@@ -47,24 +47,37 @@ $type-size-8                : 0.625em !default;  // ~10px
    Colors
    ========================================================================== */
 
+/* Custom Colors */
+$background-color           : #020020 !default;
+$dark-color								  : #062f4f !default;
+$info-color									: #B82601 !default;
+$text-color									: #E7E6E5 !default;
+
 $gray                       : #7a8288 !default;
 $dark-gray                  : mix(#000, $gray, 40%) !default;
 $darker-gray                : mix(#000, $gray, 60%) !default;
 $light-gray                 : mix(#fff, $gray, 50%) !default;
 $lighter-gray               : mix(#fff, $gray, 90%) !default;
 
-$body-color                 : #fff !default;
-$background-color           : #fff !default;
-$code-background-color      : #fafafa !default;
-$code-background-color-dark : $light-gray !default;
-$text-color                 : $dark-gray !default;
-$border-color               : $lighter-gray !default;
+$body-color                 : $background-color !default;
 
-$primary-color              : #7a8288 !default;
-$success-color              : #62c462 !default;
-$warning-color              : #f89406 !default;
-$danger-color               : #ee5f5b !default;
-$info-color                 : #52adc8 !default;
+$code-background-color      : $lighter-gray  !default;
+$code-background-color-dark : $light-gray !default;
+$border-color               : $dark-color !default;
+
+$primary-color              : $text-color !default;
+$success-color              : $dark-color	 !default;
+$warning-color              : $info-color	 !default;
+$danger-color               : $info-color	 !default;
+
+
+/* links */
+$link-color                 : $info-color !default;
+$link-color-hover           : mix(#000, $link-color, 25%) !default;
+$link-color-visited         : mix(#FF534B, $link-color, 25%) !default;
+$masthead-link-color        : $dark-gray !default;
+$masthead-link-color-hover  : mix(#000, $masthead-link-color, 25%) !default;
+
 
 /* brands */
 $behance-color              : #1769FF !default;
@@ -87,15 +100,6 @@ $vimeo-color                : #1ab7ea !default;
 $vine-color                 : #00bf8f !default;
 $youtube-color              : #bb0000 !default;
 $xing-color                 : #006567 !default;
-
-
-/* links */
-$link-color                 : $info-color !default;
-$link-color-hover           : mix(#000, $link-color, 25%) !default;
-$link-color-visited         : mix(#fff, $link-color, 25%) !default;
-$masthead-link-color        : $primary-color !default;
-$masthead-link-color-hover  : mix(#000, $primary-color, 25%) !default;
-
 
 /*
    Breakpoints
