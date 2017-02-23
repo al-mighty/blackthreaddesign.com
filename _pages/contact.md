@@ -1,7 +1,7 @@
 ---
 layout: single
-title: About
-permalink: /about/
+title: Contact
+permalink: /contact/
 ---
 
 Forthcoming...
