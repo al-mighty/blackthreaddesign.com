@@ -208,6 +208,12 @@ body:hover .visually-hidden button {
     color: $foursquare-color;
   }
 
+	.fa-reddit,
+	.fa-reddit-square {
+		color: $reddit-color;
+	}
+
+
   .fa-github,
   .fa-github-alt,
   .fa-github-square {
@@ -503,4 +509,3 @@ a.reversefootnote {
     height: 100%;
   }
 }
-
