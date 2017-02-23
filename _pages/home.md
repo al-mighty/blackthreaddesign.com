@@ -5,10 +5,10 @@ title: 'The Black Thread Blog'
 header:
 #  overlay_color: "#000"
 #  overlay_filter: "0.5"
-  image: "assets/images/apo2-1920x1080.jpg"
+  overlay_image: "assets/images/apo2-1920x1080.jpg"
   alt: 'Created with www.apophysis.org'
-  cta_label: "More Info"
-  cta_url: "/"
+#  cta_label: "More Info"
+#  cta_url: "/"
 #  caption: "Created with www.apophysis.org"
 intro:
 # - excerpt: 'Nullam suscipit et nam, tellus velit pellentesque at malesuada, enim eaque. Centered with `type="center"`'
