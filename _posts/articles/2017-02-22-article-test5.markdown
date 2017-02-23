@@ -1,13 +1,12 @@
 ---
 layout: single
-title:  "Tutorial Test"
-#tags: Test
-date:   2017-02-22 13:00:35 +0700
-categories: tutorials
-excerpt: "testing..."
+title:  "Article Test 5"
+date:   2017-02-21 13:00:35 +0700
+categories: articles
+excerpt: "testing 5..."
 teaser: "assets/images/teaser-800x450.jpg"
 header:
-  image: "assets/images/test1.png"
+  image: "assets/images/apo2-1920x1080.jpg"
 ---
 
 You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.

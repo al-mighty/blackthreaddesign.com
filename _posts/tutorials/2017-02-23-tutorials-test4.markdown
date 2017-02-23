@@ -1,10 +1,10 @@
 ---
 layout: single
-title:  "Tutorial Test"
+title:  "Tutorial Test 4"
 #tags: Test
 date:   2017-02-22 13:00:35 +0700
 categories: tutorials
-excerpt: "testing..."
+excerpt: "testing 4..."
 teaser: "assets/images/teaser-800x450.jpg"
 header:
   image: "assets/images/test1.png"
