@@ -71,3 +71,17 @@ colophon-social:
   - title: "GitHub"
     url: https://github.com/looeee
     icon: icon-github
+
+tutorials:
+  - title: "Bunch o' tutorials"
+    children:
+    - title: "Getting started"
+      url: /tutorials/tutorials-test/
+    - title: "Going further"
+      url: /tutorials/tutorials-test2/
+    - title: "Steady as she goes"
+      url: /tutorials/tutorials-test3/
+    - title: "Easy does it now"
+      url: /tutorials/tutorials-test4/
+    - title: "Woaw Betsy!"
+      url: /tutorials/tutorials-test5/
