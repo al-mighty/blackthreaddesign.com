@@ -48,22 +48,24 @@ $type-size-8                : 0.625em !default;  // ~10px
    ========================================================================== */
 
 /* Custom Colors */
-$background-color           : #020020 !default;
+$background-color           : #020000 !default;
 $dark-color								  : #062f4f !default;
+$darker-color								: #031f36 !default;
 $info-color									: #B82601 !default;
 $text-color									: #E7E6E5 !default;
 
 $gray                       : #7a8288 !default;
 $dark-gray                  : mix(#000, $gray, 40%) !default;
 $darker-gray                : mix(#000, $gray, 60%) !default;
+$darkest-gray               : mix(#000, $gray, 80%) !default;
 $light-gray                 : mix(#fff, $gray, 50%) !default;
 $lighter-gray               : mix(#fff, $gray, 90%) !default;
 
 $body-color                 : $background-color !default;
 
-$code-background-color      : $lighter-gray  !default;
+$code-background-color      : $darkest-gray   !default;
 $code-background-color-dark : $light-gray !default;
-$border-color               : $dark-color !default;
+$border-color               : $darker-color !default;
 
 $primary-color              : $text-color !default;
 $success-color              : $dark-color	 !default;

@@ -11,11 +11,8 @@ ruby RUBY_VERSION
 # Happy Jekylling!
 gem "jekyll", "3.3.1"
 
-gem "jekyll-seo-tag"
-gem "jekyll-paginate-v2"
-
 # Theme
-gem "minimal-mistakes-jekyll"
+#gem "minimal-mistakes-jekyll"
 
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
 # uncomment the line below. To upgrade, run `bundle update github-pages`.
@@ -23,6 +20,13 @@ gem "minimal-mistakes-jekyll"
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
-   gem "jekyll-feed", "~> 0.6"
-	 gem "jekyll-livereload"
+	gem "jekyll-seo-tag"
+#	gem "jekyll-paginate-v2"
+	gem 'jekyll-archives'
+	gem "jekyll-paginate"
+	gem "jekyll-sitemap"
+  gem "jekyll-feed"
+	gem "jekyll-livereload"
+	gem "jekyll-gist"
+	gem "jemoji"
 end
