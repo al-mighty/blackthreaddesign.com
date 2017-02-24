@@ -20,7 +20,32 @@ minimal-mistakes
 |  ├── home.html               # home page
 |  ├── single.html             # single document (post/page/etc)
 |  └── splash.html             # splash page
-├── _sass                      # SCSS partials
+├── _sass
+|  ├── vendor               	 # vendor SCSS partials
+|  |   ├── breakpoint       	 # media query mixins
+|  |   ├── font-awesome     	 # Font Awesome icons
+|  |   ├── magnific-popup   	 # Magnific Popup lightbox
+|  |   └── susy             	 # Susy grid system
+|  ├── _animations.scss     	 # animations
+|  ├── _archive.scss        	 # archives (list, grid, feature views)
+|  ├── _base.scss           	 # base HTML elements
+|  ├── _buttons.scss        	 # buttons
+|  ├── _footer.scss         	 # footer
+|  ├── _masthead.scss       	 # masthead
+|  ├── _mixins.scss         	 # mixins (em function, clearfix)
+|  ├── _navigation.scss     	 # nav links (breadcrumb, priority+, toc, pagination, etc.)
+|  ├── _notices.scss        	 # notices
+|  ├── _page.scss           	 # pages
+|  ├── _print.scss          	 # print styles
+|  ├── _reset.scss          	 # reset
+|  ├── _sidebar.scss        	 # sidebar
+|  ├── _syntax.scss         	 # syntax highlighting
+|  ├── _tables.scss         	 # tables
+|  ├── _utilities.scss      	 # utility classes (text/image alignment)
+|  └── _variables.scss      	 # theme defaults (fonts, colors, etc.)
+├── assets
+|  ├── css
+|  |  └── main.scss         	 # main stylesheet, loads SCSS partials in _sass
 ├── assets
 |  ├── css
 |  |  └── main.scss            # main stylesheet, loads SCSS partials from _sass
@@ -28,11 +53,19 @@ minimal-mistakes
 |  |  └── fontawesome-webfont  # Font Awesome webfonts
 |  ├── images                  # image assets for posts/pages/collections/etc.
 |  ├── js
-|  |  ├── plugins              # jQuery plugins
-|  |  ├── vendor               # vendor scripts
-|  |  ├── _main.js             # plugin settings and other scripts to load after jQuery
-|  |  └── main.min.js          # optimized and concatenated script file loaded before </body>
-├── _config.yml                # site configuration
+|  |  ├── plugins
+|  |  |   ├── jquery.fitvids.js            # fluid width video embeds
+|  |  |   ├── jquery.greedy-navigation.js  # priority plus navigation
+|  |  |   ├── jquery.magnific-popup.js     # responsive lightbox
+|  |  |   └── jquery.smooth-scroll.min.js  # make same-page links scroll smoothly
+|  |  ├── vendor
+|  |  |   └── jquery
+|  |  |       └── jquery-1.12.1.min.js
+|  |  ├── _main.js                         # jQuery plugin settings and other scripts
+|  |  └── main.min.js                      # concatenated and minified scripts├── _config.yml                # site configuration
 ├── Gemfile                    # gem file dependencies
 ├── index.html                 # paginated home page showing recent posts
 └── package.json               # NPM build scripts
+
+
+*********************************************************
