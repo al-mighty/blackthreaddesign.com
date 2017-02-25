@@ -1,7 +1,7 @@
 (function () {
 'use strict';
 
-const test = 'x';
+var test = 'x';
 
 console.log(test);
 

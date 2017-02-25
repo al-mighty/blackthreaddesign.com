@@ -4,13 +4,13 @@
   "description": "Website of the Black Thread design agency",
   "main": "index.js",
   "scripts": {
-		"push": "git push github master && npm run compress && git push",
-    "build:js": "npm run rollup -c",
-    "watch:js": "npm run rollup -c npm_scripts\rollup.js -w",
-		"compress": "npm run compress:img && npm run compress:js && npm run compress:css",
-		"compress:js": "",
-    "compress:img": "imagemin asssets/images assets/images -p",
-		"compress:css": ""
+		"push": "git push github master && npm run push:server",
+    "push:server": "npm run compress && git add . && git commit -m \"Pre-production commit.\" && git push",
+    "build:js": "rollup -c",
+    "watch:js": "rollup -c -w",
+		"compress": "npm run compress:js && npm run compress:css",
+		"compress:js": "git status",
+		"compress:css": "git status"
   },
   "repository": {
     "type": "git",
@@ -27,13 +27,10 @@
   "author": "Lewy Blue",
   "license": "ISC",
   "dependencies": {
-    "babel-plugin-glslify": "^2.0.0",
-    "gsap": "^1.19.0",
     "hammerjs": "^2.0.8",
     "three": "^0.84.0"
   },
   "devDependencies": {
-    "babel-preset-es2015-loose": "^8.0.0",
     "babel-preset-es2015-loose-rollup": "^7.0.0",
     "eslint": "^3.16.1",
     "eslint-config-airbnb": "^14.1.0",
@@ -41,12 +38,10 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
     "glslify": "^6.0.1",
-    "imagemin": "^5.2.2",
     "rollup": "^0.34.10",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^3.3.1",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-uglify": "^1.0.1"
+    "rollup-plugin-node-resolve": "^2.0.0"
   },
   "bugs": {
     "url": "https://github.com/looeee/blackthreaddesign.com.blog/issues"
