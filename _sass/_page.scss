@@ -116,12 +116,11 @@
 
   &--overlay {
     position: relative;
-    margin-bottom: -4em;
     padding: 18em 0;
     @include clearfix;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: bottom;
     animation: intro 0.3s both;
     animation-delay: 0.25s;
 		height: 100%;
