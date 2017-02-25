@@ -13,10 +13,30 @@ image:
 tags: [test, draft]
 header:
   image: "assets/images/apo2-1920x1080.jpg"
+gallery_id:
+  - url: /assets/images/test1.png #main image
+    image_path: /assets/images/test1.png #small image
+    alt: "Test 1"
+  - url: /assets/images/test2.png
+    image_path: /assets/images/test2.png
+    alt: "Test 2"
+  - url: /assets/images/test3.png
+    image_path: /assets/images/test3.png
+    alt: "Test 3"
+  - url: /assets/images/test1.png
+    image_path: /assets/images/test1.png
+    alt: "Test 4"
 ---
 
-Navigation can be included like this
+* This is the first test article. It will soon be moved into `_drafts`, and will serve to demonstrate things.
+
+* To add new posts, simply add a file in the `_posts` directory that follows the convention `YYYY-MM-DD-name-of-post.ext`
+
+Navigation can be included like this:
 {% include nav_list nav="tutorials" %}
+
+TOC can be included like this:
+{% include toc icon="gears" title="My Table of Contents" %}
 
 # Header 1
 
@@ -24,33 +44,20 @@ Navigation can be included like this
 
 ### Header 3
 
-* This is the first test article. It will soon be moved into `_drafts`, and will serve to demonstrate things.
+This text is left aligned.
+{: .text-left}
 
-This is a reference[^reference].
+This text is center aligned.
+{: .text-center}
 
-To add new posts, simply add a file in the `_posts` directory that follows the convention `YYYY-MM-DD-name-of-post.ext`
+This text is right aligned.
+{: .text-right}
 
-[External Link](http://www.fiftythree.com/paper/)
+This text is justified.
+{: .text-justify}
 
-[Repeated link][repeated-link]
-
-Code Snippets:
-
-{% highlight js %}
-var x = "x";
-console.log(x);
-//comment
-{% endhighlight %}
-
-<figure>
-	<img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image" />
-    <figcaption>This is a figure.</figcaption>
-</figure>
-
-<figure class="large">
-  <iframe width="560" height="315" src="//www.youtube.com/embed/videoseries?list=PLaLqP2ipMLc6UugVLyTwWTiFtmmZzj7ao" frameborder="0"> </iframe>
-  <figcaption>This is a figure with class `large` containing a video iframe.</figcaption>
-</figure>
+This text has no wrap applied.
+{: .text-nowrap}
 
 <div class="notice--warning" markdown="1">
 #### Header 4 with `notice--warning` class
@@ -60,11 +67,51 @@ console.log(x);
 #### Header 4 with `notice--info` class
 </div>
 
+[External Link](http://www.fiftythree.com/paper/)
+
+[Repeated link][repeated-link]
+
+This is a reference[^reference].
+
+This is an <abbr title="Abreviation">ABR</abbr>.
+
+Code Snippets:
+
+{% highlight js %}
+var x = "x";
+console.log(x);
+//comment
+{% endhighlight %}
+
+{% include gallery id="gallery_id" class="gallery_class full" caption="This is a sample gallery with **Markdown support**." %}
+
+To make the gallery fill the container add `class="full"`.
+
+<figure>
+	<img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image" />
+    <figcaption>This is a figure.</figcaption>
+</figure>
+
+{% include figure image_path="/assets/images/test3.png" alt="this is a placeholder image" caption="This is another figure." %}
+
+This is a youtube video
+{% include video id="XsxDH4HcOWA" provider="youtube" %}
+
+This is a vimeo video
+{% include video id="97649261" provider="vimeo" %}
+
 Images can be included like this: <img src="{{ site.url }}/blog/assets/images/test1.png" alt="Test Image" />
 
-Images with lightbox can be included like this: <img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image 2" class="image-popup"/>
+Images with lightbox can be included like this: <a class="image-popup" href="{{ site.url }}/blog/assets/images/test2.png"><img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image 2" /></a>
 
+![image-center]({{ site.url }}/blog/assets/images/test-200.jpg){: .align-center}
+This image is centred.
 
+![image-left]({{ site.url }}/blog/assets/images/test-400.jpg){: .align-left}
+The rest of this paragraph is filler for the sake of seeing the text wrap around the image, which is left aligned. There should be plenty of room above, below, and to the right of the image. Just look at him there — Hey guy! Way to rock that left side. I don’t care what the right aligned image says, you look great. Don’t let anyone else tell you differently.
+
+![image-right]({{ site.url }}/blog/assets/images/test-200.jpg){: .align-right}
+And now we’re going to shift things to the right align. Again, there should be plenty of room above, below, and to the left of the image. Just look at him there — Hey guy! Way to rock that right side. I don’t care what the left aligned image says, you look great. Don’t let anyone else tell you differently.
 
 
 [This is an internal link]({{ site.url }}/tutorials/)
