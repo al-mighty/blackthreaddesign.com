@@ -67,6 +67,24 @@ This text has no wrap applied.
 #### Header 4 with `notice--info` class
 </div>
 
+This paragraph of text has been emphasized with the `{: .notice}` class.
+{: .notice}
+
+This paragraph of text has been emphasized with the `{: .notice--primary}` class.
+{: .notice--primary}
+
+This paragraph of text has been emphasized with the `{: .notice--info}` class.
+{: .notice--info}
+
+This paragraph of text has been emphasized with the `{: .notice--warning}` class.
+{: .notice--warning}
+
+This paragraph of text has been emphasized with the `{: .notice--success}` class.
+{: .notice--success}
+
+This paragraph of text has been emphasized with the `{: .notice--danger}` class.
+{: .notice--danger}
+
 [External Link](http://www.fiftythree.com/paper/)
 
 [Repeated link][repeated-link]
