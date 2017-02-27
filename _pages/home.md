@@ -11,7 +11,7 @@ header:
 #  cta_url: "/"
 #  caption: "Created with www.apophysis.org"
 intro:
-# - excerpt: 'Nullam suscipit et nam, tellus velit pellentesque at malesuada, enim eaque. Centered with `type="center"`'
+  - excerpt: 'This page is currently under construction. Please check back in a few days.'
 feature_row_articles:
   - image_path: /assets/images/test1.png
     alt: "articles_img"
