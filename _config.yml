@@ -306,3 +306,7 @@ defaults:
       author_profile: false
       share: false
       comments: true
+
+#PHP include https://github.com/jnvsor/jekyll-php
+# php_path: /php/
+#include: [.php]
