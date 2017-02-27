@@ -15,8 +15,8 @@ intro:
 feature_row_articles:
   - image_path: /assets/images/test1.png
     alt: "articles_img"
-    title: "Articles"
-    title_link: "/articles/"
+    title: "Blog"
+    title_link: "/blog/"
     excerpt: "Articles related to the goings on at Black Thread Design."
 feature_row_tutorials:
   - image_path: /assets/images/test3.png

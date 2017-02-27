@@ -1,0 +1,18 @@
+---
+layout: archive
+permalink: /experiments/
+title: "Experiments"
+---
+
+{% include group-by-array collection=site.experiments field="categories" %}
+
+{% for category in group_names %}
+
+	  {% assign posts = group_items[forloop.index0] %}
+		<div class="grid__wrapper">
+	  {% for post in posts %}
+	    {% include archive-single.html type="grid" %}
+	  {% endfor %}
+		</div>
+
+{% endfor %}

@@ -1,8 +1,8 @@
 # Primary home navigation links
 
 home-primary:
-  - title: "Articles"
-    url: /articles/
+  - title: "Blog"
+    url: /blog/
   - title: "Tutorials"
     url: /tutorials/
 
@@ -22,35 +22,15 @@ masthead:
     url: /about/
   - title: "Contact"
     url: /contact/
-  - title: "Articles"
-    url: /articles/
   - title: "Tutorials"
     url: /tutorials/
+  - title: "Work"
+    url: /work/
+  - title: "Blog"
+    url: /blog/
+  - title: "Experiments"
+    url: /experiments/
 
-
-# Primary site navigation links (overlay)
-
-primary:
-  - title: "Articles"
-    url: /articles/
-    img: /assets/images/test1.png
-    excerpt: "Thoughts, inspiration, mistakes, and other minutia I've written"
-  - title: "Tutorials"
-    url: /tutorials/
-    img: /assets/images/test2.png
-    excerpt: "Tutorials to help you master three.js and other things"
-
-# Secondary site navigation links (overlay)
-
-secondary:
-  - title: "About"
-    url: /about/
-  - title: "Contact"
-    url: /contact/
-  - title: "Terms &amp; Policies"
-    url: /terms/
-  - title: "Sitemap"
-    url: /sitemap/
 
 # Footer navigation links
 
@@ -65,9 +45,6 @@ colophon-menu:
     url: /terms/
 
 colophon-social:
-  - title: "Instagram"
-    url: https://instagram.com/mmistakes
-    icon: icon-instagram
   - title: "GitHub"
     url: https://github.com/looeee
     icon: icon-github

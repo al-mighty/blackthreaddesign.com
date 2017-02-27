@@ -2,7 +2,7 @@
 layout: single
 title:  "Article Test 3"
 date:   2017-02-21 13:00:35 +0700
-categories: articles
+categories: blog
 excerpt: "testing 3..."
 teaser: "assets/images/teaser-800x450.jpg"
 header:

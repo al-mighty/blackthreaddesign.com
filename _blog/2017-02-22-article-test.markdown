@@ -2,7 +2,7 @@
 layout: single
 title:  "Article Test"
 date:   2017-02-22 13:00:35 +0700
-categories: articles
+categories: blog
 excerpt: "testing..."
 teaser: "assets/images/teaser-800x450.jpg"
 image:
@@ -133,8 +133,6 @@ And now we’re going to shift things to the right align. Again, there should be
 
 
 [This is an internal link]({{ site.url }}/tutorials/)
-
-[This is an internal link to a post]({{ site.url }}{% post_url /articles/2017-02-22-article-test %})
 
 [repeated-link]: http://jekyllrb.com/docs/home
 

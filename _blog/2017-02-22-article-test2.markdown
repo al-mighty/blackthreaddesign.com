@@ -1,9 +1,9 @@
 ---
 layout: single
-title:  "Article Test 5"
+title:  "Article Test 2"
 date:   2017-02-21 13:00:35 +0700
-categories: articles
-excerpt: "testing 5..."
+categories: blog
+excerpt: "testing 2..."
 teaser: "assets/images/teaser-800x450.jpg"
 header:
   image: "assets/images/apo2-1920x1080.jpg"

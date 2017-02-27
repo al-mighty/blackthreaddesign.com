@@ -17,7 +17,7 @@ url                      : "http://www.blackthreaddesign.com" # the base hostnam
 baseurl                  : # "/"
 repository               : "looeee/blackthreaddesign.com" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : "/assets/images/teaser-800x450.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-breadcrumbs              : true # true, false (default)
+breadcrumbs              : false # true, false (default)
 words_per_minute         : 200
 comments:
   provider               : "disqus" # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
@@ -25,11 +25,6 @@ comments:
     shortname            : "www-blackthreaddesign-com" # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
 #  discourse:
 #    server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
-#  facebook:
-    # https://developers.facebook.com/docs/plugins/comments
-#    appid                :
-#    num_posts            : # 5 (default)
-#    colorscheme          : # "light" (default), "dark"
 # staticman:
 #   allowedFields          : ['name', 'email', 'url', 'message']
 #   branch                 : "master"
@@ -170,7 +165,7 @@ sass:
 
 
 # Outputting
-permalink: /:categories/:title/
+permalink: /:collection/:title.html
 #paginate: 5 # amount of posts to show
 #paginate_path: /page:num/
 timezone: Europe/Dublin # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -236,11 +231,26 @@ assets:
       - "last 3 versions"
       - "IE > 9"
 
+collections:
+  tutorials:
+    output: true
+    permalink: /:collection/:title.html
+  work:
+    output: true
+    permalink: /:collection/:title.html
+  experiments:
+    output: true
+    permalink: /:collection/:title.html
+  blog:
+    output: true
+    permalink: /:collection/:title.html
+
+
 # Defaults
 defaults:
   # _posts
   - scope:
-      path: ""
+      path: "/blog"
       type: posts
     values:
       layout: single
@@ -249,3 +259,50 @@ defaults:
       comments: true
       share: true
       related: true
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: false
+  # _tutorials
+  - scope:
+      path: "/tutorials"
+      type: tutorials
+    values:
+      layout: tutorial
+      author_profile: false
+      share: true
+      comments: true
+      #sidebar:
+      #  nav: "tutorials"
+  # _blog
+  - scope:
+      path: "/blog"
+      type: tutorials
+    values:
+      layout: blog
+      author_profile: false
+      share: true
+      comments: true
+      #sidebar:
+      #  nav: "tutorials"
+  # _work
+  - scope:
+      path: "/work"
+      type: work
+    values:
+      layout: single
+      author_profile: false
+      share: false
+      comments: true
+  # _experiments
+  - scope:
+      path: "/experiments"
+      type: experiments
+    values:
+      layout: single
+      author_profile: false
+      share: false
+      comments: true

@@ -1,19 +1,18 @@
 ---
 layout: archive
-permalink: /articles/
-title: "Articles"
-author_profile: true
+permalink: /work/
+title: "Work"
 ---
 
-{% include group-by-array collection=site.posts field="categories" %}
+{% include group-by-array collection=site.work field="categories" %}
 
 {% for category in group_names %}
-	{% if category contains "articles" %}
+
 	  {% assign posts = group_items[forloop.index0] %}
 		<div class="grid__wrapper">
 	  {% for post in posts %}
 	    {% include archive-single.html type="grid" %}
 	  {% endfor %}
 		</div>
-	{% endif %}
+
 {% endfor %}
