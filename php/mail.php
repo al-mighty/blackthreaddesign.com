@@ -28,7 +28,7 @@ Message: $message
 mail($myemail, $subject, $emailContent, $mailheader) or die("Error!");
 
 /* Redirect visitor to the thank you page */
-header('Location: thanks.html');
+header('Location: /thanks.html');
 exit();
 
 
