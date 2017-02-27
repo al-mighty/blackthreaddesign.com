@@ -3,7 +3,8 @@
    ========================================================================== */
 
 form {
-  margin: 0 0 5px 0;
+  max-width: 640px;
+  margin:50px auto;
 
   fieldset {
     margin-bottom: 5px;
@@ -136,13 +137,29 @@ input[type="file"] {
 }
 
 input[type="button"],
-input[type="reset"],
-input[type="submit"] {
+input[type="reset"] {
   width: auto;
   height: auto;
   cursor: pointer;
   *overflow: visible;
 }
+
+[type="submit"] {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  width: 100%;
+  background: $border-color;
+  border-radius:5px;
+  border:0;
+  cursor:pointer;
+  color:white;
+  font-size:24px;
+  padding-top:10px;
+  padding-bottom:10px;
+  transition: all 0.3s;
+  margin-top:-4px;
+  font-weight:700;
+}
+[type="submit"]:hover { background: $info-color; }
 
 select,
 input[type="file"] {
@@ -160,11 +177,12 @@ select[size] {
 }
 
 textarea {
+  height: 150px;
   resize: vertical;
-  height: auto;
   overflow: auto;
   vertical-align: top;
 }
+
 
 input[type="hidden"] {
   display: none;
@@ -221,7 +239,7 @@ textarea[readonly] {
 
 input:focus,
 textarea:focus {
-  border-color: $primary-color;
+  //border-color: $primary-color;
   outline: 0;
   outline: thin dotted \9;
 }
@@ -354,6 +372,28 @@ select:focus {
   z-index: 11;
 }
 
+/*
+   Contact Form
+   ========================================================================== */
+
+.contact-form {
+  color:white;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight:500;
+  font-size: 18px;
+  border-radius: 5px;
+  line-height: 22px;
+  background-color: transparent;
+  border:2px solid $border-color;
+  transition: all 0.3s;
+  padding: 13px;
+  margin-bottom: 15px;
+  width:100%;
+  box-sizing: border-box;
+  outline:0;
+}
+
+.contact-form:focus { border:2px solid $info-color; }
 
 
 /*
