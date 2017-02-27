@@ -1,5 +1,5 @@
 {
-  "name": "blackthreaddesign.com.blog",
+  "name": "Black Thread Design",
   "version": "1.0.0",
   "description": "Website of the Black Thread design agency",
   "main": "index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/looeee/blackthreaddesign.com.blog"
+    "url": "https://github.com/looeee/blackthreaddesign.com"
   },
   "keywords": [
     "design",
@@ -44,7 +44,7 @@
     "rollup-plugin-node-resolve": "^2.0.0"
   },
   "bugs": {
-    "url": "https://github.com/looeee/blackthreaddesign.com.blog/issues"
+    "url": "https://github.com/looeee/blackthreaddesign.com/issues"
   },
   "homepage": "www.blackthreaddesign.com",
 	"eslintConfig": {

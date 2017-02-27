@@ -106,7 +106,7 @@ console.log(x);
 To make the gallery fill the container add `class="full"`.
 
 <figure>
-	<img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image" />
+	<img src="{{ site.url }}/assets/images/test2.png" alt="Test Image" />
     <figcaption>This is a figure.</figcaption>
 </figure>
 
@@ -118,23 +118,23 @@ This is a youtube video
 This is a vimeo video
 {% include video id="97649261" provider="vimeo" %}
 
-Images can be included like this: <img src="{{ site.url }}/blog/assets/images/test1.png" alt="Test Image" />
+Images can be included like this: <img src="{{ site.url }}/assets/images/test1.png" alt="Test Image" />
 
-Images with lightbox can be included like this: <a class="image-popup" href="{{ site.url }}/blog/assets/images/test2.png"><img src="{{ site.url }}/blog/assets/images/test2.png" alt="Test Image 2" /></a>
+Images with lightbox can be included like this: <a class="image-popup" href="{{ site.url }}/assets/images/test2.png"><img src="{{ site.url }}/assets/images/test2.png" alt="Test Image 2" /></a>
 
-![image-center]({{ site.url }}/blog/assets/images/test-200.jpg){: .align-center}
+![image-center]({{ site.url }}/assets/images/test-200.jpg){: .align-center}
 This image is centred.
 
-![image-left]({{ site.url }}/blog/assets/images/test-400.jpg){: .align-left}
+![image-left]({{ site.url }}/assets/images/test-400.jpg){: .align-left}
 The rest of this paragraph is filler for the sake of seeing the text wrap around the image, which is left aligned. There should be plenty of room above, below, and to the right of the image. Just look at him there — Hey guy! Way to rock that left side. I don’t care what the right aligned image says, you look great. Don’t let anyone else tell you differently.
 
-![image-right]({{ site.url }}/blog/assets/images/test-200.jpg){: .align-right}
+![image-right]({{ site.url }}/assets/images/test-200.jpg){: .align-right}
 And now we’re going to shift things to the right align. Again, there should be plenty of room above, below, and to the left of the image. Just look at him there — Hey guy! Way to rock that right side. I don’t care what the left aligned image says, you look great. Don’t let anyone else tell you differently.
 
 
 [This is an internal link]({{ site.url }}/tutorials/)
 
-[This is an internal link to a post]({{ site.url }}{% post_url /articles/2017-02-22-article-test %}) NOTE: Currently not working because  `/blog` is missing
+[This is an internal link to a post]({{ site.url }}{% post_url /articles/2017-02-22-article-test %})
 
 [repeated-link]: http://jekyllrb.com/docs/home
 

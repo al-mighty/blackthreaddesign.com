@@ -1,7 +1,7 @@
 ---
 layout: splash
 permalink: /
-title: 'The Black Thread Blog'
+title: 'Black Thread Design'
 header:
 #  overlay_color: "#000"
 #  overlay_filter: "0.5"
