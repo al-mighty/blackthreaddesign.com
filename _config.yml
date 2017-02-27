@@ -7,14 +7,14 @@
 
 # Site Settings
 
-livereload: true     # You no longer need to include --livereload
+livereload               : true     # You no longer need to include --livereload
 locale                   : "en"
 title                    : "Black Thread Design"
 title_separator          : "-"
 name                     : "Lewy Blue"
 description              : "Articles and tutorials on WebGL, three.js, web development and other things."
 url                      : "http://www.blackthreaddesign.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : "/" 
+baseurl                  : # "/"
 repository               : "looeee/blackthreaddesign.com" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : "/assets/images/teaser-800x450.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 breadcrumbs              : true # true, false (default)
