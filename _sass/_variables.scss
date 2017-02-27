@@ -78,7 +78,7 @@ $link-color                 : $info-color !default;
 $link-color-hover           : mix(#000, $link-color, 25%) !default;
 $link-color-visited         : mix(#FF534B, $link-color, 25%) !default;
 $masthead-link-color        : $dark-gray !default;
-$masthead-link-color-hover  : mix(#000, $masthead-link-color, 25%) !default;
+$masthead-link-color-hover  : $info-color !default; //mix(#000, $masthead-link-color, 25%) !default;
 
 
 /* brands */
