@@ -13,13 +13,13 @@ header:
 intro:
   - excerpt: 'This page is under construction. Please check back in a while.'
 feature_row_work:
-  - image_path: /assets/images/test-400.jpg
+  - image_path: /assets/images/test2.png
     alt: "work_img"
     title: "Work"
     title_link: "/work/"
     excerpt: "Work portfolio of Black Thread Design"
 feature_row_tutorials:
-  - image_path: /assets/images/test3.png
+  - image_path: /assets/images/test1.png
     alt: "tutorials_img"
     title: "Three.js Tutorials"
     title_link: "/tutorials/"

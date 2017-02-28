@@ -101,15 +101,15 @@ author:
   vine             :
   weibo            :
   xing             :
-  youtube          : # "https://youtube.com/c/MichaelRoseDesign"
+  youtube          :
 
 
 # Reading Files
 include:
   - .htaccess
   - _pages
-  - assets/js/_main.j
 exclude:
+  - vendor
   - .asset-cache
   - .bundle
   - .jekyll-assets-cache
