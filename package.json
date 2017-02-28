@@ -1,16 +1,16 @@
 {
-  "name": "Black Thread Design",
+  "name": "BlackThreadDesign",
   "version": "1.0.0",
   "description": "Website of the Black Thread design agency",
   "main": "index.js",
   "scripts": {
-		"push": "git push github master && npm run push:server",
+    "push": "git push github master && npm run push:server",
     "push:server": "npm run compress && git add . && git commit -m \"Pre-production commit.\" && git push",
     "build:js": "rollup -c",
     "watch:js": "rollup -c -w",
-		"compress": "npm run compress:js && npm run compress:css",
-		"compress:js": "git status",
-		"compress:css": "git status"
+    "compress": "npm run compress:js && npm run compress:css",
+    "compress:js": "git status",
+    "compress:css": "git status"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   "author": "Lewy Blue",
   "license": "ISC",
   "dependencies": {
+    "avalonbox": "git+https://github.com/Nafta7/avalonbox.git",
     "hammerjs": "^2.0.8",
     "three": "^0.84.0"
   },
@@ -41,26 +42,30 @@
     "rollup": "^0.34.10",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^3.3.1",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-watch": "^3.2.2"
   },
   "bugs": {
     "url": "https://github.com/looeee/blackthreaddesign.com/issues"
   },
   "homepage": "www.blackthreaddesign.com",
-	"eslintConfig": {
-		"extends": "airbnb",
-		"ecmaVersion": 6,
-		"env": {
-			"browser": true
-		},
-		"rules": {
-			"no-console": 0,
-			"linebreak-style": 0,
-			"import/no-extraneous-dependencies": 0,
-      "space-in-parens": ["error", "always"],
-      "prefer-template" : 0,
+  "eslintConfig": {
+    "extends": "airbnb",
+    "ecmaVersion": 6,
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "no-console": 0,
+      "linebreak-style": 0,
+      "import/no-extraneous-dependencies": 0,
+      "space-in-parens": [
+        "error",
+        "always"
+      ],
+      "prefer-template": 0,
       "padded-blocks": 0,
       "arrow-body-style": 0
     }
-	}
+  }
 }

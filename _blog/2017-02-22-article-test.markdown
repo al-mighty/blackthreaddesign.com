@@ -13,7 +13,7 @@ image:
 tags: [test, draft]
 header:
   image: "assets/images/apo2-1920x1080.jpg"
-gallery_id:
+image-gallery:
   - url: /assets/images/test1.png #main image
     image_path: /assets/images/test1.png #small image
     alt: "Test 1"
@@ -101,9 +101,25 @@ console.log(x);
 //comment
 {% endhighlight %}
 
-{% include gallery id="gallery_id" class="gallery_class full" caption="This is a sample gallery with **Markdown support**." %}
+{% include gallery id="image-gallery" class="gallery_class full" caption="This is a sample gallery with **Markdown support**." %}
 
 To make the gallery fill the container add `class="full"`.
+
+<!-- <div id="image-gallery" class="gallery">
+
+  <a href="{{ site.url }}/assets/images/test2.png">
+    <img src="{{ site.url }}/assets/images/test2.png" />
+  </a>
+
+  <a href="{{ site.url }}/assets/images/test2.png">
+    <img src="{{ site.url }}/assets/images/test2.png" />
+  </a>
+
+  <a href="{{ site.url }}/assets/images/test2.png">
+    <img src="{{ site.url }}/assets/images/test2.png" />
+  </a>
+
+</div> -->
 
 <figure>
 	<img src="{{ site.url }}/assets/images/test2.png" alt="Test Image" />

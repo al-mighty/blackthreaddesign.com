@@ -37,6 +37,7 @@
 
 /* Magnific Popup - responsive lightbox */
 @import "vendor/magnific-popup/magnific-popup"; // Magnific Popup
+@import "vendor/avalonbox"; // Avalon lightbox
 
 /* Susy - grid mixins */
 $susy: (
@@ -71,6 +72,7 @@ $susy: (
 @import "notices";
 @import "masthead";
 @import "navigation";
+@import "greedynav";
 @import "footer";
 @import "syntax";
 @import "forms";
