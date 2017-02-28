@@ -3,39 +3,51 @@ fluidvids.init( {
   players: ['www.youtube.com', 'player.vimeo.com'] // players to support
 } );
 
+//equivalent to jQuery outerHeight( true )
+function outerHeight(el) {
+  var height = el.offsetHeight;
+  var style = getComputedStyle(el);
+
+  height += parseInt(style.marginTop) + parseInt(style.marginBottom);
+  return height;
+}
+
+// Sticky footer
+var bumpIt = function() {
+  var height = outerHeight(document.querySelector( '.page__footer' ));
+  document.querySelector( 'body' ).style.marginBottom = height + 'px';
+};
+
+var didResize = false;
+
+bumpIt();
+
+var onResize = function() {
+  didResize = true;
+}
+
+window.addEventListener('resize', onResize);
+
+setInterval(function() {
+  if(didResize) {
+    didResize = false;
+    bumpIt();
+  }
+}, 250);
+
+
+
 /* ==========================================================================
    jQuery plugin settings and other scripts
    ========================================================================== */
 
 $(document).ready(function(){
 
-  // Sticky footer
-  var bumpIt = function() {
-      $('body').css('margin-bottom', $('.page__footer').outerHeight(true));
-    },
-    didResize = false;
-
-  bumpIt();
-
-  $(window).resize(function() {
-    didResize = true;
-  });
-  setInterval(function() {
-    if(didResize) {
-      didResize = false;
-      bumpIt();
-    }
-  }, 250);
-
   // Follow menu drop down
   $(".author__urls-wrapper button").on("click", function() {
     $(".author__urls").fadeToggle("fast", function() {});
     $(".author__urls-wrapper button").toggleClass("open");
   });
-
-  // init smooth scroll
-  $("a").smoothScroll({offset: -20});
-
 
   // Magnific-Popup options
   $(".image-popup").magnificPopup({
