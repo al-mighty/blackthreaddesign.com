@@ -109,7 +109,7 @@ console.log(x);
 //comment
 {% endhighlight %}
 
-{% include gallery id="image-gallery" class="gallery_class full" caption="This is a gallery with **Markdown support**." %}
+{% include gallery id="image-gallery" class="gallery_class" caption="This is a gallery with **Markdown support**." %}
 
 To make the gallery fill the container add `class="full"`.
 
