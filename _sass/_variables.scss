@@ -2,134 +2,161 @@
    Variables
    ========================================================================== */
 
+
 /*
    Typography
    ========================================================================== */
 
-$doc-font-size              : 16 !default;
+$doc-font-size: 16 !default;
 
 /* paragraph indention */
-$paragraph-indent           : false !default; // true, false (default)
-$indent-var                 : 1.3em !default;
+
+$paragraph-indent: false !default; // true, false (default)
+$indent-var: 1.3em !default;
 
 /* system typefaces */
-$serif                      : Georgia, Times, serif !default;
-$sans-serif                 : -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif !default;
-$monospace                  : Monaco, Consolas, "Lucida Console", monospace !default;
+
+$serif: Georgia,
+Times,
+serif !default;
+$sans-serif: -apple-system,
+".SFNSText-Regular",
+"San Francisco",
+"Roboto",
+"Segoe UI",
+"Helvetica Neue",
+"Lucida Grande",
+Arial,
+sans-serif !default;
+$monospace: Monaco,
+Consolas,
+"Lucida Console",
+monospace !default;
 
 /* sans serif typefaces */
-$sans-serif-narrow          : $sans-serif !default;
-$helvetica                  : Helvetica, "Helvetica Neue", Arial, sans-serif !default;
+
+$sans-serif-narrow: $sans-serif !default;
+$helvetica: Helvetica,
+"Helvetica Neue",
+Arial,
+sans-serif !default;
 
 /* serif typefaces */
-$georgia                    : Georgia, serif !default;
-$times                      : Times, serif !default;
-$bodoni                     : "Bodoni MT", serif !default;
-$calisto                    : "Calisto MT", serif !default;
-$garamond                   : Garamond, serif !default;
 
-$global-font-family         : $sans-serif !default;
-$header-font-family         : $sans-serif !default;
-$caption-font-family        : $serif !default;
+$georgia: Georgia, serif !default;
+$times: Times, serif !default;
+$bodoni: "Bodoni MT", serif !default;
+$calisto: "Calisto MT", serif !default;
+$garamond: Garamond, serif !default;
+$global-font-family: $sans-serif !default;
+$header-font-family: $sans-serif !default;
+$caption-font-family: $serif !default;
 
 /* type scale */
-$type-size-1                : 2.441em !default;  // ~39.056px
-$type-size-2                : 1.953em !default;  // ~31.248px
-$type-size-3                : 1.563em !default;  // ~25.008px
-$type-size-4                : 1.25em !default;   // ~20px
-$type-size-5                : 1em !default;      // ~16px
-$type-size-6                : 0.75em !default;   // ~12px
-$type-size-7                : 0.6875em !default; // ~11px
-$type-size-8                : 0.625em !default;  // ~10px
 
+$type-size-1: 2.441em !default; // ~39.056px
+$type-size-2: 1.953em !default; // ~31.248px
+$type-size-3: 1.563em !default; // ~25.008px
+$type-size-4: 1.25em !default; // ~20px
+$type-size-5: 1em !default; // ~16px
+$type-size-6: 0.75em !default; // ~12px
+$type-size-7: 0.6875em !default; // ~11px
+$type-size-8: 0.625em !default; // ~10px
 
 /*
    Colors
    ========================================================================== */
 
-/* Custom Colors */
-$background-color           : #020000 !default;
-$dark-color								  : #062f4f !default;
-$darker-color								: #031f36 !default;
-$info-color									: #B82601 !default;
-$text-color									: #E7E6E5 !default;
 
-$gray                       : #7a8288 !default;
-$dark-gray                  : mix(#000, $gray, 40%) !default;
-$darker-gray                : mix(#000, $gray, 60%) !default;
-$darkest-gray               : mix(#000, $gray, 80%) !default;
-$light-gray                 : mix(#fff, $gray, 50%) !default;
-$lighter-gray               : mix(#fff, $gray, 90%) !default;
+/* Shades of Red  */
+$light-red: #7C010F !default;
+$medium-red: #B82601 !default;
 
-$body-color                 : $background-color !default;
+/* Shades of Blue  */
 
-$code-background-color      : $darkest-gray   !default;
-$code-background-color-dark : $light-gray !default;
-$border-color               : $darker-color !default;
+$darkest-blue: #020000 !default;
+$darker-blue: #031f36 !default;
+$dark-blue: #062f4f !default;
+$medium-blue: #0c5c99 !default;
 
-$primary-color              : $text-color !default;
-$success-color              : $dark-color	 !default;
-$warning-color              : $info-color	 !default;
-$danger-color               : $info-color	 !default;
+/* Shades of Grey  */
+$gray: #7a8288 !default;
+$lighter-gray: mix(#fff, $gray, 90%) !default;
+$light-gray: mix(#fff, $gray, 50%) !default;
+$dark-gray: mix(#000, $gray, 40%) !default;
+$darker-gray: mix(#000, $gray, 60%) !default;
+$darkest-gray: mix(#000, $gray, 80%) !default;
 
+/* Base colors  */
+
+$info-color: $medium-red !default;
+$text-color: $lighter-gray !default;
+$background-color: $darkest-blue !default;
+$body-color: $background-color !default;
+$code-background-color: $darkest-gray !default;
+$code-background-color-dark: $light-gray !default;
+$border-color: $darker-blue !default;
+$primary-color: $text-color !default;
+$success-color: $medium-blue !default;
+$warning-color: $light-red !default;
+$danger-color: $info-color !default;
 
 /* links */
-$link-color                 : $info-color !default;
-$link-color-hover           : mix(#000, $link-color, 25%) !default;
-$link-color-visited         : mix(#FF534B, $link-color, 25%) !default;
-$masthead-link-color        : $dark-gray !default;
-$masthead-link-color-hover  : $info-color !default; //mix(#000, $masthead-link-color, 25%) !default;
 
+$link-color: $info-color !default;
+$link-color-hover: mix($background-color, $link-color, 25%) !default;
+$link-color-visited: mix($medium-red, $link-color, 25%) !default;
+$masthead-link-color: $dark-gray !default;
+$masthead-link-color-hover: $info-color  !default; 
 
 /* brands */
-$behance-color              : #1769FF !default;
-$dribbble-color             : #ea4c89 !default;
-$facebook-color             : #3b5998 !default;
-$flickr-color               : #ff0084 !default;
-$foursquare-color           : #0072b1 !default;
-$github-color               : #171516 !default;
-$google-plus-color          : #dd4b39 !default;
-$reddit-color          		: #ff4500 !default;
-$instagram-color            : #517fa4 !default;
-$lastfm-color               : #d51007 !default;
-$linkedin-color             : #007bb6 !default;
-$pinterest-color            : #cb2027 !default;
-$rss-color                  : #fa9b39 !default;
-$soundcloud-color           : #ff3300 !default;
-$stackoverflow-color        : #fe7a15 !default;
-$tumblr-color               : #32506d !default;
-$twitter-color              : #55acee !default;
-$vimeo-color                : #1ab7ea !default;
-$vine-color                 : #00bf8f !default;
-$youtube-color              : #bb0000 !default;
-$xing-color                 : #006567 !default;
+
+$behance-color: #1769FF !default;
+$dribbble-color: #ea4c89 !default;
+$facebook-color: #3b5998 !default;
+$flickr-color: #ff0084 !default;
+$foursquare-color: #0072b1 !default;
+$github-color: #171516 !default;
+$google-plus-color: #dd4b39 !default;
+$reddit-color: #ff4500 !default;
+$instagram-color: #517fa4 !default;
+$lastfm-color: #d51007 !default;
+$linkedin-color: #007bb6 !default;
+$pinterest-color: #cb2027 !default;
+$rss-color: #fa9b39 !default;
+$soundcloud-color: #ff3300 !default;
+$stackoverflow-color: #fe7a15 !default;
+$tumblr-color: #32506d !default;
+$twitter-color: #55acee !default;
+$vimeo-color: #1ab7ea !default;
+$vine-color: #00bf8f !default;
+$youtube-color: #bb0000 !default;
+$xing-color: #006567 !default;
 
 /*
    Breakpoints
    ========================================================================== */
 
-$small                      : 600px !default;
-$medium                     : 768px !default;
-$medium-wide                : 900px !default;
-$large                      : 1024px !default;
-$x-large                    : 1280px !default;
-
+$small: 600px !default;
+$medium: 768px !default;
+$medium-wide: 900px !default;
+$large: 1024px !default;
+$x-large: 1280px !default;
 
 /*
    Grid
    ========================================================================== */
 
-$right-sidebar-width-narrow : 200px !default;
-$right-sidebar-width        : 300px !default;
-$right-sidebar-width-wide   : 400px !default;
-
+$right-sidebar-width-narrow: 200px !default;
+$right-sidebar-width: 300px !default;
+$right-sidebar-width-wide: 400px !default;
 
 /*
    Other
    ========================================================================== */
 
-$border-radius              : 4px !default;
-$box-shadow                 : 0 1px 1px rgba(0, 0, 0, 0.125) !default;
-$navicon-width              : 28px !default;
-$navicon-height             : 4px !default;
-$global-transition          : all 0.2s ease-in-out !default;
+$border-radius: 4px !default;
+$box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125) !default;
+$navicon-width: 28px !default;
+$navicon-height: 4px !default;
+$global-transition: all 0.2s ease-in-out !default;
