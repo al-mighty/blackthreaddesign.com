@@ -69,7 +69,7 @@ $type-size-8: 0.625em !default; // ~10px
 
 
 /* Shades of Red  */
-$light-red: #7C010F !default;
+$dark-red: #7C010F !default;
 $medium-red: #B82601 !default;
 
 /* Shades of Blue  */
@@ -98,7 +98,7 @@ $code-background-color-dark: $light-gray !default;
 $border-color: $darker-blue !default;
 $primary-color: $text-color !default;
 $success-color: $medium-blue !default;
-$warning-color: $light-red !default;
+$warning-color: $dark-red !default;
 $danger-color: $info-color !default;
 
 /* links */

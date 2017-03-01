@@ -14,7 +14,7 @@
 
     {{ content }}
 
-    <div class="page__footer">
+    <div id="{% if page.layout contains "splash" %}splash-footer{% endif %}" class="page__footer">
       <footer>
         {% include footer.html %}
       </footer>

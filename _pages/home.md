@@ -3,13 +3,8 @@ layout: splash
 permalink: /
 title: 'Black Thread Design'
 header:
-#  overlay_color: "#000"
-#  overlay_filter: "0.5"
   image: "assets/images/splash-hero-1920.jpg"
-  alt: 'Created with www.apophysis.org'
-#  cta_label: "More Info"
-#  cta_url: "/"
-#  caption: "Created with www.apophysis.org"
+  alt: 'hero_img'
 intro:
   - excerpt: 'This page is under construction. Please check back in a while.'
 feature_row_work:
