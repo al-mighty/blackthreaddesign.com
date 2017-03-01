@@ -507,8 +507,19 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
+//Simple uuid function
+var uuid = function b(a) {
+  return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
+};
+
 document.querySelectorAll('.gallery').forEach(function (gallery) {
+  if (!gallery.id) gallery.id = uuid();
   avalonbox$1.run(gallery.id);
+});
+
+document.querySelectorAll('.lightbox').forEach(function (image) {
+  if (!image.id) image.id = uuid();
+  avalonbox$1.run(image.id);
 });
 
 fluidvids.init({

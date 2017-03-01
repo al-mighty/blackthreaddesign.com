@@ -130,7 +130,11 @@ This is a vimeo video
 
 Images can be included like this: <img src="{{ site.url }}/assets/images/test1.png" alt="Test Image" />
 
-Images with lightbox can be included like this: <a class="image-popup" href="{{ site.url }}/assets/images/test2.png"><img src="{{ site.url }}/assets/images/test2.png" alt="Test Image 2" /></a>
+Images with lightbox can be included like this:
+{% include lightbox-image id="link_id" class="link_class" full="/assets/images/test2.png" thumb="/assets/images/test2.png" alt="lightbox test" %}
+
+{% include lightbox-image id="link_id" class="link_class" full="/assets/images/test1.png" thumb="/assets/images/test1.png" alt="lightbox test 2" %}
+
 
 ![image-center]({{ site.url }}/assets/images/test-200.jpg){: .align-center}
 This image is centred.

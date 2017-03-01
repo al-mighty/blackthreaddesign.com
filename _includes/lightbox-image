@@ -1,0 +1,5 @@
+<div class="lightbox">
+    <a id="{{ include.id }}" class="{{ include.class }}" href="{{ site.url }}{{ include.full }}">
+        <img src="{{ site.url }}{{ include.thumb }}" alt="{{ include.alt }}" />
+    </a>
+</div>
