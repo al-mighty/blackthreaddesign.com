@@ -29,6 +29,7 @@
   "dependencies": {
     "avalonbox": "git+https://github.com/Nafta7/avalonbox.git",
     "hammerjs": "^2.0.8",
+    "lodash.throttle": "^4.1.1",
     "three": "^0.84.0"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import avalonbox from '../vendor/avalonbox/avalonbox.js';
 import fluidvids from '../vendor/fluidVids.js';
 import Greedy from '../vendor/greedy-nav.js';
+import throttle from 'lodash.throttle';
 
 //Simple uuid function
 var uuid = function b(a) {
@@ -35,28 +36,14 @@ function outerHeight( el ) {
 
 
 // Sticky footer
-const bumpIt = function bumpIt() {
+const setBodyMargin = function setBodyMargin() {
   const height = outerHeight( document.querySelector( '.page__footer' ) );
   document.querySelector( 'body' ).style.marginBottom = height + 'px';
 };
 
-let didResize = false;
+setBodyMargin();
 
-bumpIt();
-
-const onResize = function onResize() {
-  didResize = true;
-};
-
-window.addEventListener( 'resize', onResize );
-
-setInterval( () => {
-  if ( didResize ) {
-    didResize = false;
-    bumpIt();
-  }
-}, 250 );
-
+window.addEventListener( 'resize', throttle( setBodyMargin, 250 ) );
 
 // Initialise menu
 const menu = new Greedy( {
