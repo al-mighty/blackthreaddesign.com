@@ -5,8 +5,7 @@ title: 'Black Thread Design'
 header:
   image: "assets/images/splash-hero-1920.jpg"
   alt: 'hero_img'
-intro:
-  - excerpt: 'This page is under construction. Please check back in a while.'
+
 feature_row_work:
   - image_path: /assets/images/test2.png
     alt: "work_img"
@@ -33,8 +32,6 @@ feature_row_experiments:
     excerpt: "Smaller work pieces and experiments"
 
 ---
-
-{% include feature_row id="intro" type="center" %}
 
 {% include feature_row id="feature_row_work" type="left" %}
 

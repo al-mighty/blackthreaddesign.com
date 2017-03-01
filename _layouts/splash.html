@@ -3,6 +3,10 @@ layout: default
 ---
 {% include splash__hero.html %}
 
+<div id="splash__under-hero">
+<h2 style="text-align: center">This page is under construction. Please check back in a while.</h2>
+</div>
+
 <div id="splash-main" role="main">
   <article class="splash" itemscope itemtype="http://schema.org/CreativeWork">
     {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
