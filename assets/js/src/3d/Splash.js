@@ -6,9 +6,6 @@ import backgroundFrag from './shaders/splashBackground.frag';
 
 import { pointerPos } from '../utilities.js';
 
-
-
-
 export default class Splash {
 
   constructor() {
