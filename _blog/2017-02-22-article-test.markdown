@@ -3,6 +3,7 @@ layout: single
 title:  "Article Test"
 date:   2017-02-22 13:00:35 +0700
 categories: blog
+comments: true
 excerpt: "testing..."
 teaser: "assets/images/teaser-800x450.jpg"
 image:
@@ -26,6 +27,13 @@ image-gallery:
   - url: /assets/images/test1.png
     image_path: /assets/images/test1.png
     alt: "Test 4"
+image-gallery2:
+  - url: /assets/images/test1.png #main image
+    image_path: /assets/images/test1.png #small image
+    alt: "Test 1"
+  - url: /assets/images/test2.png
+    image_path: /assets/images/test2.png
+    alt: "Test 2"
 ---
 
 * This is the first test article. It will soon be moved into `_drafts`, and will serve to demonstrate things.
@@ -101,25 +109,11 @@ console.log(x);
 //comment
 {% endhighlight %}
 
-{% include gallery id="image-gallery" class="gallery_class full" caption="This is a sample gallery with **Markdown support**." %}
+{% include gallery id="image-gallery" class="gallery_class full" caption="This is a gallery with **Markdown support**." %}
 
 To make the gallery fill the container add `class="full"`.
 
-<!-- <div id="image-gallery" class="gallery">
-
-  <a href="{{ site.url }}/assets/images/test2.png">
-    <img src="{{ site.url }}/assets/images/test2.png" />
-  </a>
-
-  <a href="{{ site.url }}/assets/images/test2.png">
-    <img src="{{ site.url }}/assets/images/test2.png" />
-  </a>
-
-  <a href="{{ site.url }}/assets/images/test2.png">
-    <img src="{{ site.url }}/assets/images/test2.png" />
-  </a>
-
-</div> -->
+{% include gallery id="image-gallery2" class="gallery_class" caption="This is another gallery" %}
 
 <figure>
 	<img src="{{ site.url }}/assets/images/test2.png" alt="Test Image" />
