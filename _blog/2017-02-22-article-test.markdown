@@ -75,22 +75,22 @@ This text has no wrap applied.
 #### Header 4 with `notice--info` class
 </div>
 
-This paragraph of text has been emphasized with the `{: .notice}` class.
+This paragraph of text has been emphasized with the `{: .notice}` class. Here is a <a href="#">link</a>.
 {: .notice}
 
-This paragraph of text has been emphasized with the `{: .notice--primary}` class.
+This paragraph of text has been emphasized with the `{: .notice--primary}` class. Here is a <a href="#">link</a>
 {: .notice--primary}
 
-This paragraph of text has been emphasized with the `{: .notice--info}` class.
+This paragraph of text has been emphasized with the `{: .notice--info}` class. Here is a <a href="#">link</a>
 {: .notice--info}
 
-This paragraph of text has been emphasized with the `{: .notice--warning}` class.
+This paragraph of text has been emphasized with the `{: .notice--warning}` class. Here is a <a href="#">link</a>
 {: .notice--warning}
 
-This paragraph of text has been emphasized with the `{: .notice--success}` class.
+This paragraph of text has been emphasized with the `{: .notice--success}` class. Here is a <a href="#">link</a>
 {: .notice--success}
 
-This paragraph of text has been emphasized with the `{: .notice--danger}` class.
+This paragraph of text has been emphasized with the `{: .notice--danger}` class. Here is a <a href="#">link</a>
 {: .notice--danger}
 
 [External Link](http://www.fiftythree.com/paper/)

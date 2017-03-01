@@ -474,6 +474,7 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
+// Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
@@ -1098,6 +1099,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
