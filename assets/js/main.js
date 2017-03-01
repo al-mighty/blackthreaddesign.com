@@ -350,63 +350,26 @@ var avalonbox = createCommonjsModule(function (module) {
 
 var avalonbox$1 = interopDefault(avalonbox);
 
-var fluidVids = createCommonjsModule(function (module) {
-  var fluidvids = {
-    selector: ['iframe', 'object'],
-    players: ['www.youtube.com', 'player.vimeo.com']
+var utilities = createCommonjsModule(function (module, exports) {
+  //Simple uuid function
+  var uuid = function b(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
   };
 
-  var css = ['.fluidvids {', 'width: 100%; max-width: 100%;', '}', '.fluidvids-item {', 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;', '}'].join('');
-
-  var head = document.head || document.getElementsByTagName('head')[0];
-
-  function matches(src) {
-    return new RegExp('^(https?:)?\/\/(?:' + fluidvids.players.join('|') + ').*$', 'i').test(src);
-  }
-
-  function getRatio(height, width) {
-    return parseInt(height, 10) / parseInt(width, 10) * 100 + '%';
-  }
-
-  function fluid(elem) {
-    if (!matches(elem.src) && !matches(elem.data) || !!elem.getAttribute('data-fluidvids')) {
-      return;
-    }
-    var wrap = document.createElement('div');
-    elem.parentNode.insertBefore(wrap, elem);
-    elem.className += (elem.className ? ' ' : '') + 'fluidvids-item';
-    elem.setAttribute('data-fluidvids', 'loaded');
-    wrap.className += 'fluidvids';
-    wrap.style.paddingTop = getRatio(elem.height, elem.width);
-    wrap.appendChild(elem);
-  }
-
-  function addStyles() {
-    var div = document.createElement('div');
-    div.innerHTML = '<p>x</p><style>' + css + '</style>';
-    head.appendChild(div.childNodes[1]);
-  }
-
-  fluidvids.render = function () {
-    var nodes = document.querySelectorAll(fluidvids.selector.join());
-    var i = nodes.length;
-    while (i--) {
-      fluid(nodes[i]);
-    }
-  };
-
-  fluidvids.init = function (obj) {
-    for (var key in obj) {
-      fluidvids[key] = obj[key];
-    }
-    fluidvids.render();
-    addStyles();
-  };
-
-  module.exports = fluidvids;
+  exports.uuid = uuid;
 });
 
-var fluidvids = interopDefault(fluidVids);
+var uuid = utilities.uuid;
+
+document.querySelectorAll('.gallery').forEach(function (gallery) {
+  if (!gallery.id) gallery.id = uuid();
+  avalonbox$1.run(gallery.id);
+});
+
+document.querySelectorAll('.lightbox').forEach(function (image) {
+  if (!image.id) image.id = uuid();
+  avalonbox$1.run(image.id);
+});
 
 var greedyNav = createCommonjsModule(function (module) {
   var Greedy = function Greedy(options) {
@@ -510,6 +473,186 @@ var greedyNav = createCommonjsModule(function (module) {
 });
 
 var Greedy = interopDefault(greedyNav);
+
+var menu = new Greedy({
+  element: '.greedy-nav',
+  counter: false
+});
+
+// Robert Penner's easeInOutQuad
+
+// find the rest of his easing functions here: http://robertpenner.com/easing/
+// find them exported for ES6 consumption here: https://github.com/jaxgeller/ez.js
+
+var easeInOutQuad = function (t, b, c, d) {
+  t /= d / 2;
+  if (t < 1) return c / 2 * t * t + b;
+  t--;
+  return -c / 2 * (t * (t - 2) - 1) + b;
+};
+
+var jumper = function () {
+  // private variable cache
+  // no variables are created during a jump, preventing memory leaks
+
+  var element = void 0; // element to scroll to                   (node)
+
+  var start = void 0; // where scroll starts                    (px)
+  var stop = void 0; // where scroll stops                     (px)
+
+  var offset = void 0; // adjustment from the stop position      (px)
+  var easing = void 0; // easing function                        (function)
+  var a11y = void 0; // accessibility support flag             (boolean)
+
+  var distance = void 0; // distance of scroll                     (px)
+  var duration = void 0; // scroll duration                        (ms)
+
+  var timeStart = void 0; // time scroll started                    (ms)
+  var timeElapsed = void 0; // time spent scrolling thus far          (ms)
+
+  var next = void 0; // next scroll position                   (px)
+
+  var callback = void 0; // to call when done scrolling            (function)
+
+  // scroll position helper
+
+  function location() {
+    return window.scrollY || window.pageYOffset;
+  }
+
+  // element offset helper
+
+  function top(element) {
+    return element.getBoundingClientRect().top + start;
+  }
+
+  // rAF loop helper
+
+  function loop(timeCurrent) {
+    // store time scroll started, if not started already
+    if (!timeStart) {
+      timeStart = timeCurrent;
+    }
+
+    // determine time spent scrolling so far
+    timeElapsed = timeCurrent - timeStart;
+
+    // calculate next scroll position
+    next = easing(timeElapsed, start, distance, duration);
+
+    // scroll to it
+    window.scrollTo(0, next);
+
+    // check progress
+    timeElapsed < duration ? window.requestAnimationFrame(loop) // continue scroll loop
+    : done(); // scrolling is done
+  }
+
+  // scroll finished helper
+
+  function done() {
+    // account for rAF time rounding inaccuracies
+    window.scrollTo(0, start + distance);
+
+    // if scrolling to an element, and accessibility is enabled
+    if (element && a11y) {
+      // add tabindex indicating programmatic focus
+      element.setAttribute('tabindex', '-1');
+
+      // focus the element
+      element.focus();
+    }
+
+    // if it exists, fire the callback
+    if (typeof callback === 'function') {
+      callback();
+    }
+
+    // reset time for next jump
+    timeStart = false;
+  }
+
+  // API
+
+  function jump(target) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    // resolve options, or use defaults
+    duration = options.duration || 1000;
+    offset = options.offset || 0;
+    callback = options.callback; // "undefined" is a suitable default, and won't be called
+    easing = options.easing || easeInOutQuad;
+    a11y = options.a11y || false;
+
+    // cache starting position
+    start = location();
+
+    // resolve target
+    switch (typeof target) {
+      // scroll from current position
+      case 'number':
+        element = undefined; // no element to scroll to
+        a11y = false; // make sure accessibility is off
+        stop = start + target;
+        break;
+
+      // scroll to element (node)
+      // bounding rect is relative to the viewport
+      case 'object':
+        element = target;
+        stop = top(element);
+        break;
+
+      // scroll to element (selector)
+      // bounding rect is relative to the viewport
+      case 'string':
+        element = document.querySelector(target);
+        stop = top(element);
+        break;
+    }
+
+    // resolve scroll distance, accounting for offset
+    distance = stop - start + offset;
+
+    // resolve duration
+    switch (typeof options.duration) {
+      // number in ms
+      case 'number':
+        duration = options.duration;
+        break;
+
+      // function passed the distance of the scroll
+      case 'function':
+        duration = options.duration(distance);
+        break;
+    }
+
+    // start the loop
+    window.requestAnimationFrame(loop);
+  }
+
+  // expose only the jump method
+  return jump;
+};
+
+// export singleton
+
+var singleton = jumper();
+
+var links = document.querySelectorAll('a');
+
+//Filename of current page
+var fileName = location.href.split("/").pop().split("#")[0];
+
+links.forEach(function (a) {
+  //check if it's a link to another location on the page
+  if (~a.href.indexOf(fileName + '#')) {
+    var link = '#' + a.href.split('#').pop();
+    a.onclick = function () {
+      return singleton(link);
+    };
+  }
+});
 
 var index = createCommonjsModule(function (module) {
 /**
@@ -955,26 +1098,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
-//Simple uuid function
-var uuid = function b(a) {
-  return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
-};
-
-document.querySelectorAll('.gallery').forEach(function (gallery) {
-  if (!gallery.id) gallery.id = uuid();
-  avalonbox$1.run(gallery.id);
-});
-
-document.querySelectorAll('.lightbox').forEach(function (image) {
-  if (!image.id) image.id = uuid();
-  avalonbox$1.run(image.id);
-});
-
-fluidvids.init({
-  selector: ['iframe', 'object'], // runs querySelectorAll()
-  players: ['www.youtube.com', 'player.vimeo.com'] });
-
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -993,10 +1116,66 @@ setBodyMargin();
 
 window.addEventListener('resize', throttle(setBodyMargin, 250));
 
-// Initialise menu
-var menu = new Greedy({
-  element: '.greedy-nav',
-  counter: false
+var fluidVids = createCommonjsModule(function (module) {
+  var fluidvids = {
+    selector: ['iframe', 'object'],
+    players: ['www.youtube.com', 'player.vimeo.com']
+  };
+
+  var css = ['.fluidvids {', 'width: 100%; max-width: 100%;', '}', '.fluidvids-item {', 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;', '}'].join('');
+
+  var head = document.head || document.getElementsByTagName('head')[0];
+
+  function matches(src) {
+    return new RegExp('^(https?:)?\/\/(?:' + fluidvids.players.join('|') + ').*$', 'i').test(src);
+  }
+
+  function getRatio(height, width) {
+    return parseInt(height, 10) / parseInt(width, 10) * 100 + '%';
+  }
+
+  function fluid(elem) {
+    if (!matches(elem.src) && !matches(elem.data) || !!elem.getAttribute('data-fluidvids')) {
+      return;
+    }
+    var wrap = document.createElement('div');
+    elem.parentNode.insertBefore(wrap, elem);
+    elem.className += (elem.className ? ' ' : '') + 'fluidvids-item';
+    elem.setAttribute('data-fluidvids', 'loaded');
+    wrap.className += 'fluidvids';
+    wrap.style.paddingTop = getRatio(elem.height, elem.width);
+    wrap.appendChild(elem);
+  }
+
+  function addStyles() {
+    var div = document.createElement('div');
+    div.innerHTML = '<p>x</p><style>' + css + '</style>';
+    head.appendChild(div.childNodes[1]);
+  }
+
+  fluidvids.render = function () {
+    var nodes = document.querySelectorAll(fluidvids.selector.join());
+    var i = nodes.length;
+    while (i--) {
+      fluid(nodes[i]);
+    }
+  };
+
+  fluidvids.init = function (obj) {
+    for (var key in obj) {
+      fluidvids[key] = obj[key];
+    }
+    fluidvids.render();
+    addStyles();
+  };
+
+  module.exports = fluidvids;
 });
+
+var fluidvids = interopDefault(fluidVids);
+
+fluidvids.init({
+  selector: ['iframe', 'object'], // runs querySelectorAll()
+  players: ['www.youtube.com', 'player.vimeo.com'] });
 
 }());
