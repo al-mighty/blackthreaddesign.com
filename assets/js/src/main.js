@@ -4,3 +4,5 @@ import './init/initSmoothScroll.js';
 import './init/initFooter.js';
 import './init/initVideos.js';
 
+//SPLASH
+import './splash/splashLayout.js';

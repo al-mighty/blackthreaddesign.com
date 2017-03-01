@@ -474,7 +474,6 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
-// Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
@@ -1099,7 +1098,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -1179,5 +1177,22 @@ var fluidvids = interopDefault(fluidVids);
 fluidvids.init({
   selector: ['iframe', 'object'], // runs querySelectorAll()
   players: ['www.youtube.com', 'player.vimeo.com'] });
+
+var canvas = document.querySelector('#splash__hero');
+
+console.log(canvas.getBoundingClientRect());
+
+var canvasHeight = 0.75;
+canvas.style.height = window.innerHeight * canvasHeight + 'px';
+
+var masthead = document.querySelector('.masthead');
+
+var underCanvas = document.querySelector('#splash__under-hero');
+underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+
+window.addEventListener('resize', throttle(function () {
+    canvas.style.height = window.innerHeight * canvasHeight + 'px';
+    underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+}), 250);
 
 }());
