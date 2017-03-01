@@ -45955,11 +45955,6 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
-
-var Hammer = Object.freeze({
-	default: hammer$1
-});
-
 var bind = createCommonjsModule(function (module, exports) {
   "use strict";
 
@@ -47553,11 +47548,10 @@ var Splash = function () {
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
-//SPLASH
-//TODO: only load these for splash page
-//Set up app wide event listeners for touch and mouse
+// SPLASH
+// TODO: only load these for splash page
 window.addEventListener('mousemove', moveHandler);
-new Hammer(document.querySelector('body')).on('pan', moveHandler);
+new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 
 var splash = new Splash();
 
