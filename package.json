@@ -27,7 +27,6 @@
   "author": "Lewy Blue",
   "license": "ISC",
   "dependencies": {
-    "avalonbox": "git+https://github.com/Nafta7/avalonbox.git",
     "hammerjs": "^2.0.8",
     "lodash.throttle": "^4.1.1",
     "three": "^0.84.0"
@@ -66,7 +65,11 @@
       ],
       "prefer-template": 0,
       "padded-blocks": 0,
-      "arrow-body-style": 0
+      "arrow-body-style": 0,
+      "no-multi-assign": 0,
+      "no-underscore-dangle": 0,
+      "no-mixed-operators": 0,
+      "no-bitwise": 0
     }
   }
 }

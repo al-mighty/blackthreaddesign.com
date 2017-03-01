@@ -3,6 +3,7 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import glslify from 'glslify';
 
+//const threeString = JSON.stringify(function test(){});
 const glsl = () => {
   return {
     transform( code, id ) {
@@ -50,6 +51,7 @@ export default {
   targets: [
     {
       format: 'iife',
+      //banner: threeString,
       dest: 'assets/js/main.js',
     },
   ],
