@@ -5,6 +5,7 @@
 #main {
   @include container;
   @include clearfix;
+  max-width: 100%;
   margin-top: 2em;
   padding-left: 1em;
   padding-right: 1em;
@@ -12,7 +13,7 @@
   animation-delay: 0.35s;
 
   @include breakpoint($x-large) {
-    max-width: $x-large;
+    //max-width: $x-large;
   }
 }
 
