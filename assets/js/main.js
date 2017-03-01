@@ -331,10 +331,9 @@ avalonbox$1.run('image-gallery');
 
 fluidvids.init({
   selector: ['iframe', 'object'], // runs querySelectorAll()
-  players: ['www.youtube.com', 'player.vimeo.com'] // players to support
-});
+  players: ['www.youtube.com', 'player.vimeo.com'] });
 
-//equivalent to jQuery outerHeight( true )
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -344,7 +343,7 @@ function outerHeight(el) {
 }
 
 // Sticky footer
-var bumpIt = function () {
+var bumpIt = function bumpIt() {
   var height = outerHeight(document.querySelector('.page__footer'));
   document.querySelector('body').style.marginBottom = height + 'px';
 };
@@ -353,7 +352,7 @@ var didResize = false;
 
 bumpIt();
 
-var onResize = function () {
+var onResize = function onResize() {
   didResize = true;
 };
 
@@ -370,46 +369,6 @@ setInterval(function () {
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
-});
-
-/* ==========================================================================
-   jQuery plugin settings and other scripts
-   ========================================================================== */
-
-$(document).ready(function () {
-
-  // Magnific-Popup options
-  // $(".image-popup").magnificPopup({
-  //   // disableOn: function() {
-  //   //   if( $(window).width() < 500 ) {
-  //   //     return false;
-  //   //   }
-  //   //   return true;
-  //   // },
-  //   type: 'image',
-  //   tLoading: 'Loading image #%curr%...',
-  //   gallery: {
-  //     enabled: true,
-  //     navigateByImgClick: true,
-  //     preload: [0,1] // Will preload 0 - before current, and 1 after the current image
-  //   },
-  //   image: {
-  //     tError: '<a href="%url%">Image #%curr%</a> could not be loaded.',
-  //   },
-  //   removalDelay: 500, // Delay in milliseconds before popup is removed
-  //   // Class that is added to body when popup is open.
-  //   // make it unique to apply your CSS animations just to this exact popup
-  //   mainClass: 'mfp-zoom-in',
-  //   callbacks: {
-  //     beforeOpen: function() {
-  //       // just a hack that adds mfp-anim class to markup
-  //       this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
-  //     }
-  //   },
-  //   closeOnContentClick: true,
-  //   midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
-  // });
-
 });
 
 }());
