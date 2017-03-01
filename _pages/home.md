@@ -5,7 +5,7 @@ title: 'Black Thread Design'
 header:
 #  overlay_color: "#000"
 #  overlay_filter: "0.5"
-  image: "assets/images/splash-hero-text-1920.jpg"
+  image: "assets/images/splash-hero-1920.jpg"
   alt: 'Created with www.apophysis.org'
 #  cta_label: "More Info"
 #  cta_url: "/"
