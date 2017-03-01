@@ -1,4 +1,3 @@
-<script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
 ga('create', '{{ site.analytics.google.tracking_id }}', 'auto');
 
@@ -112,6 +111,3 @@ sendNavigationTimingMetrics();
 ga('set', dimensions.WINDOW_ID, uuid());
 ga('set', dimensions.TRACKING_VERSION, TRACKING_VERSION);
 ga('send', 'pageview');
-</script>
-
-<script async src="https://www.google-analytics.com/analytics.js"></script>

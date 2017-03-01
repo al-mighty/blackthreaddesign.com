@@ -96,3 +96,5 @@ Greedy.prototype.toggleHiddenLinks = function() {
   this.hiddenLinks.classList.toggle('links-invisible');
   this.toggleButton.classList.toggle('links-displayed');
 };
+
+module.exports = Greedy;

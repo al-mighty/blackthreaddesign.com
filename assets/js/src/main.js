@@ -1,6 +1,10 @@
 import avalonbox from '../vendor/avalonbox/avalonbox.js';
+import fluidvids from '../vendor/fluidVids.js';
+import Greedy from '../vendor/greedy-nav.js';
 
-avalonbox.run( 'image-gallery' );
+document.querySelectorAll( '.gallery' ).forEach( ( gallery ) => {
+  avalonbox.run( gallery.id );
+} );
 
 fluidvids.init( {
   selector: ['iframe', 'object'], // runs querySelectorAll()
@@ -10,7 +14,7 @@ fluidvids.init( {
 // equivalent to jQuery outerHeight( true )
 function outerHeight( el ) {
   let height = el.offsetHeight;
-  let style = getComputedStyle( el );
+  const style = getComputedStyle( el );
 
   height += parseInt( style.marginTop ) + parseInt( style.marginBottom );
   return height;
@@ -46,3 +50,4 @@ const menu = new Greedy( {
   element: '.greedy-nav',
   counter: false,
 } );
+
