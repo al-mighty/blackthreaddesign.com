@@ -36,8 +36,8 @@ $box: 'avalonbox';
   width: 100%;
   height: 100%;
   text-align: center;
-  max-height: 70%;
-  max-width: 70%;
+  max-height: 100%;
+  max-width: 100%;
   margin: 0 auto;
   z-index: 2000;
   top: 50%;
@@ -56,7 +56,7 @@ $box: 'avalonbox';
 
 .#{$box}-move-button {
   position: absolute;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0);
   color: #fff;
   border: none;
   width: 60px;
@@ -70,6 +70,7 @@ $box: 'avalonbox';
   width: 45%;
 
   &:hover {
+    background: rgba(0, 0, 0, 0.2);
     opacity: 1;
     cursor: pointer;
   }
