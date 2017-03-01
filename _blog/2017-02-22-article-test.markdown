@@ -46,11 +46,7 @@ Navigation can be included like this:
 TOC can be included like this:
 {% include toc icon="gears" title="My Table of Contents" %}
 
-# Header 1
-
-## Header 2
-
-### Header 3
+# Text Examples
 
 This text is left aligned.
 {: .text-left}
@@ -66,14 +62,6 @@ This text is justified.
 
 This text has no wrap applied.
 {: .text-nowrap}
-
-<div class="notice--warning" markdown="1">
-#### Header 4 with `notice--warning` class
-</div>
-
-<div class="notice--info" markdown="1">
-#### Header 4 with `notice--info` class
-</div>
 
 This paragraph of text has been emphasized with the `{: .notice}` class. Here is a <a href="#">link</a>.
 {: .notice}
@@ -93,6 +81,8 @@ This paragraph of text has been emphasized with the `{: .notice--success}` class
 This paragraph of text has been emphasized with the `{: .notice--danger}` class. Here is a <a href="#">link</a>
 {: .notice--danger}
 
+# Links, references and abbreviations
+
 [External Link](http://www.fiftythree.com/paper/)
 
 [Repeated link][repeated-link]
@@ -100,6 +90,8 @@ This paragraph of text has been emphasized with the `{: .notice--danger}` class.
 This is a reference[^reference].
 
 This is an <abbr title="Abreviation">ABR</abbr>.
+
+# Code 
 
 Code Snippets:
 
@@ -109,24 +101,7 @@ console.log(x);
 //comment
 {% endhighlight %}
 
-{% include gallery id="image-gallery" class="gallery_class" caption="This is a gallery with **Markdown support**." %}
-
-To make the gallery fill the container add `class="full"`.
-
-{% include gallery id="image-gallery2" class="gallery_class" caption="This is another gallery" %}
-
-<figure>
-	<img src="{{ site.url }}/assets/images/test2.png" alt="Test Image" />
-    <figcaption>This is a figure.</figcaption>
-</figure>
-
-{% include figure image_path="/assets/images/test3.png" alt="this is a placeholder image" caption="This is another figure." %}
-
-This is a youtube video
-{% include video id="XsxDH4HcOWA" provider="youtube" %}
-
-This is a vimeo video
-{% include video id="97649261" provider="vimeo" %}
+# Images 
 
 Images can be included like this: <img src="{{ site.url }}/assets/images/test1.png" alt="Test Image" />
 
@@ -146,6 +121,34 @@ The rest of this paragraph is filler for the sake of seeing the text wrap around
 And now we’re going to shift things to the right align. Again, there should be plenty of room above, below, and to the left of the image. Just look at him there — Hey guy! Way to rock that right side. I don’t care what the left aligned image says, you look great. Don’t let anyone else tell you differently.
 
 
+# Galleries
+
+{% include gallery id="image-gallery" class="gallery_class" caption="This is a gallery with **Markdown support**." %}
+
+To make the gallery fill the container add `class="full"`.
+
+{% include gallery id="image-gallery2" class="gallery_class" caption="This is another gallery" %}
+
+# Figures
+
+
+{% include figure image_path="/assets/images/test3.png" alt="this is a placeholder image" caption="This is a figure." %}
+
+{% include figure image_path="/assets/images/test1.png" alt="this is a placeholder image" lightbox=true caption="This is a figure with lightbox." %}
+
+
+# Videos 
+
+This is a youtube video
+{% include video id="XsxDH4HcOWA" provider="youtube" %}
+
+This is a vimeo video
+{% include video id="97649261" provider="vimeo" %}
+
+[//]: # (This is a comment)
+
+
+[//]: # (References and links)
 [This is an internal link]({{ site.url }}/tutorials/)
 
 [repeated-link]: http://jekyllrb.com/docs/home
