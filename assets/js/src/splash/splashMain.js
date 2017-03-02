@@ -1,5 +1,5 @@
 import initSplashLayout from './splashLayout.js';
-import Splash from '../3d/Splash.js';
+import SplashHero from '../3d/SplashHero.js';
 
 
 export default function initSplash() {
@@ -7,5 +7,5 @@ export default function initSplash() {
   if ( !document.querySelector( '.layout--splash' ) ) return;
 
   initSplashLayout();
-  const splash = new Splash();
+  const splashHero = new SplashHero();
 }

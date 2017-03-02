@@ -47461,9 +47461,9 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-var Splash = function () {
-    function Splash() {
-        classCallCheck(this, Splash);
+var SplashHero = function () {
+    function SplashHero() {
+        classCallCheck(this, SplashHero);
 
 
         var canvas = document.querySelector('#splash__hero');
@@ -47519,7 +47519,7 @@ var Splash = function () {
         app.play();
     }
 
-    Splash.prototype.initMaterial = function initMaterial() {
+    SplashHero.prototype.initMaterial = function initMaterial() {
         var loader = new THREE.TextureLoader();
         var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
         noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
@@ -47546,7 +47546,7 @@ var Splash = function () {
         });
     };
 
-    return Splash;
+    return SplashHero;
 }();
 
 function initSplash() {
@@ -47554,7 +47554,7 @@ function initSplash() {
   if (!document.querySelector('.layout--splash')) return;
 
   initSplashLayout();
-  var splash = new Splash();
+  var splashHero = new SplashHero();
 }
 
 window.THREE = THREE$1;
