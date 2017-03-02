@@ -6,15 +6,15 @@ import SplashTutorials from '../3d/splash/SplashTutorials.js';
 import SplashBlog from '../3d/splash/SplashBlog.js';
 
 
-export default function initSplash() {
+export default function initSplash( showStats ) {
     // Check that we are on the splash page:
   if ( !document.querySelector( '.layout--splash' ) ) return;
 
   initSplashLayout();
 
-  const splashHero = new SplashHero();
-  const splashWork = new SplashWork();
-  const splashExperiments = new SplashExperiments();
-  const splashTutorials = new SplashTutorials();
-  const splashBlog = new SplashBlog();
+  const splashHero = new SplashHero( showStats );
+  const splashWork = new SplashWork( showStats );
+  const splashExperiments = new SplashExperiments( showStats );
+  const splashTutorials = new SplashTutorials( showStats );
+  const splashBlog = new SplashBlog( showStats );
 }

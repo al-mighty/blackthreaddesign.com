@@ -9,7 +9,7 @@ import { pointerPos } from '../../utilities.js';
 
 export default class SplashExperiments {
 
-  constructor() {
+  constructor( showStats ) {
 
     const canvas = document.querySelector( '#splash-experiments-canvas' );
 
@@ -27,7 +27,8 @@ export default class SplashExperiments {
     app.scene.add( hemiLight );
 
     // TODO: not working in Edge
-    const statisticsOverlay = new StatisticsOverlay( app, container );
+    let statisticsOverlay;
+    if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
 
     const cube = this.initCube();
 
@@ -39,7 +40,7 @@ export default class SplashExperiments {
       cube.rotation.x += 0.0001 * app.delta;
 			cube.rotation.y += 0.0005 * app.delta;
 
-      statisticsOverlay.updateStatistics( app.delta );
+      if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
     };
 

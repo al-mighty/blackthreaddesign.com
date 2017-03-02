@@ -9,7 +9,7 @@ import { pointerPos } from '../../utilities.js';
 
 export default class SplashBlog {
 
-  constructor() {
+  constructor( showStats ) {
 
     const canvas = document.querySelector( '#splash-blog-canvas' );
 
@@ -17,9 +17,7 @@ export default class SplashBlog {
 
     const app = new App( canvas );
 
-    app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
-
-    // app.renderer.setClearAlpha ( 0 );
+    app.renderer = new THREE.WebGLRenderer( { canvas: app.canvas, antialias: true, alpha: true } );
 
     app.camera.position.z = 350;
 
@@ -27,7 +25,8 @@ export default class SplashBlog {
     app.scene.add( hemiLight );
 
     // TODO: not working in Edge
-    const statisticsOverlay = new StatisticsOverlay( app, container );
+    let statisticsOverlay;
+    if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
 
     const cube = this.initCube();
 
@@ -37,9 +36,9 @@ export default class SplashBlog {
     app.onUpdate = function () {
 
       cube.rotation.x += 0.0001 * app.delta;
-			cube.rotation.y += 0.0005 * app.delta;
+      cube.rotation.y += 0.0005 * app.delta;
 
-      statisticsOverlay.updateStatistics( app.delta );
+      if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
     };
 
@@ -50,12 +49,12 @@ export default class SplashBlog {
   }
 
   initLights() {
-    
+
   }
 
   initCube() {
     const geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
-    const material = new THREE.MeshStandardMaterial( {color: 0xffffff} );
+    const material = new THREE.MeshStandardMaterial( { color: 0xffffff } );
     const cube = new THREE.Mesh( geometry, material );
     return cube;
   }

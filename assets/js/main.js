@@ -47624,7 +47624,7 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
 var SplashHero = function () {
-    function SplashHero() {
+    function SplashHero(showStats) {
         classCallCheck(this, SplashHero);
 
 
@@ -47637,7 +47637,8 @@ var SplashHero = function () {
         app.camera.far = 5;
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app, container);
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
         var material = this.initMaterial();
         var geometry = new THREE.PlaneBufferGeometry(2, 2, 1);
@@ -47663,7 +47664,7 @@ var SplashHero = function () {
         app.onUpdate = function () {
             updateMaterial();
 
-            statisticsOverlay.updateStatistics(app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
@@ -47702,7 +47703,7 @@ var SplashHero = function () {
 }();
 
 var SplashWork = function () {
-    function SplashWork() {
+    function SplashWork(showStats) {
         classCallCheck(this, SplashWork);
 
 
@@ -47722,7 +47723,8 @@ var SplashWork = function () {
         app.scene.add(hemiLight);
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app, container);
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
         var cube = this.initCube();
 
@@ -47733,7 +47735,7 @@ var SplashWork = function () {
             cube.rotation.x += 0.0001 * app.delta;
             cube.rotation.y += 0.0005 * app.delta;
 
-            statisticsOverlay.updateStatistics(app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
@@ -47754,7 +47756,7 @@ var SplashWork = function () {
 }();
 
 var SplashExperiments = function () {
-    function SplashExperiments() {
+    function SplashExperiments(showStats) {
         classCallCheck(this, SplashExperiments);
 
 
@@ -47774,7 +47776,8 @@ var SplashExperiments = function () {
         app.scene.add(hemiLight);
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app, container);
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
         var cube = this.initCube();
 
@@ -47785,7 +47788,7 @@ var SplashExperiments = function () {
             cube.rotation.x += 0.0001 * app.delta;
             cube.rotation.y += 0.0005 * app.delta;
 
-            statisticsOverlay.updateStatistics(app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
@@ -47806,7 +47809,7 @@ var SplashExperiments = function () {
 }();
 
 var SplashTutorials = function () {
-    function SplashTutorials() {
+    function SplashTutorials(showStats) {
         classCallCheck(this, SplashTutorials);
 
 
@@ -47826,7 +47829,8 @@ var SplashTutorials = function () {
         app.scene.add(hemiLight);
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app, container);
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
         var cube = this.initCube();
 
@@ -47837,7 +47841,7 @@ var SplashTutorials = function () {
             cube.rotation.x += 0.0001 * app.delta;
             cube.rotation.y += 0.0005 * app.delta;
 
-            statisticsOverlay.updateStatistics(app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
@@ -47858,7 +47862,7 @@ var SplashTutorials = function () {
 }();
 
 var SplashBlog = function () {
-    function SplashBlog() {
+    function SplashBlog(showStats) {
         classCallCheck(this, SplashBlog);
 
 
@@ -47870,15 +47874,14 @@ var SplashBlog = function () {
 
         app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
 
-        // app.renderer.setClearAlpha ( 0 );
-
         app.camera.position.z = 350;
 
         var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
         app.scene.add(hemiLight);
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app, container);
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
         var cube = this.initCube();
 
@@ -47889,7 +47892,7 @@ var SplashBlog = function () {
             cube.rotation.x += 0.0001 * app.delta;
             cube.rotation.y += 0.0005 * app.delta;
 
-            statisticsOverlay.updateStatistics(app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
@@ -47909,17 +47912,17 @@ var SplashBlog = function () {
     return SplashBlog;
 }();
 
-function initSplash() {
+function initSplash(showStats) {
   // Check that we are on the splash page:
   if (!document.querySelector('.layout--splash')) return;
 
   initSplashLayout();
 
-  var splashHero = new SplashHero();
-  var splashWork = new SplashWork();
-  var splashExperiments = new SplashExperiments();
-  var splashTutorials = new SplashTutorials();
-  var splashBlog = new SplashBlog();
+  var splashHero = new SplashHero(showStats);
+  var splashWork = new SplashWork(showStats);
+  var splashExperiments = new SplashExperiments(showStats);
+  var splashTutorials = new SplashTutorials(showStats);
+  var splashBlog = new SplashBlog(showStats);
 }
 
 window.THREE = THREE$1;
@@ -47934,6 +47937,7 @@ initLoader();
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 
-initSplash();
+var showStats = false;
+initSplash(showStats);
 
 }());

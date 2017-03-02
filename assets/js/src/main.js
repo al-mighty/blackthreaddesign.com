@@ -28,4 +28,5 @@ window.addEventListener( 'mousemove', moveHandler );
 new window.Hammer( document.querySelector( 'body' ) )
   .on( 'pan', moveHandler );
 
-initSplash();
+const showStats = false;
+initSplash( showStats );

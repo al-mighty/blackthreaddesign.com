@@ -9,7 +9,7 @@ import { pointerPos } from '../../utilities.js';
 
 export default class SplashHero {
 
-  constructor() {
+  constructor( showStats ) {
 
     const canvas = document.querySelector( '#splash-hero-canvas' );
 
@@ -20,7 +20,8 @@ export default class SplashHero {
     app.camera.far = 5;
 
     // TODO: not working in Edge
-    const statisticsOverlay = new StatisticsOverlay( app, container );
+    let statisticsOverlay;
+    if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
 
 
     const material = this.initMaterial( );
@@ -48,7 +49,7 @@ export default class SplashHero {
     app.onUpdate = function () {
       updateMaterial();
 
-      statisticsOverlay.updateStatistics( app.delta );
+      if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
     };
 
