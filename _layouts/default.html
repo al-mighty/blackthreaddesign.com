@@ -8,7 +8,7 @@
   </head>
 
   <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}">
-
+    {% if page.loadingOverlay %}{% include loading_overlay %}{% endif %}
     {% include browser-upgrade.html %}
     {% include masthead.html %}
 

@@ -8,12 +8,15 @@ import './init/initSmoothScroll.js';
 import './init/initFooter.js';
 import './init/initVideos.js';
 
+import initLoader from './loadingOverlay.js';
 import initSplash from './splash/splashMain.js';
 
+// Set up globals
 window.THREE = THREE;
 window.Hammer = Hammer.default;
 
-
+THREE.Cache.enabled = true;
+initLoader();
 
 import { moveHandler } from './utilities.js';
 

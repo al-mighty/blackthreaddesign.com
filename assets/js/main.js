@@ -47145,6 +47145,37 @@ fluidvids.init({
   selector: ['iframe', 'object'], // runs querySelectorAll()
   players: ['www.youtube.com', 'player.vimeo.com'] });
 
+var useLoadingManager = false;
+
+var fadeLoader = function () {
+  var loadingOverlay = document.querySelector('#loadingOverlay');
+
+  loadingOverlay.style.opacity = 0;
+  window.setTimeout(function () {
+    loadingOverlay.classList.add('hidden');
+  }, 1000);
+};
+
+function initLoader() {
+  // If THREE is not being used, fade out straightaway
+  if (typeof THREE !== 'object') {
+    fadeLoader();
+    return;
+  }
+
+  // if we are using the loadingManager, wait for it to finish before
+  // fading out the loader
+  if (useLoadingManager) {
+    THREE.DefaultLoadingManager.onLoad = function () {
+      fadeLoader();
+    };
+  }
+  // otherwise fade it out straightaway
+  else {
+      fadeLoader();
+    }
+}
+
 function initSplashLayout() {
   var canvas = document.querySelector('#splash__hero');
 
@@ -47559,6 +47590,9 @@ function initSplash() {
 
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
+
+Cache.enabled = true;
+initLoader();
 
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);

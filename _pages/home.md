@@ -2,6 +2,7 @@
 layout: splash
 permalink: /
 title: 'Black Thread Design'
+loadingOverlay: true
 header:
   image: "assets/images/splash-hero-1920.jpg"
   alt: 'hero_img'
