@@ -1,4 +1,5 @@
 
+import StatisticsOverlay from './StatisticsOverlay.js';
 import App from './App.js';
 
 import backgroundVert from './shaders/splashBackground.vert';
@@ -17,22 +18,11 @@ export default class SplashHero {
     app.camera.far = 5;
 
     // TODO: not working in Edge
-    //const statisticsOverlay = new StatisticsOverlay( app );
-    // const control = new Controls( app );
+    const statisticsOverlay = new StatisticsOverlay( app );
+
 
     const material = this.initMaterial( );
     const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
-
-    // console.log(geometry);
-
-    // const position = new THREE.Float32BufferAttribute( [-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0], 3 );
-    // const normal = new THREE.Float32BufferAttribute( [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], 3 );
-    // const uv = new THREE.Float32BufferAttribute( [0, 1, 1, 1, 0, 0, 1, 0], 2 );
-    //
-    // console.log(position);
-    // geometry.addAttribute( 'position', position );
-    // geometry.addAttribute( 'normal', normal );
-    // geometry.addAttribute( 'uv', uv );
 
     const mesh = new THREE.Mesh( geometry, material );
 
@@ -56,7 +46,7 @@ export default class SplashHero {
     app.onUpdate = function () {
       updateMaterial();
 
-      //statisticsOverlay.updateStatistics( app.delta );
+      statisticsOverlay.updateStatistics( app.delta );
 
     };
 

@@ -47197,6 +47197,138 @@ function initSplashLayout() {
   }), 250);
 }
 
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a;}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length);},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now();},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576);}return c},update:function(){g=this.end();},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p));}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var minFrame = 1000000;
+var maxFrame = 0;
+
+var StatisticsOverlay = function () {
+    function StatisticsOverlay(app, container) {
+        classCallCheck(this, StatisticsOverlay);
+
+        this.app = app;
+
+        this.container = container || app.renderer.domElement;
+
+        this.show = false;
+
+        this.initStatsContainer();
+
+        this.initHideOverLayCheckbox();
+    }
+
+    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
+        var _this = this;
+
+        var hide = this.container.appendChild(document.createElement('div'));
+        hide.id = 'hideStatsOverlay';
+        hide.style = 'position: absolute;\n      bottom: 0;\n      left: 0;';
+
+        var checkbox = hide.appendChild(document.createElement('input'));
+        checkbox.type = 'checkbox';
+
+        var label = hide.appendChild(document.createElement('span'));
+        label.innerText = 'Show Stats';
+        label.style = 'color: white;';
+
+        checkbox.addEventListener('change', function () {
+
+            _this.statsElem.classList.toggle('hide');
+            _this.show = !_this.show;
+        });
+    };
+
+    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
+
+        this.statsElem = document.body.appendChild(document.createElement('div'));
+        this.statsElem.id = 'infoContainer';
+        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 2%;\n      width: 100%;\n      height: 30%;\n      color: white;';
+
+        this.statsElem.classList.toggle('hide');
+
+        var timeCount = this.statsElem.appendChild(document.createElement('span'));
+        timeCount.innerText = 'Total Time: ';
+        this.total = timeCount.appendChild(document.createElement('span'));
+
+        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
+        totalUnscaled.innerText = ' Total Unscaled Time: ';
+        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
+
+        var frameCount = this.statsElem.appendChild(document.createElement('span'));
+        frameCount.innerText = ' Frame Count: ';
+        this.frameCount = frameCount.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        lastFrameTime.innerText = 'Last Frame Time: ';
+        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
+
+        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        minFrameTime.innerText = ' Min Frame Time: ';
+        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
+
+        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        maxFrameTime.innerText = ' Max Frame Time: ';
+        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        avgFrameTime.innerText = 'Average Frame Time: ';
+        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
+
+        var fps = this.statsElem.appendChild(document.createElement('span'));
+        fps.innerText = ' FPS: ';
+        this.fps = fps.appendChild(document.createElement('span'));
+
+        this.hideCheck = document.querySelector('#hideOverlayChk');
+
+        this.stats = new Stats();
+        this.statsElem.appendChild(this.stats.dom);
+    };
+
+    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
+
+        if (!this.show) return;
+
+        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
+        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
+        this.frameCount.innerText = this.app.frameCount;
+
+        if (delta) {
+
+            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
+
+            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
+            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
+
+            this.lastFrameTime.innerText = unscaledDelta;
+        }
+
+        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
+        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
+
+        this.stats.update();
+    };
+
+    return StatisticsOverlay;
+}();
+
 /**
  * @author Lewy Blue / https://github.com/looeee
  */
@@ -47488,12 +47620,6 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
 var SplashHero = function () {
     function SplashHero() {
         classCallCheck(this, SplashHero);
@@ -47506,22 +47632,10 @@ var SplashHero = function () {
         app.camera.far = 5;
 
         // TODO: not working in Edge
-        //const statisticsOverlay = new StatisticsOverlay( app );
-        // const control = new Controls( app );
+        var statisticsOverlay = new StatisticsOverlay(app);
 
         var material = this.initMaterial();
         var geometry = new THREE.PlaneBufferGeometry(2, 2, 1);
-
-        // console.log(geometry);
-
-        // const position = new THREE.Float32BufferAttribute( [-1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0], 3 );
-        // const normal = new THREE.Float32BufferAttribute( [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], 3 );
-        // const uv = new THREE.Float32BufferAttribute( [0, 1, 1, 1, 0, 0, 1, 0], 2 );
-        //
-        // console.log(position);
-        // geometry.addAttribute( 'position', position );
-        // geometry.addAttribute( 'normal', normal );
-        // geometry.addAttribute( 'uv', uv );
 
         var mesh = new THREE.Mesh(geometry, material);
 
@@ -47544,7 +47658,7 @@ var SplashHero = function () {
         app.onUpdate = function () {
             updateMaterial();
 
-            //statisticsOverlay.updateStatistics( app.delta );
+            statisticsOverlay.updateStatistics(app.delta);
         };
 
         // app.onWindowResize = function () {};
