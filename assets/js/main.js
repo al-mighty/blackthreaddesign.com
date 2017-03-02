@@ -47180,20 +47180,21 @@ function initLoader() {
 
 function initSplashLayout() {
   var splashHeroContainer = document.querySelector('#splash__hero-container');
-
-  var splashHeroContainerHeight = 0.75;
-  splashHeroContainer.style.height = window.innerHeight * splashHeroContainerHeight + 'px';
-
-  //const masthead = document.querySelector('.masthead');
-
-  //let mastheadHeight = masthead.clientHeight;
-
   var underCanvas = document.querySelector('#splash__under-hero');
-  underCanvas.style.height = window.innerHeight - splashHeroContainer.getBoundingClientRect().bottom + 'px';
+
+  var splashHeroContainerHeight = window.innerHeight * 0.75;
+
+  splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
+
+  var underCanvasHeight = window.innerHeight - (splashHeroContainer.clientTop + splashHeroContainerHeight);
+  underCanvas.style.height = underCanvasHeight + 'px';
 
   window.addEventListener('resize', throttle(function () {
-    splashHeroContainer.style.height = window.innerHeight * splashHeroContainerHeight + 'px';
-    underCanvas.style.height = window.innerHeight - splashHeroContainer.getBoundingClientRect().bottom + 'px';
+    var splashHeroContainerHeight = window.innerHeight * 0.75;
+    splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
+
+    var underCanvasHeight = window.innerHeight - (splashHeroContainer.clientTop + splashHeroContainerHeight);
+    underCanvas.style.height = underCanvasHeight + 'px';
   }), 250);
 }
 
@@ -47713,7 +47714,7 @@ var SplashWork = function () {
 
         app.camera.position.z = 350;
 
-        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x00000, 1);
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.5);
         app.scene.add(hemiLight);
 
         //app.camera.far = 5;
