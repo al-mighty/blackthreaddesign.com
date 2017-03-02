@@ -1,5 +1,5 @@
 import initSplashLayout from './splashLayout.js';
-import SplashHero from '../3d/SplashHero.js';
+import SplashHero from '../3d/splash/SplashHero.js';
 
 
 export default function initSplash() {

@@ -1,11 +1,11 @@
 
-import StatisticsOverlay from './StatisticsOverlay.js';
-import App from './App.js';
+import StatisticsOverlay from '../StatisticsOverlay.js';
+import App from '../App.js';
 
-import backgroundVert from './shaders/splashBackground.vert';
-import backgroundFrag from './shaders/splashBackground.frag';
+import backgroundVert from '../shaders/splashBackground.vert';
+import backgroundFrag from '../shaders/splashBackground.frag';
 
-import { pointerPos } from '../utilities.js';
+import { pointerPos } from '../../utilities.js';
 
 export default class SplashHero {
 
