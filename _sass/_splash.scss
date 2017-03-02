@@ -1,22 +1,16 @@
-#splash__hero-container {
+#splash-hero-container {
     position: relative;
     height: 75%;
     width: 100%;
-    //background-color: $dark-red;
 }
 
-#splash__canvas-hero, #splash__canvas-work, #splash__canvas-tutorials, #splash__canvas-experiments, #splash__canvas-blog {
+#splash-hero-canvas {
     position: relative;
     height: 100%;
     width: 100%;
 }
 
-#splash__canvas-work, #splash__canvas-tutorials, #splash__canvas-experiments, #splash__canvas-blog {
-  //background-color: red;
-}
-
-
-#splash-main{
+#splash-main {
     position: relative;
     margin-left: auto;
     margin-right: auto;
@@ -24,10 +18,9 @@
     max-width: 100%;
     padding-left: 1em;
     padding-right: 1em;
-
 }
 
-#splash__under-hero{
+#splash-under-hero-row {
     position: relative;
     width: 100%;
     height: 25%;
@@ -35,6 +28,67 @@
     border-top: 1px solid $border-color;
 }
 
-#splash-footer{
+#splash-footer {
     //display: none;
+}
+
+.splash-row-canvas-container {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16em;
+    height: 16em;
+    margin: 0;
+    padding: 0;
+    background-color: rebeccapurple;
+}
+
+.splash-row {
+    position: relative;
+    height: 30em;
+    border-bottom: 1px solid $border-color;
+    border-top: 1px solid $border-color;
+}
+
+.splash-row-left {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.splash-row-right {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    right: 0;
+    top: 0;
+}
+
+.splash-row-body {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    max-width: 30em;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.splash-row-desc {
+    height: 8em;
+}
+
+.splash-row-body-title {
+    border-bottom: none !important;
+    height: 1em;
+}
+
+.splash-row-title-link {}
+
+.splash-row-canvas {
+    position: relative;
+    height: 100%;
+    width: 100%;
 }

@@ -11,9 +11,9 @@ export default class SplashTutorials {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-tutorials' );
+    const canvas = document.querySelector( '#splash-tutorials-canvas' );
 
-    const container = document.querySelector( '#splash__tutorials-container' );
+    const container = document.querySelector( '#splash-tutorials-canvas-container' );
 
     const app = new App( canvas );
 

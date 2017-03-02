@@ -11,9 +11,9 @@ export default class SplashWork {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-work' );
+    const canvas = document.querySelector( '#splash-work-canvas' );
 
-    const container = document.querySelector( '#splash__work-container' );
+    const container = document.querySelector( '#splash-work-canvas-container' );
 
     const app = new App( canvas );
 

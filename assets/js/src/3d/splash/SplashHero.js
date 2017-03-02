@@ -11,9 +11,9 @@ export default class SplashHero {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-hero' );
+    const canvas = document.querySelector( '#splash-hero-canvas' );
 
-    const container = document.querySelector( '#splash__hero-container' );
+    const container = document.querySelector( '#splash-hero-container' );
 
     const app = new App( canvas );
 

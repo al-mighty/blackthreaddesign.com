@@ -47179,8 +47179,8 @@ function initLoader() {
 }
 
 function initSplashLayout() {
-  var splashHeroContainer = document.querySelector('#splash__hero-container');
-  var underCanvas = document.querySelector('#splash__under-hero');
+  var splashHeroContainer = document.querySelector('#splash-hero-container');
+  var underCanvas = document.querySelector('#splash-under-hero-row');
 
   var splashHeroContainerHeight = window.innerHeight * 0.75;
 
@@ -47628,9 +47628,9 @@ var SplashHero = function () {
         classCallCheck(this, SplashHero);
 
 
-        var canvas = document.querySelector('#splash__canvas-hero');
+        var canvas = document.querySelector('#splash-hero-canvas');
 
-        var container = document.querySelector('#splash__hero-container');
+        var container = document.querySelector('#splash-hero-container');
 
         var app = new App(canvas);
 
@@ -47706,9 +47706,9 @@ var SplashWork = function () {
         classCallCheck(this, SplashWork);
 
 
-        var canvas = document.querySelector('#splash__canvas-work');
+        var canvas = document.querySelector('#splash-work-canvas');
 
-        var container = document.querySelector('#splash__work-container');
+        var container = document.querySelector('#splash-work-canvas-container');
 
         var app = new App(canvas);
 
@@ -47758,9 +47758,9 @@ var SplashExperiments = function () {
         classCallCheck(this, SplashExperiments);
 
 
-        var canvas = document.querySelector('#splash__canvas-experiments');
+        var canvas = document.querySelector('#splash-experiments-canvas');
 
-        var container = document.querySelector('#splash__experiments-container');
+        var container = document.querySelector('#splash-experiments-canvas-container');
 
         var app = new App(canvas);
 
@@ -47810,9 +47810,9 @@ var SplashTutorials = function () {
         classCallCheck(this, SplashTutorials);
 
 
-        var canvas = document.querySelector('#splash__canvas-tutorials');
+        var canvas = document.querySelector('#splash-tutorials-canvas');
 
-        var container = document.querySelector('#splash__tutorials-container');
+        var container = document.querySelector('#splash-tutorials-canvas-container');
 
         var app = new App(canvas);
 
@@ -47862,9 +47862,9 @@ var SplashBlog = function () {
         classCallCheck(this, SplashBlog);
 
 
-        var canvas = document.querySelector('#splash__canvas-blog');
+        var canvas = document.querySelector('#splash-blog-canvas');
 
-        var container = document.querySelector('#splash__work-blog');
+        var container = document.querySelector('#splash-blog-canvas-container');
 
         var app = new App(canvas);
 

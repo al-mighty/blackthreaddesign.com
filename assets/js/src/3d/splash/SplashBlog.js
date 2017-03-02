@@ -11,9 +11,9 @@ export default class SplashBlog {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-blog' );
+    const canvas = document.querySelector( '#splash-blog-canvas' );
 
-    const container = document.querySelector( '#splash__work-blog' );
+    const container = document.querySelector( '#splash-blog-canvas-container' );
 
     const app = new App( canvas );
 

@@ -11,9 +11,9 @@ export default class SplashExperiments {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-experiments' );
+    const canvas = document.querySelector( '#splash-experiments-canvas' );
 
-    const container = document.querySelector( '#splash__experiments-container' );
+    const container = document.querySelector( '#splash-experiments-canvas-container' );
 
     const app = new App( canvas );
 
