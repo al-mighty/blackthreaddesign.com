@@ -47179,21 +47179,21 @@ function initLoader() {
 }
 
 function initSplashLayout() {
-  var canvas = document.querySelector('#splash__hero-container');
+  var splashHeroContainer = document.querySelector('#splash__hero-container');
 
-  var canvasHeight = 0.75;
-  canvas.style.height = window.innerHeight * canvasHeight + 'px';
+  var splashHeroContainerHeight = 0.75;
+  splashHeroContainer.style.height = window.innerHeight * splashHeroContainerHeight + 'px';
 
   var masthead = document.querySelector('.masthead');
 
   var mastheadHeight = masthead.clientHeight;
 
   var underCanvas = document.querySelector('#splash__under-hero');
-  underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+  underCanvas.style.height = window.innerHeight - splashHeroContainer.getBoundingClientRect().bottom + 'px';
 
   window.addEventListener('resize', throttle(function () {
-    canvas.style.height = window.innerHeight * canvasHeight + 'px';
-    underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+    splashHeroContainer.style.height = window.innerHeight * splashHeroContainerHeight + 'px';
+    underCanvas.style.height = window.innerHeight - splashHeroContainer.getBoundingClientRect().bottom + 'px';
   }), 250);
 }
 
