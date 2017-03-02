@@ -47454,6 +47454,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
     var _canvas = void 0,
@@ -47532,6 +47537,7 @@ function App(canvas) {
 
                 if (_renderer === undefined) {
 
+                    console.log("creaing renderer");
                     _renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
                     _renderer.setPixelRatio(window.devicePixelRatio);
                     _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
@@ -47596,27 +47602,30 @@ function App(canvas) {
 
     this.onWindowResize = function () {};
 
+    var self = this;
     var onWindowResize = function () {
 
-        if (!this.autoResize) return;
+        if (!self.autoResize) return;
 
-        this.onWindowResize();
+        self.onWindowResize();
 
-        if (this.camera.type !== 'PerspectiveCamera') {
+        if (self.camera.type !== 'PerspectiveCamera') {
 
             console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
             return;
         }
 
-        var newWidth = this.canvas.clientWidth;
-        var newHeight = this.canvas.clientHeight;
+        var newWidth = self.canvas.clientWidth;
+        var newHeight = self.canvas.clientHeight;
 
-        this.camera.aspect = newWidth / newHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(newWidth, newHeight, false);
+        self.camera.aspect = newWidth / newHeight;
+        self.camera.updateProjectionMatrix();
+        self.renderer.setSize(newWidth, newHeight, false);
     };
 
-    window.addEventListener('resize', onWindowResize.bind(this), false);
+    // onWindowResize( );
+
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(position, 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
