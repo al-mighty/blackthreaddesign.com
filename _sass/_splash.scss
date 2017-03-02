@@ -5,10 +5,14 @@
     //background-color: $dark-red;
 }
 
-#splash__hero {
+#splash__canvas-hero, #splash__canvas-work {
     position: relative;
     height: 100%;
     width: 100%;
+}
+
+#splash__canvas-work {
+  background-color: red;
 }
 
 

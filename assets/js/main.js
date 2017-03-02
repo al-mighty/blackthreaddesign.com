@@ -47627,7 +47627,7 @@ var SplashHero = function () {
         classCallCheck(this, SplashHero);
 
 
-        var canvas = document.querySelector('#splash__hero');
+        var canvas = document.querySelector('#splash__canvas-hero');
 
         var container = document.querySelector('#splash__hero-container');
 

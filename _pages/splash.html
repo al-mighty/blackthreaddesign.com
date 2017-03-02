@@ -3,16 +3,10 @@ layout: splash
 permalink: /
 title: 'Black Thread Design'
 loadingOverlay: true
+excerpt: "Home page of design agency Black Thread Design"
 header:
   image: "assets/images/splash-hero-1920.jpg"
   alt: 'hero_img'
-
-feature_row_work:
-  - image_path: /assets/images/test2.png
-    alt: "work_img"
-    title: "Work"
-    title_link: "/work/"
-    excerpt: "Work portfolio of Black Thread Design"
 feature_row_tutorials:
   - image_path: /assets/images/test1.png
     alt: "tutorials_img"
@@ -34,7 +28,26 @@ feature_row_experiments:
 
 ---
 
-{% include feature_row id="feature_row_work" type="left" %}
+<div class="feature__wrapper">
+    <div class="feature__item--left">
+      <div class="archive__item">
+        
+          <div class="archive__item-teaser">
+            <canvas id="splash__canvas-work">
+              <img src="http://localhost:4000/assets/images/test1.png" alt="work_img">
+            </canvas>
+          </div>
+
+        <div class="archive__item-body">     
+							<a href="http://localhost:4000/work/"><h2 class="archive__item-title">Work</h2></a>
+            <div class="archive__item-excerpt">
+              <p>Work portfolio of Black Thread Design</p>
+            </div>  
+        </div>
+      </div>
+    </div>
+</div>
+
 
 {% include feature_row id="feature_row_experiments" type="left" %}
 
