@@ -47184,9 +47184,9 @@ function initSplashLayout() {
   var splashHeroContainerHeight = 0.75;
   splashHeroContainer.style.height = window.innerHeight * splashHeroContainerHeight + 'px';
 
-  var masthead = document.querySelector('.masthead');
+  //const masthead = document.querySelector('.masthead');
 
-  var mastheadHeight = masthead.clientHeight;
+  //let mastheadHeight = masthead.clientHeight;
 
   var underCanvas = document.querySelector('#splash__under-hero');
   underCanvas.style.height = window.innerHeight - splashHeroContainer.getBoundingClientRect().bottom + 'px';
@@ -47700,16 +47700,71 @@ var SplashHero = function () {
     return SplashHero;
 }();
 
+var SplashWork = function () {
+    function SplashWork() {
+        classCallCheck(this, SplashWork);
+
+
+        var canvas = document.querySelector('#splash__canvas-work');
+
+        var container = document.querySelector('#splash__work-container');
+
+        var app = new App(canvas);
+
+        app.camera.position.z = 350;
+
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x00000, 1);
+        app.scene.add(hemiLight);
+
+        //app.camera.far = 5;
+
+        // TODO: not working in Edge
+        var statisticsOverlay = new StatisticsOverlay(app, container);
+
+        var cube = this.initCube();
+
+        app.scene.add(cube);
+
+        app.onUpdate = function () {
+
+            cube.rotation.x += 0.0001 * app.delta;
+            cube.rotation.y += 0.0005 * app.delta;
+
+            statisticsOverlay.updateStatistics(app.delta);
+        };
+
+        // app.onWindowResize = function () {};
+
+        app.play();
+    }
+
+    SplashWork.prototype.initLights = function initLights() {};
+
+    SplashWork.prototype.initCube = function initCube() {
+        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
+        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        var cube = new THREE.Mesh(geometry, material);
+        return cube;
+    };
+
+    return SplashWork;
+}();
+
 function initSplash() {
   // Check that we are on the splash page:
   if (!document.querySelector('.layout--splash')) return;
 
   initSplashLayout();
+
   var splashHero = new SplashHero();
+  var splashWork = new SplashWork();
 }
 
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
+
+//TODO: setup global flag to show / hide stats
+//window.DEVELOPMENT = false;
 
 Cache.enabled = true;
 initLoader();

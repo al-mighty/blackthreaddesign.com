@@ -15,6 +15,9 @@ import initSplash from './splash/splashMain.js';
 window.THREE = THREE;
 window.Hammer = Hammer.default;
 
+//TODO: setup global flag to show / hide stats
+//window.DEVELOPMENT = false;
+
 THREE.Cache.enabled = true;
 initLoader();
 
