@@ -1,7 +1,7 @@
 import throttle from 'lodash.throttle';
 
 export default function initSplashLayout() {
-  const canvas = document.querySelector('#splash__hero');
+  const canvas = document.querySelector('#splash__hero-container');
 
   const canvasHeight = 0.75;
   canvas.style.height = window.innerHeight * canvasHeight + 'px';

@@ -47179,7 +47179,7 @@ function initLoader() {
 }
 
 function initSplashLayout() {
-  var canvas = document.querySelector('#splash__hero');
+  var canvas = document.querySelector('#splash__hero-container');
 
   var canvasHeight = 0.75;
   canvas.style.height = window.innerHeight * canvasHeight + 'px';
@@ -47236,7 +47236,7 @@ var StatisticsOverlay = function () {
 
         var hide = this.container.appendChild(document.createElement('div'));
         hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      bottom: 0;\n      left: 0;';
+        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
 
         var checkbox = hide.appendChild(document.createElement('input'));
         checkbox.type = 'checkbox';
@@ -47247,18 +47247,18 @@ var StatisticsOverlay = function () {
 
         checkbox.addEventListener('change', function () {
 
-            _this.statsElem.classList.toggle('hide');
+            _this.statsElem.classList.toggle('hidden');
             _this.show = !_this.show;
         });
     };
 
     StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
 
-        this.statsElem = document.body.appendChild(document.createElement('div'));
+        this.statsElem = this.container.appendChild(document.createElement('div'));
         this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 2%;\n      width: 100%;\n      height: 30%;\n      color: white;';
+        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
 
-        this.statsElem.classList.toggle('hide');
+        this.statsElem.classList.add('hidden');
 
         var timeCount = this.statsElem.appendChild(document.createElement('span'));
         timeCount.innerText = 'Total Time: ';
@@ -47299,6 +47299,8 @@ var StatisticsOverlay = function () {
         this.hideCheck = document.querySelector('#hideOverlayChk');
 
         this.stats = new Stats();
+        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
+
         this.statsElem.appendChild(this.stats.dom);
     };
 
@@ -47627,12 +47629,14 @@ var SplashHero = function () {
 
         var canvas = document.querySelector('#splash__hero');
 
+        var container = document.querySelector('#splash__hero-container');
+
         var app = new App(canvas);
 
         app.camera.far = 5;
 
         // TODO: not working in Edge
-        var statisticsOverlay = new StatisticsOverlay(app);
+        var statisticsOverlay = new StatisticsOverlay(app, container);
 
         var material = this.initMaterial();
         var geometry = new THREE.PlaneBufferGeometry(2, 2, 1);

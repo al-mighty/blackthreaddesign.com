@@ -22,7 +22,7 @@ export default class StatisticsOverlay {
     const hide = this.container.appendChild( document.createElement( 'div' ) );
     hide.id = 'hideStatsOverlay';
     hide.style = `position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;`;
 
     const checkbox = hide.appendChild( document.createElement( 'input' ) );
@@ -34,25 +34,24 @@ export default class StatisticsOverlay {
 
     checkbox.addEventListener( 'change', () => {
 
-      this.statsElem.classList.toggle( 'hide' );
+      this.statsElem.classList.toggle( 'hidden' );
       this.show = !this.show;
     } );
 
   }
 
-
   initStatsContainer() {
 
-    this.statsElem = document.body.appendChild( document.createElement( 'div' ) );
+    this.statsElem = this.container.appendChild( document.createElement( 'div' ) );
     this.statsElem.id = 'infoContainer';
     this.statsElem.style = `text-align: center;
       position: absolute;
-      top: 2%;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 30%;
-      color: white;`;
+      height: 30%;`;
 
-    this.statsElem.classList.toggle( 'hide' );
+    this.statsElem.classList.add( 'hidden' );
 
     const timeCount = this.statsElem.appendChild( document.createElement( 'span' ) );
     timeCount.innerText = 'Total Time: ';
@@ -94,6 +93,12 @@ export default class StatisticsOverlay {
 
 
     this.stats = new Stats();
+    this.stats.dom.style = `position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    opacity: 0.9;`
+
     this.statsElem.appendChild( this.stats.dom );
 
   }

@@ -1,10 +1,15 @@
-#splash__hero {
+#splash__hero-container {
     position: relative;
     height: 75%;
     width: 100%;
     //background-color: $dark-red;
 }
 
+#splash__hero {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
 
 
 #splash-main{

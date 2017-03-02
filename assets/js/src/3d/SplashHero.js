@@ -13,12 +13,14 @@ export default class SplashHero {
 
     const canvas = document.querySelector( '#splash__hero' );
 
+    const container = document.querySelector( '#splash__hero-container' );
+
     const app = new App( canvas );
 
     app.camera.far = 5;
 
     // TODO: not working in Edge
-    const statisticsOverlay = new StatisticsOverlay( app );
+    const statisticsOverlay = new StatisticsOverlay( app, container );
 
 
     const material = this.initMaterial( );
