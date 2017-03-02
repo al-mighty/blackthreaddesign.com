@@ -3,7 +3,9 @@ const useLoadingManager = false;
 const fadeLoader = () => {
   const loadingOverlay = document.querySelector( '#loadingOverlay' );
 
-  loadingOverlay.style.opacity = 0;
+  if(!loadingOverlay) return;
+
+  loadingOverlay.classList.add( 'fadeOut' );
   window.setTimeout( () => {
     loadingOverlay.classList.add( 'hidden' );
   }, 1000 );

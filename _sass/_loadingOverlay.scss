@@ -3,7 +3,10 @@
     background-color: black;
 }
 
-
+[data-loader]
+{
+    margin: 8px;
+}
 [data-loader='satellite']
 {
     position: relative;
@@ -29,88 +32,40 @@
 
     border-radius: 100%;
     background-color: #fff;
-    -webkit-box-shadow: 0 0 10px #fff;
-            box-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 10px #fff;
 }
 [data-loader='satellite']:after
 {
     right: 0;
-
     width: 24px;
     height: 24px;
     margin: 12px;
 }
 
-@-webkit-keyframes satellite
-{
-    from
-    {
-        -webkit-transform: rotate(0) translateZ(0);
-            -ms-transform: rotate(0) translateZ(0);
-             -o-transform: rotate(0) translateZ(0);
-                transform: rotate(0) translateZ(0);
-    }
-    to
-    {
-        -webkit-transform: rotate(360deg) translateZ(0);
-            -ms-transform: rotate(360deg) translateZ(0);
-             -o-transform: rotate(360deg) translateZ(0);
-                transform: rotate(360deg) translateZ(0);
-    }
-}
-@-moz-keyframes satellite
-{
-    from
-    {
-        -webkit-transform: rotate(0) translateZ(0);
-            -ms-transform: rotate(0) translateZ(0);
-             -o-transform: rotate(0) translateZ(0);
-                transform: rotate(0) translateZ(0);
-    }
-    to
-    {
-        -webkit-transform: rotate(360deg) translateZ(0);
-            -ms-transform: rotate(360deg) translateZ(0);
-             -o-transform: rotate(360deg) translateZ(0);
-                transform: rotate(360deg) translateZ(0);
-    }
-}
-@-o-keyframes satellite
-{
-    from
-    {
-        -webkit-transform: rotate(0) translateZ(0);
-            -ms-transform: rotate(0) translateZ(0);
-             -o-transform: rotate(0) translateZ(0);
-                transform: rotate(0) translateZ(0);
-    }
-    to
-    {
-        -webkit-transform: rotate(360deg) translateZ(0);
-            -ms-transform: rotate(360deg) translateZ(0);
-             -o-transform: rotate(360deg) translateZ(0);
-                transform: rotate(360deg) translateZ(0);
-    }
-}
 @keyframes satellite
 {
     from
     {
-        -webkit-transform: rotate(0) translateZ(0);
-            -ms-transform: rotate(0) translateZ(0);
-             -o-transform: rotate(0) translateZ(0);
-                transform: rotate(0) translateZ(0);
+        transform: rotate(0) translateZ(0);
     }
     to
     {
-        -webkit-transform: rotate(360deg) translateZ(0);
-            -ms-transform: rotate(360deg) translateZ(0);
-             -o-transform: rotate(360deg) translateZ(0);
-                transform: rotate(360deg) translateZ(0);
+        transform: rotate(360deg) translateZ(0);
     }
 }
 
-[data-loader]
+@keyframes fadeOpacity
 {
-    margin: 8px;
+    from
+    {
+      opacity: 1;
+    }
+    to
+    {
+      opacity: 0;
+    }
+}
+
+.fadeOut {
+  animation: fadeOpacity 1.5s 1 ease-out;
 }

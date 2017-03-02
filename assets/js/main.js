@@ -47150,7 +47150,9 @@ var useLoadingManager = false;
 var fadeLoader = function () {
   var loadingOverlay = document.querySelector('#loadingOverlay');
 
-  loadingOverlay.style.opacity = 0;
+  if (!loadingOverlay) return;
+
+  loadingOverlay.classList.add('fadeOut');
   window.setTimeout(function () {
     loadingOverlay.classList.add('hidden');
   }, 1000);
