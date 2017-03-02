@@ -47145,20 +47145,24 @@ fluidvids.init({
   selector: ['iframe', 'object'], // runs querySelectorAll()
   players: ['www.youtube.com', 'player.vimeo.com'] });
 
-var canvas = document.querySelector('#splash__hero');
+function initSplashLayout() {
+  var canvas = document.querySelector('#splash__hero');
 
-var canvasHeight = 0.75;
-canvas.style.height = window.innerHeight * canvasHeight + 'px';
+  var canvasHeight = 0.75;
+  canvas.style.height = window.innerHeight * canvasHeight + 'px';
 
-var masthead = document.querySelector('.masthead');
+  var masthead = document.querySelector('.masthead');
 
-var underCanvas = document.querySelector('#splash__under-hero');
-underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+  var mastheadHeight = masthead.clientHeight;
 
-window.addEventListener('resize', throttle(function () {
+  var underCanvas = document.querySelector('#splash__under-hero');
+  underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
+
+  window.addEventListener('resize', throttle(function () {
     canvas.style.height = window.innerHeight * canvasHeight + 'px';
     underCanvas.style.height = window.innerHeight - canvas.getBoundingClientRect().bottom + 'px';
-}), 250);
+  }), 250);
+}
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -47545,14 +47549,20 @@ var Splash = function () {
     return Splash;
 }();
 
+function initSplash() {
+  // Check that we are on the splash page:
+  if (!document.querySelector('.layout--splash')) return;
+
+  initSplashLayout();
+  var splash = new Splash();
+}
+
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
-// SPLASH
-// TODO: only load these for splash page
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 
-var splash = new Splash();
+initSplash();
 
 }());

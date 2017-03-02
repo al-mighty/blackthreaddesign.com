@@ -8,13 +8,12 @@ import './init/initSmoothScroll.js';
 import './init/initFooter.js';
 import './init/initVideos.js';
 
+import initSplash from './splash/splashMain.js';
+
 window.THREE = THREE;
 window.Hammer = Hammer.default;
 
-// SPLASH
-// TODO: only load these for splash page
-import './splash/splashLayout.js';
-import Splash from './3d/Splash.js';
+
 
 import { moveHandler } from './utilities.js';
 
@@ -23,4 +22,4 @@ window.addEventListener( 'mousemove', moveHandler );
 new window.Hammer( document.querySelector( 'body' ) )
   .on( 'pan', moveHandler );
 
-const splash = new Splash();
+initSplash();
