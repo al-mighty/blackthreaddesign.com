@@ -7,13 +7,13 @@ import backgroundFrag from '../shaders/splashBackground.frag';
 
 import { pointerPos } from '../../utilities.js';
 
-export default class SplashWork {
+export default class SplashTutorials {
 
   constructor() {
 
-    const canvas = document.querySelector( '#splash__canvas-work' );
+    const canvas = document.querySelector( '#splash__canvas-tutorials' );
 
-    const container = document.querySelector( '#splash__work-container' );
+    const container = document.querySelector( '#splash__tutorials-container' );
 
     const app = new App( canvas );
 

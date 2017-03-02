@@ -34,12 +34,12 @@ feature_row_experiments:
         
           <div id="splash__work-container"  class="archive__item-teaser">
             <canvas id="splash__canvas-work">
-              <img src="http://localhost:4000/assets/images/test1.png" alt="work_img">
+              <img src="{{ site.url }}/assets/images/test1.png" alt="work_img">
             </canvas>
           </div>
 
         <div class="archive__item-body">     
-							<a href="http://localhost:4000/work/"><h2 class="archive__item-title">Work</h2></a>
+							<a href="{{ site.url }}/work/"><h2 class="archive__item-title">Work</h2></a>
             <div class="archive__item-excerpt">
               <p>Work portfolio of Black Thread Design</p>
             </div>  
@@ -48,9 +48,62 @@ feature_row_experiments:
     </div>
 </div>
 
+<div class="feature__wrapper">
+    <div class="feature__item--right">
+      <div class="archive__item">
+        
+          <div id="splash__experiments-container"  class="archive__item-teaser">
+            <canvas id="splash__canvas-experiments">
+              <img src="{{ site.url }}/assets/images/test1.png" alt="experiment_img">
+            </canvas>
+          </div>
 
-{% include feature_row id="feature_row_experiments" type="left" %}
+        <div class="archive__item-body">     
+							<a href="{{ site.url }}/experiments/"><h2 class="archive__item-title">Experiments</h2></a>
+            <div class="archive__item-excerpt">
+              <p>Smaller work pieces and experiments</p>
+            </div>  
+        </div>
+      </div>
+    </div>
+</div>
 
-{% include feature_row id="feature_row_tutorials" type="left" %}
+<div class="feature__wrapper">
+    <div class="feature__item--left">
+      <div class="archive__item">
+        
+          <div id="splash__tutorials-container"  class="archive__item-teaser">
+            <canvas id="splash__canvas-tutorials">
+              <img src="{{ site.url }}/assets/images/test1.png" alt="work_img">
+            </canvas>
+          </div>
 
-{% include feature_row id="feature_row_blog" type="left" %}
+        <div class="archive__item-body">     
+							<a href="{{ site.url }}/tutorials/"><h2 class="archive__item-title">Three.js Tutorials</h2></a>
+            <div class="archive__item-excerpt">
+              <p>A collection of tutorials related to using three.js as part of a modern ES2015+ Javascript setup.</p>
+            </div>  
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="feature__wrapper">
+    <div class="feature__item--right">
+      <div class="archive__item">
+        
+          <div id="splash__blog-container"  class="archive__item-teaser">
+            <canvas id="splash__canvas-blog">
+              <img src="{{ site.url }}/assets/images/test1.png" alt="experiment_img">
+            </canvas>
+          </div>
+
+        <div class="archive__item-body">     
+							<a href="{{ site.url }}/blog/"><h2 class="archive__item-title">Blog</h2></a>
+            <div class="archive__item-excerpt">
+              <p>Articles related to the goings on at Black Thread Design.</p>
+            </div>  
+        </div>
+      </div>
+    </div>
+</div>
