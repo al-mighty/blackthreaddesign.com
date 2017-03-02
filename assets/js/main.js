@@ -47714,7 +47714,7 @@ var SplashWork = function () {
 
         app.camera.position.z = 350;
 
-        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.5);
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
         app.scene.add(hemiLight);
 
         //app.camera.far = 5;
