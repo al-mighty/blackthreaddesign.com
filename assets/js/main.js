@@ -46441,6 +46441,7 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
+// Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
@@ -47065,6 +47066,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -47934,6 +47936,7 @@ function initSplash(showStats) {
   var splashBlog = new SplashBlog(showStats);
 }
 
+// Set up globals
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
@@ -47943,6 +47946,7 @@ window.Hammer = hammer$1;
 Cache.enabled = true;
 initLoader();
 
+// Set up app wide event listeners for touch and mouse
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 

@@ -1,10 +1,7 @@
-$cirle-width: 16em;
+$cirle-width: 12em;
 $shadow-depth: $cirle-width * .1;
 
-// You can play with these for a little variation
-$shadow-spread: $shadow-depth * 0.2;
-
-$y-offset: $shadow-depth * .5;
+$y-offset: $shadow-depth * 0.5;
 $x-offset: $y-offset * 1.73205081;
 
 $gray1: rgba(180,   180,   180, .6);
@@ -23,12 +20,12 @@ $gray6: rgba(30,   30,   30, .6);
 .splash-circle-work {
   transition: all .3s ease;
   box-shadow:
-      // inset $x-offset (-$y-offset) 0 $shadow-spread $gray1,
-      inset (-$x-offset) (-$y-offset) 0 $shadow-spread $gray2,
-      // inset 0 ($shadow-depth) 0 $shadow-spread $gray3,
-      inset (-$x-offset) $y-offset 0 $shadow-spread $gray4,
-      inset $x-offset $y-offset 0 $shadow-spread $gray5,
-      inset 0 (-$shadow-depth) 0 $shadow-spread $gray6,
+      inset 0.2em -0.1em 0 0 $dark-blue,
+      inset -0.1em 0.1em 0 0 $medium-red,
+      inset (-$x-offset) (-$y-offset) 0 0 $gray2,
+      inset (-$x-offset) $y-offset 0 0 $gray4,
+      inset $x-offset $y-offset 0 0 $gray5,
+      inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
   animation: spin 120s linear infinite;
 }
@@ -36,12 +33,12 @@ $gray6: rgba(30,   30,   30, .6);
 .splash-circle-experiments {
   transition: all .3s ease;
   box-shadow:
-      inset $x-offset (-$y-offset) 0 $shadow-spread $gray1,
-      // inset (-$x-offset) (-$y-offset) 0 $shadow-spread $gray2,
-      inset 0 ($shadow-depth) 0 $shadow-spread $gray3,
-      // inset (-$x-offset) $y-offset 0 $shadow-spread $gray4,
-      inset $x-offset $y-offset 0 $shadow-spread $gray5,
-      inset 0 (-$shadow-depth) 0 $shadow-spread $gray6,
+      inset 0.1em -0.1em 0 0 $medium-red,
+      inset -0.2em 0.1em 0 0 $dark-blue,
+      inset $x-offset (-$y-offset) 0 0 $gray1,
+      inset 0 ($shadow-depth) 0 0 $gray3,
+      inset $x-offset $y-offset 0 0 $gray5,
+      inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
   animation: spin 120s linear infinite;
 }
@@ -49,12 +46,11 @@ $gray6: rgba(30,   30,   30, .6);
 .splash-circle-tutorials {
   transition: all .3s ease;
   box-shadow:
-      inset $x-offset (-$y-offset) 0 $shadow-spread $gray1,
-      // inset (-$x-offset) (-$y-offset) 0 $shadow-spread $gray2,
-      inset 0 ($shadow-depth) 0 $shadow-spread $gray3,
-      inset (-$x-offset) $y-offset 0 $shadow-spread $gray4,
-      // inset $x-offset $y-offset 0 $shadow-spread $gray5,
-      // inset 0 (-$shadow-depth) 0 $shadow-spread $gray6,
+      inset 0.1em -0.1em 0 0 $dark-blue,
+      inset -0.2em 0.1em 0 0 $medium-red,
+      inset $x-offset (-$y-offset) 0 0 $gray1,
+      inset 0 ($shadow-depth) 0 0 $gray3,
+      inset (-$x-offset) $y-offset 0 0 $gray4,
     ;
   animation: spin 120s linear infinite;
 }
@@ -62,12 +58,12 @@ $gray6: rgba(30,   30,   30, .6);
 .splash-circle-blog {
   transition: all .3s ease;
   box-shadow:
-      inset $x-offset (-$y-offset) 0 $shadow-spread $gray1,
-      // inset (-$x-offset) (-$y-offset) 0 $shadow-spread $gray2,
-      // inset 0 ($shadow-depth) 0 $shadow-spread $gray3,
-      inset (-$x-offset) $y-offset 0 $shadow-spread $gray4,
-      inset $x-offset $y-offset 0 $shadow-spread $gray5,
-      inset 0 (-$shadow-depth) 0 $shadow-spread $gray6,
+      inset 0.1em -0.1em 0 0 $medium-red,
+      inset -0.2em 0.1em 0 0 $dark-blue,
+      inset (-$x-offset) (-$y-offset) 0 0 $gray2,
+      inset (-$x-offset) $y-offset 0 0 $gray4,
+      inset $x-offset $y-offset 0 0 $gray5,
+      inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
   animation: spin 120s linear infinite;
 }
