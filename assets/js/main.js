@@ -46441,7 +46441,6 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
-// Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
@@ -47066,7 +47065,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -47463,171 +47461,175 @@ function Time() {
 
 function App(canvas) {
 
-    var _canvas = void 0,
-        _scene = void 0,
-        _camera = void 0,
-        _renderer = void 0;
+  var self = this;
 
-    var _currentAnimationFrameID = void 0;
+  var _canvas = void 0,
+      _scene = void 0,
+      _camera = void 0,
+      _renderer = void 0;
 
-    if (canvas !== undefined) _canvas = canvas;
+  var _currentAnimationFrameID = void 0;
 
-    this.autoRender = true;
+  if (canvas !== undefined) _canvas = canvas;
 
-    this.autoResize = true;
+  this.autoRender = true;
 
+  this.autoResize = true;
+
+  this.frameCount = 0;
+
+  this.delta = 0;
+
+  this.time = new Time();
+
+  var setRendererSize = function () {
+    _renderer.setSize(_canvas.clientWidth, _canvas.clientHeight, false);
+  };
+
+  var setCameraAspect = function () {
+    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
+    _camera.updateProjectionMatrix();
+  };
+
+  this.onWindowResize = function () {};
+
+  var onWindowResize = function () {
+
+    if (!self.autoResize) return;
+
+    self.onWindowResize();
+
+    if (_camera.type !== 'PerspectiveCamera') {
+
+      console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
+      return;
+    }
+
+    setCameraAspect();
+
+    setRendererSize();
+  };
+
+  window.addEventListener('resize', onWindowResize, false);
+
+  Object.defineProperties(this, {
+
+    canvas: {
+      get: function () {
+
+        if (_canvas === undefined) {
+
+          _canvas = document.body.appendChild(document.createElement('canvas'));
+          _canvas.style.position = 'absolute';
+          _canvas.style.width = _canvas.style.height = '100%';
+        }
+
+        return _canvas;
+      },
+      set: function (newCanvas) {
+
+        _canvas = newCanvas;
+      }
+    },
+
+    camera: {
+      get: function () {
+
+        if (_camera === undefined) {
+
+          _camera = new THREE.PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+        }
+
+        return _camera;
+      },
+      set: function (camera) {
+
+        _camera = camera;
+        setCameraAspect();
+      }
+    },
+
+    scene: {
+      get: function () {
+
+        if (_scene === undefined) {
+
+          _scene = new THREE.Scene();
+        }
+
+        return _scene;
+      },
+      set: function (scene) {
+
+        _scene = scene;
+      }
+    },
+
+    renderer: {
+      get: function () {
+
+        if (_renderer === undefined) {
+
+          _renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+          _renderer.setPixelRatio(window.devicePixelRatio);
+          _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
+        }
+
+        return _renderer;
+      },
+      set: function (renderer) {
+
+        _renderer = renderer;
+        setRendererSize();
+      }
+    },
+
+    averageFrameTime: {
+      get: function () {
+
+        return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
+      }
+    }
+
+  });
+
+  this.play = function () {
+
+    this.time.start();
+
+    function animationHandler() {
+
+      self.frameCount++;
+      self.delta = self.time.delta;
+
+      self.onUpdate();
+
+      if (self.autoRender) self.renderer.render(self.scene, self.camera);
+
+      _currentAnimationFrameID = requestAnimationFrame(function () {
+        animationHandler();
+      });
+    }
+
+    animationHandler();
+  };
+
+  this.pause = function () {
+
+    this.time.pause();
+
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
+
+  this.stop = function () {
+
+    this.time.stop();
     this.frameCount = 0;
 
-    this.delta = 0;
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
 
-    this.time = new Time();
-
-    Object.defineProperties(this, {
-
-        canvas: {
-            get: function () {
-
-                if (_canvas === undefined) {
-
-                    _canvas = document.body.appendChild(document.createElement('canvas'));
-                    _canvas.style.position = 'absolute';
-                    _canvas.style.width = _canvas.style.height = '100%';
-                }
-
-                return _canvas;
-            },
-            set: function (canvas) {
-
-                _canvas = canvas;
-            }
-        },
-
-        camera: {
-            get: function () {
-
-                if (_camera === undefined) {
-
-                    _camera = new THREE.PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
-                }
-
-                return _camera;
-            },
-            set: function (camera) {
-
-                _camera = camera;
-            }
-        },
-
-        scene: {
-            get: function () {
-
-                if (_scene === undefined) {
-
-                    _scene = new THREE.Scene();
-                }
-
-                return _scene;
-            },
-            set: function (scene) {
-
-                _scene = scene;
-            }
-        },
-
-        renderer: {
-            get: function () {
-
-                if (_renderer === undefined) {
-
-                    console.log("creaing renderer");
-                    _renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
-                    _renderer.setPixelRatio(window.devicePixelRatio);
-                    _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-                }
-
-                return _renderer;
-            },
-            set: function (renderer) {
-
-                _renderer = renderer;
-            }
-        },
-
-        averageFrameTime: {
-            get: function () {
-
-                return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
-            }
-        }
-
-    });
-
-    this.play = function () {
-
-        this.time.start();
-
-        var self = this;
-
-        function animationHandler() {
-
-            self.frameCount++;
-            self.delta = self.time.delta;
-
-            self.onUpdate();
-
-            if (self.autoRender) self.renderer.render(self.scene, self.camera);
-
-            _currentAnimationFrameID = requestAnimationFrame(function () {
-                animationHandler();
-            });
-        }
-
-        animationHandler();
-    };
-
-    this.pause = function () {
-
-        this.time.pause();
-
-        cancelAnimationFrame(_currentAnimationFrameID);
-    };
-
-    this.stop = function () {
-
-        this.time.stop();
-        this.frameCount = 0;
-
-        cancelAnimationFrame(_currentAnimationFrameID);
-    };
-
-    this.onUpdate = function () {};
-
-    this.onWindowResize = function () {};
-
-    var self = this;
-    var onWindowResize = function () {
-
-        if (!self.autoResize) return;
-
-        self.onWindowResize();
-
-        if (self.camera.type !== 'PerspectiveCamera') {
-
-            console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
-            return;
-        }
-
-        var newWidth = self.canvas.clientWidth;
-        var newHeight = self.canvas.clientHeight;
-
-        self.camera.aspect = newWidth / newHeight;
-        self.camera.updateProjectionMatrix();
-        self.renderer.setSize(newWidth, newHeight, false);
-    };
-
-    // onWindowResize( );
-
-    window.addEventListener('resize', onWindowResize, false);
+  this.onUpdate = function () {};
 }
 
 var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(position, 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
@@ -47936,7 +47938,6 @@ function initSplash(showStats) {
   var splashBlog = new SplashBlog(showStats);
 }
 
-// Set up globals
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
@@ -47946,7 +47947,6 @@ window.Hammer = hammer$1;
 Cache.enabled = true;
 initLoader();
 
-// Set up app wide event listeners for touch and mouse
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 
