@@ -38,8 +38,9 @@
     left: 33.33333%;
     width: 33.33333vw;
     height: 33.33333vw;
+    //background-image: url('/assets/images/textures/noise-1024.jpg');
     //background-image: radial-gradient(circle at center, #333333, #111111);
-    background-color: #283844;
+    background-color: $darkest-blue;
 
     @include breakpoint($medium) { 
       width: 16em;
@@ -47,6 +48,25 @@
       top: 25%;
       left: 25%;
     }
+}
+
+#splash-work-canvas-container {
+    background-image: url('/assets/images/splash/hyper_3_512.jpg');
+}
+
+#splash-experiments-canvas-container {
+    background-image: url('/assets/images/splash/hyper_4_512.jpg');
+    background-size: contain;
+}
+
+#splash-tutorials-canvas-container {
+    background-image: url('/assets/images/splash/hyper_1_512.jpg');
+    background-size: contain;
+}
+
+#splash-blog-canvas-container {
+    background-image: url('/assets/images/splash/hyper_2_512.jpg');
+    background-size: contain;
 }
 
 .splash-row {

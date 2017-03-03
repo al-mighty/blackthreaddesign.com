@@ -27,7 +27,7 @@ $gray6: rgba(30,   30,   30, .6);
       inset $x-offset $y-offset 0 0 $gray5,
       inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
-  animation: spin 120s linear infinite;
+  // animation: spin 120s linear infinite;
 }
 
 .splash-circle-experiments {
@@ -40,7 +40,7 @@ $gray6: rgba(30,   30,   30, .6);
       inset $x-offset $y-offset 0 0 $gray5,
       inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
-  animation: spin 120s linear infinite;
+  // animation: spin 120s linear infinite;
 }
 
 .splash-circle-tutorials {
@@ -52,7 +52,7 @@ $gray6: rgba(30,   30,   30, .6);
       inset 0 ($shadow-depth) 0 0 $gray3,
       inset (-$x-offset) $y-offset 0 0 $gray4,
     ;
-  animation: spin 120s linear infinite;
+  // animation: spin 120s linear infinite;
 }
 
 .splash-circle-blog {
@@ -65,5 +65,5 @@ $gray6: rgba(30,   30,   30, .6);
       inset $x-offset $y-offset 0 0 $gray5,
       inset 0 (-$shadow-depth) 0 0 $gray6,
     ;
-  animation: spin 120s linear infinite;
+  // animation: spin 120s linear infinite;
 }

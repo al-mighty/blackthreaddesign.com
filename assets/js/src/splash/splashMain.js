@@ -13,8 +13,8 @@ export default function initSplash( showStats ) {
   initSplashLayout();
 
   const splashHero = new SplashHero( showStats );
-  const splashWork = new SplashWork( showStats );
-  const splashExperiments = new SplashExperiments( showStats );
-  const splashTutorials = new SplashTutorials( showStats );
-  const splashBlog = new SplashBlog( showStats );
+  // const splashWork = new SplashWork( showStats );
+  // const splashExperiments = new SplashExperiments( showStats );
+  // const splashTutorials = new SplashTutorials( showStats );
+  // const splashBlog = new SplashBlog( showStats );
 }
