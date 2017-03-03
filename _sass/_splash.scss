@@ -34,15 +34,19 @@
 
 .splash-row-canvas-container {
     position: relative;
-    top: 25%;
-    left: 25%;
-    //transform: translate(-50%, -50%);
-    width: 16em;
-    height: 16em;
-    margin: 0;
-    padding: 0;
-    background-image: radial-gradient(circle at center, #333333, #111111);
+    top: 10%;
+    left: 33.33333%;
+    width: 33.33333vw;
+    height: 33.33333vw;
+    //background-image: radial-gradient(circle at center, #333333, #111111);
     background-color: #283844;
+
+    @include breakpoint($medium) { 
+      width: 16em;
+      height: 16em;
+      top: 25%;
+      left: 25%;
+    }
 }
 
 .splash-row {
@@ -53,28 +57,50 @@
 }
 
 .splash-row-left {
-    position: absolute;
-    width: 50%;
-    height: 100%;
+
+    position: relative;
+    width: 100%;
+    height: 50%;
     left: 0;
     top: 0;
+
+    @include breakpoint($medium) { 
+      position: absolute;
+      width: 50%;
+      height: 100%;
+    }
+    
 }
 
 .splash-row-right {
-    position: absolute;
-    width: 50%;
-    height: 100%;
+    position: relative;
+    width: 100%;
+    height: 50%;
     right: 0;
     top: 0;
+
+    @include breakpoint($medium) { 
+      position: absolute;
+      width: 50%;
+      height: 100%;
+    }
 }
 
 .splash-row-body {
     position: relative;
-    top: 50%;
-    left: 50%;
-    max-width: 30em;
-    transform: translate(-50%, -50%);
     text-align: center;
+    top: 25%;
+    left: 0;
+    width: 100%;
+
+    
+
+    @include breakpoint($medium) { 
+      top: 50%;
+      left: 50%;
+      max-width: 30em;
+      transform: translate(-50%, -50%);
+    }
 }
 
 .splash-row-desc {
