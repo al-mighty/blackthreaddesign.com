@@ -7,6 +7,8 @@ import Time from './Time.js';
 
 function App( canvas ) {
 
+  const self = this;
+
   let _canvas,
     _scene,
     _camera,
@@ -26,6 +28,38 @@ function App( canvas ) {
 
   this.time = new Time();
 
+  const setRendererSize = function () {
+    _renderer.setSize( _canvas.clientWidth, _canvas.clientHeight, false );
+  };
+
+  const setCameraAspect = function () {
+    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
+    _camera.updateProjectionMatrix();
+  };
+
+  this.onWindowResize = function () {};
+
+  const onWindowResize =	function (  ) {
+
+    if ( !self.autoResize ) return;
+
+    self.onWindowResize();
+
+    if ( _camera.type !== 'PerspectiveCamera' ) {
+
+      console.warn( 'THREE.APP: AutoResize only works with PerspectiveCamera' );
+      return;
+
+    } 
+
+    setCameraAspect();
+
+    setRendererSize();
+
+  };
+
+  window.addEventListener( 'resize', onWindowResize, false );
+
   Object.defineProperties( this, {
 
     canvas: {
@@ -44,9 +78,9 @@ function App( canvas ) {
 
       },
 
-      set( canvas ) {
+      set( newCanvas ) {
 
-        _canvas = canvas;
+        _canvas = newCanvas;
 
       },
     },
@@ -68,6 +102,7 @@ function App( canvas ) {
       set( camera ) {
 
         _camera = camera;
+        setCameraAspect();
 
       },
     },
@@ -98,8 +133,7 @@ function App( canvas ) {
       get() {
 
         if ( _renderer === undefined ) {
-            
-          console.log("creaing renderer")
+
           _renderer = new THREE.WebGLRenderer( { canvas: this.canvas, antialias: true } );
           _renderer.setPixelRatio( window.devicePixelRatio );
           _renderer.setSize( this.canvas.clientWidth, this.canvas.clientHeight, false );
@@ -113,6 +147,7 @@ function App( canvas ) {
       set( renderer ) {
 
         _renderer = renderer;
+        setRendererSize();
 
       },
 
@@ -133,8 +168,6 @@ function App( canvas ) {
   this.play = function () {
 
     this.time.start();
-
-    const self = this;
 
     function animationHandler() {
 
@@ -171,35 +204,6 @@ function App( canvas ) {
   };
 
   this.onUpdate = function () {};
-
-  this.onWindowResize = function () {};
-
-  const self = this;
-  const onWindowResize =	function (  ) {
-
-    if ( !self.autoResize ) return;
-
-    self.onWindowResize();
-
-    if ( self.camera.type !== 'PerspectiveCamera' ) {
-
-      console.warn( 'THREE.APP: AutoResize only works with PerspectiveCamera' );
-      return;
-
-    }
-
-    const newWidth = self.canvas.clientWidth;
-    const newHeight = self.canvas.clientHeight;
-
-    self.camera.aspect = newWidth / newHeight;
-    self.camera.updateProjectionMatrix();
-    self.renderer.setSize( newWidth, newHeight, false );
-
-  };
-
-  // onWindowResize( );
-
-  window.addEventListener( 'resize', onWindowResize, false );
 
 }
 
