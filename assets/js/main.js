@@ -46453,6 +46453,7 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
+// Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
   counter: false
@@ -47077,6 +47078,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -47466,6 +47468,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -47684,7 +47691,7 @@ var SplashHero = function () {
         app.onUpdate = function () {
             updateMaterial();
 
-            console.log(app.frameCount);
+            // console.log(app.frameCount)
 
             if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
@@ -47730,6 +47737,122 @@ var SplashHero = function () {
     };
 
     return SplashHero;
+}();
+
+var SplashWork = function () {
+    function SplashWork(showStats) {
+        classCallCheck(this, SplashWork);
+
+
+        var canvas = document.querySelector('#splash-work-canvas');
+
+        var container = document.querySelector('#splash-work-canvas-container');
+
+        var app = new App(canvas);
+
+        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
+
+        // app.renderer.setClearAlpha ( 0 );
+
+        app.camera.position.z = 350;
+
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
+        app.scene.add(hemiLight);
+
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
+
+        var cube = this.initCube();
+
+        app.scene.add(cube);
+
+        app.onUpdate = function () {
+
+            cube.rotation.x += 0.0001 * app.delta;
+            cube.rotation.y += 0.0005 * app.delta;
+
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
+        };
+
+        // app.onWindowResize = function () {};
+
+        app.play();
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > canvas.offsetTop + canvas.clientHeight) {
+                console.log('offscreen ');
+                //app.pause();
+            } else {
+                console.log('onscreen ');
+                // app.play();
+            }
+        });
+    }
+
+    SplashWork.prototype.initLights = function initLights() {};
+
+    SplashWork.prototype.initCube = function initCube() {
+        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
+        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        var cube = new THREE.Mesh(geometry, material);
+        return cube;
+    };
+
+    return SplashWork;
+}();
+
+var SplashExperiments = function () {
+    function SplashExperiments(showStats) {
+        classCallCheck(this, SplashExperiments);
+
+
+        var canvas = document.querySelector('#splash-experiments-canvas');
+
+        var container = document.querySelector('#splash-experiments-canvas-container');
+
+        var app = new App(canvas);
+
+        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
+
+        // app.renderer.setClearAlpha ( 0 );
+
+        app.camera.position.z = 350;
+
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
+        app.scene.add(hemiLight);
+
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
+
+        var cube = this.initCube();
+
+        app.scene.add(cube);
+
+        app.onUpdate = function () {
+
+            cube.rotation.x += 0.0001 * app.delta;
+            cube.rotation.y += 0.0005 * app.delta;
+
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
+        };
+
+        // app.onWindowResize = function () {};
+
+        app.play();
+    }
+
+    SplashExperiments.prototype.initLights = function initLights() {};
+
+    SplashExperiments.prototype.initCube = function initCube() {
+        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
+        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        var cube = new THREE.Mesh(geometry, material);
+        return cube;
+    };
+
+    return SplashExperiments;
 }();
 
 var SplashTutorials = function () {
@@ -47797,6 +47920,57 @@ var SplashTutorials = function () {
     return SplashTutorials;
 }();
 
+var SplashBlog = function () {
+    function SplashBlog(showStats) {
+        classCallCheck(this, SplashBlog);
+
+
+        var canvas = document.querySelector('#splash-blog-canvas');
+
+        var container = document.querySelector('#splash-blog-canvas-container');
+
+        var app = new App(canvas);
+
+        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
+
+        app.camera.position.z = 350;
+
+        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
+        app.scene.add(hemiLight);
+
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
+
+        var cube = this.initCube();
+
+        app.scene.add(cube);
+
+        app.onUpdate = function () {
+
+            cube.rotation.x += 0.0001 * app.delta;
+            cube.rotation.y += 0.0005 * app.delta;
+
+            if (showStats) statisticsOverlay.updateStatistics(app.delta);
+        };
+
+        // app.onWindowResize = function () {};
+
+        app.play();
+    }
+
+    SplashBlog.prototype.initLights = function initLights() {};
+
+    SplashBlog.prototype.initCube = function initCube() {
+        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
+        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        var cube = new THREE.Mesh(geometry, material);
+        return cube;
+    };
+
+    return SplashBlog;
+}();
+
 function initSplash(showStats) {
   // Check that we are on the splash page:
   if (!document.querySelector('.layout--splash')) return;
@@ -47804,12 +47978,13 @@ function initSplash(showStats) {
   initSplashLayout();
 
   var splashHero = new SplashHero(showStats);
-  // const splashWork = new SplashWork( showStats );
-  // const splashExperiments = new SplashExperiments( showStats );
+  var splashWork = new SplashWork(showStats);
+  var splashExperiments = new SplashExperiments(showStats);
   var splashTutorials = new SplashTutorials(showStats);
-  // const splashBlog = new SplashBlog( showStats );
+  var splashBlog = new SplashBlog(showStats);
 }
 
+// Set up globals
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
@@ -47819,6 +47994,7 @@ window.Hammer = hammer$1;
 Cache.enabled = true;
 initLoader();
 
+// Set up app wide event listeners for touch and mouse
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 

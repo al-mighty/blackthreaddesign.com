@@ -49,7 +49,7 @@ export default class SplashHero {
     app.onUpdate = function () {
       updateMaterial();
 
-      console.log(app.frameCount)
+      // console.log(app.frameCount)
 
       if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
