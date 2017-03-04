@@ -46456,7 +46456,7 @@ var Greedy = interopDefault(greedyNav);
 // Initialise menu
 var menu = new Greedy({
   element: '.greedy-nav',
-  counter: false
+  counter: true
 });
 
 // Robert Penner's easeInOutQuad

@@ -50,10 +50,10 @@ export default class SplashWork {
 
     window.addEventListener( 'scroll', () =>  {
       if ( window.scrollY > (canvas.offsetTop + canvas.clientHeight) ) {
-        console.log( 'offscreen ');
+        console.log( 'offscreen' );
         //app.pause();
       } else {
-        console.log( 'onscreen ');
+        console.log( 'onscreen' );
        // app.play();
       }
     });
