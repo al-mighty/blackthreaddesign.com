@@ -15,6 +15,6 @@ export default function initSplash( showStats ) {
   const splashHero = new SplashHero( showStats );
   // const splashWork = new SplashWork( showStats );
   // const splashExperiments = new SplashExperiments( showStats );
-  // const splashTutorials = new SplashTutorials( showStats );
+  const splashTutorials = new SplashTutorials( showStats );
   // const splashBlog = new SplashBlog( showStats );
 }

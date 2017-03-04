@@ -47454,11 +47454,6 @@ function Time() {
     };
 }
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -47715,112 +47710,6 @@ var SplashHero = function () {
     return SplashHero;
 }();
 
-var SplashWork = function () {
-    function SplashWork(showStats) {
-        classCallCheck(this, SplashWork);
-
-
-        var canvas = document.querySelector('#splash-work-canvas');
-
-        var container = document.querySelector('#splash-work-canvas-container');
-
-        var app = new App(canvas);
-
-        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
-
-        // app.renderer.setClearAlpha ( 0 );
-
-        app.camera.position.z = 350;
-
-        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
-        app.scene.add(hemiLight);
-
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
-
-        var cube = this.initCube();
-
-        app.scene.add(cube);
-
-        app.onUpdate = function () {
-
-            cube.rotation.x += 0.0001 * app.delta;
-            cube.rotation.y += 0.0005 * app.delta;
-
-            if (showStats) statisticsOverlay.updateStatistics(app.delta);
-        };
-
-        // app.onWindowResize = function () {};
-
-        app.play();
-    }
-
-    SplashWork.prototype.initLights = function initLights() {};
-
-    SplashWork.prototype.initCube = function initCube() {
-        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
-        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        var cube = new THREE.Mesh(geometry, material);
-        return cube;
-    };
-
-    return SplashWork;
-}();
-
-var SplashExperiments = function () {
-    function SplashExperiments(showStats) {
-        classCallCheck(this, SplashExperiments);
-
-
-        var canvas = document.querySelector('#splash-experiments-canvas');
-
-        var container = document.querySelector('#splash-experiments-canvas-container');
-
-        var app = new App(canvas);
-
-        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
-
-        // app.renderer.setClearAlpha ( 0 );
-
-        app.camera.position.z = 350;
-
-        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
-        app.scene.add(hemiLight);
-
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
-
-        var cube = this.initCube();
-
-        app.scene.add(cube);
-
-        app.onUpdate = function () {
-
-            cube.rotation.x += 0.0001 * app.delta;
-            cube.rotation.y += 0.0005 * app.delta;
-
-            if (showStats) statisticsOverlay.updateStatistics(app.delta);
-        };
-
-        // app.onWindowResize = function () {};
-
-        app.play();
-    }
-
-    SplashExperiments.prototype.initLights = function initLights() {};
-
-    SplashExperiments.prototype.initCube = function initCube() {
-        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
-        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        var cube = new THREE.Mesh(geometry, material);
-        return cube;
-    };
-
-    return SplashExperiments;
-}();
-
 var SplashTutorials = function () {
     function SplashTutorials(showStats) {
         classCallCheck(this, SplashTutorials);
@@ -47834,9 +47723,7 @@ var SplashTutorials = function () {
 
         app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
 
-        // app.renderer.setClearAlpha ( 0 );
-
-        app.camera.position.z = 350;
+        app.camera.position.z = 2;
 
         var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
         app.scene.add(hemiLight);
@@ -47845,14 +47732,30 @@ var SplashTutorials = function () {
         var statisticsOverlay = void 0;
         if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
 
-        var cube = this.initCube();
+        var book = void 0;
 
-        app.scene.add(cube);
+        var textureLoader = new THREE.TextureLoader();
+        var cover = textureLoader.load('/assets/models/book/Book_Cover.jpg');
+
+        var JSONloader = new THREE.ObjectLoader();
+
+        JSONloader.load('/assets/models/book/book.json', function (obj) {
+            book = obj.children[0];
+            // book.geometry.normalize();
+            book.scale.set(5, 5, 5);
+            book.position.set(0, 0, 0);
+            book.material = new THREE.MeshBasicMaterial({ map: cover, color: 0x000000 });
+            console.log(book);
+            app.scene.add(book);
+        });
 
         app.onUpdate = function () {
 
-            cube.rotation.x += 0.0001 * app.delta;
-            cube.rotation.y += 0.0005 * app.delta;
+            if (book) {
+
+                book.rotation.x += 0.0001 * app.delta;
+                book.rotation.y += 0.0005 * app.delta;
+            }
 
             if (showStats) statisticsOverlay.updateStatistics(app.delta);
         };
@@ -47861,8 +47764,6 @@ var SplashTutorials = function () {
 
         app.play();
     }
-
-    SplashTutorials.prototype.initLights = function initLights() {};
 
     SplashTutorials.prototype.initCube = function initCube() {
         var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
@@ -47874,57 +47775,6 @@ var SplashTutorials = function () {
     return SplashTutorials;
 }();
 
-var SplashBlog = function () {
-    function SplashBlog(showStats) {
-        classCallCheck(this, SplashBlog);
-
-
-        var canvas = document.querySelector('#splash-blog-canvas');
-
-        var container = document.querySelector('#splash-blog-canvas-container');
-
-        var app = new App(canvas);
-
-        app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
-
-        app.camera.position.z = 350;
-
-        var hemiLight = new THREE.HemisphereLight(0xffffff, 0x283844, 1.2);
-        app.scene.add(hemiLight);
-
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(app, container);
-
-        var cube = this.initCube();
-
-        app.scene.add(cube);
-
-        app.onUpdate = function () {
-
-            cube.rotation.x += 0.0001 * app.delta;
-            cube.rotation.y += 0.0005 * app.delta;
-
-            if (showStats) statisticsOverlay.updateStatistics(app.delta);
-        };
-
-        // app.onWindowResize = function () {};
-
-        app.play();
-    }
-
-    SplashBlog.prototype.initLights = function initLights() {};
-
-    SplashBlog.prototype.initCube = function initCube() {
-        var geometry = new THREE.BoxBufferGeometry(200, 200, 200);
-        var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        var cube = new THREE.Mesh(geometry, material);
-        return cube;
-    };
-
-    return SplashBlog;
-}();
-
 function initSplash(showStats) {
   // Check that we are on the splash page:
   if (!document.querySelector('.layout--splash')) return;
@@ -47932,17 +47782,17 @@ function initSplash(showStats) {
   initSplashLayout();
 
   var splashHero = new SplashHero(showStats);
-  var splashWork = new SplashWork(showStats);
-  var splashExperiments = new SplashExperiments(showStats);
+  // const splashWork = new SplashWork( showStats );
+  // const splashExperiments = new SplashExperiments( showStats );
   var splashTutorials = new SplashTutorials(showStats);
-  var splashBlog = new SplashBlog(showStats);
+  // const splashBlog = new SplashBlog( showStats );
 }
 
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
-//TODO: setup global flag to show / hide stats
-//window.DEVELOPMENT = false;
+//Create an object for storing info between apps
+
 
 Cache.enabled = true;
 initLoader();

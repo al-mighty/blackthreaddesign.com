@@ -19,9 +19,7 @@ export default class SplashTutorials {
 
     app.renderer = new THREE.WebGLRenderer({ canvas: app.canvas, antialias: true, alpha: true });
 
-    // app.renderer.setClearAlpha ( 0 );
-
-    app.camera.position.z = 350;
+    app.camera.position.z = 2;
 
     const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x283844, 1.2 );
     app.scene.add( hemiLight );
@@ -30,15 +28,36 @@ export default class SplashTutorials {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
 
-    const cube = this.initCube();
+    let book;
 
-    app.scene.add( cube );
+    const textureLoader = new THREE.TextureLoader();
+    const cover = textureLoader.load( '/assets/models/book/Book_Cover.jpg' );
+
+
+    const JSONloader = new THREE.ObjectLoader();
+
+    JSONloader.load(
+        '/assets/models/book/book.json',
+        ( obj ) => {
+          book = obj.children[0];
+          // book.geometry.normalize();
+          book.scale.set( 5, 5, 5 );
+          book.position.set( 0, 0, 0 );
+          book.material = new THREE.MeshBasicMaterial( { map: cover, color: 0x000000 } );
+          console.log( book );
+          app.scene.add( book );
+        },
+    );
 
 
     app.onUpdate = function () {
 
-      cube.rotation.x += 0.0001 * app.delta;
-			cube.rotation.y += 0.0005 * app.delta;
+      if ( book ) {
+
+        book.rotation.x += 0.0001 * app.delta;
+        book.rotation.y += 0.0005 * app.delta;
+
+      }
 
       if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
@@ -48,10 +67,6 @@ export default class SplashTutorials {
 
     app.play();
 
-  }
-
-  initLights() {
-    
   }
 
   initCube() {
