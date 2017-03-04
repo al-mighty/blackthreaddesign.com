@@ -49,6 +49,8 @@ export default class SplashHero {
     app.onUpdate = function () {
       updateMaterial();
 
+      console.log(app.frameCount)
+
       if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
 
     };
@@ -56,6 +58,14 @@ export default class SplashHero {
     // app.onWindowResize = function () {};
 
     app.play();
+
+    window.addEventListener( 'scroll', () =>  {
+      if ( window.scrollY > (canvas.offsetTop + canvas.clientHeight) ) {
+        app.pause();
+      } else {
+        app.play();
+      }
+    });
 
   }
 

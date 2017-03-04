@@ -19,4 +19,5 @@ export default function initSplashLayout() {
     underCanvas.style.height = underCanvasHeight + 'px';
   }), 250 );
 
+  
 }
