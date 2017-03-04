@@ -46364,7 +46364,7 @@ var greedyNav = createCommonjsModule(function (module) {
 
   Greedy.prototype.init = function () {
     this.setupMenu();
-    this.calculateBreakpoints();
+
     this.updateMenu();
     this.addBindings();
   };
@@ -46413,6 +46413,7 @@ var greedyNav = createCommonjsModule(function (module) {
   };
 
   Greedy.prototype.updateMenu = function () {
+    this.calculateBreakpoints();
     var availableSpace = this.element.offsetWidth - this.toggleButton.offsetWidth;
     var itemsVisible = this.visibleLinks.children.length;
     var requiredSpace = this.breakpoints[itemsVisible - 1];
@@ -46423,6 +46424,7 @@ var greedyNav = createCommonjsModule(function (module) {
     */
     if (availableSpace < this.breakpoints[itemsVisible - 1]) {
       this.toggleButton.classList.remove('hidden');
+      this.hiddenLinks.classList.remove('hidden');
 
       while (availableSpace < this.breakpoints[itemsVisible - 1]) {
         this.hiddenLinks.insertBefore(this.visibleLinks.children[itemsVisible - 1], this.hiddenLinks.firstChild);
@@ -46439,6 +46441,7 @@ var greedyNav = createCommonjsModule(function (module) {
       this.toggleButton.setAttribute('data-count', this.hiddenLinks.children.length);
       if (!this.hiddenLinks.children.length) {
         this.toggleButton.classList.add('hidden');
+        this.hiddenLinks.classList.add('hidden');
       }
     }
   };
@@ -47078,7 +47081,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -47468,11 +47470,6 @@ function Time() {
     };
 }
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -47752,7 +47749,6 @@ function initSplash(showStats) {
   // const splashBlog = new SplashBlog( showStats );
 }
 
-// Set up globals
 window.THREE = THREE$1;
 window.Hammer = hammer$1;
 
@@ -47762,7 +47758,6 @@ window.Hammer = hammer$1;
 Cache.enabled = true;
 initLoader();
 
-// Set up app wide event listeners for touch and mouse
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 

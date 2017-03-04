@@ -11,7 +11,7 @@ window.Greedy = Greedy;
 
 Greedy.prototype.init = function() {
   this.setupMenu();
-  this.calculateBreakpoints();
+
   this.updateMenu();
   this.addBindings();
 };
@@ -62,6 +62,7 @@ Greedy.prototype.addBindings = function() {
 };
 
 Greedy.prototype.updateMenu = function() {
+  this.calculateBreakpoints();
   var availableSpace = this.element.offsetWidth - this.toggleButton.offsetWidth;
   var itemsVisible = this.visibleLinks.children.length;
   var requiredSpace = this.breakpoints[itemsVisible - 1];
@@ -72,6 +73,7 @@ Greedy.prototype.updateMenu = function() {
   */
   if (availableSpace < this.breakpoints[itemsVisible - 1]) {
     this.toggleButton.classList.remove('hidden');
+    this.hiddenLinks.classList.remove('hidden');
 
     while (availableSpace < this.breakpoints[itemsVisible - 1]) {
       this.hiddenLinks.insertBefore(this.visibleLinks.children[itemsVisible - 1], this.hiddenLinks.firstChild);
@@ -88,6 +90,7 @@ Greedy.prototype.updateMenu = function() {
     this.toggleButton.setAttribute('data-count', this.hiddenLinks.children.length);
     if (!this.hiddenLinks.children.length) {
       this.toggleButton.classList.add('hidden');
+      this.hiddenLinks.classList.add('hidden');
     }
   }
 };

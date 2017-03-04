@@ -5,3 +5,4 @@ const menu = new Greedy( {
   element: '.greedy-nav',
   counter: true,
 } );
+
