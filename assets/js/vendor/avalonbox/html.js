@@ -11,7 +11,7 @@ var _bind2 = _interopRequireDefault(_bind);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var box = 'avalonbox';
+var box = 'lightbox';
 
 function createPreviousButton(doc) {
   var prev = doc.createElement('button');
@@ -67,12 +67,23 @@ function createFrame(doc) {
   return { container: frame, image: image, link: link };
 }
 
+function createCloseBtn() {
+  var btn = document.createElement('div');
+  btn.innerHTML = '<i class="fa fa-2x fa-border fa-times" aria-hidden="true"></i>';
+  btn.className = box + '-close-btn';
+  btn.id = box + '-close-btn';
+
+  return btn;
+}
+
 function createOverlayBox(doc) {
   var overlay = doc.createElement('div');
   overlay.className = box + '-overlay';
   overlay.id = box + '-overlay';
+  overlay.appendChild( createCloseBtn() );
   return overlay;
 }
+
 
 function getOverlayBox(doc) {
   var overlay = doc.getElementById(box + '-overlay');

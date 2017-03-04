@@ -45990,7 +45990,7 @@ var html = createCommonjsModule(function (module, exports) {
     return obj && obj.__esModule ? obj : { default: obj };
   }
 
-  var box = 'avalonbox';
+  var box = 'lightbox';
 
   function createPreviousButton(doc) {
     var prev = doc.createElement('button');
@@ -46046,10 +46046,20 @@ var html = createCommonjsModule(function (module, exports) {
     return { container: frame, image: image, link: link };
   }
 
+  function createCloseBtn() {
+    var btn = document.createElement('div');
+    btn.innerHTML = '<i class="fa fa-2x fa-border fa-times" aria-hidden="true"></i>';
+    btn.className = box + '-close-btn';
+    btn.id = box + '-close-btn';
+
+    return btn;
+  }
+
   function createOverlayBox(doc) {
     var overlay = doc.createElement('div');
     overlay.className = box + '-overlay';
     overlay.id = box + '-overlay';
+    overlay.appendChild(createCloseBtn());
     return overlay;
   }
 
@@ -46147,6 +46157,7 @@ var avalonbox = createCommonjsModule(function (module) {
     var spinner = html.createSpinner(doc);
     var spinnerWrapper = html.createSpinnerWrapper(doc);
     var downloadImage = new Image();
+    var closeBtn = overlay.firstChild;
 
     var active = void 0;
     var currentLink = void 0;
@@ -46165,6 +46176,7 @@ var avalonbox = createCommonjsModule(function (module) {
       overlay.appendChild(buttons.prev);
       overlay.appendChild(buttons.next);
 
+      (0, _bind2.default)(closeBtn, 'click', hideOverlay);
       (0, _bind2.default)(overlay, 'click', hideOverlay);
       (0, _bind2.default)(buttons.prev, 'click', previous);
       (0, _bind2.default)(buttons.next, 'click', next);

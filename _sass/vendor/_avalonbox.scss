@@ -1,6 +1,6 @@
-$box: 'avalonbox';
+$box: 'lightbox';
 
-@mixin avalonbox-prefix($property, $value, $prefixes: ()) {
+@mixin lightbox-prefix($property, $value, $prefixes: ()) {
   @each $prefix in $prefixes {
     #{'-' + $prefix + '-' + $property}: $value;
   }
@@ -23,6 +23,16 @@ $box: 'avalonbox';
   z-index: 1000;
 }
 
+.#{$box}-close-btn {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 4vw;
+  height: 4vw;
+  cursor: pointer;
+  z-index: 9999;
+}
+
 .#{$box}-hide {
   display: none;
 }
@@ -41,17 +51,18 @@ $box: 'avalonbox';
   margin: 0 auto;
   z-index: 2000;
   top: 50%;
-  @include avalonbox-prefix(transform, translate(0, -50%), webkit ms);
+  @include lightbox-prefix(transform, translate(0, -50%), webkit ms);
 }
 
 .#{$box}-frame-image {
   position: absolute;
+  cursor: default;
   max-width: 100%;
   max-height: 100%;
   border: 9px solid #fff;
   top: 50%;
   left: 50%;
-  @include avalonbox-prefix(transform, translate(-50%, -50%), webkit ms)
+  @include lightbox-prefix(transform, translate(-50%, -50%), webkit ms)
 }
 
 .#{$box}-move-button {
@@ -79,7 +90,7 @@ $box: 'avalonbox';
     width: 80px;
     top: 50%;
     height: 100%;
-    @include avalonbox-prefix(transform, translate(0%, -50%), webkit ms)
+    @include lightbox-prefix(transform, translate(0%, -50%), webkit ms)
   }
 }
 
@@ -95,7 +106,7 @@ $box: 'avalonbox';
   position: absolute;
   top: 50%;
   left: 50%;
-  @include avalonbox-prefix(transform, translate(-50%, -50%), webkit ms)
+  @include lightbox-prefix(transform, translate(-50%, -50%), webkit ms)
 }
 
 .#{$box}-spinner {

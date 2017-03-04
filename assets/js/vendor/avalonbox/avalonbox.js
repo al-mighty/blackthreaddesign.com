@@ -39,6 +39,7 @@ const Avalonbox = ( function () {
   const spinner = html.createSpinner( doc );
   const spinnerWrapper = html.createSpinnerWrapper( doc );
   const downloadImage = new Image();
+  const closeBtn = overlay.firstChild;
 
   let active = void 0;
   let currentLink = void 0;
@@ -57,6 +58,7 @@ const Avalonbox = ( function () {
     overlay.appendChild( buttons.prev );
     overlay.appendChild( buttons.next );
 
+    ( 0, _bind2.default )( closeBtn, 'click', hideOverlay );
     ( 0, _bind2.default )( overlay, 'click', hideOverlay );
     ( 0, _bind2.default )( buttons.prev, 'click', previous );
     ( 0, _bind2.default )( buttons.next, 'click', next );
