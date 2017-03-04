@@ -10,7 +10,8 @@
     "watch:js": "rollup -c -w",
     "compress": "npm run compress:js && npm run compress:css",
     "compress:js": "git status",
-    "compress:css": "git status"
+    "compress:css": "git status",
+    "uncss": "npm run node_scripts/uncss.js"
   },
   "repository": {
     "type": "git",

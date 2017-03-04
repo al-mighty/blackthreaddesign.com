@@ -11,6 +11,4 @@ links.forEach((a) => {
     const link = '#' + a.href.split('#').pop();
     a.onclick = () => jump(link);
   }
-}
-
-);
+});

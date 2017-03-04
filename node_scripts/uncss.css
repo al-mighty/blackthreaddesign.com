@@ -1,0 +1,1145 @@
+/*** uncss> filename: http://localhost:4000/assets/css/main.css ***/
+@charset "UTF-8";
+/*
+ *    Minimal Mistakes Jekyll Theme
+ *
+ *  - Michael Rose
+ *  - mademistakes.com
+ *  - https://twitter.com/mmistakes
+ *
+*/
+/*
+   Variables
+   ========================================================================== */
+/* ==========================================================================
+   Variables
+   ========================================================================== */
+/*
+   Typography
+   ========================================================================== */
+/* paragraph indention */
+/* system typefaces */
+/* sans serif typefaces */
+/* serif typefaces */
+/* type scale */
+/*
+   Colors
+   ========================================================================== */
+/* Shades of Red  */
+/* Shades of Blue  */
+/* Shades of Grey  */
+/* Base colors  */
+/* links */
+/* brands */
+/*
+   Breakpoints
+   ========================================================================== */
+/*
+   Grid
+   ========================================================================== */
+/*
+   Other
+   ========================================================================== */
+/*
+   Vendor
+   ========================================================================== */
+/* Breakpoint - media query mixins */
+/* Font Awesome - icon font set */
+/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("../fonts/fontawesome-webfont.eot?v=4.7.0");
+  src: url("../fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"), url("../fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"), url("../fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"), url("../fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+/* makes the font 33% larger relative to the icon container */
+
+.fa-fw {
+  width: 1.28571em;
+  text-align: center; }
+
+/* Deprecated as of 4.4.0 */
+
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+
+.fa-github:before {
+  content: ""; }
+
+.fa-rss-square:before {
+  content: ""; }
+
+/* Avalon lightbox - responsive lightbox */
+/* Susy - grid mixins */
+/*
+   Base
+   ========================================================================== */
+/* ==========================================================================
+   MIXINS
+   ========================================================================== */
+a:focus {
+  /* Default*/
+  outline: thin dotted #7C010F;
+  /* Webkit*/
+  outline: 5px auto #7C010F;
+  outline-offset: -2px; }
+
+/*
+   em function
+   ========================================================================== */
+/*
+   Bourbon clearfix
+   ========================================================================== */
+/*
+  * Provides an easy way to include a clearfix for containing floats.
+  * link http://cssmojo.com/latest_new_clearfix_so_far/
+  *
+  * example scss - Usage
+  *
+  * .element {
+  *   @include clearfix;
+  * }
+  *
+  * example css - CSS Output
+  *
+  * .element::after {
+  *   clear: both;
+  *   content: "";
+  *   display: table;
+  * }
+*/
+/* ==========================================================================
+   STYLE RESETS
+   ========================================================================== */
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+
+html {
+  /* apply a natural box layout model to all elements */
+  box-sizing: border-box;
+  background-color: #020000;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; }
+  @media (min-width: 48em) {
+    html {
+      font-size: 18px; } }
+  @media (min-width: 64em) {
+    html {
+      font-size: 20px; } }
+  @media (min-width: 80em) {
+    html {
+      font-size: 22px; } }
+
+/* Remove margin */
+body {
+  margin: 0; }
+
+/* Selected elements */
+::-moz-selection {
+  color: #fff;
+  background: #000; }
+
+::selection {
+  color: #fff;
+  background: #000; }
+
+/* Display HTML5 elements in IE6-9 and FF3 */
+article,
+footer,
+nav,
+section {
+  display: block; }
+
+/* Display block in IE6-9 and FF3 */
+canvas {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1; }
+
+/* Prevents modern browsers from displaying 'audio' without controls */
+
+a {
+  color: #B82601; }
+
+/* Apply focus state */
+/* Remove outline from links */
+a:hover,
+a:active {
+  outline: 0; }
+
+/* Prevent sub and sup affecting line-height in all browsers */
+
+/* img border in anchor's and image quality */
+img {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%;
+  /* part 1: Set a maximum relative to the parent*/
+  width: auto\9;
+  /* IE7-8 need help adjusting responsive images*/
+  height: auto;
+  /* part 2: Scale the height according to the width, otherwise you get stretching*/
+  vertical-align: middle;
+  border: 0;
+  -ms-interpolation-mode: bicubic; }
+
+/* Prevent max-width from affecting Google Maps */
+
+/* Consistent form font size in all browsers, margin changes, misc */
+button {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle; }
+
+button {
+  *overflow: visible;
+  /* inner spacing ie IE6/7*/
+  line-height: normal;
+  /* FF3/4 have !important on line-height in UA stylesheet*/ }
+
+button::-moz-focus-inner {
+  /* inner padding and border oddities in FF3/4*/
+  padding: 0;
+  border: 0; }
+
+button {
+  -webkit-appearance: button;
+  /* corrects inability to style clickable `input` types in iOS*/
+  cursor: pointer;
+  /* improves usability and consistency of cursor style between image-type `input` and others*/ }
+
+button {
+  cursor: pointer;
+  /* improves usability and consistency of cursor style between image-type `input` and others*/ }
+
+/* ==========================================================================
+   BASE ELEMENTS
+   ========================================================================== */
+html {
+  /* sticky footer fix */
+  position: relative;
+  min-height: 100%; }
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #f2f3f3;
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+  line-height: 1.5; }
+
+h2 {
+  margin: 2em 0 0.5em;
+  line-height: 1.2;
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+  font-weight: bold; }
+
+h2 {
+  font-size: 1.25em; }
+
+p {
+  margin-bottom: 1.3em; }
+
+/* reduce orphans and widows when printing */
+p, ul {
+  orphans: 3;
+  widows: 3; }
+
+/* abbreviations */
+
+/* blockquotes */
+
+/* links */
+a:hover, a:active {
+  outline: 0; }
+
+/* code */
+
+/* horizontal rule */
+
+/* lists */
+ul li {
+  margin-bottom: 0.5em; }
+
+/*
+   Media and embeds
+   ========================================================================== */
+/* Figures and images */
+
+/* Figure captions */
+
+/* Fix IE9 SVG bug */
+
+/*
+   Navigation lists
+   ========================================================================== */
+/**
+ * Removes margins, padding, and bullet points from navigation lists
+ *
+ * Example usage:
+ * <nav>
+ *    <ul>
+ *      <li><a href="#link-1">Link 1</a></li>
+ *      <li><a href="#link-2">Link 2</a></li>
+ *      <li><a href="#link-3">Link 3</a></li>
+ *    </ul>
+ *  </nav>
+ */
+nav {
+  /* override white-space for nested lists */ }
+  nav ul {
+    margin: 0;
+    padding: 0; }
+  nav li {
+    list-style: none; }
+  nav a {
+    text-decoration: none; }
+  nav ul li {
+    margin-bottom: 0; }
+
+/*
+   Global animation transition
+   ========================================================================== */
+i, strong, p, img, h2, a {
+  transition: all 0.2s ease-in-out; }
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+/*
+   Visibility
+   ========================================================================== */
+/* http://www.456bereastreet.com/archive/200711/screen_readers_sometimes_ignore_displaynone/ */
+.hidden {
+  display: none;
+  visibility: hidden; }
+
+/* for preloading images */
+
+/* https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html */
+
+/* screen readers */
+
+/*
+   Skip links
+   ========================================================================== */
+
+/*
+   Type
+   ========================================================================== */
+
+/*
+   Alignment
+   ========================================================================== */
+/* clearfix */
+
+/*
+   Images
+   ========================================================================== */
+/* image align left */
+
+/* image align right */
+
+/* image align center */
+
+/* file page content container */
+
+/*
+   Icons
+   ========================================================================== */
+
+/* social icons*/
+.social-icons .fa {
+  color: #000; }
+.social-icons .fa-github {
+  color: #171516; }
+.social-icons .fa-rss-square {
+  color: #fa9b39; }
+
+/*
+   Navicons
+   ========================================================================== */
+.navicon {
+  position: relative;
+  width: 28px;
+  height: 4px;
+  background: #fff;
+  margin: auto;
+  transition: 0.3s; }
+  .navicon:before, .navicon:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 28px;
+    height: 4px;
+    background: #fff;
+    transition: 0.3s; }
+  .navicon:before {
+    top: -8px; }
+  .navicon:after {
+    bottom: -8px; }
+
+/*
+   Sticky, fixed to top content
+   ========================================================================== */
+
+/*
+   Wells
+   ========================================================================== */
+
+/*
+   Modals
+   ========================================================================== */
+
+/*
+   Footnotes
+   ========================================================================== */
+
+/*
+   Required
+   ========================================================================== */
+
+/*
+   Google Custom Search Engine
+   ========================================================================== */
+
+/*
+   Responsive Video Embed
+      ========================================================================== */
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+@keyframes intro {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+/*
+   Default button
+   ========================================================================== */
+
+/* ==========================================================================
+   NOTICE TEXT BLOCKS
+   ========================================================================== */
+/**
+ *  Default Kramdown usage (no indents!):
+ *  <div class="notice" markdown="1">
+ *  #### Headline for the Notice
+ *  Text for the notice
+ *  </div>
+ */
+/* Default notice */
+
+/* Primary notice */
+
+/* Info notice */
+
+/* Warning notice */
+
+/* Success notice */
+
+/* Danger notice */
+
+/* ==========================================================================
+   MASTHEAD
+   ========================================================================== */
+.masthead {
+  position: relative;
+  border-bottom: 1px solid #031f36;
+  animation: intro 0.3s both;
+  animation-delay: 0.15s;
+  z-index: 20; }
+  .masthead__inner-wrap {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
+    padding: 1em 1em 1em;
+    font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif; }
+    .masthead__inner-wrap:after {
+      content: " ";
+      display: block;
+      clear: both; }
+    .masthead__inner-wrap::after {
+      clear: both;
+      content: "";
+      display: table; }
+    @media (min-width: 80em) {
+      .masthead__inner-wrap {
+        max-width: 1280px; } }
+    .masthead__inner-wrap nav {
+      z-index: 10; }
+    .masthead__inner-wrap a {
+      text-decoration: none; }
+
+.masthead__menu ul {
+  margin: 0;
+  padding: 0;
+  clear: both;
+  list-style-type: none; }
+
+.masthead__menu-item {
+  display: block;
+  list-style-type: none;
+  white-space: nowrap; }
+  .masthead__menu-item--lg {
+    padding-right: 2em;
+    font-weight: 700; }
+
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
+/*
+   Breadcrumb navigation links
+   ========================================================================== */
+
+/*
+   Post pagination navigation links
+   ========================================================================== */
+
+/*
+   Navigation list
+   ========================================================================== */
+
+/*
+   Table of contents navigation
+   ========================================================================== */
+
+/*
+   Priority plus navigation
+   ========================================================================== */
+.greedy-nav {
+  position: relative;
+  min-width: 250px;
+  background: #020000; }
+  .greedy-nav a {
+    display: block;
+    margin: 0 1rem;
+    padding: 0.5rem 0;
+    color: #494e52;
+    text-decoration: none; }
+    .greedy-nav a:hover {
+      color: #B82601; }
+  .greedy-nav button {
+    position: absolute;
+    height: 100%;
+    right: 0;
+    padding: 0 0.5rem;
+    border: 0;
+    outline: none;
+    background-color: #f2f3f3;
+    color: #fff;
+    cursor: pointer; }
+  .greedy-nav .visible-links {
+    display: table; }
+    .greedy-nav .visible-links li {
+      display: table-cell;
+      vertical-align: middle; }
+      .greedy-nav .visible-links li:first-child {
+        font-weight: bold; }
+        .greedy-nav .visible-links li:first-child a {
+          margin-left: 0; }
+      .greedy-nav .visible-links li:last-child a {
+        margin-right: 0; }
+    .greedy-nav .visible-links a {
+      position: relative; }
+      .greedy-nav .visible-links a:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 1px;
+        background: #dc9380;
+        width: 100%;
+        transition: all 0.2s ease-in-out;
+        transform: scaleX(0) translate3d(0, 0, 0);
+        /* hide*/ }
+      .greedy-nav .visible-links a:hover:before {
+        transform: scaleX(1);
+        /* reveal*/ }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.page__footer {
+  clear: both;
+  width: 100%;
+  float: left;
+  margin-left: 0;
+  margin-right: 0;
+  clear: both;
+  /* sticky footer fix start */
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  clear: both;
+  height: auto;
+  /* sticky footer fix end */
+  margin-top: 3em;
+  color: #9ba1a6;
+  animation: intro 0.3s both;
+  animation-delay: 0.45s;
+  background-color: #f2f3f3;
+  border-top: 1px solid #bdc1c4; }
+  .page__footer::after {
+    clear: both;
+    content: "";
+    display: table; }
+  .page__footer footer {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
+    margin-top: 2em;
+    padding: 0 1em 2em; }
+    .page__footer footer:after {
+      content: " ";
+      display: block;
+      clear: both; }
+    .page__footer footer::after {
+      clear: both;
+      content: "";
+      display: table; }
+    @media (min-width: 80em) {
+      .page__footer footer {
+        max-width: 1280px; } }
+  .page__footer a {
+    color: inherit;
+    text-decoration: none; }
+    .page__footer a:hover {
+      text-decoration: underline; }
+  .page__footer .fa {
+    color: #9ba1a6; }
+
+.page__footer-copyright {
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+  font-size: 0.6875em; }
+
+.page__footer-follow ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+.page__footer-follow li {
+  display: inline-block;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+  font-size: 0.75em;
+  text-transform: uppercase; }
+.page__footer-follow li + li:before {
+  content: "";
+  padding-right: 5px; }
+.page__footer-follow a {
+  padding-right: 10px;
+  font-weight: bold; }
+
+/* ==========================================================================
+   Syntax highlighting
+   ========================================================================== */
+
+/*
+   Solarized Light
+   http://ethanschoonover.com/solarized
+
+   SOLARIZED HEX      ROLE
+   --------- -------- ------------------------------------------
+   base01    #586e75  body text / default code / primary content
+   base1     #93a1a1  comments / secondary content
+   base3     #fdf6e3  background
+   orange    #cb4b16  constants
+   red       #dc322f  regex, special keywords
+   blue      #22b3eb  reserved keywords
+   cyan      #2aa198  strings, numbers
+   green     #859900  operators, other keywords
+   ========================================================================== */
+
+/* Comment */
+
+/* Error */
+
+/* Generic */
+
+/* Keyword */
+
+/* Literal */
+
+/* Name */
+
+/* Operator */
+
+/* Other */
+
+/* Punctuation */
+
+/* Comment.Multiline */
+
+/* Comment.Preproc */
+
+/* Comment.Single */
+
+/* Comment.Special */
+
+/* Generic.Deleted */
+
+/* Generic.Emph */
+
+/* Generic.Error */
+
+/* Generic.Heading */
+
+/* Generic.Inserted */
+
+/* Generic.Output */
+
+/* Generic.Prompt */
+
+/* Generic.Strong */
+
+/* Generic.Subheading */
+
+/* Generic.Traceback */
+
+/* Keyword.Constant */
+
+/* Keyword.Declaration */
+
+/* Keyword.Namespace */
+
+/* Keyword.Pseudo */
+
+/* Keyword.Reserved */
+
+/* Keyword.Type */
+
+/* Literal.Date */
+
+/* Literal.Number */
+
+/* Literal.String */
+
+/* Name.Attribute */
+
+/* Name.Builtin */
+
+/* Name.Class */
+
+/* Name.Constant */
+
+/* Name.Decorator */
+
+/* Name.Entity */
+
+/* Name.Exception */
+
+/* Name.Function */
+
+/* Name.Label */
+
+/* Name.Namespace */
+
+/* Name.Other */
+
+/* Name.Property */
+
+/* Name.Tag */
+
+/* Name.Variable */
+
+/* Operator.Word */
+
+/* Text.Whitespace */
+
+/* Literal.Number.Float */
+
+/* Literal.Number.Hex */
+
+/* Literal.Number.Integer */
+
+/* Literal.Number.Oct */
+
+/* Literal.String.Backtick */
+
+/* Literal.String.Char */
+
+/* Literal.String.Doc */
+
+/* Literal.String.Double */
+
+/* Literal.String.Escape */
+
+/* Literal.String.Heredoc */
+
+/* Literal.String.Interpol */
+
+/* Literal.String.Other */
+
+/* Literal.String.Regex */
+
+/* Literal.String.Single */
+
+/* Literal.String.Symbol */
+
+/* Name.Builtin.Pseudo */
+
+/* Name.Variable.Class */
+
+/* Name.Variable.Global */
+
+/* Name.Variable.Instance */
+
+/* Literal.Number.Integer.Long */
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+button {
+  vertical-align: baseline;
+  *vertical-align: middle; }
+
+button {
+  box-sizing: border-box;
+  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif; }
+
+/*
+   Disabled state
+   ========================================================================== */
+
+/*
+   Focus & active state
+   ========================================================================== */
+
+/*
+   Help text
+   ========================================================================== */
+
+/*
+   .form-inline
+   ========================================================================== */
+
+/*
+   .form-search
+   ========================================================================== */
+
+/*
+   .form--loading
+   ========================================================================== */
+
+/*
+   Contact Form
+   ========================================================================== */
+
+/*
+   Google search form
+   ========================================================================== */
+
+#loadingOverlay {
+  z-index: 999;
+  background-color: black; }
+
+[data-loader] {
+  margin: 8px; }
+
+[data-loader='satellite'] {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  animation: satellite 3s infinite linear;
+  border: 1px solid #fff;
+  border-radius: 100%; }
+
+[data-loader='satellite']:before,
+[data-loader='satellite']:after {
+  position: absolute;
+  left: 0;
+  width: 15px;
+  height: 15px;
+  content: '';
+  border-radius: 100%;
+  background-color: #fff;
+  box-shadow: 0 0 10px #fff; }
+
+[data-loader='satellite']:after {
+  right: 0;
+  width: 24px;
+  height: 24px;
+  margin: 12px; }
+
+@keyframes satellite {
+  from {
+    transform: rotate(0) translateZ(0); }
+  to {
+    transform: rotate(360deg) translateZ(0); } }
+
+/*
+   Layout specific
+   ========================================================================== */
+#splash-hero-container {
+  position: relative;
+  height: 75%;
+  width: 100%; }
+
+#splash-hero-canvas {
+  position: relative;
+  height: 100%;
+  width: 100%; }
+
+#splash-main {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  clear: both;
+  max-width: 100%;
+  padding-left: 1em;
+  padding-right: 1em; }
+
+#splash-under-hero-row {
+  position: relative;
+  width: 100%;
+  height: 25%;
+  margin-top: -0.37em;
+  border-top: 1px solid #031f36; }
+
+.splash-row-canvas-container {
+  position: relative;
+  top: 10%;
+  left: 33.33333%;
+  width: 33.33333vw;
+  height: 33.33333vw;
+  background-color: #020000; }
+  @media (min-width: 48em) {
+    .splash-row-canvas-container {
+      width: 16em;
+      height: 16em;
+      top: 25%;
+      left: 25%; } }
+
+#splash-work-canvas-container {
+  background-image: url("/assets/images/splash/hyper_3_512.jpg"); }
+
+#splash-experiments-canvas-container {
+  background-image: url("/assets/images/splash/hyper_4_512.jpg");
+  background-size: contain; }
+
+#splash-tutorials-canvas-container {
+  background-image: url("/assets/images/splash/hyper_1_512.jpg");
+  background-size: contain; }
+
+#splash-blog-canvas-container {
+  background-image: url("/assets/images/splash/hyper_2_512.jpg");
+  background-size: contain; }
+
+.splash-row {
+  position: relative;
+  height: 30em;
+  border-bottom: 1px solid #031f36;
+  border-top: 1px solid #031f36; }
+
+.splash-row-left {
+  position: relative;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  top: 0; }
+  @media (min-width: 48em) {
+    .splash-row-left {
+      position: absolute;
+      width: 50%;
+      height: 100%; } }
+
+.splash-row-right {
+  position: relative;
+  width: 100%;
+  height: 50%;
+  right: 0;
+  top: 0; }
+  @media (min-width: 48em) {
+    .splash-row-right {
+      position: absolute;
+      width: 50%;
+      height: 100%; } }
+
+.splash-row-body {
+  position: relative;
+  text-align: center;
+  top: 25%;
+  left: 0;
+  width: 100%; }
+  @media (min-width: 48em) {
+    .splash-row-body {
+      top: 50%;
+      left: 50%;
+      max-width: 30em;
+      transform: translate(-50%, -50%); } }
+
+.splash-row-desc {
+  height: 8em; }
+
+.splash-row-body-title {
+  border-bottom: none !important;
+  height: 1em; }
+
+.splash-row-canvas {
+  position: relative;
+  height: 100%;
+  width: 100%; }
+
+/* ==========================================================================
+   SINGLE PAGE/POST
+   ========================================================================== */
+
+.page__content {
+  /* paragraph indents */
+  /* blockquote citations */ }
+  .page__content h2 {
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #031f36; }
+  .page__content p {
+    font-size: 1em; }
+  .page__content p {
+    margin: 0 0 1.3em;
+    /* sibling indentation*/ }
+  .page__content a {
+    text-decoration: none; }
+    .page__content a:hover {
+      text-decoration: underline; }
+
+/*
+   Social sharing
+   ========================================================================== */
+
+/*
+   Page meta
+   ========================================================================== */
+
+/*
+   Page taxonomy
+   ========================================================================== */
+
+/*
+   Comments
+   ========================================================================== */
+
+/*
+   Related
+   ========================================================================== */
+
+/* ==========================================================================
+   ARCHIVE
+   ========================================================================== */
+
+/* remove border*/
+
+/*
+   List view
+   ========================================================================== */
+
+/*
+   Grid view
+   ========================================================================== */
+
+/*
+   Features
+   ========================================================================== */
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+/*
+   Default
+   ========================================================================== */
+
+/*
+   Author profile and links
+   ========================================================================== */
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+/*
+   Hide the following elements on print
+   ========================================================================== */
+@media print {
+  .masthead,
+  .page__footer {
+    display: none; } }
+/*
+   Custom
+   ========================================================================== */
+.splash-circle-work {
+  transition: all .3s ease;
+  box-shadow: inset 0.2em -0.1em 0 0 #062f4f, inset -0.1em 0.1em 0 0 #B82601, inset -1.03923em -0.6em 0 0 rgba(150, 150, 150, 0.6), inset -1.03923em 0.6em 0 0 rgba(90, 90, 90, 0.6), inset 1.03923em 0.6em 0 0 rgba(60, 60, 60, 0.6), inset 0 -1.2em 0 0 rgba(30, 30, 30, 0.6); }
+
+.splash-circle-experiments {
+  transition: all .3s ease;
+  box-shadow: inset 0.1em -0.1em 0 0 #B82601, inset -0.2em 0.1em 0 0 #062f4f, inset 1.03923em -0.6em 0 0 rgba(180, 180, 180, 0.6), inset 0 1.2em 0 0 rgba(120, 120, 120, 0.6), inset 1.03923em 0.6em 0 0 rgba(60, 60, 60, 0.6), inset 0 -1.2em 0 0 rgba(30, 30, 30, 0.6); }
+
+.splash-circle-tutorials {
+  transition: all .3s ease;
+  box-shadow: inset 0.1em -0.1em 0 0 #062f4f, inset -0.2em 0.1em 0 0 #B82601, inset 1.03923em -0.6em 0 0 rgba(180, 180, 180, 0.6), inset 0 1.2em 0 0 rgba(120, 120, 120, 0.6), inset -1.03923em 0.6em 0 0 rgba(90, 90, 90, 0.6); }
+
+.splash-circle-blog {
+  transition: all .3s ease;
+  box-shadow: inset 0.1em -0.1em 0 0 #B82601, inset -0.2em 0.1em 0 0 #062f4f, inset -1.03923em -0.6em 0 0 rgba(150, 150, 150, 0.6), inset -1.03923em 0.6em 0 0 rgba(90, 90, 90, 0.6), inset 1.03923em 0.6em 0 0 rgba(60, 60, 60, 0.6), inset 0 -1.2em 0 0 rgba(30, 30, 30, 0.6); }
+
+.centred {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }
+
+.circle {
+  border-radius: 50%; }
+
+.fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+#breakpoint {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; }
+
+@media (min-width: 6.25em) {
+  #breakpoint:before {
+    content: "BP: X-Small"; } }
+@media (min-width: 37.5em) {
+  #breakpoint:before {
+    content: "BP: Small"; } }
+@media (min-width: 48em) {
+  #breakpoint:before {
+    content: "BP: Medium"; } }
+@media (min-width: 56.25em) {
+  #breakpoint:before {
+    content: "BP: Wide"; } }
+@media (min-width: 64em) {
+  #breakpoint:before {
+    content: "BP: Large"; } }
+@media (min-width: 80em) {
+  #breakpoint:before {
+    content: "BP: X-Large"; } }

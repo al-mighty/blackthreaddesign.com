@@ -1,0 +1,1195 @@
+{.author__urls:after} AND {.author__urls:before} share 10 declarations
+  - border-left-color: transparent
+  - border-right-color: transparent
+  - border-style: solid
+  - border-width: 0 10px 10px
+  - content: ""
+  - display: none
+  - display: block
+  - left: calc(50% - 10px)
+  - position: absolute
+  - width: 0
+{.author__urls:after} AND {.greedy-nav .hidden-links:after} share 9 declarations
+  - border-color: #fff transparent
+  - border-style: solid
+  - border-width: 0 10px 10px
+  - content: ""
+  - display: block
+  - position: absolute
+  - top: -10px
+  - width: 0
+  - z-index: 1
+{.author__urls:before} AND {.greedy-nav .hidden-links:before} share 9 declarations
+  - border-color: #031f36 transparent
+  - border-style: solid
+  - border-width: 0 10px 10px
+  - content: ""
+  - display: block
+  - position: absolute
+  - top: -11px
+  - width: 0
+  - z-index: 0
+{.greedy-nav .hidden-links:after} AND {.greedy-nav .hidden-links:before} share 9 declarations
+  - border-left-color: transparent
+  - border-right-color: transparent
+  - border-style: solid
+  - border-width: 0 10px 10px
+  - content: ""
+  - display: block
+  - position: absolute
+  - right: 10px
+  - width: 0
+{.author__urls:after}, {.author__urls:before}, {.greedy-nav .hidden-links:after} AND {.greedy-nav .hidden-links:before} share 8 declarations
+  - border-left-color: transparent
+  - border-right-color: transparent
+  - border-style: solid
+  - border-width: 0 10px 10px
+  - content: ""
+  - display: block
+  - position: absolute
+  - width: 0
+{.breadcrumbs} AND {.masthead__inner-wrap} share 8 declarations
+  - clear: both
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 1280px
+  - max-width: 1024px
+  - padding-left: 1em
+  - padding-right: 1em
+{.notice--danger} AND {.notice--info} share 8 declarations
+  - background-color: #5d1301
+  - border-radius: 4px
+  - box-shadow: 0 1px 1px rgba(184, 38, 1, 0.25)
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em !important
+  - margin: 2em 0 !important
+  - padding: 1em
+  - text-indent: initial
+{.author__urls} AND {.greedy-nav .hidden-links} share 8 declarations
+  - background: #fff
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+  - box-shadow: 0 0 10px rgba(0, 0, 0, 0.25)
+  - margin-top: 15px
+  - position: absolute
+  - right: 0
+{.splash-row-left} AND {.splash-row-right} share 7 declarations
+  - height: 50%
+  - height: 100%
+  - position: absolute
+  - position: relative
+  - top: 0
+  - width: 50%
+  - width: 100%
+{#main} AND {.breadcrumbs} share 7 declarations
+  - animation: intro 0.3s both
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 1024px
+  - padding-left: 1em
+  - padding-right: 1em
+{.feature__item--center} AND {.feature__item--left} share 7 declarations
+  - clear: both
+  - float: left
+  - font-size: 1.25rem
+  - margin-left: 0
+  - margin-right: 0
+  - text-align: center
+  - width: 100%
+{.pagination li a} AND {.pagination--pager} share 7 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - display: block
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-weight: bold
+  - text-align: center
+  - text-decoration: none
+{.page__share .btn span, .page__share #goog-wm-sb span} AND {.sr-only} share 7 declarations
+  - border: 0
+  - height: 1px
+  - margin: -1px
+  - overflow: hidden
+  - padding: 0
+  - position: absolute
+  - width: 1px
+{.btn, #goog-wm-sb} AND {.pagination li a} share 6 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-weight: bold
+  - margin-bottom: 0.25em
+  - padding: 0.5em 1em
+  - text-align: center
+  - text-decoration: none
+{.notice}, {.notice--danger}, {.notice--info}, {.notice--primary}, {.notice--success} AND {.notice--warning} share 6 declarations
+  - border-radius: 4px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em !important
+  - margin: 2em 0 !important
+  - padding: 1em
+  - text-indent: initial
+{.greedy-nav .hidden-links} AND {.page__hero-caption} share 6 declarations
+  - padding-bottom: 5px
+  - padding-left: 5px
+  - padding-right: 5px
+  - padding-top: 5px
+  - position: absolute
+  - right: 0
+{#main} AND {.masthead__inner-wrap} share 6 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 1024px
+  - padding-left: 1em
+  - padding-right: 1em
+{.feature__item--center}, {.feature__item--left} AND {.feature__item--right} share 6 declarations
+  - clear: both
+  - float: left
+  - font-size: 1.25rem
+  - margin-left: 0
+  - margin-right: 0
+  - width: 100%
+{.lightbox-frame-image} AND {.lightbox-spinner-wrapper} share 6 declarations
+  - -ms-transform: translate(-50%, -50%)
+  - -webkit-transform: translate(-50%, -50%)
+  - left: 50%
+  - position: absolute
+  - top: 50%
+  - transform: translate(-50%, -50%)
+{#main} AND {#splash-main} share 6 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 100%
+  - padding-left: 1em
+  - padding-right: 1em
+{.author__urls} AND {.author__urls:before} share 6 declarations
+  - border-bottom-color: #031f36
+  - border-style: solid
+  - border-top-color: #031f36
+  - display: block
+  - display: none
+  - position: absolute
+{.author__urls} AND {form legend} share 5 declarations
+  - border: 0
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - display: block
+  - padding: 0
+{.author__urls} AND {hr} share 5 declarations
+  - border: 0
+  - border-top: 1px solid #031f36
+  - display: block
+  - margin-left: 0
+  - margin-right: 0
+{.breadcrumbs}, {.masthead__inner-wrap} AND {.page__footer footer} share 5 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 1024px
+  - max-width: 1280px
+{.author__urls} AND {.page__footer} share 5 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - margin-left: 0
+  - margin-right: 0
+  - position: absolute
+{.btn--disabled} AND {.page__comments-form.disabled input,
+  .page__comments-form.disabled button,
+  .page__comments-form.disabled textarea,
+  .page__comments-form.disabled label} share 5 declarations
+  - box-shadow: none
+  - cursor: not-allowed
+  - filter: alpha(opacity=65)
+  - opacity: 0.65
+  - pointer-events: none
+{.nav__list label}, {.splash-row} AND {[data-loader='satellite']} share 5 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - border-top-style: solid
+  - border-top-width: 1px
+  - position: relative
+{.form:before}, {.fullscreen}, {.responsive-video-container iframe,
+  .responsive-video-container object,
+  .responsive-video-container embed}, {.show-modal:before} AND {.splash-row-left} share 5 declarations
+  - height: 100%
+  - left: 0
+  - position: absolute
+  - top: 0
+  - width: 100%
+{#splash-main}, {.breadcrumbs} AND {.masthead__inner-wrap} share 5 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - padding-left: 1em
+  - padding-right: 1em
+{.feature__item--center}, {.feature__item--left}, {.feature__item--right}, {.page .page__inner-wrap}, {.page .page__inner-wrap .page__content,
+  .page .page__inner-wrap .page__meta,
+  .page .page__inner-wrap .comment__date,
+  .page .page__inner-wrap .page__share}, {.page__comments}, {.page__footer} AND {.pagination} share 5 declarations
+  - clear: both
+  - float: left
+  - margin-left: 0
+  - margin-right: 0
+  - width: 100%
+{.masthead__inner-wrap}, {.notice}, {.notice--danger}, {.notice--info}, {.notice--primary}, {.notice--success} AND {.notice--warning} share 5 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - padding-bottom: 1em
+  - padding-left: 1em
+  - padding-right: 1em
+  - padding-top: 1em
+{.author__urls} AND {.modal} share 5 declarations
+  - background: #fff
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+  - display: none
+{.nav__sub-title}, {.pagination li a} AND {.pagination--pager} share 5 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - display: block
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-weight: bold
+{#main} AND {.page__footer footer} share 5 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+  - margin-top: 2em
+  - max-width: 1024px
+{.btn, #goog-wm-sb} AND {.pagination--pager} share 5 declarations
+  - border-radius: 4px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-weight: bold
+  - text-align: center
+  - text-decoration: none
+{.author__urls} AND {.page__taxonomy-item} share 5 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - padding-left: 10px
+  - padding-right: 10px
+{.pagination li a} AND {.toc__menu a} share 5 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - display: block
+  - font-weight: bold
+  - line-height: 1.5
+{.greedy-nav .hidden-links} AND {.page__taxonomy-item} share 5 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - padding-bottom: 5px
+  - padding-top: 5px
+{.author__urls} AND {.greedy-nav .hidden-links:before} share 5 declarations
+  - border-bottom-color: #031f36
+  - border-style: solid
+  - border-top-color: #031f36
+  - display: block
+  - position: absolute
+{.modal} AND {.toc} share 5 declarations
+  - background-color: #fff
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+  - box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125)
+{div.highlighter-rouge,
+figure.highlight} AND {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} share 5 declarations
+  - background-color: #181a1b
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125)
+{.btn, #goog-wm-sb} AND {.nav__list label} share 5 declarations
+  - border-radius: 4px
+  - cursor: pointer
+  - display: inline-block
+  - font-size: 0.75em
+  - font-weight: bold
+{.modal}, {.toc} AND {input,
+textarea,
+select} share 5 declarations
+  - background-color: #fff
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125)
+{.archive}, {.feature__item--center}, {.feature__item--left}, {.feature__item--right}, {.page .page__inner-wrap}, {.page .page__inner-wrap .page__content,
+  .page .page__inner-wrap .page__meta,
+  .page .page__inner-wrap .comment__date,
+  .page .page__inner-wrap .page__share}, {.page__comments}, {.page__footer} AND {.pagination} share 4 declarations
+  - float: left
+  - margin-left: 0
+  - margin-right: 0
+  - width: 100%
+{.author__urls} AND {.page__hero-caption} share 4 declarations
+  - padding-left: 10px
+  - padding-right: 10px
+  - position: absolute
+  - right: 0
+{.archive}, {.breadcrumbs ol} AND {.page} share 4 declarations
+  - float: right
+  - margin-right: 0
+  - padding-left: 4.23729%
+  - width: 83.05085%
+{.author__urls} AND {.author__urls:after} share 4 declarations
+  - border-style: solid
+  - display: none
+  - display: block
+  - position: absolute
+{.form:before}, {.fullscreen}, {.lightbox-overlay}, {.responsive-video-container iframe,
+  .responsive-video-container object,
+  .responsive-video-container embed}, {.show-modal:before} AND {.splash-row-left} share 4 declarations
+  - height: 100%
+  - left: 0
+  - top: 0
+  - width: 100%
+{.notice}, {.notice--danger}, {.notice--info}, {.notice--primary}, {.notice--success}, {.notice--warning} AND {.pagination--pager} share 4 declarations
+  - border-radius: 4px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - padding-bottom: 1em
+  - padding-top: 1em
+{.page__related} AND {.pagination--pager} share 4 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - float: left
+  - padding-top: 1em
+{.page__footer} AND {.page__related} share 4 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - clear: both
+  - float: left
+{.greedy-nav .visible-links a:before} AND {.show-modal:before} share 4 declarations
+  - content: ""
+  - left: 0
+  - position: absolute
+  - width: 100%
+{.archive} AND {.grid__item} share 4 declarations
+  - float: left
+  - margin-bottom: 2em
+  - margin-left: 0
+  - margin-right: 0
+{.author__urls:before}, {.greedy-nav .hidden-links} AND {.greedy-nav .hidden-links:before} share 4 declarations
+  - border-bottom-color: #031f36
+  - border-style: solid
+  - border-top-color: #031f36
+  - position: absolute
+{.form:before}, {.fullscreen}, {.responsive-video-container iframe,
+  .responsive-video-container object,
+  .responsive-video-container embed}, {.show-modal:before} AND {.splash-row-right} share 4 declarations
+  - height: 100%
+  - position: absolute
+  - top: 0
+  - width: 100%
+{#breakpoint} AND {.lightbox-overlay} share 4 declarations
+  - left: 0
+  - position: fixed
+  - top: 0
+  - z-index: 1000
+{.modal}, {.toc}, {div.highlighter-rouge,
+figure.highlight}, {input,
+textarea,
+select} AND {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125)
+{.author__urls:after}, {.greedy-nav .hidden-links:after} AND {.lightbox-frame-image} share 4 declarations
+  - border-bottom-color: #fff
+  - border-style: solid
+  - border-top-color: #fff
+  - position: absolute
+{.lightbox-move-button} AND {.page__hero-caption} share 4 declarations
+  - bottom: 0
+  - color: #fff
+  - opacity: 0.5
+  - position: absolute
+{.author__urls}, {.nav__list label} AND {div.highlighter-rouge,
+figure.highlight} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - position: relative
+{.nav__list label}, {.page__taxonomy-item} AND {input,
+textarea,
+select} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - display: inline-block
+{.author__content} AND {form legend} share 4 declarations
+  - display: block
+  - padding-left: 0
+  - padding-right: 0
+  - width: 100%
+{.contact-form} AND {[type="submit"]} share 4 declarations
+  - border-radius: 5px
+  - color: white
+  - transition: all 0.3s
+  - width: 100%
+{.page__footer} AND {hr} share 4 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - margin-left: 0
+  - margin-right: 0
+{.breadcrumbs} AND {div.highlighter-rouge .highlight,
+  figure.highlight .highlight} share 4 declarations
+  - margin-bottom: 0
+  - margin-top: 0
+  - padding-left: 1em
+  - padding-right: 1em
+{.modal}, {.toc} AND {div.highlighter-rouge,
+figure.highlight} share 4 declarations
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+  - box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125)
+{.author__urls}, {.greedy-nav .hidden-links} AND {.toc} share 4 declarations
+  - background-color: #fff
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+{.page__hero} AND {.page__hero--overlay} share 4 declarations
+  - animation: intro 0.3s both
+  - animation-delay: 0.25s
+  - clear: both
+  - position: relative
+{.comment} AND {.pagination} share 4 declarations
+  - clear: both
+  - margin-left: 0
+  - margin-right: 0
+  - margin-top: 1em
+{.sr-only-focusable:active, .sr-only-focusable:focus} AND {input[type="image"],
+input[type="checkbox"],
+input[type="radio"]} share 4 declarations
+  - height: auto
+  - margin-left: 0
+  - margin-right: 0
+  - width: auto
+{.author__urls}, {.greedy-nav .hidden-links} AND {input,
+textarea,
+select} share 4 declarations
+  - background-color: #fff
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+{.author__urls} AND {div.highlighter-rouge,
+figure.highlight} share 4 declarations
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+  - position: relative
+{.navicon} AND {.navicon:before, .navicon:after} share 4 declarations
+  - background: #fff
+  - height: 4px
+  - transition: 0.3s
+  - width: 28px
+{.masthead} AND {.nav__list label} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - position: relative
+  - z-index: 20
+{.author__urls:before} AND {.modal} share 4 declarations
+  - border-bottom-color: #031f36
+  - border-style: solid
+  - border-top-color: #031f36
+  - display: none
+{.masthead__inner-wrap}, {.page__comments-form} AND {div.highlighter-rouge .highlight,
+  figure.highlight .highlight} share 4 declarations
+  - padding-bottom: 1em
+  - padding-left: 1em
+  - padding-right: 1em
+  - padding-top: 1em
+{.lightbox-frame} AND {.splash-row-body} share 4 declarations
+  - position: relative
+  - text-align: center
+  - top: 50%
+  - width: 100%
+{.pagination--pager} AND {.screen-reader-text:focus,
+.screen-reader-shortcut:focus} share 4 declarations
+  - display: block
+  - font-size: 1em
+  - font-weight: bold
+  - text-decoration: none
+{.author__avatar img}, {.comment__avatar}, {.highlight table td} AND {.page__hero-caption} share 4 declarations
+  - padding-bottom: 5px
+  - padding-left: 5px
+  - padding-right: 5px
+  - padding-top: 5px
+{.author__avatar img}, {.comment__avatar} AND {.page__taxonomy-item} share 4 declarations
+  - border-style: solid
+  - border-width: 1px
+  - padding-bottom: 5px
+  - padding-top: 5px
+{.pagination--pager} AND {.toc__menu a} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - display: block
+  - font-weight: bold
+{.author__urls} AND {.pagination--pager} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - display: block
+{.nav__list label} AND {.toc} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - color: #7a8288
+{.greedy-nav .hidden-links} AND {.modal} share 4 declarations
+  - background: #fff
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+{.page__taxonomy-item}, {.pagination li a}, {.pagination--pager}, {.splash-row}, {.well}, {input,
+textarea,
+select}, {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} AND {table} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - border-top-style: solid
+  - border-top-width: 1px
+{.nav__list label} AND {.page__taxonomy-item} share 4 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - border-radius: 4px
+  - display: inline-block
+{.author__avatar img}, {.author__urls}, {.comment__avatar}, {.greedy-nav .hidden-links}, {.modal}, {.toc}, {.well}, {[data-loader='satellite']}, {div.highlighter-rouge,
+figure.highlight}, {input,
+textarea,
+select}, {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} AND {td} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - border-right-style: solid
+  - border-right-width: 1px
+{.page__taxonomy-item} AND {.pagination--pager} share 4 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - border-radius: 4px
+  - text-decoration: none
+{.author__avatar img} AND {.comment__avatar} share 4 declarations
+  - border: 1px solid #031f36
+  - border-radius: 50%
+  - border-top: 1px solid #031f36
+  - padding: 5px
+{.nav__sub-title} AND {table} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em
+{.nav__list label} AND {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - font-size: 0.75em
+{.author__urls:before}, {.contact-form}, {.greedy-nav .hidden-links:before} AND {.splash-row} share 4 declarations
+  - border-bottom-color: #031f36
+  - border-bottom-style: solid
+  - border-top-color: #031f36
+  - border-top-style: solid
+{.author__urls:after}, {.greedy-nav .hidden-links:after} AND {.lightbox-spinner} share 4 declarations
+  - border-bottom-color: #fff
+  - border-right-color: transparent
+  - border-style: solid
+  - border-top-color: #fff
+{.nav__list label} AND {.toc__menu a} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - color: #7a8288
+  - font-weight: bold
+{.nav__list label} AND {.nav__sub-title} share 4 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - font-size: 0.75em
+  - font-weight: bold
+{.nav__list label} AND {.pagination--pager} share 4 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - border-radius: 4px
+  - font-weight: bold
+{.pagination--pager} AND {.toc} share 4 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+{.page__taxonomy-item} AND {.pagination li a} share 3 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - text-decoration: none
+{.nav__sub-title} AND {.page__footer-follow li} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em
+  - text-transform: uppercase
+{.btn, #goog-wm-sb} AND {.nav__list .nav__items .active} share 3 declarations
+  - background-color: #f2f3f3
+  - border-radius: 4px
+  - font-weight: bold
+{.nav__list label} AND {.pagination li a} share 3 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - font-weight: bold
+{.nav__title} AND {.pagination--pager} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 1em
+  - font-weight: bold
+{.breadcrumbs} AND {.pagination--pager} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - padding-left: 2em
+  - padding-right: 2em
+{.masthead__inner-wrap} AND {.pagination--pager} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - padding-bottom: 1em
+  - padding-top: 1em
+{.archive__subtitle} AND {.pagination--pager} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - font-size: 1em
+{p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} AND {table} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - font-size: 0.75em
+{.btn, #goog-wm-sb} AND {.nav__sub-title} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em
+  - font-weight: bold
+{.nav__sub-title} AND {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - font-size: 0.75em
+{.nav__list label} AND {table} share 3 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - font-size: 0.75em
+{abbr[title],
+abbr[data-original-title]} AND {u,
+ins} share 3 declarations
+  - border-bottom-color: #f2f3f3
+  - border-bottom-width: 1px
+  - text-decoration: none
+{.nav__sub-title} AND {.toc} share 3 declarations
+  - border-bottom: 1px solid #031f36
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - text-transform: uppercase
+{.lightbox-frame-image} AND {.modal} share 3 declarations
+  - border-style: solid
+  - left: 50%
+  - top: 50%
+{.lightbox-frame} AND {.lightbox-frame-image} share 3 declarations
+  - max-height: 100%
+  - max-width: 100%
+  - top: 50%
+{.author__content} AND {.author__urls} share 3 declarations
+  - display: block
+  - padding-left: 0
+  - padding-right: 0
+{.author__avatar} AND {.author__content} share 3 declarations
+  - display: block
+  - display: table-cell
+  - vertical-align: top
+{.nav__sub-title} AND {.toc__menu a} share 3 declarations
+  - border-bottom: 1px solid #031f36
+  - display: block
+  - font-weight: bold
+{.greedy-nav .hidden-links} AND {div.highlighter-rouge,
+figure.highlight} share 3 declarations
+  - border: 1px solid #031f36
+  - border-radius: 4px
+  - border-top: 1px solid #031f36
+{.author__urls} AND {.pagination li a} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - display: block
+{.pagination li a} AND {.screen-reader-text:focus,
+.screen-reader-shortcut:focus} share 3 declarations
+  - display: block
+  - font-weight: bold
+  - text-decoration: none
+{.page__related} AND {.page__share} share 3 declarations
+  - border-top: 1px solid #031f36
+  - margin-top: 2em
+  - padding-top: 1em
+{blockquote} AND {figure} share 3 declarations
+  - margin-bottom: 2em
+  - margin-left: 0
+  - margin-top: 2em
+{#main} AND {blockquote} share 3 declarations
+  - margin-top: 2em
+  - padding-left: 1em
+  - padding-right: 1em
+{.centred} AND {.modal} share 3 declarations
+  - left: 50%
+  - position: fixed
+  - top: 50%
+{#goog-fixurl ul} AND {.toc__menu} share 3 declarations
+  - list-style: none
+  - margin-left: 0
+  - padding-left: 0
+{.form__spinner} AND {.modal} share 3 declarations
+  - display: none
+  - left: 50%
+  - top: 50%
+{.author__urls} AND {.greedy-nav .hidden-links a} share 3 declarations
+  - margin: 0
+  - padding-bottom: 10px
+  - padding-top: 10px
+{.breadcrumbs} AND {.masthead__menu ul} share 3 declarations
+  - clear: both
+  - margin-bottom: 0
+  - margin-top: 0
+{.masthead__menu ul} AND {.page__hero--overlay} share 3 declarations
+  - clear: both
+  - padding-left: 0
+  - padding-right: 0
+{input[type="button"],
+input[type="reset"]} AND {input[type="image"],
+input[type="checkbox"],
+input[type="radio"]} share 3 declarations
+  - cursor: pointer
+  - height: auto
+  - width: auto
+{.author__urls} AND {[type="submit"]} share 3 declarations
+  - border: 0
+  - padding-bottom: 10px
+  - padding-top: 10px
+{#splash-main} AND {.page__footer footer} share 3 declarations
+  - clear: both
+  - margin-left: auto
+  - margin-right: auto
+{.modal__actions} AND {.pagination li a} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - padding: 0.5em 1em
+{.archive__subtitle} AND {.pagination li a} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - color: #9ba1a6
+{.breadcrumbs ol} AND {.toc__menu} share 3 declarations
+  - list-style: none
+  - margin-right: 0
+  - padding: 0
+{.pagination li a.disabled} AND {.pagination--pager.disabled} share 3 declarations
+  - color: #dee0e1
+  - cursor: not-allowed
+  - pointer-events: none
+{.feature__item--left .archive__item-body} AND {.feature__item--right .archive__item-body} share 3 declarations
+  - padding-left: 4.23729%
+  - padding-right: 8.47458%
+  - width: 57.62712%
+{.author__urls a} AND {.page__hero-caption} share 3 declarations
+  - padding-bottom: 2px
+  - padding-right: 5px
+  - padding-top: 2px
+{.pagination} AND {div.highlighter-rouge .highlight,
+  figure.highlight .highlight} share 3 declarations
+  - margin-left: 0
+  - margin-right: 0
+  - padding-top: 1em
+{.page__share} AND {.pagination--pager} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - padding-top: 1em
+{blockquote} AND {div.highlighter-rouge .highlight,
+  figure.highlight .highlight} share 3 declarations
+  - margin-left: 0
+  - padding-left: 1em
+  - padding-right: 1em
+{.pagination ul} AND {body} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - margin: 0
+  - padding: 0
+{.pagination} AND {hr} share 3 declarations
+  - margin-left: 0
+  - margin-right: 0
+  - margin-top: 1em
+{hr} AND {table} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - margin-bottom: 1em
+{div.highlighter-rouge,
+figure.highlight} AND {table} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - margin-bottom: 1em
+{.grid__item:nth-child(2n + 2)} AND {.grid__item:nth-child(4n + 3)} share 3 declarations
+  - clear: none
+  - margin-left: 51.02041%
+  - margin-right: -100%
+{#splash-under-hero-row} AND {.contact-form} share 3 declarations
+  - border-top-color: #031f36
+  - border-top-style: solid
+  - width: 100%
+{#goog-wm-qt}, {.btn, #goog-wm-sb} AND {.nav__list label} share 3 declarations
+  - border-radius: 4px
+  - display: inline-block
+  - font-size: 0.75em
+{form legend} AND {input,
+textarea,
+select} share 3 declarations
+  - border-bottom: 1px solid #cccccc
+  - color: #f2f3f3
+  - width: 100%
+{#splash-hero-canvas}, {.lightbox-frame}, {.splash-row-canvas}, {.splash-row-left} AND {.splash-row-right} share 3 declarations
+  - height: 100%
+  - position: relative
+  - width: 100%
+{.author__content} AND {.toc__menu} share 3 declarations
+  - padding-left: 0
+  - padding-right: 0
+  - width: 100%
+{.author__urls}, {.nav__list label}, {[data-loader='satellite']} AND {div.highlighter-rouge,
+figure.highlight} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - position: relative
+{#splash-under-hero-row}, {.nav__list label} AND {[data-loader='satellite']} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - position: relative
+{input,
+textarea,
+select} AND {table} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - width: 100%
+{.author__urls}, {.splash-row} AND {div.highlighter-rouge,
+figure.highlight} share 3 declarations
+  - border-bottom: 1px solid #031f36
+  - border-top: 1px solid #031f36
+  - position: relative
+{.fa-stack-1x, .fa-stack-2x}, {.form:before}, {.fullscreen}, {.greedy-nav .visible-links a:before}, {.responsive-video-container iframe,
+  .responsive-video-container object,
+  .responsive-video-container embed}, {.show-modal:before} AND {.splash-row-left} share 3 declarations
+  - left: 0
+  - position: absolute
+  - width: 100%
+{.author__urls}, {.page__share .btn span, .page__share #goog-wm-sb span} AND {.sr-only} share 3 declarations
+  - border: 0
+  - padding: 0
+  - position: absolute
+{form legend} AND {table} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - width: 100%
+{.form__spinner}, {.lightbox-frame-image} AND {.lightbox-spinner-wrapper} share 3 declarations
+  - left: 50%
+  - position: absolute
+  - top: 50%
+{.greedy-nav .visible-links a:before}, {.navicon:before, .navicon:after} AND {.show-modal:before} share 3 declarations
+  - content: ""
+  - left: 0
+  - position: absolute
+{.lightbox-overlay} AND {.splash-row-right} share 3 declarations
+  - height: 100%
+  - top: 0
+  - width: 100%
+{.form-inline .radio,
+.form-inline .checkbox,
+.form-inline .radio} AND {.form-search .radio,
+.form-search .checkbox,
+.form-inline .radio} share 3 declarations
+  - margin-bottom: 0
+  - padding-left: 0
+  - vertical-align: middle
+{.archive} AND {.feature__item--right .archive__item-body} share 3 declarations
+  - float: left
+  - margin-left: 0
+  - padding-left: 4.23729%
+{.form-inline .radio input[type="radio"],
+.form-inline .checkbox input[type="checkbox"]} AND {.form-search .radio input[type="radio"],
+.form-search .checkbox input[type="checkbox"]} share 3 declarations
+  - float: left
+  - margin-left: 0
+  - margin-right: 3px
+{.page__related} AND {.pagination} share 3 declarations
+  - clear: both
+  - float: left
+  - padding-top: 1em
+{.splash-row-right} AND {div.highlighter-rouge:before,
+  figure.highlight:before} share 3 declarations
+  - position: absolute
+  - right: 0
+  - top: 0
+{.feature__item--center}, {.feature__item--left}, {.feature__item--right}, {.grid__item}, {.page .page__inner-wrap}, {.page .page__inner-wrap .page__content,
+  .page .page__inner-wrap .page__meta,
+  .page .page__inner-wrap .comment__date,
+  .page .page__inner-wrap .page__share}, {.page__comments}, {.page__footer} AND {.pagination} share 3 declarations
+  - float: left
+  - margin-left: 0
+  - margin-right: 0
+{.author__urls} AND {.greedy-nav .hidden-links:after} share 3 declarations
+  - border-style: solid
+  - display: block
+  - position: absolute
+{.greedy-nav .hidden-links} AND {.page__footer} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - position: absolute
+{.archive}, {.breadcrumbs ol}, {.feature__item--left .archive__item-body} AND {.page} share 3 declarations
+  - float: right
+  - margin-right: 0
+  - padding-left: 4.23729%
+{.greedy-nav .visible-links a:before} AND {.page__footer} share 3 declarations
+  - bottom: 0
+  - position: absolute
+  - width: 100%
+{#splash-under-hero-row}, {.page__footer}, {input,
+textarea,
+select} AND {table} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - width: 100%
+{.archive}, {.feature__item--center}, {.feature__item--left}, {.feature__item--right}, {.page .page__inner-wrap}, {.page .page__inner-wrap .page__content,
+  .page .page__inner-wrap .page__meta,
+  .page .page__inner-wrap .comment__date,
+  .page .page__inner-wrap .page__share}, {.page__comments}, {.page__footer}, {.pagination} AND {.toc__menu} share 3 declarations
+  - margin-left: 0
+  - margin-right: 0
+  - width: 100%
+{.author__urls}, {.masthead__menu ul}, {.page__footer-follow ul}, {.pagination ul}, {.toc__menu}, {body}, {input[type="image"],
+input[type="checkbox"],
+input[type="radio"]} AND {nav ul} share 3 declarations
+  - margin-left: 0
+  - margin-right: 0
+  - padding: 0
+{.author__urls}, {.breadcrumbs ol}, {.masthead__menu ul}, {.page__footer-follow ul} AND {.pagination ul} share 3 declarations
+  - list-style-type: none
+  - margin-right: 0
+  - padding: 0
+{.author__urls}, {.masthead__menu ul}, {.page__footer-follow ul}, {.pagination ul} AND {.toc__menu} share 3 declarations
+  - list-style-type: none
+  - margin: 0
+  - padding: 0
+{.page__footer}, {.sr-only-focusable:active, .sr-only-focusable:focus} AND {input[type="image"],
+input[type="checkbox"],
+input[type="radio"]} share 3 declarations
+  - height: auto
+  - margin-left: 0
+  - margin-right: 0
+{.pagination li a}, {.pagination--pager} AND {hr} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - display: block
+{.author__urls:before}, {.greedy-nav .hidden-links:before} AND {hr} share 3 declarations
+  - border-top-color: #031f36
+  - border-top-style: solid
+  - display: block
+{.author__urls a}, {.pagination--pager} AND {.screen-reader-text:focus,
+.screen-reader-shortcut:focus} share 3 declarations
+  - display: block
+  - font-size: 1em
+  - text-decoration: none
+{#main:after}, {.breadcrumbs:after}, {.masthead__inner-wrap:after}, {.page__footer footer:after} AND {.wrapper:after} share 3 declarations
+  - clear: both
+  - content: " "
+  - display: block
+{.align-center}, {.align-left} AND {.align-right} share 3 declarations
+  - display: block
+  - margin-left: auto
+  - margin-right: auto
+{.author__urls} AND {.greedy-nav button} share 3 declarations
+  - border: 0
+  - position: absolute
+  - right: 0
+{.greedy-nav .hidden-links li}, {.nav__sub-title}, {.pagination li a}, {.pagination--pager}, {.toc__menu a} AND {form legend} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - display: block
+{.author__urls:before}, {.greedy-nav .hidden-links li}, {.greedy-nav .hidden-links:before}, {.nav__sub-title} AND {.toc__menu a} share 3 declarations
+  - border-bottom-color: #031f36
+  - border-bottom-style: solid
+  - display: block
+{.centred}, {.lightbox-frame-image}, {.lightbox-spinner-wrapper} AND {.splash-row-body} share 3 declarations
+  - left: 50%
+  - top: 50%
+  - transform: translate(-50%, -50%)
+{.breadcrumbs}, {.nav__title}, {.pagination ul}, {.skip-link} AND {body} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - margin-bottom: 0
+  - margin-top: 0
+{.pagination li a}, {.pagination--pager} AND {table} share 3 declarations
+  - border: 1px solid #bdc1c4
+  - border-bottom: 1px solid #bdc1c4
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+{.pagination li a}, {.toc} AND {table} share 3 declarations
+  - border-style: solid
+  - border-width: 1px
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+{.greedy-nav button} AND {.page__hero-caption} share 3 declarations
+  - color: #fff
+  - position: absolute
+  - right: 0
+{.greedy-nav button} AND {.splash-row-right} share 3 declarations
+  - height: 100%
+  - position: absolute
+  - right: 0
+{.breadcrumbs}, {.notice}, {.notice--danger}, {.notice--info}, {.notice--primary}, {.notice--success} AND {.notice--warning} share 3 declarations
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - padding-left: 1em
+  - padding-right: 1em
+{.greedy-nav button} AND {div.highlighter-rouge:before,
+  figure.highlight:before} share 3 declarations
+  - background-color: #f2f3f3
+  - position: absolute
+  - right: 0
+{.nav__list label}, {.page__comments-title}, {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} AND {table} share 3 declarations
+  - border-top-style: solid
+  - border-top-width: 1px
+  - font-size: 0.75em
+{.page__comments-title}, {.page__meta-title}, {.page__related-title} AND {.page__share-title} share 3 declarations
+  - font-size: 0.75em
+  - margin-bottom: 10px
+  - text-transform: uppercase
+{.page__taxonomy-item}, {.pagination li a}, {.pagination--pager}, {figcaption a} AND {u,
+ins} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - text-decoration: none
+{.author__urls}, {.greedy-nav .hidden-links}, {.modal}, {.nav__list label}, {.page__taxonomy-item}, {.pagination--pager}, {.toc}, {.well}, {div.highlighter-rouge,
+figure.highlight}, {input,
+textarea,
+select} AND {p > code,
+a > code,
+li > code,
+figcaption > code,
+td > code} share 3 declarations
+  - border-radius: 4px
+  - border-style: solid
+  - border-width: 1px
+{.navicon:before, .navicon:after} AND {[data-loader='satellite']:before,
+[data-loader='satellite']:after} share 3 declarations
+  - background-color: #fff
+  - left: 0
+  - position: absolute
+{.greedy-nav button} AND {.lightbox-move-button} share 3 declarations
+  - color: #fff
+  - height: 100%
+  - position: absolute
+{.author__urls} AND {.lightbox-frame-image} share 3 declarations
+  - border-style: solid
+  - cursor: default
+  - position: absolute
+{.author__urls} AND {.page__hero--overlay} share 3 declarations
+  - padding-left: 0
+  - padding-right: 0
+  - position: relative
+{.author__urls} AND {.splash-row-right} share 3 declarations
+  - position: relative
+  - position: absolute
+  - right: 0
+{.author__avatar img}, {.comment__avatar} AND {.greedy-nav .hidden-links} share 3 declarations
+  - border: 1px solid #031f36
+  - border-top: 1px solid #031f36
+  - padding: 5px
+{.archive}, {.grid__item} AND {figure} share 3 declarations
+  - margin-bottom: 2em
+  - margin-left: 0
+  - margin-right: 0
+{#main::after}, {.breadcrumbs::after}, {.comment::after}, {.feature__wrapper::after}, {.masthead__inner-wrap::after}, {.page__footer footer::after}, {.page__footer::after}, {.page__hero--overlay::after}, {.page__hero::after}, {.page__related::after}, {.pagination::after}, {.sidebar::after} AND {.sticky::after} share 3 declarations
+  - clear: both
+  - content: ""
+  - display: table
+{.splash-row-body} AND {.splash-row-left} share 3 declarations
+  - left: 0
+  - position: relative
+  - width: 100%
+{.masthead} AND {[data-loader='satellite']} share 3 declarations
+  - border-bottom-style: solid
+  - border-bottom-width: 1px
+  - position: relative
+{.comment}, {.feature__item--center}, {.feature__item--left}, {.feature__item--right}, {.masthead__menu ul}, {.page .page__inner-wrap}, {.page .page__inner-wrap .page__content,
+  .page .page__inner-wrap .page__meta,
+  .page .page__inner-wrap .comment__date,
+  .page .page__inner-wrap .page__share}, {.page__comments}, {.page__footer} AND {.pagination} share 3 declarations
+  - clear: both
+  - margin-left: 0
+  - margin-right: 0
+{.feature__item:nth-child(3n + 1)}, {.grid__item:nth-child(2n + 1)} AND {.grid__item:nth-child(4n + 1)} share 3 declarations
+  - clear: both
+  - margin-left: 0
+  - margin-right: -100%
+{#main}, {.breadcrumbs}, {.masthead__inner-wrap}, {.page__footer footer} AND {.wrapper} share 3 declarations
+  - margin-left: auto
+  - margin-right: auto
+  - max-width: 1024px
+{.breadcrumbs}, {.masthead__inner-wrap} AND {.page__hero--overlay .wrapper} share 3 declarations
+  - max-width: 1280px
+  - padding-left: 1em
+  - padding-right: 1em
+{.feature__item--center}, {.feature__item--left}, {.feature__item--right} AND {.nav__list .nav__items} share 3 declarations
+  - font-size: 1.25rem
+  - margin-left: 0
+  - margin-right: 0
+{#goog-fixurl ul}, {.author__urls}, {.masthead__menu ul}, {.page__footer-follow ul} AND {.pagination ul} share 3 declarations
+  - list-style-type: none
+  - margin-left: 0
+  - padding-left: 0
+{#splash-main} AND {.navicon} share 3 declarations
+  - margin-left: auto
+  - margin-right: auto
+  - position: relative
+{.fa-stack-1x, .fa-stack-2x} AND {.splash-row-body} share 3 declarations
+  - left: 0
+  - text-align: center
+  - width: 100%
+{#goog-wm-qt} AND {input,
+textarea,
+select} share 3 declarations
+  - background-color: #fff
+  - border-radius: 4px
+  - display: inline-block
+{.page__footer-follow li} AND {.page__taxonomy-item} share 3 declarations
+  - display: inline-block
+  - padding-bottom: 5px
+  - padding-top: 5px
+{.btn, #goog-wm-sb} AND {.page__taxonomy-item} share 3 declarations
+  - border-radius: 4px
+  - display: inline-block
+  - text-decoration: none
+{.author__avatar img}, {.author__urls:before}, {.comment__avatar}, {.contact-form}, {.greedy-nav .hidden-links:before}, {.modal}, {.toc} AND {div.highlighter-rouge,
+figure.highlight} share 3 declarations
+  - border-bottom-color: #031f36
+  - border-style: solid
+  - border-top-color: #031f36
+{.btn, #goog-wm-sb} AND {.page__footer-follow li} share 3 declarations
+  - display: inline-block
+  - font-family: -apple-system, ".sfnstext-regular", "san francisco", "roboto", "segoe ui", "helvetica neue", "lucida grande", arial, sans-serif
+  - font-size: 0.75em
+{.fa-stack} AND {.icon} share 3 declarations
+  - display: inline-block
+  - position: relative
+  - vertical-align: middle
+{.author__urls:after}, {.greedy-nav .hidden-links:after} AND {[data-loader='satellite']} share 3 declarations
+  - border-bottom-color: #fff
+  - border-style: solid
+  - border-top-color: #fff
