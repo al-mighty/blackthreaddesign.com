@@ -1,3 +1,3 @@
 <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: black; z-index: 9999;">
-  <div data-loader="satellite" style="top: 50vh; left: 50vw"></div>
+  <div data-loader="satellite" style="top: 47vh; left: 47vw"></div>
 </div>
