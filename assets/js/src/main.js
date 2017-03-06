@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as Hammer from 'hammerjs';
+import PNLTRI from '../vendor/pnltri/pnltri.js';
 
 
 import './init/initLightBox.js';
@@ -15,7 +16,21 @@ import initSplash from './splash/splashMain.js';
 window.THREE = THREE;
 window.Hammer = Hammer.default;
 
-//Create an object for storing info between apps
+//Use PNLTRI for triangualtion
+window.THREE.ShapeUtils.triangulateShape = ( function () {
+  var pnlTriangulator = new PNLTRI.Triangulator();
+  function removeDupEndPts(points) {
+    var l = points.length;
+    if ( l > 2 && points[ l - 1 ].equals( points[ 0 ] ) ) {
+      points.pop();
+    }
+  }
+  return function triangulateShape( contour, holes ) {
+    removeDupEndPts( contour );
+    holes.forEach( removeDupEndPts );
+    return pnlTriangulator.triangulate_polygon( [ contour ].concat(holes) );
+  };
+} )();
 
 
 THREE.Cache.enabled = true;

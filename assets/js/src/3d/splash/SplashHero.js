@@ -11,56 +11,55 @@ export default class SplashHero {
 
   constructor( showStats ) {
 
-    const canvas = document.querySelector( '#splash-hero-canvas' );
+    const self = this;
 
-    const container = document.querySelector( '#splash-hero-container' );
+    self.canvas = document.querySelector( '#splash-hero-canvas' );
 
-    const app = new App( canvas );
+    self.container = document.querySelector( '#splash-hero-container' );
 
-    app.camera.far = 5;
+    self.app = new App( self.canvas );
+
+    // self.app.camera.far = 100;
+    self.app.camera.position.set( 0, 0, 400);
 
     // TODO: not working in Edge
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
+    
+    self.addBackground();
 
+    self.addText();
 
-    const material = this.initMaterial( );
-    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
-
-    const mesh = new THREE.Mesh( geometry, material );
-
-    app.scene.add( mesh );
-
+    
     const updateMaterial = function () {
         // For some reason pan events on mobile sometimes register as (0,0); ignore these
         if ( pointerPos.x !== 0 && pointerPos.y !== 0 ) {
-            const offsetX = pointerPos.x / app.canvas.clientWidth;
-            let offsetY = 1 - pointerPos.y / app.canvas.clientHeight;
+            const offsetX = pointerPos.x / self.app.canvas.clientWidth;
+            let offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
 
             // make the line well defined when moving the pointer off the top of the screen
             offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
 
-            material.uniforms.offset.value = [offsetX, offsetY];
-            material.uniforms.smooth.value = [1, offsetY];
+            self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
+            self.backgroundMat.uniforms.smooth.value = [1, offsetY];
 
         }
     };
 
-    app.onUpdate = function () {
+    self.app.onUpdate = function () {
       updateMaterial();
 
-      // console.log(app.frameCount)
-
-      if ( showStats ) statisticsOverlay.updateStatistics( app.delta );
+      if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 
-    // app.onWindowResize = function () {};
+    self.app.onWindowResize = function () {};
 
-    app.play();
+    self.app.play();
 
+    //Pause if the canvas is not onscreen
     window.addEventListener( 'scroll', () =>  {
-      if ( window.scrollY > (canvas.offsetTop + canvas.clientHeight) ) {
+      if ( window.scrollY > (self.canvas.offsetTop + self.canvas.clientHeight) ) {
         app.pause();
       } else {
         app.play();
@@ -69,7 +68,47 @@ export default class SplashHero {
 
   }
 
-  initMaterial( ) {
+  addText() {
+    const self = this;
+    
+    const loader = new THREE.FontLoader();
+    const textMat = new THREE.MeshBasicMaterial( {color: 0xffffff } );
+    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', function ( response ) {
+      const textGeometry = new THREE.TextGeometry( 'Black Thread Design', {
+        font: response,
+        size: 14,
+        height: 0,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 10,
+        bevelSize: 8,
+        bevelSegments: 5
+      } );
+
+      textGeometry.computeBoundingBox();
+			textGeometry.computeVertexNormals();
+
+      const textMesh = new THREE.Mesh( textGeometry, textMat );
+
+      // console.log(textMesh);
+      textMesh.position.set( 0, -40, 0)
+
+      self.app.scene.add( textMesh );
+    } );
+
+  }
+  
+  addBackground() {
+    this.backgroundMat = this.initBackgroundMat( );
+    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
+
+    const mesh = new THREE.Mesh( geometry, this.backgroundMat );
+
+    this.app.scene.add( mesh );
+  }
+
+
+  initBackgroundMat( ) {
     const loader = new THREE.TextureLoader();
     const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
     noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
