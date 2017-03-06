@@ -37,13 +37,13 @@ export default class SplashHero {
     self.app = new App( self.canvas );
 
     // self.app.camera.far = 100;
-    self.app.camera.position.set( 0, 0, 300 );
+    self.app.camera.position.set( 0, 0, 500 );
 
     // TODO: not working in Edge
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
-    //self.addBackground();
+    self.addBackground();
 
     self.addText();
 
@@ -65,7 +65,7 @@ export default class SplashHero {
     };
 
     self.app.onUpdate = function () {
-      //updateMaterial();
+      updateMaterial();
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -100,8 +100,8 @@ export default class SplashHero {
         size:40,
         height:3,
         font: response,
-        weight:'normal',
-        style:'normal',
+        weight: 'normal',
+        style: 'normal',
         curveSegments:24,
         bevelSize:2,
         bevelThickness:2,
@@ -112,7 +112,7 @@ export default class SplashHero {
 
       const textMesh = new THREE.Mesh( textGeometry, textMat );
 
-      textMesh.position.set( 0, 0, 10 );
+      textMesh.position.set( 0, 0, 100 );
 
       self.app.scene.add( textMesh );
     } );
@@ -121,10 +121,10 @@ export default class SplashHero {
   
   addBackground() {
     this.backgroundMat = this.initBackgroundMat( );
-    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
-
+    const geometry = new THREE.PlaneGeometry( 2, 2, 1 );
+    console.log(geometry);
     const mesh = new THREE.Mesh( geometry, this.backgroundMat );
-    mwesh.position.set( 0, 0, -1 );
+    mesh.position.set( 0, 0, -10 );
     this.app.scene.add( mesh );
   }
 

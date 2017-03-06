@@ -49026,7 +49026,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(commo
 }());
 });
 
-BAS = {};
+var BAS = {};
 
 BAS.BaseAnimationMaterial = function (parameters, uniforms) {
   ShaderMaterial.call(this);
@@ -54668,7 +54668,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(position, 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
+var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
@@ -54702,13 +54702,13 @@ var SplashHero = function () {
         self.app = new App(self.canvas);
 
         // self.app.camera.far = 100;
-        self.app.camera.position.set(0, 0, 300);
+        self.app.camera.position.set(0, 0, 500);
 
         // TODO: not working in Edge
         var statisticsOverlay = void 0;
         if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-        //self.addBackground();
+        self.addBackground();
 
         self.addText();
 
@@ -54729,7 +54729,7 @@ var SplashHero = function () {
         };
 
         self.app.onUpdate = function () {
-            //updateMaterial();
+            updateMaterial();
 
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
@@ -54773,7 +54773,7 @@ var SplashHero = function () {
 
             var textMesh = new THREE.Mesh(textGeometry, textMat);
 
-            textMesh.position.set(0, 0, 10);
+            textMesh.position.set(0, 0, 100);
 
             self.app.scene.add(textMesh);
         });
@@ -54781,10 +54781,10 @@ var SplashHero = function () {
 
     SplashHero.prototype.addBackground = function addBackground() {
         this.backgroundMat = this.initBackgroundMat();
-        var geometry = new THREE.PlaneBufferGeometry(2, 2, 1);
-
+        var geometry = new THREE.PlaneGeometry(2, 2, 1);
+        console.log(geometry);
         var mesh = new THREE.Mesh(geometry, this.backgroundMat);
-        mwesh.position.set(0, 0, -1);
+        mesh.position.set(0, 0, -10);
         this.app.scene.add(mesh);
     };
 
