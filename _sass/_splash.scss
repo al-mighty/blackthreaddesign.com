@@ -52,6 +52,10 @@
 
 #splash-work-canvas-container {
     background-image: url('/assets/images/splash/hyper_3_512.jpg');
+    background-size: contain;
+    @include breakpoint($medium) { 
+      background-size: initial;
+    }
 }
 
 #splash-experiments-canvas-container {
