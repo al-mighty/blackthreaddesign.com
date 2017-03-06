@@ -54672,6 +54672,10 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
+var textVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, -1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
+
+var textFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
+
 function generateTextGeometry(text, params) {
     var geometry = new THREE.TextGeometry(text, params);
 
@@ -54725,6 +54729,9 @@ var SplashHero = function () {
 
                 self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
                 self.backgroundMat.uniforms.smooth.value = [1, offsetY];
+
+                //self.textMat.uniforms.offset.value = [offsetX, offsetY];
+                //self.textMat.uniforms.smooth.value = [1, offsetY];
             }
         };
 
@@ -54752,39 +54759,10 @@ var SplashHero = function () {
         this.controls = new OrbitControls(this.app.camera, this.app.renderer.domElement);
     };
 
-    SplashHero.prototype.addText = function addText() {
-        var self = this;
-
-        var loader = new THREE.FontLoader();
-        var textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        loader.load('assets/fonts/json/droid_sans_mono_regular.typeface.json', function (response) {
-            var textGeometry = generateTextGeometry('Black Thread Design', {
-                size: 40,
-                height: 3,
-                font: response,
-                weight: 'normal',
-                style: 'normal',
-                curveSegments: 24,
-                bevelSize: 2,
-                bevelThickness: 2,
-                bevelEnabled: true,
-                anchor: { x: 0.5, y: 0.5, z: 0.0 }
-            });
-
-            var textMesh = new THREE.Mesh(textGeometry, textMat);
-
-            textMesh.position.set(0, 0, 100);
-
-            self.app.scene.add(textMesh);
-        });
-    };
-
     SplashHero.prototype.addBackground = function addBackground() {
         this.backgroundMat = this.initBackgroundMat();
         var geometry = new THREE.PlaneGeometry(2, 2, 1);
-        console.log(geometry);
         var mesh = new THREE.Mesh(geometry, this.backgroundMat);
-        mesh.position.set(0, 0, -10);
         this.app.scene.add(mesh);
     };
 
@@ -54792,9 +54770,6 @@ var SplashHero = function () {
         var loader = new THREE.TextureLoader();
         var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
         noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
-        // noiseTexture.premultiplyAlpha = true;
-        // noiseTexture.repeat = [10.5, 10.5];
-        // noiseTexture.offset = [100.0, 1.0];
 
         var uniforms = {
 
@@ -54809,9 +54784,57 @@ var SplashHero = function () {
         return new THREE.RawShaderMaterial({
             uniforms: uniforms,
             vertexShader: backgroundVert,
-            fragmentShader: backgroundFrag,
-            side: THREE.DoubleSide,
-            transparent: true
+            fragmentShader: backgroundFrag
+        });
+    };
+
+    SplashHero.prototype.addText = function addText() {
+        var self = this;
+
+        var loader = new THREE.FontLoader();
+        this.textMat = new THREE.MeshBasicMaterial({ color: 0xffffff }); //this.initTextMat(); 
+
+        loader.load('assets/fonts/json/droid_sans_mono_regular.typeface.json', function (response) {
+            var textGeometry = generateTextGeometry('Black Thread Design', {
+                size: 40,
+                height: 3,
+                font: response,
+                weight: 'normal',
+                style: 'normal',
+                curveSegments: 24,
+                bevelSize: 2,
+                bevelThickness: 2,
+                bevelEnabled: true,
+                anchor: { x: 0.5, y: 0.5, z: 0.0 }
+            });
+
+            var textMesh = new THREE.Mesh(textGeometry, self.textMat);
+
+            textMesh.position.set(0, 0, 100);
+
+            self.app.scene.add(textMesh);
+        });
+    };
+
+    SplashHero.prototype.initTextMat = function initTextMat() {
+        var loader = new THREE.TextureLoader();
+        var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+        noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+        var uniforms = {
+
+            noiseTexture: { value: noiseTexture },
+            offset: { value: new THREE.Vector2(0, 0) },
+            smooth: { value: new THREE.Vector2(0.0, 1.0) },
+            color1: { value: new THREE.Color(0xffffff) },
+            color2: { value: new THREE.Color(0x283844) }
+
+        };
+
+        return new THREE.RawShaderMaterial({
+            uniforms: uniforms,
+            vertexShader: textVert,
+            fragmentShader: textFrag
         });
     };
 

@@ -5,6 +5,8 @@ import OrbitControls from '../controls/OrbitControls.js';
 
 import backgroundVert from '../shaders/splashBackground.vert';
 import backgroundFrag from '../shaders/splashBackground.frag';
+import textVert from '../shaders/splashText.vert';
+import textFrag from '../shaders/splashText.frag';
 
 import { pointerPos } from '../../utilities.js';
 
@@ -61,6 +63,9 @@ export default class SplashHero {
             self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
             self.backgroundMat.uniforms.smooth.value = [1, offsetY];
 
+            //self.textMat.uniforms.offset.value = [offsetX, offsetY];
+            //self.textMat.uniforms.smooth.value = [1, offsetY];
+
         }
     };
 
@@ -90,41 +95,10 @@ export default class SplashHero {
     this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
   }
 
-  addText() {
-    const self = this;
-
-    const loader = new THREE.FontLoader();
-    const textMat = new THREE.MeshBasicMaterial( {color: 0xffffff } );
-    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', function ( response ) {
-      const textGeometry = generateTextGeometry( 'Black Thread Design', {
-        size:40,
-        height:3,
-        font: response,
-        weight: 'normal',
-        style: 'normal',
-        curveSegments:24,
-        bevelSize:2,
-        bevelThickness:2,
-        bevelEnabled:true,
-        anchor:{x:0.5, y:0.5, z:0.0}
-      });
-
-
-      const textMesh = new THREE.Mesh( textGeometry, textMat );
-
-      textMesh.position.set( 0, 0, 100 );
-
-      self.app.scene.add( textMesh );
-    } );
-
-  }
-  
   addBackground() {
     this.backgroundMat = this.initBackgroundMat( );
     const geometry = new THREE.PlaneGeometry( 2, 2, 1 );
-    console.log(geometry);
     const mesh = new THREE.Mesh( geometry, this.backgroundMat );
-    mesh.position.set( 0, 0, -10 );
     this.app.scene.add( mesh );
   }
 
@@ -133,9 +107,6 @@ export default class SplashHero {
     const loader = new THREE.TextureLoader();
     const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
     noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
-    // noiseTexture.premultiplyAlpha = true;
-    // noiseTexture.repeat = [10.5, 10.5];
-    // noiseTexture.offset = [100.0, 1.0];
 
     const uniforms = {
 
@@ -151,8 +122,62 @@ export default class SplashHero {
       uniforms,
       vertexShader: backgroundVert,
       fragmentShader: backgroundFrag,
-      side: THREE.DoubleSide,
-      transparent: true,
+      // side: THREE.DoubleSide,
+      // transparent: true,
+    } );
+
+  }
+
+  addText() {
+    const self = this;
+
+    const loader = new THREE.FontLoader();
+    this.textMat = new THREE.MeshBasicMaterial( {color: 0xffffff } ); //this.initTextMat(); 
+
+    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', function ( response ) {
+      const textGeometry = generateTextGeometry( 'Black Thread Design', {
+        size:40,
+        height:3,
+        font: response,
+        weight: 'normal',
+        style: 'normal',
+        curveSegments:24,
+        bevelSize:2,
+        bevelThickness:2,
+        bevelEnabled:true,
+        anchor:{x:0.5, y:0.5, z:0.0}
+      });
+
+      const textMesh = new THREE.Mesh( textGeometry, self.textMat );
+
+      textMesh.position.set( 0, 0, 100 );
+
+      self.app.scene.add( textMesh );
+    } );
+
+  }
+
+  initTextMat( ) {
+    const loader = new THREE.TextureLoader();
+    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
+    noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+    const uniforms = {
+
+      noiseTexture: { value: noiseTexture },
+      offset: { value: new THREE.Vector2( 0, 0 ) },
+      smooth: { value: new THREE.Vector2( 0.0, 1.0 ) },
+      color1: { value: new THREE.Color( 0xffffff ) },
+      color2: { value: new THREE.Color( 0x283844 ) },
+
+    };
+
+    return new THREE.RawShaderMaterial( {
+      uniforms,
+      vertexShader: textVert,
+      fragmentShader: textFrag,
+      // side: THREE.DoubleSide,
+      // transparent: true,
     } );
 
   }
