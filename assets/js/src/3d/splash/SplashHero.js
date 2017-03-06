@@ -25,12 +25,11 @@ export default class SplashHero {
     // TODO: not working in Edge
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( app, container );
-    
+
     self.addBackground();
 
     self.addText();
 
-    
     const updateMaterial = function () {
         // For some reason pan events on mobile sometimes register as (0,0); ignore these
         if ( pointerPos.x !== 0 && pointerPos.y !== 0 ) {
@@ -59,10 +58,10 @@ export default class SplashHero {
 
     //Pause if the canvas is not onscreen
     window.addEventListener( 'scroll', () =>  {
-      if ( window.scrollY > (self.canvas.offsetTop + self.canvas.clientHeight) ) {
-        app.pause();
-      } else {
-        app.play();
+      if ( ! self.app.isPaused && window.scrollY > (self.canvas.offsetTop + self.canvas.clientHeight) ) {
+        self.app.pause();
+      } else if ( self.app.isPaused ) {
+        self.app.play();
       }
     });
 

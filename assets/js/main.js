@@ -49443,6 +49443,9 @@ function App(canvas) {
 
   this.delta = 0;
 
+  this.isPlaying = false;
+  this.isPaused = false;
+
   this.time = new Time();
 
   var setRendererSize = function () {
@@ -49560,6 +49563,9 @@ function App(canvas) {
 
     this.time.start();
 
+    this.isPlaying = true;
+    this.isPaused = false;
+
     function animationHandler() {
 
       self.frameCount++;
@@ -49579,12 +49585,17 @@ function App(canvas) {
 
   this.pause = function () {
 
+    this.isPaused = true;
+
     this.time.pause();
 
     cancelAnimationFrame(_currentAnimationFrameID);
   };
 
   this.stop = function () {
+
+    this.isPlaying = false;
+    this.isPaused = false;
 
     this.time.stop();
     this.frameCount = 0;
@@ -49649,10 +49660,10 @@ var SplashHero = function () {
 
         //Pause if the canvas is not onscreen
         window.addEventListener('scroll', function () {
-            if (window.scrollY > self.canvas.offsetTop + self.canvas.clientHeight) {
-                app.pause();
-            } else {
-                app.play();
+            if (!self.app.isPaused && window.scrollY > self.canvas.offsetTop + self.canvas.clientHeight) {
+                self.app.pause();
+            } else if (self.app.isPaused) {
+                self.app.play();
             }
         });
     }

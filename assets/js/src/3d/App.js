@@ -26,6 +26,9 @@ function App( canvas ) {
 
   this.delta = 0;
 
+  this.isPlaying = false;
+  this.isPaused = false;
+
   this.time = new Time();
 
   const setRendererSize = function () {
@@ -169,6 +172,9 @@ function App( canvas ) {
 
     this.time.start();
 
+    this.isPlaying = true;
+    this.isPaused = false;
+
     function animationHandler() {
 
       self.frameCount ++;
@@ -188,6 +194,8 @@ function App( canvas ) {
 
   this.pause = function () {
 
+    this.isPaused = true;
+
     this.time.pause();
 
     cancelAnimationFrame( _currentAnimationFrameID );
@@ -195,6 +203,9 @@ function App( canvas ) {
   };
 
   this.stop = function () {
+
+    this.isPlaying = false;
+    this.isPaused = false;
 
     this.time.stop();
     this.frameCount = 0;
