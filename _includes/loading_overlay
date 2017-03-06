@@ -1,5 +1,5 @@
-<div id="loadingOverlay" class="fullscreen">
-  <div id="loadingIcon" class="centred">
+<div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  <div id="loadingIcon" style="position: fixed; top: 50%; left: 50%;   transform: translate(-50%, -50%);">
     <div data-loader="satellite"></div>
   </div>
 </div>
