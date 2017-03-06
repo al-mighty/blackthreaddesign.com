@@ -1,5 +1,12 @@
 import * as THREE from 'three';
 import * as Hammer from 'hammerjs';
+
+//Adds TweenLite, TimeLineLite etc as globals
+import 'gsap/src/uncompressed/TimelineLite';
+import 'gsap/src/uncompressed/easing/EasePack';
+
+import BAS from './3d/vendor/bas.js';
+
 import PNLTRI from '../vendor/pnltri/pnltri.js';
 
 

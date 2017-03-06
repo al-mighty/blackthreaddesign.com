@@ -28,6 +28,7 @@
   "author": "Lewy Blue",
   "license": "ISC",
   "dependencies": {
+    "gsap": "^1.19.1",
     "hammerjs": "^2.0.8",
     "lodash.throttle": "^4.1.1",
     "three": "^0.84.0"
