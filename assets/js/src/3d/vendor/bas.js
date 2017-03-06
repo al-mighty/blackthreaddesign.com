@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export default BAS = {};
+const BAS = {};
 
 BAS.BaseAnimationMaterial = function (parameters, uniforms) {
   THREE.ShaderMaterial.call(this);
@@ -1628,3 +1628,5 @@ BAS.Timeline.register('translate', {
   },
   defaultFrom: new THREE.Vector3(0, 0, 0)
 });
+
+export default BAS;
