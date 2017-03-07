@@ -1,5 +1,5 @@
 {
-  "name": "BlackThreadDesign",
+  "name": "blackthreaddesign",
   "version": "1.0.0",
   "description": "Website of the Black Thread design agency",
   "main": "index.js",
@@ -73,7 +73,11 @@
       "no-underscore-dangle": 0,
       "no-mixed-operators": 0,
       "no-bitwise": 0,
-      "no-plusplus": 0
+      "no-plusplus": 0,
+      "max-len": 0,
+      "import/extensions" : 0,
+      "import/no-unresolved": 0,
+      "func-names": 0
     }
   }
 }

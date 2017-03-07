@@ -1,4 +1,4 @@
-
+import * as THREE from 'three';
 import StatisticsOverlay from '../StatisticsOverlay.js';
 import App from '../App.js';
 import OrbitControls from '../controls/OrbitControls.js';
@@ -10,8 +10,8 @@ import textFrag from '../shaders/splashText.frag';
 
 import { pointerPos } from '../../utilities.js';
 
-function generateTextGeometry(text, params) {
-  const geometry = new THREE.TextGeometry(text, params);
+function generateTextGeometry( text, params ) {
+  const geometry = new THREE.TextGeometry( text, params );
 
   geometry.computeBoundingBox();
 
@@ -19,9 +19,9 @@ function generateTextGeometry(text, params) {
   const anchorX = size.x * -params.anchor.x;
   const anchorY = size.y * -params.anchor.y;
   const anchorZ = size.z * -params.anchor.z;
-  const matrix = new THREE.Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
+  const matrix = new THREE.Matrix4().makeTranslation( anchorX, anchorY, anchorZ );
 
-  geometry.applyMatrix(matrix);
+  geometry.applyMatrix( matrix );
 
   return geometry;
 }
@@ -53,20 +53,20 @@ export default class SplashHero {
 
     const updateMaterial = function () {
         // For some reason pan events on mobile sometimes register as (0,0); ignore these
-        if ( pointerPos.x !== 0 && pointerPos.y !== 0 ) {
-            const offsetX = pointerPos.x / self.app.canvas.clientWidth;
-            let offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
+      if ( pointerPos.x !== 0 && pointerPos.y !== 0 ) {
+        const offsetX = pointerPos.x / self.app.canvas.clientWidth;
+        let offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
 
             // make the line well defined when moving the pointer off the top of the screen
-            offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
+        offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
 
-            self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
-            self.backgroundMat.uniforms.smooth.value = [1, offsetY];
+        self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
+        self.backgroundMat.uniforms.smooth.value = [1, offsetY];
 
-            //self.textMat.uniforms.offset.value = [offsetX, offsetY];
-            //self.textMat.uniforms.smooth.value = [1, offsetY];
+            // self.textMat.uniforms.offset.value = [offsetX, offsetY];
+            // self.textMat.uniforms.smooth.value = [1, offsetY];
 
-        }
+      }
     };
 
     self.app.onUpdate = function () {
@@ -81,13 +81,13 @@ export default class SplashHero {
     self.app.play();
 
     // Pause if the canvas is not onscreen
-    window.addEventListener( 'scroll', () =>  {
-      if ( ! self.app.isPaused && window.scrollY > (self.canvas.offsetTop + self.canvas.clientHeight) ) {
+    window.addEventListener( 'scroll', () => {
+      if ( !self.app.isPaused && window.scrollY > ( self.canvas.offsetTop + self.canvas.clientHeight ) ) {
         self.app.pause();
       } else if ( self.app.isPaused ) {
         self.app.play();
       }
-    });
+    } );
 
   }
 
@@ -132,21 +132,21 @@ export default class SplashHero {
     const self = this;
 
     const loader = new THREE.FontLoader();
-    this.textMat = new THREE.MeshBasicMaterial( {color: 0xffffff } ); //this.initTextMat(); 
+    this.textMat = new THREE.MeshBasicMaterial( { color: 0xffffff } ); // this.initTextMat();
 
-    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', function ( response ) {
+    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', ( response ) => {
       const textGeometry = generateTextGeometry( 'Black Thread Design', {
-        size:40,
-        height:3,
+        size: 40,
+        height: 3,
         font: response,
         weight: 'normal',
         style: 'normal',
-        curveSegments:24,
-        bevelSize:2,
-        bevelThickness:2,
-        bevelEnabled:true,
-        anchor:{x:0.5, y:0.5, z:0.0}
-      });
+        curveSegments: 24,
+        bevelSize: 2,
+        bevelThickness: 2,
+        bevelEnabled: true,
+        anchor: { x: 0.5, y: 0.5, z: 0.0 },
+      } );
 
       const textMesh = new THREE.Mesh( textGeometry, self.textMat );
 

@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Time from './Time.js';
 
 /**
@@ -9,10 +10,10 @@ function App( canvas ) {
 
   const self = this;
 
-  let _canvas,
-    _scene,
-    _camera,
-    _renderer;
+  let _canvas;
+  let _scene;
+  let _camera;
+  let _renderer;
 
   let _currentAnimationFrameID;
 
@@ -42,7 +43,7 @@ function App( canvas ) {
 
   this.onWindowResize = function () {};
 
-  const onWindowResize =	function (  ) {
+  const onWindowResize = function () {
 
     if ( !self.autoResize ) return;
 
@@ -53,7 +54,7 @@ function App( canvas ) {
       console.warn( 'THREE.APP: AutoResize only works with PerspectiveCamera' );
       return;
 
-    } 
+    }
 
     setCameraAspect();
 

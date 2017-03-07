@@ -5,15 +5,14 @@ export const uuid = function b( a ) {
 };
 
 
-
 /* ****************************************
   Keep track of mouse / pointer position
-  use something like 
-  
+  use something like
+
   import { moveHandler } from './utilities.js';
   window.addEventListener('mousemove', moveHandler); //use once globally
 
-  to keep track of position then use 
+  to keep track of position then use
 
   import { pointerPos } from './utilities.js';
 
@@ -29,7 +28,7 @@ export const moveHandler = ( e ) => {
 
     pointerPos.x = e.center.x;
     pointerPos.y = e.center.y;
-  }	else {
+  } else {
     pointerPos.x = e.pageX;
     pointerPos.y = e.pageY;
   }
