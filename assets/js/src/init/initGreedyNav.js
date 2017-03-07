@@ -1,8 +1,9 @@
 import Greedy from '../../vendor/greedy-nav.js';
 
 // Initialise menu
-const menu = new Greedy( {
-  element: '.greedy-nav',
-  counter: true,
-} );
-
+export default function () {
+  const menu = new Greedy( {
+    element: '.greedy-nav',
+    counter: true,
+  } );
+}

@@ -16,7 +16,10 @@ const setBodyMargin = function setBodyMargin() {
   document.querySelector( 'body' ).style.marginBottom = height + 'px';
 };
 
-setBodyMargin();
 
-window.addEventListener( 'resize', throttle( setBodyMargin, 250 ) );
 
+export default function () {
+    setBodyMargin();
+
+    window.addEventListener( 'resize', throttle( setBodyMargin, 250 ) );
+}

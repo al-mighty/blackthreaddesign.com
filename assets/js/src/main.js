@@ -12,11 +12,11 @@ import PNLTRI from '../vendor/pnltri/pnltri.js';
 import { moveHandler } from './utilities.js';
 
 // TODO: refactor as functions to allow these to be run after initLoader
-import './init/initLightBox.js';
-import './init/initGreedyNav.js';
-import './init/initSmoothScroll.js';
-import './init/initFooter.js';
-import './init/initVideos.js';
+import initLightBox from './init/initLightBox.js';
+import initGreedyNav from './init/initGreedyNav.js';
+import initSmoothScroll from './init/initSmoothScroll.js';
+import initFooter from './init/initFooter.js';
+import initVideos from './init/initVideos.js';
 
 import initLoader from './loadingOverlay.js';
 import initSplash from './splash/splashMain.js';
@@ -24,6 +24,15 @@ import initSplash from './splash/splashMain.js';
 // Set up loading overlay
 initLoader();
 
+// Initialise layout and other things
+initGreedyNav();
+
+// BUG: nav left not hidden on first image
+initLightBox();
+
+initFooter();
+initSmoothScroll();
+initVideos();
 
 // Set up any globals
 window.Hammer = Hammer.default;

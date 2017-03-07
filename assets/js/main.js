@@ -48230,15 +48230,17 @@ var avalonbox = createCommonjsModule(function (module) {
 
 var avalonbox$1 = interopDefault(avalonbox);
 
-document.querySelectorAll('.gallery').forEach(function (gallery) {
-  if (!gallery.id) gallery.id = uuid();
-  avalonbox$1.run(gallery.id);
-});
+var initLightBox = function () {
+  document.querySelectorAll('.gallery').forEach(function (gallery) {
+    if (!gallery.id) gallery.id = uuid();
+    avalonbox$1.run(gallery.id);
+  });
 
-document.querySelectorAll('.lightbox').forEach(function (image) {
-  if (!image.id) image.id = uuid();
-  avalonbox$1.run(image.id);
-});
+  document.querySelectorAll('.lightbox').forEach(function (image) {
+    if (!image.id) image.id = uuid();
+    avalonbox$1.run(image.id);
+  });
+};
 
 var greedyNav = createCommonjsModule(function (module) {
   var Greedy = function Greedy(options) {
@@ -48346,10 +48348,12 @@ var greedyNav = createCommonjsModule(function (module) {
 
 var Greedy = interopDefault(greedyNav);
 
-var menu = new Greedy({
-  element: '.greedy-nav',
-  counter: true
-});
+var initGreedyNav = function () {
+  var menu = new Greedy({
+    element: '.greedy-nav',
+    counter: true
+  });
+};
 
 // Robert Penner's easeInOutQuad
 
@@ -48513,18 +48517,20 @@ var singleton = jumper();
 
 var links = document.querySelectorAll('a');
 
-//Filename of current page
-var fileName = location.href.split("/").pop().split("#")[0];
+// Filename of current page
+var fileName = location.href.split('/').pop().split('#')[0];
 
-links.forEach(function (a) {
-  //check if it's a link to another location on the page
-  if (~a.href.indexOf(fileName + '#')) {
-    var link = '#' + a.href.split('#').pop();
-    a.onclick = function () {
-      return singleton(link);
-    };
-  }
-});
+var initSmoothScroll = function () {
+    links.forEach(function (a) {
+        //check if it's a link to another location on the page
+        if (~a.href.indexOf(fileName + '#')) {
+            var link = '#' + a.href.split('#').pop();
+            a.onclick = function () {
+                return singleton(link);
+            };
+        }
+    });
+};
 
 var index = createCommonjsModule(function (module) {
 /**
@@ -48984,9 +48990,11 @@ var setBodyMargin = function setBodyMargin() {
   document.querySelector('body').style.marginBottom = height + 'px';
 };
 
-setBodyMargin();
+var initFooter = function () {
+  setBodyMargin();
 
-window.addEventListener('resize', throttle(setBodyMargin, 250));
+  window.addEventListener('resize', throttle(setBodyMargin, 250));
+};
 
 var fluidVids = createCommonjsModule(function (module) {
   var fluidvids = {
@@ -49046,9 +49054,11 @@ var fluidVids = createCommonjsModule(function (module) {
 
 var fluidvids = interopDefault(fluidVids);
 
-fluidvids.init({
-  selector: ['iframe', 'object'], // runs querySelectorAll()
-  players: ['www.youtube.com', 'player.vimeo.com'] });
+var initVideos = function () {
+    fluidvids.init({
+        selector: ['iframe', 'object'], // runs querySelectorAll()
+        players: ['www.youtube.com', 'player.vimeo.com'] });
+};
 
 var useLoadingManager = false;
 
@@ -50657,7 +50667,22 @@ function initSplash(showStats) {
   // const splashBlog = new SplashBlog( showStats );
 }
 
+// Adds TweenLite, TimeLineLite etc as globals
+// import BAS from './3d/vendor/bas.js';
+
+// TODO: refactor as functions to allow these to be run after initLoader
+// Set up loading overlay
 initLoader();
+
+// Initialise layout and other things
+initGreedyNav();
+
+// BUG: nav left not hidden on first image
+initLightBox();
+
+initFooter();
+initSmoothScroll();
+initVideos();
 
 // Set up any globals
 window.Hammer = hammer$1;
