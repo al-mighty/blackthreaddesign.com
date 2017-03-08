@@ -63,5 +63,6 @@ new window.Hammer( document.querySelector( 'body' ) )
   .on( 'pan', moveHandler );
 
 
+// Set up Splash scene
 const showStats = false;
 initSplash( showStats );

@@ -50485,9 +50485,9 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var textVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, -1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
+var textVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( position.xy, 1.0, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5 + 0.5;\n}\n";
 
-var textFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
+var textFrag = "#define GLSLIFY 1\nuniform sampler2D map;\nvarying vec2 screenUV;\nvoid main() {\n  gl_FragColor = texture2D( map, screenUV );\n}\n";
 
 function generateTextGeometry(text, params) {
   var geometry = new TextGeometry(text, params);
@@ -50513,7 +50513,6 @@ var SplashHero = function () {
     var self = this;
 
     self.canvas = document.querySelector('#splash-hero-canvas');
-
     self.container = document.querySelector('#splash-hero-container');
 
     self.app = new App(self.canvas);
@@ -50521,17 +50520,36 @@ var SplashHero = function () {
     // self.app.camera.far = 100;
     self.app.camera.position.set(0, 0, 500);
 
+    self.colorA = new Color(0xffffff);
+    self.colorB = new Color(0x283844);
+
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
     if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
+    var rtOptions = {
+      wrapS: RepeatWrapping,
+      wrapT: RepeatWrapping,
+      minFilter: LinearFilter,
+      magFilter: NearestFilter,
+      format: RGBFormat,
+      depthBuffer: false,
+      stencilBuffer: false
+    };
+
+    var textureSize = _Math.nextPowerOfTwo(Math.max(self.canvas.clientWidth, self.canvas.clientHeight));
+    console.log(textureSize);
+
+    this.bgRenderTarget = new WebGLRenderTarget(textureSize, textureSize, rtOptions);
+    this.textRenderTarget = new WebGLRenderTarget(textureSize, textureSize, rtOptions);
+    // this.textRenderTarget.texture.repeat.set( 0.001, 0.006 );
     self.addBackground();
 
     self.addText();
 
     self.addControls();
 
-    var updateMaterial = function () {
+    var updateMaterials = function () {
       // For some reason pan events on mobile sometimes register as (0,0); ignore these
       if (pointerPos.x !== 0 && pointerPos.y !== 0) {
         var offsetX = pointerPos.x / self.app.canvas.clientWidth;
@@ -50542,19 +50560,38 @@ var SplashHero = function () {
 
         self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
         self.backgroundMat.uniforms.smooth.value = [1, offsetY];
-
-        // self.textMat.uniforms.offset.value = [offsetX, offsetY];
-        // self.textMat.uniforms.smooth.value = [1, offsetY];
       }
     };
 
+    self.app.scene.background = this.bgRenderTarget.texture;
+
+    self.num = 3;
+
     self.app.onUpdate = function () {
-      updateMaterial();
+      updateMaterials();
+
+      self.bgMesh.visible = true;
+      self.backgroundMat.uniforms.color1.value = self.colorB;
+      self.backgroundMat.uniforms.color2.value = self.colorA;
+      self.app.renderer.render(self.app.scene, self.app.camera, self.textRenderTarget, false);
+      self.backgroundMat.uniforms.color1.value = self.colorA;
+      self.backgroundMat.uniforms.color2.value = self.colorB;
+      self.app.renderer.render(self.app.scene, self.app.camera, self.bgRenderTarget, false);
+      self.bgMesh.visible = false;
+
+      //   if(self.num) {
+      //       self.num -= 1;
+      //       console.log (self.bgRenderTarget.texture);
+      //       window.open( self.app.renderer.domElement.toDataURL( 'image/png' ), 'screenshot' );
+      //   }
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
 
-    self.app.onWindowResize = function () {};
+    self.app.onWindowResize = function () {
+      this.bgRenderTarget.setSize(self.canvas.clientHeight, self.canvas.clientHeight);
+      this.textRenderTarget.setSize(self.canvas.clientHeight, self.canvas.clientHeight);
+    };
 
     self.app.play();
 
@@ -50575,8 +50612,8 @@ var SplashHero = function () {
   SplashHero.prototype.addBackground = function addBackground() {
     this.backgroundMat = this.initBackgroundMat();
     var geometry = new PlaneGeometry(2, 2, 1);
-    var mesh = new Mesh(geometry, this.backgroundMat);
-    this.app.scene.add(mesh);
+    this.bgMesh = new Mesh(geometry, this.backgroundMat);
+    this.app.scene.add(this.bgMesh);
   };
 
   SplashHero.prototype.initBackgroundMat = function initBackgroundMat() {
@@ -50589,8 +50626,8 @@ var SplashHero = function () {
       noiseTexture: { value: noiseTexture },
       offset: { value: new Vector2(0, 0) },
       smooth: { value: new Vector2(0.0, 1.0) },
-      color1: { value: new Color(0xffffff) },
-      color2: { value: new Color(0x283844) }
+      color1: { value: this.colorA },
+      color2: { value: this.colorB }
 
     };
 
@@ -50605,7 +50642,8 @@ var SplashHero = function () {
     var self = this;
 
     var loader = new FontLoader();
-    this.textMat = new MeshBasicMaterial({ color: 0xffffff }); // this.initTextMat();
+    // this.textMat = new THREE.MeshBasicMaterial( { color: 0xffffff, map: this.textRenderTarget.texture } ); // this.initTextMat();
+    this.textMat = this.initTextMat();
 
     loader.load('assets/fonts/json/droid_sans_mono_regular.typeface.json', function (response) {
       var textGeometry = generateTextGeometry('Black Thread Design', {
@@ -50635,16 +50673,10 @@ var SplashHero = function () {
     noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
 
     var uniforms = {
-
-      noiseTexture: { value: noiseTexture },
-      offset: { value: new Vector2(0, 0) },
-      smooth: { value: new Vector2(0.0, 1.0) },
-      color1: { value: new Color(0xffffff) },
-      color2: { value: new Color(0x283844) }
-
+      map: { value: this.textRenderTarget.texture }
     };
 
-    return new RawShaderMaterial({
+    return new ShaderMaterial({
       uniforms: uniforms,
       vertexShader: textVert,
       fragmentShader: textFrag
@@ -50667,11 +50699,6 @@ function initSplash(showStats) {
   // const splashBlog = new SplashBlog( showStats );
 }
 
-// Adds TweenLite, TimeLineLite etc as globals
-// import BAS from './3d/vendor/bas.js';
-
-// TODO: refactor as functions to allow these to be run after initLoader
-// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
@@ -50710,6 +50737,7 @@ ShapeUtils.triangulateShape = function () {
 window.addEventListener('mousemove', moveHandler);
 new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
 
+// Set up Splash scene
 var showStats = false;
 initSplash(showStats);
 

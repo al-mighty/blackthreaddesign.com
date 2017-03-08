@@ -1,7 +1,7 @@
-attribute vec3 position;
-varying vec2 uv;
+varying vec2 screenUV;
 
 void main() {
-	gl_Position = vec4(vec3(position.x, position.y, -1.0), 1.0);
-	uv = vec2(position.x, position.y) * 0.5;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position.xy, 1.0, 1.0 );
+
+  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5 + 0.5;
 }
