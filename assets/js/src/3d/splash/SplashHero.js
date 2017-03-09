@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import BAS from '../vendor/bas.js';
+import threeUtils from '../threeUtils.js';
 import StatisticsOverlay from '../StatisticsOverlay.js';
 import App from '../App.js';
 import OrbitControls from '../controls/OrbitControls.js';
@@ -24,6 +26,12 @@ function generateTextGeometry( text, params ) {
   geometry.applyMatrix( matrix );
 
   return geometry;
+}
+
+function tesselateGeometry( geometry ) {
+  threeUtils.tessellateRepeat( geometry, 1.0, 2 );
+
+  threeUtils.separateFaces( geometry );
 }
 
 export default class SplashHero {
@@ -73,8 +81,25 @@ export default class SplashHero {
         self.smooth.set( 1.0, offsetY );
       }
     };
+
+    let uTime = 0.0;
+    let direction = 1.0;
     self.app.onUpdate = function () {
       updateMaterials();
+
+      if( uTime >= 1.5 || uTime <= -0.5 ) { 
+        uTime = 0.0;
+      }
+
+      if( uTime <= 1.0 && uTime >= 0.0 ) {
+        uTime += ( direction * self.app.delta / 8000 );
+      }
+      else {
+        uTime -= ( direction * self.app.delta / 8000 );
+        direction *= -1.0;
+      }
+
+      self.textMat.uniforms.uTime.value = uTime;
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -150,7 +175,106 @@ export default class SplashHero {
         anchor: { x: 0.5, y: 0.5, z: 0.0 },
       } );
 
-      const textMesh = new THREE.Mesh( textGeometry, self.textMat );
+      tesselateGeometry( textGeometry );
+
+      const bufferGeometry = new BAS.ModelBufferGeometry( textGeometry );
+
+
+      /** *********************************************************************** */
+      function FibSpherePointClosure () {
+        const v = { x: 0, y: 0, z: 0 };
+        const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
+
+        return function ( i, n, radius ) {
+          const step = 2.0 / n;
+          let r,
+            phi;
+
+          v.y = i * step - 1 + ( step * 0.5 );
+          r = Math.sqrt( 1 - v.y * v.y );
+          phi = i * G;
+          v.x = Math.cos( phi ) * r;
+          v.z = Math.sin( phi ) * r;
+
+          radius = radius || 1;
+
+          v.x *= radius;
+          v.y *= radius;
+          v.z *= radius;
+
+          return v;
+        };
+      };
+
+      const fibSpherePoint = new FibSpherePointClosure();
+
+      const aAnimation = bufferGeometry.createAttribute( 'aAnimation', 2 );
+      const aEndPosition = bufferGeometry.createAttribute( 'aEndPosition', 3 );
+      const aAxisAngle = bufferGeometry.createAttribute( 'aAxisAngle', 4 );
+
+      const faceCount = bufferGeometry.faceCount;
+      let i,
+        i2,
+        i3,
+        i4,
+        v;
+
+      const maxDelay = 0.0;
+      const minDuration = 1.0;
+      const maxDuration = 1.0;
+      const stretch = 0.05;
+      const lengthFactor = 0.001;
+      const maxLength = textGeometry.boundingBox.max.length();
+
+      this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
+      this._animationProgress = 0;
+
+      const axis = new THREE.Vector3();
+      let angle;
+
+      for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
+        const face = textGeometry.faces[i];
+        const centroid = BAS.Utils.computeCentroid( textGeometry, face );
+        const centroidN = new THREE.Vector3().copy( centroid ).normalize();
+
+        // animation
+        const delay = ( maxLength - centroid.length() ) * lengthFactor;
+        const duration = THREE.Math.randFloat( minDuration, maxDuration );
+
+        for ( v = 0; v < 6; v += 2 ) {
+          aAnimation.array[i2 + v] = delay + stretch * Math.random();
+          aAnimation.array[i2 + v + 1] = duration;
+        }
+
+        // end position
+        const point = fibSpherePoint( i, faceCount, 200 );
+
+        for ( v = 0; v < 9; v += 3 ) {
+          aEndPosition.array[i3 + v] = point.x;
+          aEndPosition.array[i3 + v + 1] = point.y;
+          aEndPosition.array[i3 + v + 2] = point.z;
+        }
+
+        // axis angle
+        axis.x = centroidN.x;
+        axis.y = -centroidN.y;
+        axis.z = -centroidN.z;
+
+        axis.normalize();
+
+        angle = Math.PI * THREE.Math.randFloat( 0.5, 2.0 );
+
+        for ( v = 0; v < 12; v += 4 ) {
+          aAxisAngle.array[i4 + v] = axis.x;
+          aAxisAngle.array[i4 + v + 1] = axis.y;
+          aAxisAngle.array[i4 + v + 2] = axis.z;
+          aAxisAngle.array[i4 + v + 3] = angle;
+        }
+      }
+
+
+      /** *********************************************************************** */
+      const textMesh = new THREE.Mesh( bufferGeometry, this.textMat );
 
       textMesh.position.set( 0, 0, 100 );
 
@@ -166,6 +290,7 @@ export default class SplashHero {
       smooth: { value: this.smooth },
       color1: { value: this.colorB },
       color2: { value: this.colorA },
+      uTime: { value: 0.0 },
     };
 
     return new THREE.ShaderMaterial( {
