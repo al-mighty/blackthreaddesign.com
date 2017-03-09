@@ -50481,13 +50481,13 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
+var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, -1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var textVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( position.xy, 1.0, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5 + 0.5;\n}\n";
+var textVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( position.xy, 1.0, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
 
-var textFrag = "#define GLSLIFY 1\nuniform sampler2D map;\nvarying vec2 screenUV;\nvoid main() {\n  gl_FragColor = texture2D( map, screenUV );\n}\n";
+var textFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
 function generateTextGeometry(text, params) {
   var geometry = new TextGeometry(text, params);
@@ -50517,11 +50517,14 @@ var SplashHero = function () {
 
     self.app = new App(self.canvas);
 
-    // self.app.camera.far = 100;
     self.app.camera.position.set(0, 0, 500);
 
     self.colorA = new Color(0xffffff);
     self.colorB = new Color(0x283844);
+
+    var loader = new TextureLoader();
+    this.noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+    this.noiseTexture.wrapS = this.noiseTexture.wrapT = RepeatWrapping;
 
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
@@ -50541,8 +50544,7 @@ var SplashHero = function () {
     console.log(textureSize);
 
     this.bgRenderTarget = new WebGLRenderTarget(textureSize, textureSize, rtOptions);
-    this.textRenderTarget = new WebGLRenderTarget(textureSize, textureSize, rtOptions);
-    // this.textRenderTarget.texture.repeat.set( 0.001, 0.006 );
+
     self.addBackground();
 
     self.addText();
@@ -50560,38 +50562,25 @@ var SplashHero = function () {
 
         self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
         self.backgroundMat.uniforms.smooth.value = [1, offsetY];
+
+        self.textMat.uniforms.offset.value = [offsetX, offsetY];
+        self.textMat.uniforms.smooth.value = [1, offsetY];
       }
     };
 
     self.app.scene.background = this.bgRenderTarget.texture;
 
-    self.num = 3;
-
     self.app.onUpdate = function () {
       updateMaterials();
 
       self.bgMesh.visible = true;
-      self.backgroundMat.uniforms.color1.value = self.colorB;
-      self.backgroundMat.uniforms.color2.value = self.colorA;
-      self.app.renderer.render(self.app.scene, self.app.camera, self.textRenderTarget, false);
-      self.backgroundMat.uniforms.color1.value = self.colorA;
-      self.backgroundMat.uniforms.color2.value = self.colorB;
       self.app.renderer.render(self.app.scene, self.app.camera, self.bgRenderTarget, false);
       self.bgMesh.visible = false;
-
-      //   if(self.num) {
-      //       self.num -= 1;
-      //       console.log (self.bgRenderTarget.texture);
-      //       window.open( self.app.renderer.domElement.toDataURL( 'image/png' ), 'screenshot' );
-      //   }
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
 
-    self.app.onWindowResize = function () {
-      this.bgRenderTarget.setSize(self.canvas.clientHeight, self.canvas.clientHeight);
-      this.textRenderTarget.setSize(self.canvas.clientHeight, self.canvas.clientHeight);
-    };
+    self.app.onWindowResize = function () {};
 
     self.app.play();
 
@@ -50617,13 +50606,10 @@ var SplashHero = function () {
   };
 
   SplashHero.prototype.initBackgroundMat = function initBackgroundMat() {
-    var loader = new TextureLoader();
-    var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-    noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
 
     var uniforms = {
 
-      noiseTexture: { value: noiseTexture },
+      noiseTexture: { value: this.noiseTexture },
       offset: { value: new Vector2(0, 0) },
       smooth: { value: new Vector2(0.0, 1.0) },
       color1: { value: this.colorA },
@@ -50642,7 +50628,6 @@ var SplashHero = function () {
     var self = this;
 
     var loader = new FontLoader();
-    // this.textMat = new THREE.MeshBasicMaterial( { color: 0xffffff, map: this.textRenderTarget.texture } ); // this.initTextMat();
     this.textMat = this.initTextMat();
 
     loader.load('assets/fonts/json/droid_sans_mono_regular.typeface.json', function (response) {
@@ -50668,12 +50653,12 @@ var SplashHero = function () {
   };
 
   SplashHero.prototype.initTextMat = function initTextMat() {
-    var loader = new TextureLoader();
-    var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-    noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
-
     var uniforms = {
-      map: { value: this.textRenderTarget.texture }
+      noiseTexture: { value: this.noiseTexture },
+      offset: { value: new Vector2(0, 0) },
+      smooth: { value: new Vector2(0.0, 1.0) },
+      color1: { value: this.colorB },
+      color2: { value: this.colorA }
     };
 
     return new ShaderMaterial({

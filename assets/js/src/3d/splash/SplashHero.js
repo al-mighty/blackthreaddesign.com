@@ -37,11 +37,15 @@ export default class SplashHero {
 
     self.app = new App( self.canvas );
 
-    // self.app.camera.far = 100;
     self.app.camera.position.set( 0, 0, 500 );
 
     self.colorA = new THREE.Color( 0xffffff );
     self.colorB = new THREE.Color( 0x283844 );
+
+    const loader = new THREE.TextureLoader();
+    this.noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
+    this.noiseTexture.wrapS = this.noiseTexture.wrapT = THREE.RepeatWrapping;
+
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -61,8 +65,7 @@ export default class SplashHero {
     console.log( textureSize );
 
     this.bgRenderTarget = new THREE.WebGLRenderTarget( textureSize, textureSize, rtOptions );
-    this.textRenderTarget = new THREE.WebGLRenderTarget( textureSize, textureSize, rtOptions );
-    // this.textRenderTarget.texture.repeat.set( 0.001, 0.006 );
+
     self.addBackground();
 
     self.addText();
@@ -81,40 +84,26 @@ export default class SplashHero {
         self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
         self.backgroundMat.uniforms.smooth.value = [1, offsetY];
 
+        self.textMat.uniforms.offset.value = [offsetX, offsetY];
+        self.textMat.uniforms.smooth.value = [1, offsetY];
+
       }
     };
 
     self.app.scene.background = this.bgRenderTarget.texture;
 
-    self.num = 3;
-
     self.app.onUpdate = function () {
       updateMaterials();
 
       self.bgMesh.visible = true;
-      self.backgroundMat.uniforms.color1.value = self.colorB;
-      self.backgroundMat.uniforms.color2.value = self.colorA;
-      self.app.renderer.render( self.app.scene, self.app.camera, self.textRenderTarget, false );
-      self.backgroundMat.uniforms.color1.value = self.colorA;
-      self.backgroundMat.uniforms.color2.value = self.colorB;
       self.app.renderer.render( self.app.scene, self.app.camera, self.bgRenderTarget, false );
       self.bgMesh.visible = false;
-
-
-    //   if(self.num) {
-    //       self.num -= 1;
-    //       console.log (self.bgRenderTarget.texture);
-    //       window.open( self.app.renderer.domElement.toDataURL( 'image/png' ), 'screenshot' );
-    //   }
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 
-    self.app.onWindowResize = function () {
-      this.bgRenderTarget.setSize( self.canvas.clientHeight, self.canvas.clientHeight );
-      this.textRenderTarget.setSize( self.canvas.clientHeight, self.canvas.clientHeight );
-    };
+    self.app.onWindowResize = function () { };
 
     self.app.play();
 
@@ -142,13 +131,10 @@ export default class SplashHero {
 
 
   initBackgroundMat( ) {
-    const loader = new THREE.TextureLoader();
-    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
-    noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
     const uniforms = {
 
-      noiseTexture: { value: noiseTexture },
+      noiseTexture: { value: this.noiseTexture },
       offset: { value: new THREE.Vector2( 0, 0 ) },
       smooth: { value: new THREE.Vector2( 0.0, 1.0 ) },
       color1: { value: this.colorA },
@@ -170,7 +156,6 @@ export default class SplashHero {
     const self = this;
 
     const loader = new THREE.FontLoader();
-    // this.textMat = new THREE.MeshBasicMaterial( { color: 0xffffff, map: this.textRenderTarget.texture } ); // this.initTextMat();
     this.textMat = this.initTextMat();
 
 
@@ -198,12 +183,12 @@ export default class SplashHero {
   }
 
   initTextMat( ) {
-    const loader = new THREE.TextureLoader();
-    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
-    noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
-
     const uniforms = {
-      map: { value: this.textRenderTarget.texture },
+      noiseTexture: { value: this.noiseTexture },
+      offset: { value: new THREE.Vector2( 0, 0 ) },
+      smooth: { value: new THREE.Vector2( 0.0, 1.0 ) },
+      color1: { value: this.colorB },
+      color2: { value: this.colorA },
     };
 
     return new THREE.ShaderMaterial( {
