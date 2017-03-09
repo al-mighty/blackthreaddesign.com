@@ -42,6 +42,9 @@ export default class SplashHero {
     self.colorA = new THREE.Color( 0xffffff );
     self.colorB = new THREE.Color( 0x283844 );
 
+    self.offset = new THREE.Vector2( 0, 0 );
+    self.smooth = new THREE.Vector2( 1.0, 1.0 );
+
     const loader = new THREE.TextureLoader();
     this.noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
     this.noiseTexture.wrapS = this.noiseTexture.wrapT = THREE.RepeatWrapping;
@@ -50,21 +53,6 @@ export default class SplashHero {
     // TODO: not working in Edge
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
-
-    const rtOptions = {
-      wrapS: THREE.RepeatWrapping,
-      wrapT: THREE.RepeatWrapping,
-      minFilter: THREE.LinearFilter,
-      magFilter: THREE.NearestFilter,
-      format: THREE.RGBFormat,
-      depthBuffer: false,
-      stencilBuffer: false,
-    };
-
-    const textureSize = THREE.Math.nextPowerOfTwo( Math.max( self.canvas.clientWidth, self.canvas.clientHeight ) );
-    console.log( textureSize );
-
-    this.bgRenderTarget = new THREE.WebGLRenderTarget( textureSize, textureSize, rtOptions );
 
     self.addBackground();
 
@@ -78,26 +66,15 @@ export default class SplashHero {
         const offsetX = pointerPos.x / self.app.canvas.clientWidth;
         let offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
 
-            // make the line well defined when moving the pointer off the top of the screen
+        // make the line well defined when moving the pointer off the top of the screen
         offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
 
-        self.backgroundMat.uniforms.offset.value = [offsetX, offsetY];
-        self.backgroundMat.uniforms.smooth.value = [1, offsetY];
-
-        self.textMat.uniforms.offset.value = [offsetX, offsetY];
-        self.textMat.uniforms.smooth.value = [1, offsetY];
-
+        self.offset.set( offsetX, offsetY );
+        self.smooth.set( 1.0, offsetY );
       }
     };
-
-    self.app.scene.background = this.bgRenderTarget.texture;
-
     self.app.onUpdate = function () {
       updateMaterials();
-
-      self.bgMesh.visible = true;
-      self.app.renderer.render( self.app.scene, self.app.camera, self.bgRenderTarget, false );
-      self.bgMesh.visible = false;
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -124,7 +101,7 @@ export default class SplashHero {
 
   addBackground() {
     this.backgroundMat = this.initBackgroundMat( );
-    const geometry = new THREE.PlaneGeometry( 2, 2, 1 );
+    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
     this.bgMesh = new THREE.Mesh( geometry, this.backgroundMat );
     this.app.scene.add( this.bgMesh );
   }
@@ -135,8 +112,8 @@ export default class SplashHero {
     const uniforms = {
 
       noiseTexture: { value: this.noiseTexture },
-      offset: { value: new THREE.Vector2( 0, 0 ) },
-      smooth: { value: new THREE.Vector2( 0.0, 1.0 ) },
+      offset: { value: this.offset },
+      smooth: { value: this.smooth },
       color1: { value: this.colorA },
       color2: { value: this.colorB },
 
@@ -182,11 +159,11 @@ export default class SplashHero {
 
   }
 
-  initTextMat( ) {
+  initTextMat() {
     const uniforms = {
       noiseTexture: { value: this.noiseTexture },
-      offset: { value: new THREE.Vector2( 0, 0 ) },
-      smooth: { value: new THREE.Vector2( 0.0, 1.0 ) },
+      offset: { value: this.offset },
+      smooth: { value: this.smooth },
       color1: { value: this.colorB },
       color2: { value: this.colorA },
     };
