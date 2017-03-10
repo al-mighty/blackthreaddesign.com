@@ -1957,10 +1957,7 @@ WebGLRenderTarget.prototype = {
 Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12017,6 +12014,8 @@ BufferAttribute.prototype = {
 
 };
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12046,10 +12045,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -23894,7 +23889,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -23923,7 +23918,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -35404,7 +35398,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -36815,13 +36812,33 @@ PropertyBinding.findNode = function( root, nodeName ) {
 
 /**
  *
- * Action provided by AnimationMixer for scheduling clip playback on specific
- * objects.
+ * A group of objects that receives a shared animation state.
  *
- * @author Ben Houston / http://clara.io/
- * @author David Sarno / http://lighthaus.us/
+ * Usage:
+ *
+ * 	-	Add objects you would otherwise pass as 'root' to the
+ * 		constructor or the .clipAction method of AnimationMixer.
+ *
+ * 	-	Instead pass this object as 'root'.
+ *
+ * 	-	You can also add and remove objects later when the mixer
+ * 		is running.
+ *
+ * Note:
+ *
+ *  	Objects of this class appear as one object to the mixer,
+ *  	so cache control of the individual objects must be done
+ *  	on the group.
+ *
+ * Limitation:
+ *
+ * 	- 	The animated properties must be compatible among the
+ * 		all objects in the group.
+ *
+ *  -	A single property can either be controlled through a
+ *  	target group or directly, but not both.
+ *
  * @author tschw
- *
  */
 
 function AnimationAction( mixer, clip, localRoot ) {
@@ -38230,13 +38247,7 @@ Uniform.prototype.clone = function () {
 };
 
 /**
- * @author bhouston / http://clara.io
- * @author WestLangley / http://github.com/WestLangley
- *
- * Ref: https://en.wikipedia.org/wiki/Spherical_coordinate_system
- *
- * The poles (phi) are at the positive and negative y axis.
- * The equator starts at positive z.
+ * @author benaadams / https://twitter.com/ben_a_adams
  */
 
 function Spherical( radius, phi, theta ) {
@@ -38312,9 +38323,11 @@ Spherical.prototype = {
 };
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author Mugen87 / https://github.com/Mugen87
+ *
+ * Ref: https://en.wikipedia.org/wiki/Cylindrical_coordinate_system
+ *
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -38458,12 +38471,10 @@ VertexNormalsHelper.prototype.update = ( function () {
 }() );
 
 /**
- * @author Sean Griffin / http://twitter.com/sgrif
- * @author Michael Guerrero / http://realitymeltdown.com
+ * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author ikerr / http://verold.com
- * @author Mugen87 / https://github.com/Mugen87
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function SkeletonHelper( object ) {
 
@@ -38575,7 +38586,6 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -38648,8 +38658,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -38759,12 +38768,8 @@ FaceNormalsHelper.prototype.update = ( function () {
 
 /**
  * @author alteredq / http://alteredqualia.com/
- * @author Mugen87 / https://github.com/Mugen87
- *
- *	- shows frustum, line of sight and up of the camera
- *	- suitable for fast updates
- * 	- based on frustum visualization in lightgl.js shadowmap example
- *		http://evanw.github.com/lightgl.js/tests/shadowmap.html
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
  */
 
 function CameraHelper( camera ) {
@@ -38957,26 +38962,8 @@ CameraHelper.prototype.update = function () {
 }();
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -39131,8 +39118,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-//
-
 Curve.create = function ( construct, getPoint ) {
 
 	console.log( 'THREE.Curve.create() has been deprecated' );
@@ -39179,7 +39164,6 @@ Object.assign( Spline.prototype, {
 } );
 
 //
-
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -40183,6 +40167,8 @@ AudioAnalyser.prototype.getData = function () {
 	return this.getFrequencyData();
 
 };
+
+//
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -53281,12 +53267,12 @@ var avalonbox = createCommonjsModule(function (module) {
     }
 
     function swipeHandler() {
-      new Hammer(document.querySelector('body')).on('swipeleft', function () {
+      new Hammer(document.querySelector('body')).on('swipeleft', function (e) {
         console.log("left");
-        previous();
-      }).on('swiperight', function () {
+        previous(e);
+      }).on('swiperight', function (e) {
         console.log("left");
-        next();
+        next(e);
       });
     }
 
@@ -53410,7 +53396,6 @@ Greedy.prototype.toggleHiddenLinks = function () {
   this.toggleButton.classList.toggle('links-displayed');
 };
 
-// Initialise menu
 var initGreedyNav = function () {
   var menu = new Greedy({
     element: '.greedy-nav',
@@ -54039,7 +54024,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -54798,11 +54782,6 @@ function Time() {
     };
 }
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -54986,21 +54965,6 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -56241,12 +56205,6 @@ function initSplash(showStats) {
   var splashHero = new SplashHero(showStats);
 }
 
-// Adds TweenLite, TimeLineLite etc as globals
-// import 'gsap/src/uncompressed/TimelineLite';
-// import 'gsap/src/uncompressed/easing/EasePack';
-
-// TODO: refactor as functions to allow these to be run after initLoader
-// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things

@@ -174,13 +174,13 @@ const Avalonbox = ( function () {
 
   function swipeHandler () {
     new Hammer( document.querySelector( 'body' ) )
-    .on( 'swipeleft', () => {
+    .on( 'swipeleft', ( e ) => {
       console.log("left");
-      previous(); 
+      previous( e ); 
     })
-    .on( 'swiperight', () => {
+    .on( 'swiperight', ( e ) => {
       console.log("left");
-      next(); 
+      next( e ); 
     });
   }
 
