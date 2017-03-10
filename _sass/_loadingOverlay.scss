@@ -34,18 +34,18 @@
     right: 25%;
     width: 48px;
     height: 48px;
-    margin: 250%;
+    margin: 25vmin;
 }
 
 @keyframes satellite
 {
     from
     {
-        transform: rotate(0) translateZ(0);
+        transform: translate(-50%, -50%) rotate(0);
     }
     to
     {
-        transform: rotate(360deg) translateZ(0);
+        transform: translate(-50%, -50%) rotate(360deg);
     }
 }
 
