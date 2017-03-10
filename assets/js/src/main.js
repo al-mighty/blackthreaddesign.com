@@ -9,7 +9,7 @@ import 'babel-polyfill';
 
 import PNLTRI from '../vendor/pnltri/pnltri.js';
 
-import { moveHandler } from './utilities.js';
+import utils from './utilities.js';
 
 // TODO: refactor as functions to allow these to be run after initLoader
 import initLightBox from './init/initLightBox.js';
@@ -58,9 +58,9 @@ THREE.ShapeUtils.triangulateShape = ( () => {
 } )();
 
 // Set up app wide event listeners for touch and mouse
-window.addEventListener( 'mousemove', moveHandler );
+window.addEventListener( 'mousemove', utils.moveHandler );
 new window.Hammer( document.querySelector( 'body' ) )
-  .on( 'pan', moveHandler );
+  .on( 'pan', utils.moveHandler );
 
 
 // Set up Splash scene

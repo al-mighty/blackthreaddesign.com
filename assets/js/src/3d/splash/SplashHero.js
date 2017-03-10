@@ -10,7 +10,7 @@ import backgroundFrag from '../shaders/splashBackground.frag';
 import textVert from '../shaders/splashText.vert';
 import textFrag from '../shaders/splashText.frag';
 
-import { pointerPos } from '../../utilities.js';
+import utils from '../../utilities.js';
 
 const v = new THREE.Vector3();
 const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
@@ -39,20 +39,11 @@ export default class SplashHero {
 
     const self = this;
 
-    self.canvas = document.querySelector( '#splash-hero-canvas' );
     self.container = document.querySelector( '#splash-hero-container' );
 
-    self.app = new App( self.canvas );
+    self.app = new App( document.querySelector( '#splash-hero-canvas' ) );
 
-    self.app.camera.position.set( 0, 0, 500 );
-
-    self.offset = new THREE.Vector2( 0, 0 );
-    self.smooth = new THREE.Vector2( 1.0, 1.0 );
-
-    const loader = new THREE.TextureLoader();
-    this.noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
-    this.noiseTexture.wrapS = this.noiseTexture.wrapT = THREE.RepeatWrapping;
-
+    // self.app.camera.position.set( 0, 0, 200 * widthRatio );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -64,15 +55,17 @@ export default class SplashHero {
 
     self.addText();
 
+    // self.computeCameraDistance();
+
     self.addControls();
 
     this.pauseWhenOffscreen();
 
     const updateMaterials = function () {
         // For some reason pan events on mobile sometimes register as (0,0); ignore these
-      if ( pointerPos.x !== 0 && pointerPos.y !== 0 ) {
-        const offsetX = pointerPos.x / self.app.canvas.clientWidth;
-        let offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
+      if ( utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0 ) {
+        const offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
+        let offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
 
         // make the line well defined when moving the pointer off the top of the screen
         offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
@@ -82,7 +75,7 @@ export default class SplashHero {
       }
     };
 
-    let uTime = 1.0;
+    let uTime = 0.0;
     let direction = -1.0;
 
     const updateAnimation = function () {
@@ -90,12 +83,16 @@ export default class SplashHero {
         uTime = 0.0;
       }
 
-      if ( uTime <= 1.0 && uTime >= 0.0 ) {
+      if ( uTime >= 0 ) {
         uTime += ( direction * self.app.delta / 8000 );
-      } else {
-        uTime -= ( direction * self.app.delta / 8000 );
-        direction *= -1.0;
       }
+
+      // if ( uTime <= 1.0 && uTime >= 0.0 ) {
+      //   uTime += ( direction * self.app.delta / 8000 );
+      // } else {
+      //   uTime -= ( direction * self.app.delta / 8000 );
+      //   direction *= -1.0;
+      // }
 
       self.textMat.uniforms.uTime.value = uTime;
     };
@@ -127,13 +124,25 @@ export default class SplashHero {
 
       self.initBufferAnimation( bufferGeometry, textGeometry );
 
-      const textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
+      self.textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
 
-      textMesh.position.set( 0, 0, 100 );
+      const dist = threeUtils.cameraDistanceToFillScreenWidth( this.app.camera, this.app.canvas, this.textMesh.geometry );
 
-      self.app.scene.add( textMesh );
+      self.app.camera.position.set( 0, 0, dist );
+
+      // console.log( dist, self.app.camera.position.z )
+
+      self.app.scene.add( self.textMesh );
     });
 
+  }
+
+  computeCameraDistance() {
+    const dist = threeUtils.cameraDistanceToFillScreenWidth( this.app.camera, this.app.canvas, this.textMesh.geometry );
+
+    // console.log( dist );
+
+    return dist;
   }
 
   initBufferAnimation( bufferGeometry, geometry ) {
@@ -221,6 +230,8 @@ export default class SplashHero {
         anchor: { x: 0.5, y: 0.5, z: 0.0 },
       } );
 
+      // console.log(textGeometry)
+
       threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
 
       threeUtils.explodeModifier( textGeometry );
@@ -235,11 +246,18 @@ export default class SplashHero {
   }
 
   initMaterials () {
+    const loader = new THREE.TextureLoader();
+    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
+    noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+    this.offset = new THREE.Vector2( 0, 0 );
+    this.smooth = new THREE.Vector2( 1.0, 1.0 );
+
     const colA = new THREE.Color( 0xffffff );
     const colB = new THREE.Color( 0x283844 );
 
     const uniforms = {
-        noiseTexture: { value: this.noiseTexture },
+        noiseTexture: { value: noiseTexture },
         offset: { value: this.offset },
         smooth: { value: this.smooth },  
     };
@@ -270,7 +288,7 @@ export default class SplashHero {
   // TODO: Currently only works when scrolling down
   pauseWhenOffscreen() {
     window.addEventListener( 'scroll', () => {
-      if ( !this.app.isPaused && window.scrollY > ( this.canvas.offsetTop + this.canvas.clientHeight ) ) {
+      if ( !this.app.isPaused && window.scrollY > ( this.app.canvas.offsetTop + this.app.canvas.clientHeight ) ) {
         this.app.pause();
       } else if ( this.app.isPaused ) {
         this.app.play();

@@ -52888,37 +52888,37 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
-// Simple uuid function
-var uuid = function b(a) {
-  return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
-};
-
 /* ****************************************
-  Keep track of mouse / pointer position
-  use something like
-
-  import { moveHandler } from './utilities.js';
-  window.addEventListener('mousemove', moveHandler); //use once globally
-
-  to keep track of position then use
-
-  import { pointerPos } from './utilities.js';
-
+Keep track of mouse / pointer position
+use something like
+  import utils from './utilities.js';
+window.addEventListener('mousemove', utils.moveHandler); //use once globally
+  utils.pointerPos
   to access the position
 */
+
 var pointerPos = {
   x: 0,
   y: 0
 };
 
-var moveHandler = function (e) {
-  if (e.pointerType === 'touch') {
+var utils = {
+  // Simple uuid function
+  uuid: function b(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
+  },
 
-    pointerPos.x = e.center.x;
-    pointerPos.y = e.center.y;
-  } else {
-    pointerPos.x = e.pageX;
-    pointerPos.y = e.pageY;
+  pointerPos: pointerPos,
+
+  moveHandler: function (e) {
+    if (e.pointerType === 'touch') {
+
+      pointerPos.x = e.center.x;
+      pointerPos.y = e.center.y;
+    } else {
+      pointerPos.x = e.pageX;
+      pointerPos.y = e.pageY;
+    }
   }
 };
 
@@ -53275,121 +53275,115 @@ var avalonbox$1 = interopDefault(avalonbox);
 
 var initLightBox = function () {
   document.querySelectorAll('.gallery').forEach(function (gallery) {
-    if (!gallery.id) gallery.id = uuid();
+    if (!gallery.id) gallery.id = utils.uuid();
     avalonbox$1.run(gallery.id);
   });
 
   document.querySelectorAll('.lightbox').forEach(function (image) {
-    if (!image.id) image.id = uuid();
+    if (!image.id) image.id = utils.uuid();
     avalonbox$1.run(image.id);
   });
 };
 
-var greedyNav = createCommonjsModule(function (module) {
-  var Greedy = function Greedy(options) {
-    this.element = document.querySelector(options.element);
-    this.counter = options.counter || false;
-    this.visibleLinks = this.element.querySelector('.visible-links');
-    this.toggleButton = this.element.querySelector('.toggle-links');
-    this.breakpoints = [];
-    this.init();
-  };
+var Greedy = function Greedy(options) {
+  this.element = document.querySelector(options.element);
+  this.counter = options.counter || false;
+  this.visibleLinks = this.element.querySelector('.visible-links');
+  this.toggleButton = this.element.querySelector('.toggle-links');
+  this.breakpoints = [];
+  this.init();
+};
 
-  window.Greedy = Greedy;
+// window.Greedy = Greedy;
 
-  Greedy.prototype.init = function () {
-    this.setupMenu();
+Greedy.prototype.init = function () {
+  this.setupMenu();
 
-    this.updateMenu();
-    this.addBindings();
-  };
+  this.updateMenu();
+  this.addBindings();
+};
+
+/*
+  Creates/returns a method bounded with 'this'. Used for creating
+  named event listeners that can easily be removed
+*/
+Greedy.prototype.bindMethod = function (name) {
+  return this['_' + name + '_'] || Object.defineProperty(this, '_' + name + '_', { value: this[name].bind(this) })['_' + name + '_'];
+};
+
+/*
+  Creates the necessary markup and adds the necessary classes
+*/
+Greedy.prototype.setupMenu = function () {
+  this.hiddenLinks = document.createElement('ul');
+  this.hiddenLinks.classList.add('hidden-links');
+  this.hiddenLinks.classList.add('links-invisible');
+  this.element.appendChild(this.hiddenLinks);
+  this.visibleLinks.classList.add('visible-links');
+
+  if (this.counter) {
+    this.toggleButton.classList.add('counter');
+  } else {
+    this.toggleButton.classList.add('no-counter');
+  }
+};
+
+/*
+  For each navigation item, calculate how much space is needed
+  to accomodate it
+*/
+Greedy.prototype.calculateBreakpoints = function () {
+  var childrenWidth = 0;
+
+  for (var i = 0; i < this.visibleLinks.children.length; i++) {
+    childrenWidth += this.visibleLinks.children[i].offsetWidth;
+    this.breakpoints[i] = childrenWidth;
+  }
+};
+
+Greedy.prototype.addBindings = function () {
+  window.addEventListener('resize', this.bindMethod('updateMenu'));
+  this.toggleButton.addEventListener('click', this.bindMethod('toggleHiddenLinks'));
+};
+
+Greedy.prototype.updateMenu = function () {
+  this.calculateBreakpoints();
+  var availableSpace = this.element.offsetWidth - this.toggleButton.offsetWidth;
+  var itemsVisible = this.visibleLinks.children.length;
+  var requiredSpace = this.breakpoints[itemsVisible - 1];
 
   /*
-    Creates/returns a method bounded with 'this'. Used for creating
-    named event listeners that can easily be removed
+    Check if there is not enough space for the visible links or
+    if there is space available for the hidden link
   */
-  Greedy.prototype.bindMethod = function (name) {
-    return this['_' + name + '_'] || Object.defineProperty(this, '_' + name + '_', { value: this[name].bind(this) })['_' + name + '_'];
-  };
+  if (availableSpace < this.breakpoints[itemsVisible - 1]) {
+    this.toggleButton.classList.remove('hidden');
+    this.hiddenLinks.classList.remove('hidden');
 
-  /*
-    Creates the necessary markup and adds the necessary classes
-  */
-  Greedy.prototype.setupMenu = function () {
-    this.hiddenLinks = document.createElement('ul');
-    this.hiddenLinks.classList.add('hidden-links');
-    this.hiddenLinks.classList.add('links-invisible');
-    this.element.appendChild(this.hiddenLinks);
-    this.visibleLinks.classList.add('visible-links');
-
-    if (this.counter) {
-      this.toggleButton.classList.add('counter');
-    } else {
-      this.toggleButton.classList.add('no-counter');
+    while (availableSpace < this.breakpoints[itemsVisible - 1]) {
+      this.hiddenLinks.insertBefore(this.visibleLinks.children[itemsVisible - 1], this.hiddenLinks.firstChild);
+      itemsVisible--;
     }
-  };
-
-  /*
-    For each navigation item, calculate how much space is needed
-    to accomodate it
-  */
-  Greedy.prototype.calculateBreakpoints = function () {
-    var childrenWidth = 0;
-
-    for (var i = 0; i < this.visibleLinks.children.length; i++) {
-      childrenWidth += this.visibleLinks.children[i].offsetWidth;
-      this.breakpoints[i] = childrenWidth;
+  } else if (availableSpace > this.breakpoints[itemsVisible]) {
+    while (availableSpace > this.breakpoints[itemsVisible]) {
+      this.visibleLinks.appendChild(this.hiddenLinks.removeChild(this.hiddenLinks.firstChild));
+      itemsVisible++;
     }
-  };
+  }
 
-  Greedy.prototype.addBindings = function () {
-    window.addEventListener('resize', this.bindMethod('updateMenu'));
-    this.toggleButton.addEventListener('click', this.bindMethod('toggleHiddenLinks'));
-  };
-
-  Greedy.prototype.updateMenu = function () {
-    this.calculateBreakpoints();
-    var availableSpace = this.element.offsetWidth - this.toggleButton.offsetWidth;
-    var itemsVisible = this.visibleLinks.children.length;
-    var requiredSpace = this.breakpoints[itemsVisible - 1];
-
-    /*
-      Check if there is not enough space for the visible links or
-      if there is space available for the hidden link
-    */
-    if (availableSpace < this.breakpoints[itemsVisible - 1]) {
-      this.toggleButton.classList.remove('hidden');
-      this.hiddenLinks.classList.remove('hidden');
-
-      while (availableSpace < this.breakpoints[itemsVisible - 1]) {
-        this.hiddenLinks.insertBefore(this.visibleLinks.children[itemsVisible - 1], this.hiddenLinks.firstChild);
-        itemsVisible--;
-      }
-    } else if (availableSpace > this.breakpoints[itemsVisible]) {
-      while (availableSpace > this.breakpoints[itemsVisible]) {
-        this.visibleLinks.appendChild(this.hiddenLinks.removeChild(this.hiddenLinks.firstChild));
-        itemsVisible++;
-      }
+  if (this.counter) {
+    this.toggleButton.setAttribute('data-count', this.hiddenLinks.children.length);
+    if (!this.hiddenLinks.children.length) {
+      this.toggleButton.classList.add('hidden');
+      this.hiddenLinks.classList.add('hidden');
     }
+  }
+};
 
-    if (this.counter) {
-      this.toggleButton.setAttribute('data-count', this.hiddenLinks.children.length);
-      if (!this.hiddenLinks.children.length) {
-        this.toggleButton.classList.add('hidden');
-        this.hiddenLinks.classList.add('hidden');
-      }
-    }
-  };
-
-  Greedy.prototype.toggleHiddenLinks = function () {
-    this.hiddenLinks.classList.toggle('links-invisible');
-    this.toggleButton.classList.toggle('links-displayed');
-  };
-
-  module.exports = Greedy;
-});
-
-var Greedy = interopDefault(greedyNav);
+Greedy.prototype.toggleHiddenLinks = function () {
+  this.hiddenLinks.classList.toggle('links-invisible');
+  this.toggleButton.classList.toggle('links-displayed');
+};
 
 var initGreedyNav = function () {
   var menu = new Greedy({
@@ -54159,349 +54153,365 @@ function initSplashLayout() {
 var fontLoader = void 0;
 
 var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
-            var buffer = new Float32Array(count * itemSize);
-            var attribute = new BufferAttribute(buffer, itemSize);
+  var buffer = new Float32Array(count * itemSize);
+  var attribute = new BufferAttribute(buffer, itemSize);
 
-            bufferGeometry.addAttribute(name, attribute);
+  bufferGeometry.addAttribute(name, attribute);
 
-            return attribute;
+  return attribute;
 };
 
 var threeUtils = {
-            /**
-             * Duplicates vertices so each face becomes separate.
-             * copied from  THREE.ExplodeModifier.
-               */
-            explodeModifier: function (geometry) {
-                        var vertices = [];
+  cameraDistanceToFillScreenWidth: function (camera, canvas, geometry) {
 
-                        for (var i = 0, il = geometry.faces.length; i < il; i++) {
-                                    var n = vertices.length;
-                                    var face = geometry.faces[i];
+    var vFOV = camera.fov * Math.PI / 180;
 
-                                    var a = face.a;
-                                    var b = face.b;
-                                    var c = face.c;
+    var hFOV = 2 * Math.atan(1 / camera.aspect * Math.tan(vFOV / 2));
 
-                                    var va = geometry.vertices[a];
-                                    var vb = geometry.vertices[b];
-                                    var vc = geometry.vertices[c];
+    var ratio = 2 * Math.tan(hFOV / 2);
+    var screen = ratio * (1 / camera.aspect);
 
-                                    vertices.push(va.clone());
-                                    vertices.push(vb.clone());
-                                    vertices.push(vc.clone());
+    if (!geometry.boundingBox) geometry.computeBoundingBox();
 
-                                    face.a = n;
-                                    face.b = n + 1;
-                                    face.c = n + 2;
-                        }
+    var size = geometry.boundingBox.max.x;
+    var dist = size / screen / 4;
 
-                        geometry.vertices = vertices;
-            },
+    return dist;
+  },
+  /**
+   * Duplicates vertices so each face becomes separate.
+   * copied from  THREE.ExplodeModifier.
+     */
+  explodeModifier: function (geometry) {
+    var vertices = [];
 
+    for (var i = 0, il = geometry.faces.length; i < il; i++) {
+      var n = vertices.length;
+      var face = geometry.faces[i];
 
-            /**
-            * Break faces with edges longer than maxEdgeLength.
-            * copied from  THREE.TessellateModifier.
-              */
-            tessellate: function (geometry, maxEdgeLength) {
-                        var edge = void 0;
+      var a = face.a;
+      var b = face.b;
+      var c = face.c;
 
-                        var faces = [];
-                        var faceVertexUvs = [];
-                        var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
+      var va = geometry.vertices[a];
+      var vb = geometry.vertices[b];
+      var vc = geometry.vertices[c];
 
-                        for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
+      vertices.push(va.clone());
+      vertices.push(vb.clone());
+      vertices.push(vc.clone());
 
-                                    faceVertexUvs[i] = [];
-                        }
+      face.a = n;
+      face.b = n + 1;
+      face.c = n + 2;
+    }
 
-                        for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
+    geometry.vertices = vertices;
+  },
 
-                                    var face = geometry.faces[_i];
 
-                                    if (face instanceof Face3) {
+  /**
+  * Break faces with edges longer than maxEdgeLength.
+  * copied from  THREE.TessellateModifier.
+    */
+  tessellate: function (geometry, maxEdgeLength) {
+    var edge = void 0;
 
-                                                var a = face.a;
-                                                var b = face.b;
-                                                var c = face.c;
+    var faces = [];
+    var faceVertexUvs = [];
+    var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
 
-                                                var va = geometry.vertices[a];
-                                                var vb = geometry.vertices[b];
-                                                var vc = geometry.vertices[c];
+    for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
 
-                                                var dab = va.distanceToSquared(vb);
-                                                var dbc = vb.distanceToSquared(vc);
-                                                var dac = va.distanceToSquared(vc);
+      faceVertexUvs[i] = [];
+    }
 
-                                                if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
+    for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
 
-                                                            var m = geometry.vertices.length;
+      var face = geometry.faces[_i];
 
-                                                            var triA = face.clone();
-                                                            var triB = face.clone();
+      if (face instanceof Face3) {
 
-                                                            var vm = void 0;
-                                                            var vnm = void 0;
-                                                            var vcm = void 0;
+        var a = face.a;
+        var b = face.b;
+        var c = face.c;
 
-                                                            if (dab >= dbc && dab >= dac) {
+        var va = geometry.vertices[a];
+        var vb = geometry.vertices[b];
+        var vc = geometry.vertices[c];
 
-                                                                        vm = va.clone();
-                                                                        vm.lerp(vb, 0.5);
+        var dab = va.distanceToSquared(vb);
+        var dbc = vb.distanceToSquared(vc);
+        var dac = va.distanceToSquared(vc);
 
-                                                                        triA.a = a;
-                                                                        triA.b = m;
-                                                                        triA.c = c;
+        if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
 
-                                                                        triB.a = m;
-                                                                        triB.b = b;
-                                                                        triB.c = c;
+          var m = geometry.vertices.length;
 
-                                                                        if (face.vertexNormals.length === 3) {
+          var triA = face.clone();
+          var triB = face.clone();
 
-                                                                                    vnm = face.vertexNormals[0].clone();
-                                                                                    vnm.lerp(face.vertexNormals[1], 0.5);
+          var vm = void 0;
+          var vnm = void 0;
+          var vcm = void 0;
 
-                                                                                    triA.vertexNormals[1].copy(vnm);
-                                                                                    triB.vertexNormals[0].copy(vnm);
-                                                                        }
+          if (dab >= dbc && dab >= dac) {
 
-                                                                        if (face.vertexColors.length === 3) {
+            vm = va.clone();
+            vm.lerp(vb, 0.5);
 
-                                                                                    vcm = face.vertexColors[0].clone();
-                                                                                    vcm.lerp(face.vertexColors[1], 0.5);
+            triA.a = a;
+            triA.b = m;
+            triA.c = c;
 
-                                                                                    triA.vertexColors[1].copy(vcm);
-                                                                                    triB.vertexColors[0].copy(vcm);
-                                                                        }
+            triB.a = m;
+            triB.b = b;
+            triB.c = c;
 
-                                                                        edge = 0;
-                                                            } else if (dbc >= dab && dbc >= dac) {
+            if (face.vertexNormals.length === 3) {
 
-                                                                        vm = vb.clone();
-                                                                        vm.lerp(vc, 0.5);
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp(face.vertexNormals[1], 0.5);
 
-                                                                        triA.a = a;
-                                                                        triA.b = b;
-                                                                        triA.c = m;
-
-                                                                        triB.a = m;
-                                                                        triB.b = c;
-                                                                        triB.c = a;
-
-                                                                        if (face.vertexNormals.length === 3) {
-
-                                                                                    vnm = face.vertexNormals[1].clone();
-                                                                                    vnm.lerp(face.vertexNormals[2], 0.5);
-
-                                                                                    triA.vertexNormals[2].copy(vnm);
-
-                                                                                    triB.vertexNormals[0].copy(vnm);
-                                                                                    triB.vertexNormals[1].copy(face.vertexNormals[2]);
-                                                                                    triB.vertexNormals[2].copy(face.vertexNormals[0]);
-                                                                        }
-
-                                                                        if (face.vertexColors.length === 3) {
-
-                                                                                    vcm = face.vertexColors[1].clone();
-                                                                                    vcm.lerp(face.vertexColors[2], 0.5);
-
-                                                                                    triA.vertexColors[2].copy(vcm);
-
-                                                                                    triB.vertexColors[0].copy(vcm);
-                                                                                    triB.vertexColors[1].copy(face.vertexColors[2]);
-                                                                                    triB.vertexColors[2].copy(face.vertexColors[0]);
-                                                                        }
-
-                                                                        edge = 1;
-                                                            } else {
-
-                                                                        vm = va.clone();
-                                                                        vm.lerp(vc, 0.5);
-
-                                                                        triA.a = a;
-                                                                        triA.b = b;
-                                                                        triA.c = m;
-
-                                                                        triB.a = m;
-                                                                        triB.b = b;
-                                                                        triB.c = c;
-
-                                                                        if (face.vertexNormals.length === 3) {
-
-                                                                                    vnm = face.vertexNormals[0].clone();
-                                                                                    vnm.lerp(face.vertexNormals[2], 0.5);
-
-                                                                                    triA.vertexNormals[2].copy(vnm);
-                                                                                    triB.vertexNormals[0].copy(vnm);
-                                                                        }
-
-                                                                        if (face.vertexColors.length === 3) {
-
-                                                                                    vcm = face.vertexColors[0].clone();
-                                                                                    vcm.lerp(face.vertexColors[2], 0.5);
-
-                                                                                    triA.vertexColors[2].copy(vcm);
-                                                                                    triB.vertexColors[0].copy(vcm);
-                                                                        }
-
-                                                                        edge = 2;
-                                                            }
-
-                                                            faces.push(triA, triB);
-                                                            geometry.vertices.push(vm);
-
-                                                            for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
-
-                                                                        if (geometry.faceVertexUvs[j].length) {
-
-                                                                                    var uvs = geometry.faceVertexUvs[j][_i];
-
-                                                                                    var uvA = uvs[0];
-                                                                                    var uvB = uvs[1];
-                                                                                    var uvC = uvs[2];
-
-                                                                                    // AB
-
-                                                                                    var uvsTriA = void 0;
-                                                                                    var uvsTriB = void 0;
-                                                                                    var uvM = void 0;
-
-                                                                                    if (edge === 0) {
-
-                                                                                                uvM = uvA.clone();
-                                                                                                uvM.lerp(uvB, 0.5);
-
-                                                                                                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
-                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
-
-                                                                                                // BC
-                                                                                    } else if (edge === 1) {
-
-                                                                                                uvM = uvB.clone();
-                                                                                                uvM.lerp(uvC, 0.5);
-
-                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                                                                                                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
-
-                                                                                                // AC
-                                                                                    } else {
-
-                                                                                                uvM = uvA.clone();
-                                                                                                uvM.lerp(uvC, 0.5);
-
-                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
-                                                                                    }
-
-                                                                                    faceVertexUvs[j].push(uvsTriA, uvsTriB);
-                                                                        }
-                                                            }
-                                                } else {
-
-                                                            faces.push(face);
-
-                                                            for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
-
-                                                                        faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
-                                                            }
-                                                }
-                                    }
-                        }
-
-                        geometry.faces = faces;
-                        geometry.faceVertexUvs = faceVertexUvs;
-            },
-
-
-            // recursive version of tesselate
-            tessellateRecursive: function (geometry, maxEdgeLength, depth) {
-                        for (var i = 0; i < depth; i++) {
-                                    this.tessellate(geometry, maxEdgeLength);
-                        }
-            },
-
-
-            // compute the centroid of a triangular face
-            computeCentroid: function () {
-                        var v = new Vector3();
-
-                        return function (geometry, face) {
-                                    var a = geometry.vertices[face.a];
-                                    var b = geometry.vertices[face.b];
-                                    var c = geometry.vertices[face.c];
-
-                                    v.x = (a.x + b.x + c.x) / 3;
-                                    v.y = (a.y + b.y + c.y) / 3;
-                                    v.z = (a.z + b.z + c.z) / 3;
-
-                                    return v;
-                        };
-            }(),
-
-            // promisified version of THREE.FontLoader
-            fontLoader: function (url) {
-                        var promiseLoader = function (url) {
-                                    return new Promise(function (resolve, reject) {
-                                                if (!fontLoader) fontLoader = new FontLoader();
-                                                fontLoader.load(url, resolve);
-                                                // reject( console.error( 'Couldn\'t load font ' + url ) );
-                                    });
-                        };
-
-                        return promiseLoader(url).then(function (object) {
-                                    return object;
-                        });
-            },
-
-            // Add an attribute to a bufferGeometry and return a reference to the attribute
-            createBufferAttribute: createBufferAttribute,
-
-            // set the .index property of a bufferGeometry from faces
-            setBufferGeometryIndicesFromFaces: function (bufferGeometry, faceCount, faces) {
-                        var indexBuffer = new Uint32Array(faceCount * 3);
-
-                        bufferGeometry.setIndex(new BufferAttribute(indexBuffer, 1));
-
-                        for (var i = 0, offset = 0; i < faceCount; i++, offset += 3) {
-                                    var face = faces[i];
-
-                                    indexBuffer[offset] = face.a;
-                                    indexBuffer[offset + 1] = face.b;
-                                    indexBuffer[offset + 2] = face.c;
-                        }
-            },
-
-            // create an attribute 'positions' from a set of vertices
-            bufferPositions: function (bufferGeometry, vertices) {
-                        var vertexCount = vertices.length;
-                        var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
-
-                        for (var i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
-                                    var vertex = vertices[i];
-
-                                    positionBuffer[offset] = vertex.x;
-                                    positionBuffer[offset + 1] = vertex.y;
-                                    positionBuffer[offset + 2] = vertex.z;
-                        }
-            },
-
-            generateTextGeometry: function (text, params) {
-                        var geometry = new TextGeometry(text, params);
-
-                        geometry.computeBoundingBox();
-
-                        var size = geometry.boundingBox.getSize();
-                        var anchorX = size.x * -params.anchor.x;
-                        var anchorY = size.y * -params.anchor.y;
-                        var anchorZ = size.z * -params.anchor.z;
-                        var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
-
-                        geometry.applyMatrix(matrix);
-
-                        return geometry;
+              triA.vertexNormals[1].copy(vnm);
+              triB.vertexNormals[0].copy(vnm);
             }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp(face.vertexColors[1], 0.5);
+
+              triA.vertexColors[1].copy(vcm);
+              triB.vertexColors[0].copy(vcm);
+            }
+
+            edge = 0;
+          } else if (dbc >= dab && dbc >= dac) {
+
+            vm = vb.clone();
+            vm.lerp(vc, 0.5);
+
+            triA.a = a;
+            triA.b = b;
+            triA.c = m;
+
+            triB.a = m;
+            triB.b = c;
+            triB.c = a;
+
+            if (face.vertexNormals.length === 3) {
+
+              vnm = face.vertexNormals[1].clone();
+              vnm.lerp(face.vertexNormals[2], 0.5);
+
+              triA.vertexNormals[2].copy(vnm);
+
+              triB.vertexNormals[0].copy(vnm);
+              triB.vertexNormals[1].copy(face.vertexNormals[2]);
+              triB.vertexNormals[2].copy(face.vertexNormals[0]);
+            }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[1].clone();
+              vcm.lerp(face.vertexColors[2], 0.5);
+
+              triA.vertexColors[2].copy(vcm);
+
+              triB.vertexColors[0].copy(vcm);
+              triB.vertexColors[1].copy(face.vertexColors[2]);
+              triB.vertexColors[2].copy(face.vertexColors[0]);
+            }
+
+            edge = 1;
+          } else {
+
+            vm = va.clone();
+            vm.lerp(vc, 0.5);
+
+            triA.a = a;
+            triA.b = b;
+            triA.c = m;
+
+            triB.a = m;
+            triB.b = b;
+            triB.c = c;
+
+            if (face.vertexNormals.length === 3) {
+
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp(face.vertexNormals[2], 0.5);
+
+              triA.vertexNormals[2].copy(vnm);
+              triB.vertexNormals[0].copy(vnm);
+            }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp(face.vertexColors[2], 0.5);
+
+              triA.vertexColors[2].copy(vcm);
+              triB.vertexColors[0].copy(vcm);
+            }
+
+            edge = 2;
+          }
+
+          faces.push(triA, triB);
+          geometry.vertices.push(vm);
+
+          for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+
+            if (geometry.faceVertexUvs[j].length) {
+
+              var uvs = geometry.faceVertexUvs[j][_i];
+
+              var uvA = uvs[0];
+              var uvB = uvs[1];
+              var uvC = uvs[2];
+
+              // AB
+
+              var uvsTriA = void 0;
+              var uvsTriB = void 0;
+              var uvM = void 0;
+
+              if (edge === 0) {
+
+                uvM = uvA.clone();
+                uvM.lerp(uvB, 0.5);
+
+                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+
+                // BC
+              } else if (edge === 1) {
+
+                uvM = uvB.clone();
+                uvM.lerp(uvC, 0.5);
+
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
+
+                // AC
+              } else {
+
+                uvM = uvA.clone();
+                uvM.lerp(uvC, 0.5);
+
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+              }
+
+              faceVertexUvs[j].push(uvsTriA, uvsTriB);
+            }
+          }
+        } else {
+
+          faces.push(face);
+
+          for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
+
+            faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
+          }
+        }
+      }
+    }
+
+    geometry.faces = faces;
+    geometry.faceVertexUvs = faceVertexUvs;
+  },
+
+
+  // recursive version of tesselate
+  tessellateRecursive: function (geometry, maxEdgeLength, depth) {
+    for (var i = 0; i < depth; i++) {
+      this.tessellate(geometry, maxEdgeLength);
+    }
+  },
+
+
+  // compute the centroid of a triangular face
+  computeCentroid: function () {
+    var v = new Vector3();
+
+    return function (geometry, face) {
+      var a = geometry.vertices[face.a];
+      var b = geometry.vertices[face.b];
+      var c = geometry.vertices[face.c];
+
+      v.x = (a.x + b.x + c.x) / 3;
+      v.y = (a.y + b.y + c.y) / 3;
+      v.z = (a.z + b.z + c.z) / 3;
+
+      return v;
+    };
+  }(),
+
+  // promisified version of THREE.FontLoader
+  fontLoader: function (url) {
+    var promiseLoader = function (url) {
+      return new Promise(function (resolve, reject) {
+        if (!fontLoader) fontLoader = new FontLoader();
+        fontLoader.load(url, resolve);
+        // reject( console.error( 'Couldn\'t load font ' + url ) );
+      });
+    };
+
+    return promiseLoader(url).then(function (object) {
+      return object;
+    });
+  },
+
+  // Add an attribute to a bufferGeometry and return a reference to the attribute
+  createBufferAttribute: createBufferAttribute,
+
+  // set the .index property of a bufferGeometry from faces
+  setBufferGeometryIndicesFromFaces: function (bufferGeometry, faceCount, faces) {
+    var indexBuffer = new Uint32Array(faceCount * 3);
+
+    bufferGeometry.setIndex(new BufferAttribute(indexBuffer, 1));
+
+    for (var i = 0, offset = 0; i < faceCount; i++, offset += 3) {
+      var face = faces[i];
+
+      indexBuffer[offset] = face.a;
+      indexBuffer[offset + 1] = face.b;
+      indexBuffer[offset + 2] = face.c;
+    }
+  },
+
+  // create an attribute 'positions' from a set of vertices
+  bufferPositions: function (bufferGeometry, vertices) {
+    var vertexCount = vertices.length;
+    var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
+
+    for (var i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
+      var vertex = vertices[i];
+
+      positionBuffer[offset] = vertex.x;
+      positionBuffer[offset + 1] = vertex.y;
+      positionBuffer[offset + 2] = vertex.z;
+    }
+  },
+
+  generateTextGeometry: function (text, params) {
+    var geometry = new TextGeometry(text, params);
+
+    geometry.computeBoundingBox();
+
+    var size = geometry.boundingBox.getSize();
+    var anchorX = size.x * -params.anchor.x;
+    var anchorY = size.y * -params.anchor.y;
+    var anchorZ = size.z * -params.anchor.z;
+    var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
+
+    geometry.applyMatrix(matrix);
+
+    return geometry;
+  }
 
 };
 
@@ -55909,19 +55919,11 @@ var SplashHero = function () {
 
     var self = this;
 
-    self.canvas = document.querySelector('#splash-hero-canvas');
     self.container = document.querySelector('#splash-hero-container');
 
-    self.app = new App(self.canvas);
+    self.app = new App(document.querySelector('#splash-hero-canvas'));
 
-    self.app.camera.position.set(0, 0, 500);
-
-    self.offset = new Vector2(0, 0);
-    self.smooth = new Vector2(1.0, 1.0);
-
-    var loader = new TextureLoader();
-    this.noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-    this.noiseTexture.wrapS = this.noiseTexture.wrapT = RepeatWrapping;
+    // self.app.camera.position.set( 0, 0, 200 * widthRatio );
 
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
@@ -55933,15 +55935,17 @@ var SplashHero = function () {
 
     self.addText();
 
+    // self.computeCameraDistance();
+
     self.addControls();
 
     this.pauseWhenOffscreen();
 
     var updateMaterials = function () {
       // For some reason pan events on mobile sometimes register as (0,0); ignore these
-      if (pointerPos.x !== 0 && pointerPos.y !== 0) {
-        var offsetX = pointerPos.x / self.app.canvas.clientWidth;
-        var offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
+      if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
+        var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
+        var offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
 
         // make the line well defined when moving the pointer off the top of the screen
         offsetY = offsetY > 0.99 ? 0.999 : offsetY;
@@ -55951,7 +55955,7 @@ var SplashHero = function () {
       }
     };
 
-    var uTime = 1.0;
+    var uTime = 0.0;
     var direction = -1.0;
 
     var updateAnimation = function () {
@@ -55959,12 +55963,16 @@ var SplashHero = function () {
         uTime = 0.0;
       }
 
-      if (uTime <= 1.0 && uTime >= 0.0) {
+      if (uTime >= 0) {
         uTime += direction * self.app.delta / 8000;
-      } else {
-        uTime -= direction * self.app.delta / 8000;
-        direction *= -1.0;
       }
+
+      // if ( uTime <= 1.0 && uTime >= 0.0 ) {
+      //   uTime += ( direction * self.app.delta / 8000 );
+      // } else {
+      //   uTime -= ( direction * self.app.delta / 8000 );
+      //   direction *= -1.0;
+      // }
 
       self.textMat.uniforms.uTime.value = uTime;
     };
@@ -55983,6 +55991,8 @@ var SplashHero = function () {
   }
 
   SplashHero.prototype.addText = function addText() {
+    var _this = this;
+
     var self = this;
 
     threeUtils.fontLoader('assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
@@ -55993,12 +56003,24 @@ var SplashHero = function () {
 
       self.initBufferAnimation(bufferGeometry, textGeometry);
 
-      var textMesh = new Mesh(bufferGeometry, self.textMat);
+      self.textMesh = new Mesh(bufferGeometry, self.textMat);
 
-      textMesh.position.set(0, 0, 100);
+      var dist = threeUtils.cameraDistanceToFillScreenWidth(_this.app.camera, _this.app.canvas, _this.textMesh.geometry);
 
-      self.app.scene.add(textMesh);
+      self.app.camera.position.set(0, 0, dist);
+
+      // console.log( dist, self.app.camera.position.z )
+
+      self.app.scene.add(self.textMesh);
     });
+  };
+
+  SplashHero.prototype.computeCameraDistance = function computeCameraDistance() {
+    var dist = threeUtils.cameraDistanceToFillScreenWidth(this.app.camera, this.app.canvas, this.textMesh.geometry);
+
+    // console.log( dist );
+
+    return dist;
   };
 
   SplashHero.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
@@ -56086,6 +56108,8 @@ var SplashHero = function () {
       anchor: { x: 0.5, y: 0.5, z: 0.0 }
     });
 
+    // console.log(textGeometry)
+
     threeUtils.tessellateRecursive(textGeometry, 1.0, 2);
 
     threeUtils.explodeModifier(textGeometry);
@@ -56100,11 +56124,18 @@ var SplashHero = function () {
   };
 
   SplashHero.prototype.initMaterials = function initMaterials() {
+    var loader = new TextureLoader();
+    var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+    noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
+
+    this.offset = new Vector2(0, 0);
+    this.smooth = new Vector2(1.0, 1.0);
+
     var colA = new Color(0xffffff);
     var colB = new Color(0x283844);
 
     var uniforms = {
-      noiseTexture: { value: this.noiseTexture },
+      noiseTexture: { value: noiseTexture },
       offset: { value: this.offset },
       smooth: { value: this.smooth }
     };
@@ -56136,13 +56167,13 @@ var SplashHero = function () {
 
 
   SplashHero.prototype.pauseWhenOffscreen = function pauseWhenOffscreen() {
-    var _this = this;
+    var _this2 = this;
 
     window.addEventListener('scroll', function () {
-      if (!_this.app.isPaused && window.scrollY > _this.canvas.offsetTop + _this.canvas.clientHeight) {
-        _this.app.pause();
-      } else if (_this.app.isPaused) {
-        _this.app.play();
+      if (!_this2.app.isPaused && window.scrollY > _this2.app.canvas.offsetTop + _this2.app.canvas.clientHeight) {
+        _this2.app.pause();
+      } else if (_this2.app.isPaused) {
+        _this2.app.play();
       }
     });
   };
@@ -56198,8 +56229,8 @@ ShapeUtils.triangulateShape = function () {
 }();
 
 // Set up app wide event listeners for touch and mouse
-window.addEventListener('mousemove', moveHandler);
-new window.Hammer(document.querySelector('body')).on('pan', moveHandler);
+window.addEventListener('mousemove', utils.moveHandler);
+new window.Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
 
 // Set up Splash scene
 var showStats = false;
