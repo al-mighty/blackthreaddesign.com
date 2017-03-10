@@ -53267,12 +53267,10 @@ var avalonbox = createCommonjsModule(function (module) {
     }
 
     function swipeHandler() {
-      new Hammer(document.querySelector('body')).on('swipeleft', function (e) {
-        console.log("left");
-        previous();
-      }).on('swiperight', function (e) {
-        console.log("left");
+      new Hammer(document.querySelector('body')).on('swipeleft', function () {
         next();
+      }).on('swiperight', function () {
+        previous();
       });
     }
 
