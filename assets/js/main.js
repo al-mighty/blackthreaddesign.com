@@ -54162,365 +54162,349 @@ function initSplashLayout() {
 var fontLoader = void 0;
 
 var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
-  var buffer = new Float32Array(count * itemSize);
-  var attribute = new BufferAttribute(buffer, itemSize);
+            var buffer = new Float32Array(count * itemSize);
+            var attribute = new BufferAttribute(buffer, itemSize);
 
-  bufferGeometry.addAttribute(name, attribute);
+            bufferGeometry.addAttribute(name, attribute);
 
-  return attribute;
+            return attribute;
 };
 
 var threeUtils = {
-  cameraDistanceToFillScreenWidth: function (camera, canvas, geometry) {
+            /**
+             * Duplicates vertices so each face becomes separate.
+             * copied from  THREE.ExplodeModifier.
+               */
+            explodeModifier: function (geometry) {
+                        var vertices = [];
 
-    var vFOV = camera.fov * Math.PI / 180;
+                        for (var i = 0, il = geometry.faces.length; i < il; i++) {
+                                    var n = vertices.length;
+                                    var face = geometry.faces[i];
 
-    var hFOV = 2 * Math.atan(1 / camera.aspect * Math.tan(vFOV / 2));
+                                    var a = face.a;
+                                    var b = face.b;
+                                    var c = face.c;
 
-    var ratio = 2 * Math.tan(hFOV / 2);
-    var screen = ratio * (1 / camera.aspect);
+                                    var va = geometry.vertices[a];
+                                    var vb = geometry.vertices[b];
+                                    var vc = geometry.vertices[c];
 
-    if (!geometry.boundingBox) geometry.computeBoundingBox();
+                                    vertices.push(va.clone());
+                                    vertices.push(vb.clone());
+                                    vertices.push(vc.clone());
 
-    var size = geometry.boundingBox.max.x;
-    var dist = size / screen / 4;
+                                    face.a = n;
+                                    face.b = n + 1;
+                                    face.c = n + 2;
+                        }
 
-    return dist;
-  },
-  /**
-   * Duplicates vertices so each face becomes separate.
-   * copied from  THREE.ExplodeModifier.
-     */
-  explodeModifier: function (geometry) {
-    var vertices = [];
-
-    for (var i = 0, il = geometry.faces.length; i < il; i++) {
-      var n = vertices.length;
-      var face = geometry.faces[i];
-
-      var a = face.a;
-      var b = face.b;
-      var c = face.c;
-
-      var va = geometry.vertices[a];
-      var vb = geometry.vertices[b];
-      var vc = geometry.vertices[c];
-
-      vertices.push(va.clone());
-      vertices.push(vb.clone());
-      vertices.push(vc.clone());
-
-      face.a = n;
-      face.b = n + 1;
-      face.c = n + 2;
-    }
-
-    geometry.vertices = vertices;
-  },
+                        geometry.vertices = vertices;
+            },
 
 
-  /**
-  * Break faces with edges longer than maxEdgeLength.
-  * copied from  THREE.TessellateModifier.
-    */
-  tessellate: function (geometry, maxEdgeLength) {
-    var edge = void 0;
+            /**
+            * Break faces with edges longer than maxEdgeLength.
+            * copied from  THREE.TessellateModifier.
+              */
+            tessellate: function (geometry, maxEdgeLength) {
+                        var edge = void 0;
 
-    var faces = [];
-    var faceVertexUvs = [];
-    var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
+                        var faces = [];
+                        var faceVertexUvs = [];
+                        var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
 
-    for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
+                        for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
 
-      faceVertexUvs[i] = [];
-    }
+                                    faceVertexUvs[i] = [];
+                        }
 
-    for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
+                        for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
 
-      var face = geometry.faces[_i];
+                                    var face = geometry.faces[_i];
 
-      if (face instanceof Face3) {
+                                    if (face instanceof Face3) {
 
-        var a = face.a;
-        var b = face.b;
-        var c = face.c;
+                                                var a = face.a;
+                                                var b = face.b;
+                                                var c = face.c;
 
-        var va = geometry.vertices[a];
-        var vb = geometry.vertices[b];
-        var vc = geometry.vertices[c];
+                                                var va = geometry.vertices[a];
+                                                var vb = geometry.vertices[b];
+                                                var vc = geometry.vertices[c];
 
-        var dab = va.distanceToSquared(vb);
-        var dbc = vb.distanceToSquared(vc);
-        var dac = va.distanceToSquared(vc);
+                                                var dab = va.distanceToSquared(vb);
+                                                var dbc = vb.distanceToSquared(vc);
+                                                var dac = va.distanceToSquared(vc);
 
-        if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
+                                                if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
 
-          var m = geometry.vertices.length;
+                                                            var m = geometry.vertices.length;
 
-          var triA = face.clone();
-          var triB = face.clone();
+                                                            var triA = face.clone();
+                                                            var triB = face.clone();
 
-          var vm = void 0;
-          var vnm = void 0;
-          var vcm = void 0;
+                                                            var vm = void 0;
+                                                            var vnm = void 0;
+                                                            var vcm = void 0;
 
-          if (dab >= dbc && dab >= dac) {
+                                                            if (dab >= dbc && dab >= dac) {
 
-            vm = va.clone();
-            vm.lerp(vb, 0.5);
+                                                                        vm = va.clone();
+                                                                        vm.lerp(vb, 0.5);
 
-            triA.a = a;
-            triA.b = m;
-            triA.c = c;
+                                                                        triA.a = a;
+                                                                        triA.b = m;
+                                                                        triA.c = c;
 
-            triB.a = m;
-            triB.b = b;
-            triB.c = c;
+                                                                        triB.a = m;
+                                                                        triB.b = b;
+                                                                        triB.c = c;
 
-            if (face.vertexNormals.length === 3) {
+                                                                        if (face.vertexNormals.length === 3) {
 
-              vnm = face.vertexNormals[0].clone();
-              vnm.lerp(face.vertexNormals[1], 0.5);
+                                                                                    vnm = face.vertexNormals[0].clone();
+                                                                                    vnm.lerp(face.vertexNormals[1], 0.5);
 
-              triA.vertexNormals[1].copy(vnm);
-              triB.vertexNormals[0].copy(vnm);
+                                                                                    triA.vertexNormals[1].copy(vnm);
+                                                                                    triB.vertexNormals[0].copy(vnm);
+                                                                        }
+
+                                                                        if (face.vertexColors.length === 3) {
+
+                                                                                    vcm = face.vertexColors[0].clone();
+                                                                                    vcm.lerp(face.vertexColors[1], 0.5);
+
+                                                                                    triA.vertexColors[1].copy(vcm);
+                                                                                    triB.vertexColors[0].copy(vcm);
+                                                                        }
+
+                                                                        edge = 0;
+                                                            } else if (dbc >= dab && dbc >= dac) {
+
+                                                                        vm = vb.clone();
+                                                                        vm.lerp(vc, 0.5);
+
+                                                                        triA.a = a;
+                                                                        triA.b = b;
+                                                                        triA.c = m;
+
+                                                                        triB.a = m;
+                                                                        triB.b = c;
+                                                                        triB.c = a;
+
+                                                                        if (face.vertexNormals.length === 3) {
+
+                                                                                    vnm = face.vertexNormals[1].clone();
+                                                                                    vnm.lerp(face.vertexNormals[2], 0.5);
+
+                                                                                    triA.vertexNormals[2].copy(vnm);
+
+                                                                                    triB.vertexNormals[0].copy(vnm);
+                                                                                    triB.vertexNormals[1].copy(face.vertexNormals[2]);
+                                                                                    triB.vertexNormals[2].copy(face.vertexNormals[0]);
+                                                                        }
+
+                                                                        if (face.vertexColors.length === 3) {
+
+                                                                                    vcm = face.vertexColors[1].clone();
+                                                                                    vcm.lerp(face.vertexColors[2], 0.5);
+
+                                                                                    triA.vertexColors[2].copy(vcm);
+
+                                                                                    triB.vertexColors[0].copy(vcm);
+                                                                                    triB.vertexColors[1].copy(face.vertexColors[2]);
+                                                                                    triB.vertexColors[2].copy(face.vertexColors[0]);
+                                                                        }
+
+                                                                        edge = 1;
+                                                            } else {
+
+                                                                        vm = va.clone();
+                                                                        vm.lerp(vc, 0.5);
+
+                                                                        triA.a = a;
+                                                                        triA.b = b;
+                                                                        triA.c = m;
+
+                                                                        triB.a = m;
+                                                                        triB.b = b;
+                                                                        triB.c = c;
+
+                                                                        if (face.vertexNormals.length === 3) {
+
+                                                                                    vnm = face.vertexNormals[0].clone();
+                                                                                    vnm.lerp(face.vertexNormals[2], 0.5);
+
+                                                                                    triA.vertexNormals[2].copy(vnm);
+                                                                                    triB.vertexNormals[0].copy(vnm);
+                                                                        }
+
+                                                                        if (face.vertexColors.length === 3) {
+
+                                                                                    vcm = face.vertexColors[0].clone();
+                                                                                    vcm.lerp(face.vertexColors[2], 0.5);
+
+                                                                                    triA.vertexColors[2].copy(vcm);
+                                                                                    triB.vertexColors[0].copy(vcm);
+                                                                        }
+
+                                                                        edge = 2;
+                                                            }
+
+                                                            faces.push(triA, triB);
+                                                            geometry.vertices.push(vm);
+
+                                                            for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+
+                                                                        if (geometry.faceVertexUvs[j].length) {
+
+                                                                                    var uvs = geometry.faceVertexUvs[j][_i];
+
+                                                                                    var uvA = uvs[0];
+                                                                                    var uvB = uvs[1];
+                                                                                    var uvC = uvs[2];
+
+                                                                                    // AB
+
+                                                                                    var uvsTriA = void 0;
+                                                                                    var uvsTriB = void 0;
+                                                                                    var uvM = void 0;
+
+                                                                                    if (edge === 0) {
+
+                                                                                                uvM = uvA.clone();
+                                                                                                uvM.lerp(uvB, 0.5);
+
+                                                                                                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+
+                                                                                                // BC
+                                                                                    } else if (edge === 1) {
+
+                                                                                                uvM = uvB.clone();
+                                                                                                uvM.lerp(uvC, 0.5);
+
+                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
+
+                                                                                                // AC
+                                                                                    } else {
+
+                                                                                                uvM = uvA.clone();
+                                                                                                uvM.lerp(uvC, 0.5);
+
+                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+                                                                                    }
+
+                                                                                    faceVertexUvs[j].push(uvsTriA, uvsTriB);
+                                                                        }
+                                                            }
+                                                } else {
+
+                                                            faces.push(face);
+
+                                                            for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
+
+                                                                        faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
+                                                            }
+                                                }
+                                    }
+                        }
+
+                        geometry.faces = faces;
+                        geometry.faceVertexUvs = faceVertexUvs;
+            },
+
+
+            // recursive version of tesselate
+            tessellateRecursive: function (geometry, maxEdgeLength, depth) {
+                        for (var i = 0; i < depth; i++) {
+                                    this.tessellate(geometry, maxEdgeLength);
+                        }
+            },
+
+
+            // compute the centroid of a triangular face
+            computeCentroid: function () {
+                        var v = new Vector3();
+
+                        return function (geometry, face) {
+                                    var a = geometry.vertices[face.a];
+                                    var b = geometry.vertices[face.b];
+                                    var c = geometry.vertices[face.c];
+
+                                    v.x = (a.x + b.x + c.x) / 3;
+                                    v.y = (a.y + b.y + c.y) / 3;
+                                    v.z = (a.z + b.z + c.z) / 3;
+
+                                    return v;
+                        };
+            }(),
+
+            // promisified version of THREE.FontLoader
+            fontLoader: function (url) {
+                        var promiseLoader = function (url) {
+                                    return new Promise(function (resolve, reject) {
+                                                if (!fontLoader) fontLoader = new FontLoader();
+                                                fontLoader.load(url, resolve);
+                                                // reject( console.error( 'Couldn\'t load font ' + url ) );
+                                    });
+                        };
+
+                        return promiseLoader(url).then(function (object) {
+                                    return object;
+                        });
+            },
+
+            // Add an attribute to a bufferGeometry and return a reference to the attribute
+            createBufferAttribute: createBufferAttribute,
+
+            // set the .index property of a bufferGeometry from faces
+            setBufferGeometryIndicesFromFaces: function (bufferGeometry, faceCount, faces) {
+                        var indexBuffer = new Uint32Array(faceCount * 3);
+
+                        bufferGeometry.setIndex(new BufferAttribute(indexBuffer, 1));
+
+                        for (var i = 0, offset = 0; i < faceCount; i++, offset += 3) {
+                                    var face = faces[i];
+
+                                    indexBuffer[offset] = face.a;
+                                    indexBuffer[offset + 1] = face.b;
+                                    indexBuffer[offset + 2] = face.c;
+                        }
+            },
+
+            // create an attribute 'positions' from a set of vertices
+            bufferPositions: function (bufferGeometry, vertices) {
+                        var vertexCount = vertices.length;
+                        var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
+
+                        for (var i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
+                                    var vertex = vertices[i];
+
+                                    positionBuffer[offset] = vertex.x;
+                                    positionBuffer[offset + 1] = vertex.y;
+                                    positionBuffer[offset + 2] = vertex.z;
+                        }
+            },
+
+            generateTextGeometry: function (text, params) {
+                        var geometry = new TextGeometry(text, params);
+
+                        geometry.computeBoundingBox();
+
+                        var size = geometry.boundingBox.getSize();
+                        var anchorX = size.x * -params.anchor.x;
+                        var anchorY = size.y * -params.anchor.y;
+                        var anchorZ = size.z * -params.anchor.z;
+                        var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
+
+                        geometry.applyMatrix(matrix);
+
+                        return geometry;
             }
-
-            if (face.vertexColors.length === 3) {
-
-              vcm = face.vertexColors[0].clone();
-              vcm.lerp(face.vertexColors[1], 0.5);
-
-              triA.vertexColors[1].copy(vcm);
-              triB.vertexColors[0].copy(vcm);
-            }
-
-            edge = 0;
-          } else if (dbc >= dab && dbc >= dac) {
-
-            vm = vb.clone();
-            vm.lerp(vc, 0.5);
-
-            triA.a = a;
-            triA.b = b;
-            triA.c = m;
-
-            triB.a = m;
-            triB.b = c;
-            triB.c = a;
-
-            if (face.vertexNormals.length === 3) {
-
-              vnm = face.vertexNormals[1].clone();
-              vnm.lerp(face.vertexNormals[2], 0.5);
-
-              triA.vertexNormals[2].copy(vnm);
-
-              triB.vertexNormals[0].copy(vnm);
-              triB.vertexNormals[1].copy(face.vertexNormals[2]);
-              triB.vertexNormals[2].copy(face.vertexNormals[0]);
-            }
-
-            if (face.vertexColors.length === 3) {
-
-              vcm = face.vertexColors[1].clone();
-              vcm.lerp(face.vertexColors[2], 0.5);
-
-              triA.vertexColors[2].copy(vcm);
-
-              triB.vertexColors[0].copy(vcm);
-              triB.vertexColors[1].copy(face.vertexColors[2]);
-              triB.vertexColors[2].copy(face.vertexColors[0]);
-            }
-
-            edge = 1;
-          } else {
-
-            vm = va.clone();
-            vm.lerp(vc, 0.5);
-
-            triA.a = a;
-            triA.b = b;
-            triA.c = m;
-
-            triB.a = m;
-            triB.b = b;
-            triB.c = c;
-
-            if (face.vertexNormals.length === 3) {
-
-              vnm = face.vertexNormals[0].clone();
-              vnm.lerp(face.vertexNormals[2], 0.5);
-
-              triA.vertexNormals[2].copy(vnm);
-              triB.vertexNormals[0].copy(vnm);
-            }
-
-            if (face.vertexColors.length === 3) {
-
-              vcm = face.vertexColors[0].clone();
-              vcm.lerp(face.vertexColors[2], 0.5);
-
-              triA.vertexColors[2].copy(vcm);
-              triB.vertexColors[0].copy(vcm);
-            }
-
-            edge = 2;
-          }
-
-          faces.push(triA, triB);
-          geometry.vertices.push(vm);
-
-          for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
-
-            if (geometry.faceVertexUvs[j].length) {
-
-              var uvs = geometry.faceVertexUvs[j][_i];
-
-              var uvA = uvs[0];
-              var uvB = uvs[1];
-              var uvC = uvs[2];
-
-              // AB
-
-              var uvsTriA = void 0;
-              var uvsTriB = void 0;
-              var uvM = void 0;
-
-              if (edge === 0) {
-
-                uvM = uvA.clone();
-                uvM.lerp(uvB, 0.5);
-
-                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
-                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
-
-                // BC
-              } else if (edge === 1) {
-
-                uvM = uvB.clone();
-                uvM.lerp(uvC, 0.5);
-
-                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
-
-                // AC
-              } else {
-
-                uvM = uvA.clone();
-                uvM.lerp(uvC, 0.5);
-
-                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
-              }
-
-              faceVertexUvs[j].push(uvsTriA, uvsTriB);
-            }
-          }
-        } else {
-
-          faces.push(face);
-
-          for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
-
-            faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
-          }
-        }
-      }
-    }
-
-    geometry.faces = faces;
-    geometry.faceVertexUvs = faceVertexUvs;
-  },
-
-
-  // recursive version of tesselate
-  tessellateRecursive: function (geometry, maxEdgeLength, depth) {
-    for (var i = 0; i < depth; i++) {
-      this.tessellate(geometry, maxEdgeLength);
-    }
-  },
-
-
-  // compute the centroid of a triangular face
-  computeCentroid: function () {
-    var v = new Vector3();
-
-    return function (geometry, face) {
-      var a = geometry.vertices[face.a];
-      var b = geometry.vertices[face.b];
-      var c = geometry.vertices[face.c];
-
-      v.x = (a.x + b.x + c.x) / 3;
-      v.y = (a.y + b.y + c.y) / 3;
-      v.z = (a.z + b.z + c.z) / 3;
-
-      return v;
-    };
-  }(),
-
-  // promisified version of THREE.FontLoader
-  fontLoader: function (url) {
-    var promiseLoader = function (url) {
-      return new Promise(function (resolve, reject) {
-        if (!fontLoader) fontLoader = new FontLoader();
-        fontLoader.load(url, resolve);
-        // reject( console.error( 'Couldn\'t load font ' + url ) );
-      });
-    };
-
-    return promiseLoader(url).then(function (object) {
-      return object;
-    });
-  },
-
-  // Add an attribute to a bufferGeometry and return a reference to the attribute
-  createBufferAttribute: createBufferAttribute,
-
-  // set the .index property of a bufferGeometry from faces
-  setBufferGeometryIndicesFromFaces: function (bufferGeometry, faceCount, faces) {
-    var indexBuffer = new Uint32Array(faceCount * 3);
-
-    bufferGeometry.setIndex(new BufferAttribute(indexBuffer, 1));
-
-    for (var i = 0, offset = 0; i < faceCount; i++, offset += 3) {
-      var face = faces[i];
-
-      indexBuffer[offset] = face.a;
-      indexBuffer[offset + 1] = face.b;
-      indexBuffer[offset + 2] = face.c;
-    }
-  },
-
-  // create an attribute 'positions' from a set of vertices
-  bufferPositions: function (bufferGeometry, vertices) {
-    var vertexCount = vertices.length;
-    var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
-
-    for (var i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
-      var vertex = vertices[i];
-
-      positionBuffer[offset] = vertex.x;
-      positionBuffer[offset + 1] = vertex.y;
-      positionBuffer[offset + 2] = vertex.z;
-    }
-  },
-
-  generateTextGeometry: function (text, params) {
-    var geometry = new TextGeometry(text, params);
-
-    geometry.computeBoundingBox();
-
-    var size = geometry.boundingBox.getSize();
-    var anchorX = size.x * -params.anchor.x;
-    var anchorY = size.y * -params.anchor.y;
-    var anchorZ = size.z * -params.anchor.z;
-    var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
-
-    geometry.applyMatrix(matrix);
-
-    return geometry;
-  }
 
 };
 
@@ -55932,7 +55916,11 @@ var SplashHero = function () {
 
     self.app = new App(document.querySelector('#splash-hero-canvas'));
 
-    // self.app.camera.position.set( 0, 0, 200 * widthRatio );
+    var cameraZPos = function () {
+      return -112 * self.app.camera.aspect + 500;
+    };
+
+    self.app.camera.position.set(0, 0, cameraZPos());
 
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
@@ -55943,8 +55931,6 @@ var SplashHero = function () {
     self.addBackground();
 
     self.addText();
-
-    // self.computeCameraDistance();
 
     self.addControls();
 
@@ -55964,12 +55950,12 @@ var SplashHero = function () {
       }
     };
 
-    var uTime = 0.0;
+    var uTime = 1.0;
     var direction = -1.0;
 
     var updateAnimation = function () {
       if (uTime >= 1.5 || uTime <= -0.5) {
-        uTime = 0.0;
+        uTime = 1.0;
       }
 
       if (uTime >= 0) {
@@ -55991,17 +55977,23 @@ var SplashHero = function () {
 
       updateAnimation();
 
+      console.log("camera z: " + self.app.camera.position.z);
+      // console.log( "cameraDistanceToFillScreenWidth: " + dist);
+      console.log("camera aspect: " + self.app.camera.aspect);
+      console.log("canvas width : " + self.app.canvas.clientWidth);
+      console.log("canvas height : " + self.app.canvas.clientHeight);
+
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
 
-    self.app.onWindowResize = function () {};
+    self.app.onWindowResize = function () {
+      self.app.camera.position.set(0, 0, cameraZPos());
+    };
 
     self.app.play();
   }
 
   SplashHero.prototype.addText = function addText() {
-    var _this = this;
-
     var self = this;
 
     threeUtils.fontLoader('assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
@@ -56012,24 +56004,10 @@ var SplashHero = function () {
 
       self.initBufferAnimation(bufferGeometry, textGeometry);
 
-      self.textMesh = new Mesh(bufferGeometry, self.textMat);
+      var textMesh = new Mesh(bufferGeometry, self.textMat);
 
-      var dist = threeUtils.cameraDistanceToFillScreenWidth(_this.app.camera, _this.app.canvas, _this.textMesh.geometry);
-
-      self.app.camera.position.set(0, 0, dist);
-
-      // console.log( dist, self.app.camera.position.z )
-
-      self.app.scene.add(self.textMesh);
+      self.app.scene.add(textMesh);
     });
-  };
-
-  SplashHero.prototype.computeCameraDistance = function computeCameraDistance() {
-    var dist = threeUtils.cameraDistanceToFillScreenWidth(this.app.camera, this.app.canvas, this.textMesh.geometry);
-
-    // console.log( dist );
-
-    return dist;
   };
 
   SplashHero.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
@@ -56176,13 +56154,13 @@ var SplashHero = function () {
 
 
   SplashHero.prototype.pauseWhenOffscreen = function pauseWhenOffscreen() {
-    var _this2 = this;
+    var _this = this;
 
     window.addEventListener('scroll', function () {
-      if (!_this2.app.isPaused && window.scrollY > _this2.app.canvas.offsetTop + _this2.app.canvas.clientHeight) {
-        _this2.app.pause();
-      } else if (_this2.app.isPaused) {
-        _this2.app.play();
+      if (!_this.app.isPaused && window.scrollY > _this.app.canvas.offsetTop + _this.app.canvas.clientHeight) {
+        _this.app.pause();
+      } else if (_this.app.isPaused) {
+        _this.app.play();
       }
     });
   };

@@ -43,7 +43,11 @@ export default class SplashHero {
 
     self.app = new App( document.querySelector( '#splash-hero-canvas' ) );
 
-    // self.app.camera.position.set( 0, 0, 200 * widthRatio );
+    const cameraZPos = () => {
+      return -112 * self.app.camera.aspect + 500;
+    }
+
+    self.app.camera.position.set( 0, 0, cameraZPos() );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -55,14 +59,12 @@ export default class SplashHero {
 
     self.addText();
 
-    // self.computeCameraDistance();
-
     self.addControls();
 
     this.pauseWhenOffscreen();
 
     const updateMaterials = function () {
-        // For some reason pan events on mobile sometimes register as (0,0); ignore these
+        // Pan events on mobile sometimes register as (0,0); ignore these
       if ( utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0 ) {
         const offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
         let offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
@@ -75,12 +77,12 @@ export default class SplashHero {
       }
     };
 
-    let uTime = 0.0;
+    let uTime = 1.0;
     let direction = -1.0;
 
     const updateAnimation = function () {
       if ( uTime >= 1.5 || uTime <= -0.5 ) {
-        uTime = 0.0;
+        uTime = 1.0;
       }
 
       if ( uTime >= 0 ) {
@@ -102,11 +104,20 @@ export default class SplashHero {
 
       updateAnimation();
 
+      console.log( "camera z: " + self.app.camera.position.z );
+      // console.log( "cameraDistanceToFillScreenWidth: " + dist);
+      console.log( "camera aspect: " + self.app.camera.aspect);
+      console.log( "canvas width : " + self.app.canvas.clientWidth);
+      console.log( "canvas height : " + self.app.canvas.clientHeight);
+
+
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 
-    self.app.onWindowResize = function () { };
+    self.app.onWindowResize = function () { 
+      self.app.camera.position.set( 0, 0, cameraZPos() );
+    };
 
     self.app.play();
 
@@ -124,25 +135,11 @@ export default class SplashHero {
 
       self.initBufferAnimation( bufferGeometry, textGeometry );
 
-      self.textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
+      const textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
 
-      const dist = threeUtils.cameraDistanceToFillScreenWidth( this.app.camera, this.app.canvas, this.textMesh.geometry );
-
-      self.app.camera.position.set( 0, 0, dist );
-
-      // console.log( dist, self.app.camera.position.z )
-
-      self.app.scene.add( self.textMesh );
+      self.app.scene.add( textMesh );
     });
 
-  }
-
-  computeCameraDistance() {
-    const dist = threeUtils.cameraDistanceToFillScreenWidth( this.app.camera, this.app.canvas, this.textMesh.geometry );
-
-    // console.log( dist );
-
-    return dist;
   }
 
   initBufferAnimation( bufferGeometry, geometry ) {
