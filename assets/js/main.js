@@ -53148,6 +53148,7 @@ var avalonbox = createCommonjsModule(function (module) {
       (0, _bind2.default)(buttons.prev, 'click', previous);
       (0, _bind2.default)(buttons.next, 'click', next);
       (0, _bind2.default)(doc, 'keydown', keyPressHandler);
+      swipeHandler();
     }
 
     function hideOverlay(e) {
@@ -53263,6 +53264,14 @@ var avalonbox = createCommonjsModule(function (module) {
       } else if (e.key == 'Escape') {
         hideOverlay(e);
       }
+    }
+
+    function swipeHandler() {
+      new Hammer(document.querySelector('body')).on('swipeleft', function () {
+        previous();
+      }).on('swiperight', function () {
+        next();
+      });
     }
 
     return { run: run };
@@ -55942,7 +55951,7 @@ var SplashHero = function () {
     this.pauseWhenOffscreen();
 
     var updateMaterials = function () {
-      // For some reason pan events on mobile sometimes register as (0,0); ignore these
+      // Pan events on mobile sometimes register as (0,0); ignore these
       if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
         var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
         var offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;

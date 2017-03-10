@@ -1,5 +1,4 @@
 
-
 const _html = require( './html' );
 
 const html = _interopRequireWildcard( _html );
@@ -63,6 +62,7 @@ const Avalonbox = ( function () {
     ( 0, _bind2.default )( buttons.prev, 'click', previous );
     ( 0, _bind2.default )( buttons.next, 'click', next );
     ( 0, _bind2.default )( doc, 'keydown', keyPressHandler );
+    swipeHandler();
   }
 
   function hideOverlay( e ) {
@@ -89,9 +89,13 @@ const Avalonbox = ( function () {
       html.hide( buttons.prev );
       html.hide( buttons.next );
     } else {
-      if ( currentLink.previousElementSibling && currentLink.previousElementSibling.tagName === 'A' ) { html.show( buttons.prev ); } else { html.hide( buttons.prev ); }
+      if ( currentLink.previousElementSibling && currentLink.previousElementSibling.tagName === 'A' ) { 
+        html.show( buttons.prev ); } else { html.hide( buttons.prev ); 
+      }
 
-      if ( currentLink.nextElementSibling && currentLink.nextElementSibling.tagName === 'A' ) { html.show( buttons.next ); } else { html.hide( buttons.next ); }
+      if ( currentLink.nextElementSibling && currentLink.nextElementSibling.tagName === 'A' ) { 
+        html.show( buttons.next ); } else { html.hide( buttons.next ); 
+      }
     }
   }
 
@@ -100,7 +104,9 @@ const Avalonbox = ( function () {
     if ( currentLink.nextElementSibling && currentLink.nextElementSibling.tagName === 'A' ) {
       currentLink = currentLink.nextElementSibling;
       loadImage();
-      if ( currentLink.previousElementSibling && currentLink.nextElementSibling.tagName !== 'A' ) { html.hide( buttons.next ); }
+      if ( currentLink.previousElementSibling && currentLink.nextElementSibling.tagName !== 'A' ) { 
+        html.hide( buttons.next ); 
+      }
     }
 
     e.stopPropagation();
@@ -111,7 +117,9 @@ const Avalonbox = ( function () {
     if ( currentLink.previousElementSibling && currentLink.previousElementSibling.tagName === 'A' ) {
       currentLink = currentLink.previousElementSibling;
       loadImage();
-      if ( currentLink.previousElementSibling && currentLink.previousElementSibling.tagName !== 'A' ) { html.hide( buttons.prev ); }
+      if ( currentLink.previousElementSibling && currentLink.previousElementSibling.tagName !== 'A' ) { 
+        html.hide( buttons.prev ); 
+      }
     }
 
     e.stopPropagation();
@@ -162,6 +170,16 @@ const Avalonbox = ( function () {
     } else if ( e.key == 'Escape' ) {
       hideOverlay ( e );
     }
+  }
+
+  function swipeHandler () {
+    new Hammer( document.querySelector( 'body' ) )
+    .on( 'swipeleft', () => {
+      previous(); 
+    })
+    .on( 'swiperight', () => {
+      next(); 
+    });
   }
 
   return { run };
