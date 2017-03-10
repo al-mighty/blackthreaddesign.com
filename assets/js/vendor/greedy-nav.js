@@ -7,7 +7,7 @@ var Greedy = function Greedy(options) {
   this.init();
 };
 
-window.Greedy = Greedy;
+// window.Greedy = Greedy;
 
 Greedy.prototype.init = function() {
   this.setupMenu();
@@ -100,4 +100,4 @@ Greedy.prototype.toggleHiddenLinks = function() {
   this.toggleButton.classList.toggle('links-displayed');
 };
 
-module.exports = Greedy;
+export default Greedy;
