@@ -55932,7 +55932,7 @@ var SplashHero = function () {
 
     self.addText();
 
-    self.addControls();
+    // self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -55977,11 +55977,10 @@ var SplashHero = function () {
 
       updateAnimation();
 
-      console.log("camera z: " + self.app.camera.position.z);
-      // console.log( "cameraDistanceToFillScreenWidth: " + dist);
-      console.log("camera aspect: " + self.app.camera.aspect);
-      console.log("canvas width : " + self.app.canvas.clientWidth);
-      console.log("canvas height : " + self.app.canvas.clientHeight);
+      // console.log( "camera z: " + self.app.camera.position.z );
+      // console.log( "camera aspect: " + self.app.camera.aspect);
+      // console.log( "canvas width : " + self.app.canvas.clientWidth);
+      // console.log( "canvas height : " + self.app.canvas.clientHeight);
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
@@ -56092,10 +56091,8 @@ var SplashHero = function () {
       bevelSize: 2,
       bevelThickness: 2,
       bevelEnabled: true,
-      anchor: { x: 0.5, y: 0.5, z: 0.0 }
+      anchor: { x: 0.5, y: 0.0, z: 0.0 }
     });
-
-    // console.log(textGeometry)
 
     threeUtils.tessellateRecursive(textGeometry, 1.0, 2);
 

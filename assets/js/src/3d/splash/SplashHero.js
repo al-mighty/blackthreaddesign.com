@@ -59,7 +59,7 @@ export default class SplashHero {
 
     self.addText();
 
-    self.addControls();
+    // self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -104,16 +104,15 @@ export default class SplashHero {
 
       updateAnimation();
 
-      console.log( "camera z: " + self.app.camera.position.z );
-      // console.log( "cameraDistanceToFillScreenWidth: " + dist);
-      console.log( "camera aspect: " + self.app.camera.aspect);
-      console.log( "canvas width : " + self.app.canvas.clientWidth);
-      console.log( "canvas height : " + self.app.canvas.clientHeight);
-
+      // console.log( "camera z: " + self.app.camera.position.z );
+      // console.log( "camera aspect: " + self.app.camera.aspect);
+      // console.log( "canvas width : " + self.app.canvas.clientWidth);
+      // console.log( "canvas height : " + self.app.canvas.clientHeight);
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
+
 
     self.app.onWindowResize = function () { 
       self.app.camera.position.set( 0, 0, cameraZPos() );
@@ -224,10 +223,8 @@ export default class SplashHero {
         bevelSize: 2,
         bevelThickness: 2,
         bevelEnabled: true,
-        anchor: { x: 0.5, y: 0.5, z: 0.0 },
+        anchor: { x: 0.5, y: 0.0, z: 0.0 },
       } );
-
-      // console.log(textGeometry)
 
       threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
 
