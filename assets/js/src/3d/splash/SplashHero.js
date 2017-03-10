@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import BAS from '../vendor/bas.js';
+
 import threeUtils from '../threeUtils.js';
 import StatisticsOverlay from '../StatisticsOverlay.js';
 import App from '../App.js';
@@ -12,53 +12,26 @@ import textFrag from '../shaders/splashText.frag';
 
 import { pointerPos } from '../../utilities.js';
 
-function generateTextGeometry( text, params ) {
-  const geometry = new THREE.TextGeometry( text, params );
+const v = new THREE.Vector3();
+const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
+function fibSpherePoint( i, n, radius ) {
+  const step = 2.0 / n;
 
-  geometry.computeBoundingBox();
+  const phi = i * G;
 
-  const size = geometry.boundingBox.getSize();
-  const anchorX = size.x * -params.anchor.x;
-  const anchorY = size.y * -params.anchor.y;
-  const anchorZ = size.z * -params.anchor.z;
-  const matrix = new THREE.Matrix4().makeTranslation( anchorX, anchorY, anchorZ );
+  v.y = i * step - 1 + ( step * 0.5 );
+  const r = Math.sqrt( 1 - v.y * v.y );
+  v.x = Math.cos( phi ) * r;
+  v.z = Math.sin( phi ) * r;
 
-  geometry.applyMatrix( matrix );
+  radius = radius || 1;
 
-  return geometry;
+  v.x *= radius;
+  v.y *= radius;
+  v.z *= radius;
+
+  return v;
 }
-
-function tesselateGeometry( geometry ) {
-  threeUtils.tessellateRecursive( geometry, 1.0, 2 );
-
-  threeUtils.explodeModifier( geometry );
-}
-
-function FibSpherePointClosure() {
-  const v = { x: 0, y: 0, z: 0 };
-  const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
-
-  return function ( i, n, radius ) {
-    const step = 2.0 / n;
-
-    const phi = i * G;
-
-    v.y = i * step - 1 + ( step * 0.5 );
-    const r = Math.sqrt( 1 - v.y * v.y );
-    v.x = Math.cos( phi ) * r;
-    v.z = Math.sin( phi ) * r;
-
-    radius = radius || 1;
-
-    v.x *= radius;
-    v.y *= radius;
-    v.z *= radius;
-
-    return v;
-  };
-}
-
-const fibSpherePoint = new FibSpherePointClosure();
 
 export default class SplashHero {
 
@@ -73,9 +46,6 @@ export default class SplashHero {
 
     self.app.camera.position.set( 0, 0, 500 );
 
-    self.colorA = new THREE.Color( 0xffffff );
-    self.colorB = new THREE.Color( 0x283844 );
-
     self.offset = new THREE.Vector2( 0, 0 );
     self.smooth = new THREE.Vector2( 1.0, 1.0 );
 
@@ -88,11 +58,15 @@ export default class SplashHero {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
+    self.initMaterials();
+
     self.addBackground();
 
     self.addText();
 
     self.addControls();
+
+    this.pauseWhenOffscreen();
 
     const updateMaterials = function () {
         // For some reason pan events on mobile sometimes register as (0,0); ignore these
@@ -108,11 +82,10 @@ export default class SplashHero {
       }
     };
 
-    let uTime = 0.0;
-    let direction = 1.0;
-    self.app.onUpdate = function () {
-      updateMaterials();
+    let uTime = 1.0;
+    let direction = -1.0;
 
+    const updateAnimation = function () {
       if ( uTime >= 1.5 || uTime <= -0.5 ) {
         uTime = 0.0;
       }
@@ -125,6 +98,12 @@ export default class SplashHero {
       }
 
       self.textMat.uniforms.uTime.value = uTime;
+    };
+
+    self.app.onUpdate = function () {
+      updateMaterials();
+
+      updateAnimation();
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -134,85 +113,40 @@ export default class SplashHero {
 
     self.app.play();
 
-    // Pause if the canvas is not onscreen
-    window.addEventListener( 'scroll', () => {
-      if ( !self.app.isPaused && window.scrollY > ( self.canvas.offsetTop + self.canvas.clientHeight ) ) {
-        self.app.pause();
-      } else if ( self.app.isPaused ) {
-        self.app.play();
-      }
-    } );
-
-  }
-
-  addControls() {
-    this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
-  }
-
-  addBackground() {
-    this.backgroundMat = this.initBackgroundMat( );
-    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
-    this.bgMesh = new THREE.Mesh( geometry, this.backgroundMat );
-    this.app.scene.add( this.bgMesh );
-  }
-
-
-  initBackgroundMat( ) {
-
-    const uniforms = {
-
-      noiseTexture: { value: this.noiseTexture },
-      offset: { value: this.offset },
-      smooth: { value: this.smooth },
-      color1: { value: this.colorA },
-      color2: { value: this.colorB },
-
-    };
-
-    return new THREE.RawShaderMaterial( {
-      uniforms,
-      vertexShader: backgroundVert,
-      fragmentShader: backgroundFrag,
-      // side: THREE.DoubleSide,
-      // transparent: true,
-    } );
-
   }
 
   addText() {
     const self = this;
 
-    const loader = new THREE.FontLoader();
-    this.textMat = this.initTextMat();
+    threeUtils.fontLoader( 'assets/fonts/json/droid_sans_mono_regular.typeface.json' )
+    .then( ( font ) => {
 
+      const textGeometry = self.createTextGeometry( font );
 
-    loader.load( 'assets/fonts/json/droid_sans_mono_regular.typeface.json', ( response ) => {
-      const textGeometry = generateTextGeometry( 'Black Thread Design', {
-        size: 40,
-        height: 3,
-        font: response,
-        weight: 'normal',
-        style: 'normal',
-        curveSegments: 24,
-        bevelSize: 2,
-        bevelThickness: 2,
-        bevelEnabled: true,
-        anchor: { x: 0.5, y: 0.5, z: 0.0 },
-      } );
+      const bufferGeometry = new THREE.BufferGeometry( textGeometry );
 
-      tesselateGeometry( textGeometry );
+      self.initBufferAnimation( bufferGeometry, textGeometry );
 
-      const bufferGeometry = new BAS.ModelBufferGeometry( textGeometry );
+      const textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
 
+      textMesh.position.set( 0, 0, 100 );
 
-      /** *********************************************************************** */
+      self.app.scene.add( textMesh );
+    });
 
+  }
 
-      const aAnimation = bufferGeometry.createAttribute( 'aAnimation', 2 );
-      const aEndPosition = bufferGeometry.createAttribute( 'aEndPosition', 3 );
-      const aAxisAngle = bufferGeometry.createAttribute( 'aAxisAngle', 4 );
+  initBufferAnimation( bufferGeometry, geometry ) {
+      const faceCount = geometry.faces.length;
+      const vertexCount = geometry.vertices.length;
 
-      const faceCount = bufferGeometry.faceCount;
+      threeUtils.setBufferGeometryIndicesFromFaces( bufferGeometry, faceCount, geometry.faces );
+      threeUtils.bufferPositions( bufferGeometry, geometry.vertices );
+
+      const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
+      const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
+      const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
+
       let i;
       let i2;
       let i3;
@@ -224,7 +158,7 @@ export default class SplashHero {
       const maxDuration = 1.0;
       const stretch = 0.05;
       const lengthFactor = 0.001;
-      const maxLength = textGeometry.boundingBox.max.length();
+      const maxLength = geometry.boundingBox.max.length();
 
       this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
       this._animationProgress = 0;
@@ -233,8 +167,8 @@ export default class SplashHero {
       let angle;
 
       for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
-        const face = textGeometry.faces[i];
-        const centroid = BAS.Utils.computeCentroid( textGeometry, face );
+        const face = geometry.faces[i];
+        const centroid = threeUtils.computeCentroid( geometry, face );
         const centroidN = new THREE.Vector3().copy( centroid ).normalize();
 
         // animation
@@ -271,36 +205,81 @@ export default class SplashHero {
           aAxisAngle.array[i4 + v + 3] = angle;
         }
       }
-
-
-      /** *********************************************************************** */
-      const textMesh = new THREE.Mesh( bufferGeometry, this.textMat );
-
-      textMesh.position.set( 0, 0, 100 );
-
-      self.app.scene.add( textMesh );
-    } );
-
   }
 
-  initTextMat() {
+  createTextGeometry( font ) {
+    const textGeometry = threeUtils.generateTextGeometry( 'Black Thread Design', {
+        size: 40,
+        height: 3,
+        font: font,
+        weight: 'normal',
+        style: 'normal',
+        curveSegments: 24,
+        bevelSize: 2,
+        bevelThickness: 2,
+        bevelEnabled: true,
+        anchor: { x: 0.5, y: 0.5, z: 0.0 },
+      } );
+
+      threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
+
+      threeUtils.explodeModifier( textGeometry );
+
+      return textGeometry;
+  }
+
+  addBackground() {
+    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
+    this.bgMesh = new THREE.Mesh( geometry, this.backgroundMat );
+    this.app.scene.add( this.bgMesh );
+  }
+
+  initMaterials () {
+    const colA = new THREE.Color( 0xffffff );
+    const colB = new THREE.Color( 0x283844 );
+
     const uniforms = {
-      noiseTexture: { value: this.noiseTexture },
-      offset: { value: this.offset },
-      smooth: { value: this.smooth },
-      color1: { value: this.colorB },
-      color2: { value: this.colorA },
-      uTime: { value: 0.0 },
+        noiseTexture: { value: this.noiseTexture },
+        offset: { value: this.offset },
+        smooth: { value: this.smooth },  
     };
 
-    return new THREE.ShaderMaterial( {
-      uniforms,
-      vertexShader: textVert,
-      fragmentShader: textFrag,
-      side: THREE.DoubleSide,
-      // transparent: true,
+    this.textMat = new THREE.ShaderMaterial( {
+        uniforms: Object.assign( { 
+          color1: { value: colB },
+          color2: { value: colA },
+          uTime: { value: 0.0 }
+        }, uniforms ),
+        vertexShader: textVert,
+        fragmentShader: textFrag,
+        side: THREE.DoubleSide,
     } );
 
+    this.backgroundMat = new THREE.RawShaderMaterial( {
+      uniforms: Object.assign( { 
+          color1: { value: colA },
+          color2: { value: colB },
+        }, uniforms ),
+      vertexShader: backgroundVert,
+      fragmentShader: backgroundFrag,
+    } );
+  }
+
+  // Pause if the canvas is not onscreen
+  // TODO: Make this a part of App
+  // TODO: Currently only works when scrolling down
+  pauseWhenOffscreen() {
+    window.addEventListener( 'scroll', () => {
+      if ( !this.app.isPaused && window.scrollY > ( this.canvas.offsetTop + this.canvas.clientHeight ) ) {
+        this.app.pause();
+      } else if ( this.app.isPaused ) {
+        this.app.play();
+      }
+    } );
+  }
+
+  addControls() {
+    this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
   }
 
 }

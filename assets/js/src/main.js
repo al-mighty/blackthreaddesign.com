@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import * as Hammer from 'hammerjs';
 
-// Adds TweenLite, TimeLineLite etc as globals
-import 'gsap/src/uncompressed/TimelineLite';
-import 'gsap/src/uncompressed/easing/EasePack';
+import 'babel-polyfill';
 
-// import BAS from './3d/vendor/bas.js';
+// Adds TweenLite, TimeLineLite etc as globals
+// import 'gsap/src/uncompressed/TimelineLite';
+// import 'gsap/src/uncompressed/easing/EasePack';
 
 import PNLTRI from '../vendor/pnltri/pnltri.js';
 
@@ -41,7 +41,7 @@ window.Hammer = Hammer.default;
 // Set up THREE
 THREE.Cache.enabled = true;
 
-// Use PNLTRI for triangualtion>
+//Use PNLTRI for triangualtion
 THREE.ShapeUtils.triangulateShape = ( () => {
   const pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts( points ) {

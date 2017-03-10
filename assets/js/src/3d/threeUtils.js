@@ -1,5 +1,16 @@
 import * as THREE from 'three';
 
+let fontLoader;
+
+const createBufferAttribute = ( bufferGeometry, name, itemSize, count ) => {
+  const buffer = new Float32Array( count * itemSize );
+  const attribute = new THREE.BufferAttribute( buffer, itemSize );
+
+  bufferGeometry.addAttribute( name, attribute );
+
+  return attribute;
+};
+
 export default {
   /**
    * Duplicates vertices so each face becomes separate.
@@ -273,6 +284,85 @@ export default {
     for ( let i = 0; i < depth; i++ ) {
       this.tessellate( geometry, maxEdgeLength );
     }
+  },
+
+  // compute the centroid of a triangular face
+  computeCentroid: ( function () {
+    const v = new THREE.Vector3();
+
+    return function ( geometry, face ) {
+      const a = geometry.vertices[face.a];
+      const b = geometry.vertices[face.b];
+      const c = geometry.vertices[face.c];
+
+      v.x = ( a.x + b.x + c.x ) / 3;
+      v.y = ( a.y + b.y + c.y ) / 3;
+      v.z = ( a.z + b.z + c.z ) / 3;
+
+      return v;
+    };
+  }() ),
+
+  // promisified version of THREE.FontLoader
+  fontLoader: ( url ) => {
+    const promiseLoader = url => new Promise( ( resolve, reject ) => {
+      if ( !fontLoader ) fontLoader = new THREE.FontLoader();
+      fontLoader.load( url, resolve );
+      // reject( console.error( 'Couldn\'t load font ' + url ) );
+    } );
+
+    return promiseLoader( url )
+    .then( ( object ) => {
+      return object;
+    })
+  },
+
+  // Add an attribute to a bufferGeometry and return a reference to the attribute
+  createBufferAttribute,
+
+  // set the .index property of a bufferGeometry from faces
+  setBufferGeometryIndicesFromFaces: ( bufferGeometry, faceCount, faces ) => {
+    const indexBuffer = new Uint32Array( faceCount * 3 );
+
+    bufferGeometry.setIndex( new THREE.BufferAttribute( indexBuffer, 1 ) );
+
+    for ( let i = 0, offset = 0; i < faceCount; i++, offset += 3 ) {
+      const face = faces[i];
+
+      indexBuffer[offset] = face.a;
+      indexBuffer[offset + 1] = face.b;
+      indexBuffer[offset + 2] = face.c;
+    }
+  },
+
+  // create an attribute 'positions' from a set of vertices
+  bufferPositions: ( bufferGeometry, vertices ) => {
+    const vertexCount = vertices.length;
+    const positionBuffer = createBufferAttribute( bufferGeometry, 'position', 3, vertexCount ).array;
+
+    for (let i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
+      const vertex = vertices[i];
+
+      positionBuffer[offset    ] = vertex.x;
+      positionBuffer[offset + 1] = vertex.y;
+      positionBuffer[offset + 2] = vertex.z;
+    }
+  },
+
+  generateTextGeometry: ( text, params ) => {
+    const geometry = new THREE.TextGeometry( text, params );
+
+    geometry.computeBoundingBox();
+
+    const size = geometry.boundingBox.getSize();
+    const anchorX = size.x * -params.anchor.x;
+    const anchorY = size.y * -params.anchor.y;
+    const anchorZ = size.z * -params.anchor.z;
+    const matrix = new THREE.Matrix4().makeTranslation( anchorX, anchorY, anchorZ );
+
+    geometry.applyMatrix( matrix );
+
+    return geometry;
   },
 
 };
