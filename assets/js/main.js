@@ -55881,6 +55881,27 @@ var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec3 uAxis;\nun
 
 var textFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
+var v = new Vector3();
+var G = Math.PI * (3 - Math.sqrt(5));
+function fibSpherePoint(i, n, radius) {
+  var step = 2.0 / n;
+
+  var phi = i * G;
+
+  v.y = i * step - 1 + step * 0.5;
+  var r = Math.sqrt(1 - v.y * v.y);
+  v.x = Math.cos(phi) * r;
+  v.z = Math.sin(phi) * r;
+
+  radius = radius || 1;
+
+  v.x *= radius;
+  v.y *= radius;
+  v.z *= radius;
+
+  return v;
+}
+
 var SplashHero = function () {
   function SplashHero(showStats) {
     classCallCheck(this, SplashHero);
@@ -56025,7 +56046,7 @@ var SplashHero = function () {
       }
 
       // end position
-      var point = new Vector3(-100, 100, -100); //fibSpherePoint( i, faceCount, 200 );
+      var point = fibSpherePoint(i, faceCount, 200);
 
       for (v = 0; v < 9; v += 3) {
         aEndPosition.array[i3 + v] = point.x;
