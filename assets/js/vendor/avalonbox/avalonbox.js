@@ -109,7 +109,7 @@ const Avalonbox = ( function () {
       }
     }
 
-    e.stopPropagation();
+    if( e ) e.stopPropagation();
   }
 
   function previous( e ) {
@@ -122,7 +122,7 @@ const Avalonbox = ( function () {
       }
     }
 
-    e.stopPropagation();
+    if( e ) e.stopPropagation();
   }
 
   function loadImage() {
@@ -176,11 +176,11 @@ const Avalonbox = ( function () {
     new Hammer( document.querySelector( 'body' ) )
     .on( 'swipeleft', ( e ) => {
       console.log("left");
-      previous( e ); 
+      previous( ); 
     })
     .on( 'swiperight', ( e ) => {
       console.log("left");
-      next( e ); 
+      next( ); 
     });
   }
 

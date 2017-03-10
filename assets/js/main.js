@@ -53201,7 +53201,7 @@ var avalonbox = createCommonjsModule(function (module) {
         }
       }
 
-      e.stopPropagation();
+      if (e) e.stopPropagation();
     }
 
     function previous(e) {
@@ -53214,7 +53214,7 @@ var avalonbox = createCommonjsModule(function (module) {
         }
       }
 
-      e.stopPropagation();
+      if (e) e.stopPropagation();
     }
 
     function loadImage() {
@@ -53269,10 +53269,10 @@ var avalonbox = createCommonjsModule(function (module) {
     function swipeHandler() {
       new Hammer(document.querySelector('body')).on('swipeleft', function (e) {
         console.log("left");
-        previous(e);
+        previous();
       }).on('swiperight', function (e) {
         console.log("left");
-        next(e);
+        next();
       });
     }
 
