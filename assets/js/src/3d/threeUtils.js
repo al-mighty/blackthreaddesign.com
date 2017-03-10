@@ -3,28 +3,27 @@ import * as THREE from 'three';
 export default {
   /**
    * Duplicates vertices so each face becomes separate.
-   * Same as THREE.ExplodeModifier.
-   *
-   * @param {THREE.Geometry} geometry Geometry instance to modify.
+   * copied from  THREE.ExplodeModifier.
+
    */
-  separateFaces: function (geometry) {
-    var vertices = [];
+  explodeModifier( geometry ) {
+    const vertices = [];
 
-    for (var i = 0, il = geometry.faces.length; i < il; i++) {
-      var n = vertices.length;
-      var face = geometry.faces[i];
+    for ( let i = 0, il = geometry.faces.length; i < il; i++ ) {
+      const n = vertices.length;
+      const face = geometry.faces[i];
 
-      var a = face.a;
-      var b = face.b;
-      var c = face.c;
+      const a = face.a;
+      const b = face.b;
+      const c = face.c;
 
-      var va = geometry.vertices[a];
-      var vb = geometry.vertices[b];
-      var vc = geometry.vertices[c];
+      const va = geometry.vertices[a];
+      const vb = geometry.vertices[b];
+      const vc = geometry.vertices[c];
 
-      vertices.push(va.clone());
-      vertices.push(vb.clone());
-      vertices.push(vc.clone());
+      vertices.push( va.clone() );
+      vertices.push( vb.clone() );
+      vertices.push( vc.clone() );
 
       face.a = n;
       face.b = n + 1;
@@ -34,48 +33,57 @@ export default {
     geometry.vertices = vertices;
   },
 
-  tessellate: function (geometry, maxEdgeLength) {
-    var edge;
+   /**
+   * Break faces with edges longer than maxEdgeLength.
+   * copied from  THREE.TessellateModifier.
 
-    var faces = [];
-    var faceVertexUvs = [];
-    var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
+   */
+  tessellate( geometry, maxEdgeLength ) {
+    let edge;
 
-    for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
+    const faces = [];
+    const faceVertexUvs = [];
+    const maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
+
+    for ( let i = 0, il = geometry.faceVertexUvs.length; i < il; i++ ) {
 
       faceVertexUvs[i] = [];
 
     }
 
-    for (var i = 0, il = geometry.faces.length; i < il; i++) {
+    for ( let i = 0, il = geometry.faces.length; i < il; i++ ) {
 
-      var face = geometry.faces[i];
+      const face = geometry.faces[i];
 
-      if (face instanceof THREE.Face3) {
+      if ( face instanceof THREE.Face3 ) {
 
-        var a = face.a;
-        var b = face.b;
-        var c = face.c;
+        const a = face.a;
+        const b = face.b;
+        const c = face.c;
 
-        var va = geometry.vertices[a];
-        var vb = geometry.vertices[b];
-        var vc = geometry.vertices[c];
+        const va = geometry.vertices[a];
+        const vb = geometry.vertices[b];
+        const vc = geometry.vertices[c];
 
-        var dab = va.distanceToSquared(vb);
-        var dbc = vb.distanceToSquared(vc);
-        var dac = va.distanceToSquared(vc);
+        const dab = va.distanceToSquared( vb );
+        const dbc = vb.distanceToSquared( vc );
+        const dac = va.distanceToSquared( vc );
 
-        if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
+        if ( dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared ) {
 
-          var m = geometry.vertices.length;
+          const m = geometry.vertices.length;
 
-          var triA = face.clone();
-          var triB = face.clone();
+          const triA = face.clone();
+          const triB = face.clone();
 
-          if (dab >= dbc && dab >= dac) {
+          let vm;
+          let vnm;
+          let vcm;
 
-            var vm = va.clone();
-            vm.lerp(vb, 0.5);
+          if ( dab >= dbc && dab >= dac ) {
+
+            vm = va.clone();
+            vm.lerp( vb, 0.5 );
 
             triA.a = a;
             triA.b = m;
@@ -85,32 +93,32 @@ export default {
             triB.b = b;
             triB.c = c;
 
-            if (face.vertexNormals.length === 3) {
+            if ( face.vertexNormals.length === 3 ) {
 
-              var vnm = face.vertexNormals[0].clone();
-              vnm.lerp(face.vertexNormals[1], 0.5);
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp( face.vertexNormals[1], 0.5 );
 
-              triA.vertexNormals[1].copy(vnm);
-              triB.vertexNormals[0].copy(vnm);
+              triA.vertexNormals[1].copy( vnm );
+              triB.vertexNormals[0].copy( vnm );
 
             }
 
-            if (face.vertexColors.length === 3) {
+            if ( face.vertexColors.length === 3 ) {
 
-              var vcm = face.vertexColors[0].clone();
-              vcm.lerp(face.vertexColors[1], 0.5);
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp( face.vertexColors[1], 0.5 );
 
-              triA.vertexColors[1].copy(vcm);
-              triB.vertexColors[0].copy(vcm);
+              triA.vertexColors[1].copy( vcm );
+              triB.vertexColors[0].copy( vcm );
 
             }
 
             edge = 0;
 
-          } else if (dbc >= dab && dbc >= dac) {
+          } else if ( dbc >= dab && dbc >= dac ) {
 
-            var vm = vb.clone();
-            vm.lerp(vc, 0.5);
+            vm = vb.clone();
+            vm.lerp( vc, 0.5 );
 
             triA.a = a;
             triA.b = b;
@@ -120,29 +128,29 @@ export default {
             triB.b = c;
             triB.c = a;
 
-            if (face.vertexNormals.length === 3) {
+            if ( face.vertexNormals.length === 3 ) {
 
-              var vnm = face.vertexNormals[1].clone();
-              vnm.lerp(face.vertexNormals[2], 0.5);
+              vnm = face.vertexNormals[1].clone();
+              vnm.lerp( face.vertexNormals[2], 0.5 );
 
-              triA.vertexNormals[2].copy(vnm);
+              triA.vertexNormals[2].copy( vnm );
 
-              triB.vertexNormals[0].copy(vnm);
-              triB.vertexNormals[1].copy(face.vertexNormals[2]);
-              triB.vertexNormals[2].copy(face.vertexNormals[0]);
+              triB.vertexNormals[0].copy( vnm );
+              triB.vertexNormals[1].copy( face.vertexNormals[2] );
+              triB.vertexNormals[2].copy( face.vertexNormals[0] );
 
             }
 
-            if (face.vertexColors.length === 3) {
+            if ( face.vertexColors.length === 3 ) {
 
-              var vcm = face.vertexColors[1].clone();
-              vcm.lerp(face.vertexColors[2], 0.5);
+              vcm = face.vertexColors[1].clone();
+              vcm.lerp( face.vertexColors[2], 0.5 );
 
-              triA.vertexColors[2].copy(vcm);
+              triA.vertexColors[2].copy( vcm );
 
-              triB.vertexColors[0].copy(vcm);
-              triB.vertexColors[1].copy(face.vertexColors[2]);
-              triB.vertexColors[2].copy(face.vertexColors[0]);
+              triB.vertexColors[0].copy( vcm );
+              triB.vertexColors[1].copy( face.vertexColors[2] );
+              triB.vertexColors[2].copy( face.vertexColors[0] );
 
             }
 
@@ -150,8 +158,8 @@ export default {
 
           } else {
 
-            var vm = va.clone();
-            vm.lerp(vc, 0.5);
+            vm = va.clone();
+            vm.lerp( vc, 0.5 );
 
             triA.a = a;
             triA.b = b;
@@ -161,23 +169,23 @@ export default {
             triB.b = b;
             triB.c = c;
 
-            if (face.vertexNormals.length === 3) {
+            if ( face.vertexNormals.length === 3 ) {
 
-              var vnm = face.vertexNormals[0].clone();
-              vnm.lerp(face.vertexNormals[2], 0.5);
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp( face.vertexNormals[2], 0.5 );
 
-              triA.vertexNormals[2].copy(vnm);
-              triB.vertexNormals[0].copy(vnm);
+              triA.vertexNormals[2].copy( vnm );
+              triB.vertexNormals[0].copy( vnm );
 
             }
 
-            if (face.vertexColors.length === 3) {
+            if ( face.vertexColors.length === 3 ) {
 
-              var vcm = face.vertexColors[0].clone();
-              vcm.lerp(face.vertexColors[2], 0.5);
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp( face.vertexColors[2], 0.5 );
 
-              triA.vertexColors[2].copy(vcm);
-              triB.vertexColors[0].copy(vcm);
+              triA.vertexColors[2].copy( vcm );
+              triB.vertexColors[0].copy( vcm );
 
             }
 
@@ -185,52 +193,56 @@ export default {
 
           }
 
-          faces.push(triA, triB);
-          geometry.vertices.push(vm);
+          faces.push( triA, triB );
+          geometry.vertices.push( vm );
 
-          for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+          for ( let j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++ ) {
 
-            if (geometry.faceVertexUvs[j].length) {
+            if ( geometry.faceVertexUvs[j].length ) {
 
-              var uvs = geometry.faceVertexUvs[j][i];
+              const uvs = geometry.faceVertexUvs[j][i];
 
-              var uvA = uvs[0];
-              var uvB = uvs[1];
-              var uvC = uvs[2];
+              const uvA = uvs[0];
+              const uvB = uvs[1];
+              const uvC = uvs[2];
 
               // AB
 
-              if (edge === 0) {
+              let uvsTriA;
+              let uvsTriB;
+              let uvM;
 
-                var uvM = uvA.clone();
-                uvM.lerp(uvB, 0.5);
+              if ( edge === 0 ) {
 
-                var uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
-                var uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+                uvM = uvA.clone();
+                uvM.lerp( uvB, 0.5 );
+
+                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
 
                 // BC
 
-              } else if (edge === 1) {
+              } else if ( edge === 1 ) {
 
-                var uvM = uvB.clone();
-                uvM.lerp(uvC, 0.5);
+                uvM = uvB.clone();
+                uvM.lerp( uvC, 0.5 );
 
-                var uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                var uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
 
                 // AC
 
               } else {
 
-                var uvM = uvA.clone();
-                uvM.lerp(uvC, 0.5);
+                uvM = uvA.clone();
+                uvM.lerp( uvC, 0.5 );
 
-                var uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                var uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
 
               }
 
-              faceVertexUvs[j].push(uvsTriA, uvsTriB);
+              faceVertexUvs[j].push( uvsTriA, uvsTriB );
 
             }
 
@@ -238,11 +250,11 @@ export default {
 
         } else {
 
-          faces.push(face);
+          faces.push( face );
 
-          for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+          for ( let j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++ ) {
 
-            faceVertexUvs[j].push(geometry.faceVertexUvs[j][i]);
+            faceVertexUvs[j].push( geometry.faceVertexUvs[j][i] );
 
           }
 
@@ -256,10 +268,11 @@ export default {
     geometry.faceVertexUvs = faceVertexUvs;
   },
 
-  tessellateRepeat: function(geometry, maxEdgeLength, times) {
-    for (var i = 0; i < times; i++) {
-      this.tessellate(geometry, maxEdgeLength);
+  // recursive version of tesselate
+  tessellateRecursive( geometry, maxEdgeLength, depth ) {
+    for ( let i = 0; i < depth; i++ ) {
+      this.tessellate( geometry, maxEdgeLength );
     }
   },
 
-}
+};

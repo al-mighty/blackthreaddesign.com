@@ -29,10 +29,36 @@ function generateTextGeometry( text, params ) {
 }
 
 function tesselateGeometry( geometry ) {
-  threeUtils.tessellateRepeat( geometry, 1.0, 2 );
+  threeUtils.tessellateRecursive( geometry, 1.0, 2 );
 
-  threeUtils.separateFaces( geometry );
+  threeUtils.explodeModifier( geometry );
 }
+
+function FibSpherePointClosure() {
+  const v = { x: 0, y: 0, z: 0 };
+  const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
+
+  return function ( i, n, radius ) {
+    const step = 2.0 / n;
+
+    const phi = i * G;
+
+    v.y = i * step - 1 + ( step * 0.5 );
+    const r = Math.sqrt( 1 - v.y * v.y );
+    v.x = Math.cos( phi ) * r;
+    v.z = Math.sin( phi ) * r;
+
+    radius = radius || 1;
+
+    v.x *= radius;
+    v.y *= radius;
+    v.z *= radius;
+
+    return v;
+  };
+}
+
+const fibSpherePoint = new FibSpherePointClosure();
 
 export default class SplashHero {
 
@@ -87,14 +113,13 @@ export default class SplashHero {
     self.app.onUpdate = function () {
       updateMaterials();
 
-      if( uTime >= 1.5 || uTime <= -0.5 ) { 
+      if ( uTime >= 1.5 || uTime <= -0.5 ) {
         uTime = 0.0;
       }
 
-      if( uTime <= 1.0 && uTime >= 0.0 ) {
+      if ( uTime <= 1.0 && uTime >= 0.0 ) {
         uTime += ( direction * self.app.delta / 8000 );
-      }
-      else {
+      } else {
         uTime -= ( direction * self.app.delta / 8000 );
         direction *= -1.0;
       }
@@ -181,43 +206,18 @@ export default class SplashHero {
 
 
       /** *********************************************************************** */
-      function FibSpherePointClosure () {
-        const v = { x: 0, y: 0, z: 0 };
-        const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
 
-        return function ( i, n, radius ) {
-          const step = 2.0 / n;
-          let r,
-            phi;
-
-          v.y = i * step - 1 + ( step * 0.5 );
-          r = Math.sqrt( 1 - v.y * v.y );
-          phi = i * G;
-          v.x = Math.cos( phi ) * r;
-          v.z = Math.sin( phi ) * r;
-
-          radius = radius || 1;
-
-          v.x *= radius;
-          v.y *= radius;
-          v.z *= radius;
-
-          return v;
-        };
-      };
-
-      const fibSpherePoint = new FibSpherePointClosure();
 
       const aAnimation = bufferGeometry.createAttribute( 'aAnimation', 2 );
       const aEndPosition = bufferGeometry.createAttribute( 'aEndPosition', 3 );
       const aAxisAngle = bufferGeometry.createAttribute( 'aAxisAngle', 4 );
 
       const faceCount = bufferGeometry.faceCount;
-      let i,
-        i2,
-        i3,
-        i4,
-        v;
+      let i;
+      let i2;
+      let i3;
+      let i4;
+      let v;
 
       const maxDelay = 0.0;
       const minDuration = 1.0;
@@ -297,7 +297,7 @@ export default class SplashHero {
       uniforms,
       vertexShader: textVert,
       fragmentShader: textFrag,
-      // side: THREE.DoubleSide,
+      side: THREE.DoubleSide,
       // transparent: true,
     } );
 

@@ -50067,11 +50067,9 @@ BAS.PhongAnimationMaterial.prototype._concatVertexShader = function () {
 var threeUtils = {
             /**
              * Duplicates vertices so each face becomes separate.
-             * Same as THREE.ExplodeModifier.
-             *
-             * @param {THREE.Geometry} geometry Geometry instance to modify.
-             */
-            separateFaces: function (geometry) {
+             * copied from  THREE.ExplodeModifier.
+               */
+            explodeModifier: function (geometry) {
                         var vertices = [];
 
                         for (var i = 0, il = geometry.faces.length; i < il; i++) {
@@ -50098,8 +50096,13 @@ var threeUtils = {
                         geometry.vertices = vertices;
             },
 
+
+            /**
+            * Break faces with edges longer than maxEdgeLength.
+            * copied from  THREE.TessellateModifier.
+              */
             tessellate: function (geometry, maxEdgeLength) {
-                        var edge;
+                        var edge = void 0;
 
                         var faces = [];
                         var faceVertexUvs = [];
@@ -50110,9 +50113,9 @@ var threeUtils = {
                                     faceVertexUvs[i] = [];
                         }
 
-                        for (var i = 0, il = geometry.faces.length; i < il; i++) {
+                        for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
 
-                                    var face = geometry.faces[i];
+                                    var face = geometry.faces[_i];
 
                                     if (face instanceof Face3) {
 
@@ -50135,9 +50138,13 @@ var threeUtils = {
                                                             var triA = face.clone();
                                                             var triB = face.clone();
 
+                                                            var vm = void 0;
+                                                            var vnm = void 0;
+                                                            var vcm = void 0;
+
                                                             if (dab >= dbc && dab >= dac) {
 
-                                                                        var vm = va.clone();
+                                                                        vm = va.clone();
                                                                         vm.lerp(vb, 0.5);
 
                                                                         triA.a = a;
@@ -50150,7 +50157,7 @@ var threeUtils = {
 
                                                                         if (face.vertexNormals.length === 3) {
 
-                                                                                    var vnm = face.vertexNormals[0].clone();
+                                                                                    vnm = face.vertexNormals[0].clone();
                                                                                     vnm.lerp(face.vertexNormals[1], 0.5);
 
                                                                                     triA.vertexNormals[1].copy(vnm);
@@ -50159,7 +50166,7 @@ var threeUtils = {
 
                                                                         if (face.vertexColors.length === 3) {
 
-                                                                                    var vcm = face.vertexColors[0].clone();
+                                                                                    vcm = face.vertexColors[0].clone();
                                                                                     vcm.lerp(face.vertexColors[1], 0.5);
 
                                                                                     triA.vertexColors[1].copy(vcm);
@@ -50169,7 +50176,7 @@ var threeUtils = {
                                                                         edge = 0;
                                                             } else if (dbc >= dab && dbc >= dac) {
 
-                                                                        var vm = vb.clone();
+                                                                        vm = vb.clone();
                                                                         vm.lerp(vc, 0.5);
 
                                                                         triA.a = a;
@@ -50182,7 +50189,7 @@ var threeUtils = {
 
                                                                         if (face.vertexNormals.length === 3) {
 
-                                                                                    var vnm = face.vertexNormals[1].clone();
+                                                                                    vnm = face.vertexNormals[1].clone();
                                                                                     vnm.lerp(face.vertexNormals[2], 0.5);
 
                                                                                     triA.vertexNormals[2].copy(vnm);
@@ -50194,7 +50201,7 @@ var threeUtils = {
 
                                                                         if (face.vertexColors.length === 3) {
 
-                                                                                    var vcm = face.vertexColors[1].clone();
+                                                                                    vcm = face.vertexColors[1].clone();
                                                                                     vcm.lerp(face.vertexColors[2], 0.5);
 
                                                                                     triA.vertexColors[2].copy(vcm);
@@ -50207,7 +50214,7 @@ var threeUtils = {
                                                                         edge = 1;
                                                             } else {
 
-                                                                        var vm = va.clone();
+                                                                        vm = va.clone();
                                                                         vm.lerp(vc, 0.5);
 
                                                                         triA.a = a;
@@ -50220,7 +50227,7 @@ var threeUtils = {
 
                                                                         if (face.vertexNormals.length === 3) {
 
-                                                                                    var vnm = face.vertexNormals[0].clone();
+                                                                                    vnm = face.vertexNormals[0].clone();
                                                                                     vnm.lerp(face.vertexNormals[2], 0.5);
 
                                                                                     triA.vertexNormals[2].copy(vnm);
@@ -50229,7 +50236,7 @@ var threeUtils = {
 
                                                                         if (face.vertexColors.length === 3) {
 
-                                                                                    var vcm = face.vertexColors[0].clone();
+                                                                                    vcm = face.vertexColors[0].clone();
                                                                                     vcm.lerp(face.vertexColors[2], 0.5);
 
                                                                                     triA.vertexColors[2].copy(vcm);
@@ -50246,7 +50253,7 @@ var threeUtils = {
 
                                                                         if (geometry.faceVertexUvs[j].length) {
 
-                                                                                    var uvs = geometry.faceVertexUvs[j][i];
+                                                                                    var uvs = geometry.faceVertexUvs[j][_i];
 
                                                                                     var uvA = uvs[0];
                                                                                     var uvB = uvs[1];
@@ -50254,31 +50261,35 @@ var threeUtils = {
 
                                                                                     // AB
 
+                                                                                    var uvsTriA = void 0;
+                                                                                    var uvsTriB = void 0;
+                                                                                    var uvM = void 0;
+
                                                                                     if (edge === 0) {
 
-                                                                                                var uvM = uvA.clone();
+                                                                                                uvM = uvA.clone();
                                                                                                 uvM.lerp(uvB, 0.5);
 
-                                                                                                var uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
-                                                                                                var uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+                                                                                                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
 
                                                                                                 // BC
                                                                                     } else if (edge === 1) {
 
-                                                                                                var uvM = uvB.clone();
+                                                                                                uvM = uvB.clone();
                                                                                                 uvM.lerp(uvC, 0.5);
 
-                                                                                                var uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                                                                                                var uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
+                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
 
                                                                                                 // AC
                                                                                     } else {
 
-                                                                                                var uvM = uvA.clone();
+                                                                                                uvM = uvA.clone();
                                                                                                 uvM.lerp(uvC, 0.5);
 
-                                                                                                var uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
-                                                                                                var uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+                                                                                                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                                                                                                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
                                                                                     }
 
                                                                                     faceVertexUvs[j].push(uvsTriA, uvsTriB);
@@ -50288,9 +50299,9 @@ var threeUtils = {
 
                                                             faces.push(face);
 
-                                                            for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+                                                            for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
 
-                                                                        faceVertexUvs[j].push(geometry.faceVertexUvs[j][i]);
+                                                                        faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
                                                             }
                                                 }
                                     }
@@ -50300,12 +50311,13 @@ var threeUtils = {
                         geometry.faceVertexUvs = faceVertexUvs;
             },
 
-            tessellateRepeat: function (geometry, maxEdgeLength, times) {
-                        for (var i = 0; i < times; i++) {
+
+            // recursive version of tesselate
+            tessellateRecursive: function (geometry, maxEdgeLength, depth) {
+                        for (var i = 0; i < depth; i++) {
                                     this.tessellate(geometry, maxEdgeLength);
                         }
             }
-
 };
 
 var stats_min = createCommonjsModule(function (module) {
@@ -51680,7 +51692,7 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec3 uAxis;\nuniform float uAngle;\nattribute vec2 aAnimation;\nattribute vec3 aEndPosition;\nattribute vec4 aAxisAngle;\nvarying vec2 screenUV;\nvec3 cubicBezier(vec3 p0, vec3 c0, vec3 c1, vec3 p1, float t){\n    vec3 tp;\n    float tn = 1.0 - t;\n    tp.xyz = tn * tn * tn * p0.xyz + 3.0 * tn * tn * t * c0.xyz + 3.0 * tn * t * t * c1.xyz + t * t * t * p1.xyz;\n    return tp;\n}\nfloat ease(float t, float b, float c, float d) {\n  return c*((t=t/d - 1.0)*t*t + 1.0) + b;\n}\nvec3 rotateVector(vec4 q, vec3 v) {\n    return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);\n}\nvec4 quatFromAxisAngle(vec3 axis, float angle) {\n    float halfAngle = angle * 0.5;\n    return vec4(axis.xyz * sin(halfAngle), cos(halfAngle));\n}\nvoid main() {\n  float tDelay = aAnimation.x;\n  float tDuration = aAnimation.y;\n  float tTime = clamp(uTime - tDelay, 0.0, tDuration);\n  float tProgress = ease(tTime, 0.0, 1.0, tDuration);\n  vec3 transformed = vec3( position );\n \n  transformed = mix(transformed, aEndPosition, tProgress);\n  float angle = aAxisAngle.w * tProgress;\n  vec4 tQuat = quatFromAxisAngle(aAxisAngle.xyz, angle);\n  vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );\n  gl_Position = projectionMatrix * mvPosition;\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
+var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec3 uAxis;\nuniform float uAngle;\nattribute vec2 aAnimation;\nattribute vec3 aEndPosition;\nattribute vec4 aAxisAngle;\nvarying vec2 screenUV;\nfloat ease(float t, float b, float c, float d) {\n  return c*((t=t/d - 1.0)*t*t + 1.0) + b;\n}\nvec4 quatFromAxisAngle(vec3 axis, float angle) {\n    float halfAngle = angle * 0.5;\n    return vec4(axis.xyz * sin(halfAngle), cos(halfAngle));\n}\nvoid main() {\n  float tDelay = aAnimation.x;\n  float tDuration = aAnimation.y;\n  float tTime = clamp(uTime - tDelay, 0.0, tDuration);\n  float tProgress = ease(tTime, 0.0, 1.0, tDuration);\n  vec3 transformed = vec3( position );\n \n  transformed = mix(transformed, aEndPosition, tProgress);\n  float angle = aAxisAngle.w * tProgress;\n  vec4 tQuat = quatFromAxisAngle(aAxisAngle.xyz, angle);\n  vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );\n  gl_Position = projectionMatrix * mvPosition;\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
 
 var textFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
@@ -51701,10 +51713,36 @@ function generateTextGeometry(text, params) {
 }
 
 function tesselateGeometry(geometry) {
-  threeUtils.tessellateRepeat(geometry, 1.0, 2);
+  threeUtils.tessellateRecursive(geometry, 1.0, 2);
 
-  threeUtils.separateFaces(geometry);
+  threeUtils.explodeModifier(geometry);
 }
+
+function FibSpherePointClosure() {
+  var v = { x: 0, y: 0, z: 0 };
+  var G = Math.PI * (3 - Math.sqrt(5));
+
+  return function (i, n, radius) {
+    var step = 2.0 / n;
+
+    var phi = i * G;
+
+    v.y = i * step - 1 + step * 0.5;
+    var r = Math.sqrt(1 - v.y * v.y);
+    v.x = Math.cos(phi) * r;
+    v.z = Math.sin(phi) * r;
+
+    radius = radius || 1;
+
+    v.x *= radius;
+    v.y *= radius;
+    v.z *= radius;
+
+    return v;
+  };
+}
+
+var fibSpherePoint = new FibSpherePointClosure();
 
 var SplashHero = function () {
   function SplashHero(showStats) {
@@ -51846,43 +51884,17 @@ var SplashHero = function () {
       var bufferGeometry = new BAS.ModelBufferGeometry(textGeometry);
 
       /** *********************************************************************** */
-      function FibSpherePointClosure() {
-        var v = { x: 0, y: 0, z: 0 };
-        var G = Math.PI * (3 - Math.sqrt(5));
-
-        return function (i, n, radius) {
-          var step = 2.0 / n;
-          var r = void 0,
-              phi = void 0;
-
-          v.y = i * step - 1 + step * 0.5;
-          r = Math.sqrt(1 - v.y * v.y);
-          phi = i * G;
-          v.x = Math.cos(phi) * r;
-          v.z = Math.sin(phi) * r;
-
-          radius = radius || 1;
-
-          v.x *= radius;
-          v.y *= radius;
-          v.z *= radius;
-
-          return v;
-        };
-      }
-
-      var fibSpherePoint = new FibSpherePointClosure();
 
       var aAnimation = bufferGeometry.createAttribute('aAnimation', 2);
       var aEndPosition = bufferGeometry.createAttribute('aEndPosition', 3);
       var aAxisAngle = bufferGeometry.createAttribute('aAxisAngle', 4);
 
       var faceCount = bufferGeometry.faceCount;
-      var i = void 0,
-          i2 = void 0,
-          i3 = void 0,
-          i4 = void 0,
-          v = void 0;
+      var i = void 0;
+      var i2 = void 0;
+      var i3 = void 0;
+      var i4 = void 0;
+      var v = void 0;
 
       var maxDelay = 0.0;
       var minDuration = 1.0;
@@ -51959,7 +51971,8 @@ var SplashHero = function () {
     return new ShaderMaterial({
       uniforms: uniforms,
       vertexShader: textVert,
-      fragmentShader: textFrag
+      fragmentShader: textFrag,
+      side: DoubleSide
     });
   };
 
@@ -51973,10 +51986,6 @@ function initSplash(showStats) {
   initSplashLayout();
 
   var splashHero = new SplashHero(showStats);
-  // const splashWork = new SplashWork( showStats );
-  // const splashExperiments = new SplashExperiments( showStats );
-  // const splashTutorials = new SplashTutorials( showStats );
-  // const splashBlog = new SplashBlog( showStats );
 }
 
 initLoader();
