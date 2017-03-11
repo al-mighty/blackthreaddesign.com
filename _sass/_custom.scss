@@ -38,7 +38,7 @@
   }
 
   @include breakpoint($medium-wide) { 
-    content: "BP: Wide"; 
+    content: "BP: Medium-Wide"; 
   }
 
   @include breakpoint($large) { 

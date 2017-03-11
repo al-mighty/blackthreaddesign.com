@@ -17,8 +17,12 @@ $gray6: rgba(30,   30,   30, .6);
   100% { transform: rotate(360deg); }
 }
 
-.splash-circle-work {
-  transition: all .3s ease;
+#splash-circle-work {
+  background-image: url('/assets/images/splash/hyper_3_512.jpg');
+  background-size: contain;
+  @include breakpoint($medium) { 
+    background-size: initial;
+  }
   box-shadow:
       inset 0.2em -0.1em 0 0 $dark-blue,
       inset -0.1em 0.1em 0 0 $medium-red,
@@ -30,8 +34,9 @@ $gray6: rgba(30,   30,   30, .6);
   // animation: spin 120s linear infinite;
 }
 
-.splash-circle-experiments {
-  transition: all .3s ease;
+#splash-circle-experiments {
+  background-image: url('/assets/images/splash/hyper_4_512.jpg');
+  background-size: contain;
   box-shadow:
       inset 0.1em -0.1em 0 0 $medium-red,
       inset -0.2em 0.1em 0 0 $dark-blue,
@@ -43,8 +48,9 @@ $gray6: rgba(30,   30,   30, .6);
   // animation: spin 120s linear infinite;
 }
 
-.splash-circle-tutorials {
-  transition: all .3s ease;
+#splash-circle-tutorials {
+  background-image: url('/assets/images/splash/hyper_1_512.jpg');
+  background-size: contain;
   box-shadow:
       inset 0.1em -0.1em 0 0 $dark-blue,
       inset -0.2em 0.1em 0 0 $medium-red,
@@ -55,8 +61,9 @@ $gray6: rgba(30,   30,   30, .6);
   // animation: spin 120s linear infinite;
 }
 
-.splash-circle-blog {
-  transition: all .3s ease;
+#splash-circle-blog {
+  background-image: url('/assets/images/splash/hyper_2_512.jpg');
+  background-size: contain;
   box-shadow:
       inset 0.1em -0.1em 0 0 $medium-red,
       inset -0.2em 0.1em 0 0 $dark-blue,

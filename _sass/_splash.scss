@@ -33,44 +33,34 @@
 }
 
 .splash-row-canvas-container {
-    position: relative;
+    position: absolute;
     top: 10%;
-    left: 33.33333%;
-    width: 33.33333vw;
-    height: 33.33333vw;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    width: 50vw;
+    height: 50vw;
     //background-image: url('/assets/images/textures/noise-1024.jpg');
     //background-image: radial-gradient(circle at center, #333333, #111111);
-    background-color: $darkest-blue;
+    background-color: $background-color;
 
-    @include breakpoint($medium) { 
+    @include breakpoint($small) { 
+      width: 40vw;
+      height: 40vw;
+    }
+
+   @include breakpoint($medium) { 
+      width: 33.3333vw;
+      height: 33.3333vw;
+    }
+
+    @include breakpoint($medium-wide) { 
+      position: relative;
+      transform: translate(0, 0);
       width: 16em;
       height: 16em;
       top: 25%;
       left: 25%;
     }
-}
-
-#splash-work-canvas-container {
-    background-image: url('/assets/images/splash/hyper_3_512.jpg');
-    background-size: contain;
-    @include breakpoint($medium) { 
-      background-size: initial;
-    }
-}
-
-#splash-experiments-canvas-container {
-    background-image: url('/assets/images/splash/hyper_4_512.jpg');
-    background-size: contain;
-}
-
-#splash-tutorials-canvas-container {
-    background-image: url('/assets/images/splash/hyper_1_512.jpg');
-    background-size: contain;
-}
-
-#splash-blog-canvas-container {
-    background-image: url('/assets/images/splash/hyper_2_512.jpg');
-    background-size: contain;
 }
 
 .splash-row {
@@ -88,7 +78,7 @@
     left: 0;
     top: 0;
 
-    @include breakpoint($medium) { 
+    @include breakpoint($medium-wide) { 
       position: absolute;
       width: 50%;
       height: 100%;
@@ -103,7 +93,7 @@
     right: 0;
     top: 0;
 
-    @include breakpoint($medium) { 
+    @include breakpoint($medium-wide) { 
       position: absolute;
       width: 50%;
       height: 100%;
@@ -119,7 +109,7 @@
 
     
 
-    @include breakpoint($medium) { 
+    @include breakpoint($medium-wide) { 
       top: 50%;
       left: 50%;
       max-width: 30em;
