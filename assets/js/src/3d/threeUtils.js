@@ -363,4 +363,13 @@ export default {
     return geometry;
   },
 
+  //TODO: fix
+  meshToJSON: ( mesh ) => {
+      const meshJSON = mesh.toJSON();
+      // console.log(textMeshJSON);
+
+      const jsonWindow = window.open( 'data:text,' + encodeURIComponent( JSON.stringify( textMeshJSON ) ), '_blank' );
+      jsonWindow.focus();
+  }
+
 };

@@ -13,22 +13,14 @@ import textFrag from '../shaders/splashText.frag';
 import utils from '../../utilities.js';
 
 const v = new THREE.Vector3();
-const G = Math.PI * ( 3 - Math.sqrt( 5 ) );
-function fibSpherePoint( i, n, radius ) {
-  const step = 2.0 / n;
 
-  const phi = i * G;
 
-  v.y = i * step - 1 + ( step * 0.5 );
-  const r = Math.sqrt( 1 - v.y * v.y );
-  v.x = Math.cos( phi ) * r;
-  v.z = Math.sin( phi ) * r;
+const randomPointInDisk = ( radius ) => {
+  const r = THREE.Math.randFloat( 0, 1 );
+  const t = THREE.Math.randFloat( 0, Math.PI * 2 );
 
-  radius = radius || 1;
-
-  v.x *= radius;
-  v.y *= radius;
-  v.z *= radius;
+  v.x = Math.sqrt( r ) * Math.cos( t ) * radius;
+  v.y = Math.sqrt( r )  * Math.sin( t ) * radius;
 
   return v;
 }
@@ -87,11 +79,14 @@ export default class SplashHero {
     let uTime = 1.0;
 
     const updateAnimation = function () {
-      if ( uTime >= 1.5 || uTime <= -0.5 ) {
-        uTime = 1.0;
-      }
+      // if ( uTime >= 1.5 || uTime <= -0.5 ) {
+      //   uTime = 1.0;
+      // }
 
-      if ( uTime >= 0 && self.app.delta < 100 ) {
+      // set on repeat (for testing)
+      // if ( uTime <= 0.1 ) uTime = 1.0;
+
+      if ( uTime >= 0.1 && self.app.delta < 100 ) {
         uTime += ( -1.0 * self.app.delta / 8000 );
       }
 
@@ -102,9 +97,6 @@ export default class SplashHero {
       updateMaterials();
 
       updateAnimation();
-
-      console.log( 'aspect: ' + self.app.camera.aspect );
-      console.log( 'position: ' + self.app.camera.position.z );
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -149,7 +141,7 @@ export default class SplashHero {
 
       const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
       const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
-      const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
+      // const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
 
       let i;
       let i2;
@@ -159,9 +151,11 @@ export default class SplashHero {
 
       const maxDelay = 0.0;
       const minDuration = 1.0;
-      const maxDuration = 1.0;
-      const stretch = 0.05;
-      const lengthFactor = 0.001;
+      const maxDuration = 100.0;
+
+      const stretch = 0.1;
+      const lengthFactor = 0.0001;
+
       const maxLength = geometry.boundingBox.max.length();
 
       this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
@@ -180,12 +174,12 @@ export default class SplashHero {
         const duration = THREE.Math.randFloat( minDuration, maxDuration );
 
         for ( v = 0; v < 6; v += 2 ) {
-          aAnimation.array[i2 + v] = delay + stretch * Math.random();
+          aAnimation.array[i2 + v] = delay + stretch * 0.5;
           aAnimation.array[i2 + v + 1] = duration;
         }
 
         // end position
-        const point = fibSpherePoint( i, faceCount, 200 );
+        const point = randomPointInDisk( 300 );
 
         for ( v = 0; v < 9; v += 3 ) {
           aEndPosition.array[i3 + v] = point.x;
@@ -193,21 +187,22 @@ export default class SplashHero {
           aEndPosition.array[i3 + v + 2] = point.z;
         }
 
-        // axis angle
-        axis.x = centroidN.x;
-        axis.y = -centroidN.y;
-        axis.z = -centroidN.z;
+        // // axis angle
+        // axis.x = centroidN.x;
+        // axis.y = -centroidN.y;
+        // axis.z = -centroidN.z;
 
-        axis.normalize();
+        // axis.normalize();
 
-        angle = Math.PI * THREE.Math.randFloat( 0.5, 2.0 );
+        // // Currently not used
+        // angle = Math.PI * THREE.Math.randFloat( 0.1, 2.0 );
 
-        for ( v = 0; v < 12; v += 4 ) {
-          aAxisAngle.array[i4 + v] = axis.x;
-          aAxisAngle.array[i4 + v + 1] = axis.y;
-          aAxisAngle.array[i4 + v + 2] = axis.z;
-          aAxisAngle.array[i4 + v + 3] = angle;
-        }
+        // for ( v = 0; v < 12; v += 4 ) {
+        //   aAxisAngle.array[i4 + v] = axis.x;
+        //   aAxisAngle.array[i4 + v + 1] = axis.y;
+        //   aAxisAngle.array[i4 + v + 2] = axis.z;
+        //   aAxisAngle.array[i4 + v + 3] = angle;
+        // }
       }
   }
 
