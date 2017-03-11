@@ -55932,7 +55932,7 @@ var SplashHero = function () {
 
     self.addText();
 
-    self.addControls();
+    // self.addControls();
 
     this.pauseWhenOffscreen();
 

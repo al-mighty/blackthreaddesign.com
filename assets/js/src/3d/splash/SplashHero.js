@@ -64,7 +64,7 @@ export default class SplashHero {
 
     self.addText();
 
-    self.addControls();
+    // self.addControls();
 
     this.pauseWhenOffscreen();
 
