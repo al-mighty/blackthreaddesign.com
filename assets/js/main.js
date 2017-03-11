@@ -54106,7 +54106,7 @@ var initVideos = function () {
         players: ['www.youtube.com', 'player.vimeo.com'] });
 };
 
-var useLoadingManager = false;
+var useLoadingManager = true;
 
 var fadeLoader = function () {
   var loadingOverlay = document.querySelector('#loadingOverlay');
@@ -54116,27 +54116,30 @@ var fadeLoader = function () {
   loadingOverlay.classList.add('fadeOut');
   window.setTimeout(function () {
     loadingOverlay.classList.add('hidden');
-  }, 1000);
+  }, 1500);
 };
 
 function initLoader() {
-  // If THREE is not being used, fade out straightaway
-  if (typeof THREE !== 'object') {
-    fadeLoader();
-    return;
-  }
-
-  // if we are using the loadingManager, wait for it to finish before
-  // fading out the loader
-  if (useLoadingManager) {
-    THREE.DefaultLoadingManager.onLoad = function () {
+  // show for at least a few seconds
+  window.setTimeout(function () {
+    // If THREE is not being used, fade out straightaway
+    if (typeof THREE !== 'object') {
       fadeLoader();
-    };
-  }
-  // otherwise fade it out straightaway
-  else {
-      fadeLoader();
+      return;
     }
+
+    // if we are using the loadingManager, wait for it to finish before
+    // fading out the loader
+    if (useLoadingManager) {
+      THREE.DefaultLoadingManager.onLoad = function () {
+        fadeLoader();
+      };
+    }
+    // otherwise fade it out straightaway
+    else {
+        fadeLoader();
+      }
+  }, 3000);
 }
 
 function initSplashLayout() {
