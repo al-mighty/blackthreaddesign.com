@@ -52,8 +52,6 @@ GEM
       pathutil (>= 0.8)
       rack (> 1, < 2)
       sprockets (~> 3.3, < 3.7)
-    jekyll-feed (0.9.1)
-      jekyll (~> 3.3)
     jekyll-gist (1.4.0)
       octokit (~> 4.2)
     jekyll-livereload (0.2.2)
@@ -117,7 +115,6 @@ DEPENDENCIES
   jekyll (= 3.3.1)
   jekyll-archives
   jekyll-assets
-  jekyll-feed
   jekyll-gist
   jekyll-livereload
   jekyll-paginate

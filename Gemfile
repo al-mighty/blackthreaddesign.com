@@ -28,7 +28,6 @@ group :jekyll_plugins do
 	gem 'jekyll-archives'
 	gem "jekyll-paginate"
 	gem "jekyll-sitemap"
-  gem "jekyll-feed"
 	gem "jekyll-livereload"
 	gem "jekyll-gist"
 	gem "jemoji"
