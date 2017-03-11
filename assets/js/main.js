@@ -55936,13 +55936,15 @@ var SplashHero = function () {
 
     this.pauseWhenOffscreen();
 
+    var mastHeadHeight = document.querySelector('.masthead').clientHeight;
+
     var updateMaterials = function () {
       // Pan events on mobile sometimes register as (0,0); ignore these
       if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
         var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-        var offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
+        var offsetY = 1 - (utils.pointerPos.y - mastHeadHeight) / self.app.canvas.clientHeight;
 
-        // make the line well defined when moving the pointer off the top of the screen
+        // make the line well defined when moving the pointer off the top of the canvas
         offsetY = offsetY > 0.99 ? 0.999 : offsetY;
 
         self.offset.set(offsetX, offsetY);
@@ -55951,23 +55953,15 @@ var SplashHero = function () {
     };
 
     var uTime = 1.0;
-    var direction = -1.0;
 
     var updateAnimation = function () {
       if (uTime >= 1.5 || uTime <= -0.5) {
         uTime = 1.0;
       }
 
-      if (uTime >= 0) {
-        uTime += direction * self.app.delta / 8000;
+      if (uTime >= 0 && self.app.delta < 100) {
+        uTime += -1.0 * self.app.delta / 8000;
       }
-
-      // if ( uTime <= 1.0 && uTime >= 0.0 ) {
-      //   uTime += ( direction * self.app.delta / 8000 );
-      // } else {
-      //   uTime -= ( direction * self.app.delta / 8000 );
-      //   direction *= -1.0;
-      // }
 
       self.textMat.uniforms.uTime.value = uTime;
     };
@@ -55987,6 +55981,7 @@ var SplashHero = function () {
 
     self.app.onWindowResize = function () {
       self.app.camera.position.set(0, 0, cameraZPos());
+      mastHeadHeight = document.querySelector('.masthead').clientHeight;
     };
 
     self.app.play();
