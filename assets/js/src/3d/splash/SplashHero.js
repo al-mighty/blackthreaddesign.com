@@ -33,6 +33,15 @@ function fibSpherePoint( i, n, radius ) {
   return v;
 }
 
+// computed using least squares fit from a few tests
+const cameraZPos = ( aspect ) => {
+  if ( aspect <= 0.9 ) return -960 * aspect + 1350;
+  else if ( aspect <= 1.2 ) return -430 * aspect + 900;
+  else if ( aspect <= 3 ) return -110 * aspect + 500;
+  else if ( aspect <= 4.5 ) return -40 * aspect + 300;
+  return 100;
+}
+
 export default class SplashHero {
 
   constructor( showStats ) {
@@ -43,11 +52,7 @@ export default class SplashHero {
 
     self.app = new App( document.querySelector( '#splash-hero-canvas' ) );
 
-    const cameraZPos = () => {
-      return -112 * self.app.camera.aspect + 500;
-    }
-
-    self.app.camera.position.set( 0, 0, cameraZPos() );
+    self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -59,7 +64,7 @@ export default class SplashHero {
 
     self.addText();
 
-    // self.addControls();
+    self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -98,10 +103,8 @@ export default class SplashHero {
 
       updateAnimation();
 
-      // console.log( "camera z: " + self.app.camera.position.z );
-      // console.log( "camera aspect: " + self.app.camera.aspect);
-      // console.log( "canvas width : " + self.app.canvas.clientWidth);
-      // console.log( "canvas height : " + self.app.canvas.clientHeight);
+      console.log( 'aspect: ' + self.app.camera.aspect );
+      console.log( 'position: ' + self.app.camera.position.z );
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -109,8 +112,9 @@ export default class SplashHero {
 
 
     self.app.onWindowResize = function () { 
-      self.app.camera.position.set( 0, 0, cameraZPos() );
+      self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
     };
 
     self.app.play();
@@ -208,7 +212,7 @@ export default class SplashHero {
   }
 
   createTextGeometry( font ) {
-    const textGeometry = threeUtils.generateTextGeometry( 'Black Thread Design', {
+    const textGeometry = new THREE.TextGeometry( 'Black Thread Design', {
         size: 40,
         height: 3,
         font: font,
@@ -218,14 +222,15 @@ export default class SplashHero {
         bevelSize: 2,
         bevelThickness: 2,
         bevelEnabled: true,
-        anchor: { x: 0.5, y: 0.0, z: 0.0 },
-      } );
+    } );
 
-      threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
+   threeUtils.positionTextGeometry( textGeometry, { x: 0.5, y: 0.0, z: 0.0 } );
 
-      threeUtils.explodeModifier( textGeometry );
+    threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
 
-      return textGeometry;
+    threeUtils.explodeModifier( textGeometry );
+
+    return textGeometry;
   }
 
   addBackground() {

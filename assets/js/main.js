@@ -54490,15 +54490,13 @@ var threeUtils = {
                         }
             },
 
-            generateTextGeometry: function (text, params) {
-                        var geometry = new TextGeometry(text, params);
-
+            positionTextGeometry: function (geometry, anchor) {
                         geometry.computeBoundingBox();
 
                         var size = geometry.boundingBox.getSize();
-                        var anchorX = size.x * -params.anchor.x;
-                        var anchorY = size.y * -params.anchor.y;
-                        var anchorZ = size.z * -params.anchor.z;
+                        var anchorX = size.x * -anchor.x;
+                        var anchorY = size.y * -anchor.y;
+                        var anchorZ = size.z * -anchor.z;
                         var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
 
                         geometry.applyMatrix(matrix);
@@ -55905,6 +55903,12 @@ function fibSpherePoint(i, n, radius) {
   return v;
 }
 
+// computed using least squares fit from a few tests
+var cameraZPos = function (aspect) {
+  if (aspect <= 0.9) return -960 * aspect + 1350;else if (aspect <= 1.2) return -430 * aspect + 900;else if (aspect <= 3) return -110 * aspect + 500;else if (aspect <= 4.5) return -40 * aspect + 300;
+  return 100;
+};
+
 var SplashHero = function () {
   function SplashHero(showStats) {
     classCallCheck(this, SplashHero);
@@ -55916,11 +55920,7 @@ var SplashHero = function () {
 
     self.app = new App(document.querySelector('#splash-hero-canvas'));
 
-    var cameraZPos = function () {
-      return -112 * self.app.camera.aspect + 500;
-    };
-
-    self.app.camera.position.set(0, 0, cameraZPos());
+    self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
 
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
@@ -55932,7 +55932,7 @@ var SplashHero = function () {
 
     self.addText();
 
-    // self.addControls();
+    self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -55971,16 +55971,14 @@ var SplashHero = function () {
 
       updateAnimation();
 
-      // console.log( "camera z: " + self.app.camera.position.z );
-      // console.log( "camera aspect: " + self.app.camera.aspect);
-      // console.log( "canvas width : " + self.app.canvas.clientWidth);
-      // console.log( "canvas height : " + self.app.canvas.clientHeight);
+      console.log('aspect: ' + self.app.camera.aspect);
+      console.log('position: ' + self.app.camera.position.z);
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
 
     self.app.onWindowResize = function () {
-      self.app.camera.position.set(0, 0, cameraZPos());
+      self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
       mastHeadHeight = document.querySelector('.masthead').clientHeight;
     };
 
@@ -56076,7 +56074,7 @@ var SplashHero = function () {
   };
 
   SplashHero.prototype.createTextGeometry = function createTextGeometry(font) {
-    var textGeometry = threeUtils.generateTextGeometry('Black Thread Design', {
+    var textGeometry = new TextGeometry('Black Thread Design', {
       size: 40,
       height: 3,
       font: font,
@@ -56085,9 +56083,10 @@ var SplashHero = function () {
       curveSegments: 24,
       bevelSize: 2,
       bevelThickness: 2,
-      bevelEnabled: true,
-      anchor: { x: 0.5, y: 0.0, z: 0.0 }
+      bevelEnabled: true
     });
+
+    threeUtils.positionTextGeometry(textGeometry, { x: 0.5, y: 0.0, z: 0.0 });
 
     threeUtils.tessellateRecursive(textGeometry, 1.0, 2);
 

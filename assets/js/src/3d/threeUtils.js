@@ -349,15 +349,13 @@ export default {
     }
   },
 
-  generateTextGeometry: ( text, params ) => {
-    const geometry = new THREE.TextGeometry( text, params );
-
+  positionTextGeometry: ( geometry, anchor ) => {
     geometry.computeBoundingBox();
 
     const size = geometry.boundingBox.getSize();
-    const anchorX = size.x * -params.anchor.x;
-    const anchorY = size.y * -params.anchor.y;
-    const anchorZ = size.z * -params.anchor.z;
+    const anchorX = size.x * -anchor.x;
+    const anchorY = size.y * -anchor.y;
+    const anchorZ = size.z * -anchor.z;
     const matrix = new THREE.Matrix4().makeTranslation( anchorX, anchorY, anchorZ );
 
     geometry.applyMatrix( matrix );
