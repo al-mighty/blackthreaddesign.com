@@ -54774,6 +54774,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -54815,8 +54820,6 @@ function App(canvas) {
 
     if (!self.autoResize) return;
 
-    self.onWindowResize();
-
     if (_camera.type !== 'PerspectiveCamera') {
 
       console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
@@ -54826,6 +54829,8 @@ function App(canvas) {
     setCameraAspect();
 
     setRendererSize();
+
+    self.onWindowResize();
   };
 
   window.addEventListener('resize', onWindowResize, false);
