@@ -23,11 +23,12 @@
   position: absolute;
   height: 100%;
   right: 0;
-  padding: 0 0.5rem;
+  // padding: 0 0.5rem;
+  margin-right: -0.5em;
   border: 0;
   outline: none;
   background-color: $background-color;
-  color: #fff;
+  color: $text-color;
   cursor: pointer;
 
       /* The circle icon */
