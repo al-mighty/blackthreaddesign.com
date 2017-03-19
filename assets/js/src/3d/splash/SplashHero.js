@@ -257,7 +257,9 @@ export default class SplashHero {
 
     threeUtils.positionTextGeometry( textGeometry, { x: 0.5, y: 0.0, z: 0.0 } );
 
-    threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
+    const tesselationLevel = (window.innerWidth >= 1300 ) ? 2 : 1;
+
+    threeUtils.tessellateRecursive( textGeometry, 10.0, tesselationLevel );
 
     threeUtils.explodeModifier( textGeometry );
 
