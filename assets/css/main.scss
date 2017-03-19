@@ -40,12 +40,6 @@ $susy: (
   gutter-position: after,
   container: $large,
   global-box-sizing: border-box,
-  // debug: (
-  //   image: show,
-  //   color: blue,
-  //   output: overlay,
-  //   toggle: top right,
-  // ),
 );
 @import "vendor/susy/susy";
 
@@ -68,14 +62,13 @@ $susy: (
 @import "footer";
 @import "syntax";
 @import "forms";
-@import "loadingOverlay";
-
 
 /*
    Layout specific
    ========================================================================== */
 
 @import "splash";
+@import "splashCircle";
 @import "page";
 @import "archive";
 @import "sidebar";
@@ -85,6 +78,4 @@ $susy: (
 /*
    Custom
    ========================================================================== */
-
-@import "splashCircle";
 @import "custom";
