@@ -285,6 +285,7 @@ export default {
       this.tessellate( geometry, maxEdgeLength );
     }
   },
+  
 
   // compute the centroid of a triangular face
   computeCentroid: ( function () {

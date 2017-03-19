@@ -54774,11 +54774,6 @@ function Time() {
     };
 }
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -55895,7 +55890,7 @@ var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 uv;\nvoid main() {\n\tfloat dst = length(uv - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, uv).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( uv, uv ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec3 uAxis;\nuniform float uAngle;\nattribute vec2 aAnimation;\nattribute vec3 aEndPosition;\nvarying vec2 screenUV;\nfloat ease(float t, float b, float c, float d) {\n  return c*((t=t/d - 1.0)*t*t + 1.0) + b;\n}\nvoid main() {\n  float tDelay = aAnimation.x;\n  float tDuration = aAnimation.y;\n  float tTime = clamp(uTime - tDelay, 0.0, tDuration);\n  float tProgress = ease(tTime, 0.0, 1.0, tDuration);\n \n  vec3 transformed = mix(position, aEndPosition, tProgress);\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
+var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec3 uAxis;\nuniform vec2 pointer;\nuniform float uAngle;\nattribute vec2 aAnimation;\nattribute vec3 aEndPosition;\nvarying vec2 screenUV;\nfloat ease(float t, float b, float c, float d) {\n  return c*((t=t/d - 1.0)*t*t + 1.0) + b;\n}\nvoid main() {\n  float d = length( position.xy - pointer );\n  float dist = 1.0 / d;\n  float tDelay = aAnimation.x;\n  float tDuration = aAnimation.y;\n  float tTime = clamp(uTime - tDelay, 0.0, tDuration);\n  float tProgress = ease(tTime, 0.0, 1.0, tDuration);\n \n  vec3 transformed = mix(position, aEndPosition, tProgress);\n  float moveAmount= 0.0;\n  if(uTime <= 0.1) moveAmount = clamp( dist * 200.0, 0.0, 10.0 );\n  transformed.x = transformed.x + moveAmount;\n  transformed.y = transformed.y + moveAmount;\n  gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
 
 var textFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
@@ -55911,6 +55906,15 @@ var randomPointInDisk = function (radius) {
   return v;
 };
 
+var pointerPosToCanvasCentre = function (canvas) {
+  var halfWidth = canvas.clientWidth / 2;
+  var halfHeight = canvas.clientHeight / 2 + document.querySelector('.masthead').clientHeight;
+  return {
+    x: utils.pointerPos.x <= halfWidth ? -halfWidth + utils.pointerPos.x : utils.pointerPos.x - halfWidth,
+    // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
+    y: halfHeight - utils.pointerPos.y
+  };
+};
 // computed using least squares fit from a few tests
 var cameraZPos = function (aspect) {
   if (aspect <= 0.9) return -960 * aspect + 1350;else if (aspect <= 1.2) return -430 * aspect + 900;else if (aspect <= 3) return -110 * aspect + 500;else if (aspect <= 4.5) return -40 * aspect + 300;
@@ -55957,6 +55961,9 @@ var SplashHero = function () {
 
         self.offset.set(offsetX, offsetY);
         self.smooth.set(1.0, offsetY);
+
+        var pointer = pointerPosToCanvasCentre(self.app.canvas);
+        self.pointer.set(pointer.x, pointer.y);
       }
     };
 
@@ -56019,6 +56026,8 @@ var SplashHero = function () {
 
     var aAnimation = threeUtils.createBufferAttribute(bufferGeometry, 'aAnimation', 2, vertexCount);
     var aEndPosition = threeUtils.createBufferAttribute(bufferGeometry, 'aEndPosition', 3, vertexCount);
+
+    // Currently not used
     // const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
 
     var i = void 0;
@@ -56042,10 +56051,13 @@ var SplashHero = function () {
     var axis = new Vector3();
     var angle = void 0;
 
+    // const scaleMartix = new THREE.Matrix4();
+
     for (i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12) {
       var face = geometry.faces[i];
+
       var centroid = threeUtils.computeCentroid(geometry, face);
-      var centroidN = new Vector3().copy(centroid).normalize();
+      // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
 
       // animation
       var delay = (maxLength - centroid.length()) * lengthFactor;
@@ -56060,19 +56072,23 @@ var SplashHero = function () {
       var point = randomPointInDisk(300);
 
       for (v = 0; v < 9; v += 3) {
+        // scaleMartix.makeScale( 1, 1, THREE.Math.randFloat(1.0, 1.1) );
+        // point.applyMatrix4(scaleMartix);
         aEndPosition.array[i3 + v] = point.x;
         aEndPosition.array[i3 + v + 1] = point.y;
         aEndPosition.array[i3 + v + 2] = point.z;
       }
 
-      // // axis angle
+      // Currently not used
+
+      // axis angle
       // axis.x = centroidN.x;
       // axis.y = -centroidN.y;
       // axis.z = -centroidN.z;
 
       // axis.normalize();
 
-      // // Currently not used
+      // 
       // angle = Math.PI * THREE.Math.randFloat( 0.1, 2.0 );
 
       // for ( v = 0; v < 12; v += 4 ) {
@@ -56119,6 +56135,7 @@ var SplashHero = function () {
 
     this.offset = new Vector2(0, 0);
     this.smooth = new Vector2(1.0, 1.0);
+    this.pointer = new Vector2();
 
     var colA = new Color(0xffffff);
     var colB = new Color(0x283844);
@@ -56133,7 +56150,8 @@ var SplashHero = function () {
       uniforms: Object.assign({
         color1: { value: colB },
         color2: { value: colA },
-        uTime: { value: 0.0 }
+        uTime: { value: 0.0 },
+        pointer: { value: this.pointer }
       }, uniforms),
       vertexShader: textVert,
       fragmentShader: textFrag,

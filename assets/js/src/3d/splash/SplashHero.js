@@ -20,11 +20,35 @@ const randomPointInDisk = ( radius ) => {
   const t = THREE.Math.randFloat( 0, Math.PI * 2 );
 
   v.x = Math.sqrt( r ) * Math.cos( t ) * radius;
-  v.y = Math.sqrt( r )  * Math.sin( t ) * radius;
+  v.y = Math.sqrt( r ) * Math.sin( t ) * radius;
 
   return v;
 }
 
+const randomPointInSphere = ( radius ) => {
+  const x = THREE.Math.randFloat( -1, 1 );
+  const y = THREE.Math.randFloat( -1, 1 );
+  const z = THREE.Math.randFloat( -1, 1 );
+  const normalizationFactor = 1 / Math.sqrt( x * x + y * y + z * z );
+
+  v.x = x * normalizationFactor * radius;
+  v.y = x * normalizationFactor * radius;
+  v.z = x * normalizationFactor * radius;
+
+  return v;
+}
+
+const pointerPosToCanvasCentre = ( canvas ) => {
+  const halfWidth = canvas.clientWidth / 2;
+  const halfHeight = ( canvas.clientHeight / 2) + document.querySelector( '.masthead' ).clientHeight;
+  return {
+    x: ( utils.pointerPos.x <= halfWidth ) 
+      ? -halfWidth + utils.pointerPos.x 
+      : utils.pointerPos.x - halfWidth,
+    // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
+    y: halfHeight - utils.pointerPos.y
+  }
+}
 // computed using least squares fit from a few tests
 const cameraZPos = ( aspect ) => {
   if ( aspect <= 0.9 ) return -960 * aspect + 1350;
@@ -73,6 +97,9 @@ export default class SplashHero {
 
         self.offset.set( offsetX, offsetY );
         self.smooth.set( 1.0, offsetY );
+
+        const pointer = pointerPosToCanvasCentre ( self.app.canvas );
+        self.pointer.set( pointer.x, pointer.y );
       }
     };
 
@@ -133,93 +160,102 @@ export default class SplashHero {
   }
 
   initBufferAnimation( bufferGeometry, geometry ) {
-      const faceCount = geometry.faces.length;
-      const vertexCount = geometry.vertices.length;
+    const faceCount = geometry.faces.length;
+    const vertexCount = geometry.vertices.length;
 
-      threeUtils.setBufferGeometryIndicesFromFaces( bufferGeometry, faceCount, geometry.faces );
-      threeUtils.bufferPositions( bufferGeometry, geometry.vertices );
+    threeUtils.setBufferGeometryIndicesFromFaces( bufferGeometry, faceCount, geometry.faces );
+    threeUtils.bufferPositions( bufferGeometry, geometry.vertices );
 
-      const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
-      const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
-      // const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
+    const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
+    const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
+    
+    // Currently not used
+    // const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
 
-      let i;
-      let i2;
-      let i3;
-      let i4;
-      let v;
+    let i;
+    let i2;
+    let i3;
+    let i4;
+    let v;
 
-      const maxDelay = 0.0;
-      const minDuration = 1.0;
-      const maxDuration = 100.0;
+    const maxDelay = 0.0;
+    const minDuration = 1.0;
+    const maxDuration = 100.0;
 
-      const stretch = 0.1;
-      const lengthFactor = 0.0001;
+    const stretch = 0.1;
+    const lengthFactor = 0.0001;
 
-      const maxLength = geometry.boundingBox.max.length();
+    const maxLength = geometry.boundingBox.max.length();
 
-      this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
-      this._animationProgress = 0;
+    this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
+    this._animationProgress = 0;
 
-      const axis = new THREE.Vector3();
-      let angle;
+    const axis = new THREE.Vector3();
+    let angle;
 
-      for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
-        const face = geometry.faces[i];
-        const centroid = threeUtils.computeCentroid( geometry, face );
-        const centroidN = new THREE.Vector3().copy( centroid ).normalize();
+    // const scaleMartix = new THREE.Matrix4();
 
-        // animation
-        const delay = ( maxLength - centroid.length() ) * lengthFactor;
-        const duration = THREE.Math.randFloat( minDuration, maxDuration );
+    for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
+      const face = geometry.faces[i];
+    
+      const centroid = threeUtils.computeCentroid( geometry, face );
+      // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
 
-        for ( v = 0; v < 6; v += 2 ) {
-          aAnimation.array[i2 + v] = delay + stretch * 0.5;
-          aAnimation.array[i2 + v + 1] = duration;
-        }
+      // animation
+      const delay = ( maxLength - centroid.length() ) * lengthFactor;
+      const duration = THREE.Math.randFloat( minDuration, maxDuration );
 
-        // end position
-        const point = randomPointInDisk( 300 );
-
-        for ( v = 0; v < 9; v += 3 ) {
-          aEndPosition.array[i3 + v] = point.x;
-          aEndPosition.array[i3 + v + 1] = point.y;
-          aEndPosition.array[i3 + v + 2] = point.z;
-        }
-
-        // // axis angle
-        // axis.x = centroidN.x;
-        // axis.y = -centroidN.y;
-        // axis.z = -centroidN.z;
-
-        // axis.normalize();
-
-        // // Currently not used
-        // angle = Math.PI * THREE.Math.randFloat( 0.1, 2.0 );
-
-        // for ( v = 0; v < 12; v += 4 ) {
-        //   aAxisAngle.array[i4 + v] = axis.x;
-        //   aAxisAngle.array[i4 + v + 1] = axis.y;
-        //   aAxisAngle.array[i4 + v + 2] = axis.z;
-        //   aAxisAngle.array[i4 + v + 3] = angle;
-        // }
+      for ( v = 0; v < 6; v += 2 ) {
+        aAnimation.array[i2 + v] = delay + stretch * 0.5;
+        aAnimation.array[i2 + v + 1] = duration;
       }
+
+      // end position
+      const point = randomPointInDisk( 300 );
+
+      for ( v = 0; v < 9; v += 3 ) {
+        // scaleMartix.makeScale( 1, 1, THREE.Math.randFloat(1.0, 1.1) );
+        // point.applyMatrix4(scaleMartix);
+        aEndPosition.array[i3 + v] = point.x;
+        aEndPosition.array[i3 + v + 1] = point.y;
+        aEndPosition.array[i3 + v + 2] = point.z;
+      }
+
+      // Currently not used
+
+      // axis angle
+      // axis.x = centroidN.x;
+      // axis.y = -centroidN.y;
+      // axis.z = -centroidN.z;
+
+      // axis.normalize();
+
+      // 
+      // angle = Math.PI * THREE.Math.randFloat( 0.1, 2.0 );
+
+      // for ( v = 0; v < 12; v += 4 ) {
+      //   aAxisAngle.array[i4 + v] = axis.x;
+      //   aAxisAngle.array[i4 + v + 1] = axis.y;
+      //   aAxisAngle.array[i4 + v + 2] = axis.z;
+      //   aAxisAngle.array[i4 + v + 3] = angle;
+      // }
+    }
   }
 
   createTextGeometry( font ) {
     const textGeometry = new THREE.TextGeometry( 'Black Thread Design', {
-        size: 40,
-        height: 3,
-        font: font,
-        weight: 'normal',
-        style: 'normal',
-        curveSegments: 24,
-        bevelSize: 2,
-        bevelThickness: 2,
-        bevelEnabled: true,
+      size: 40,
+      height: 3,
+      font: font,
+      weight: 'normal',
+      style: 'normal',
+      curveSegments: 24,
+      bevelSize: 2,
+      bevelThickness: 2,
+      bevelEnabled: true,
     } );
 
-   threeUtils.positionTextGeometry( textGeometry, { x: 0.5, y: 0.0, z: 0.0 } );
+    threeUtils.positionTextGeometry( textGeometry, { x: 0.5, y: 0.0, z: 0.0 } );
 
     threeUtils.tessellateRecursive( textGeometry, 1.0, 2 );
 
@@ -241,6 +277,7 @@ export default class SplashHero {
 
     this.offset = new THREE.Vector2( 0, 0 );
     this.smooth = new THREE.Vector2( 1.0, 1.0 );
+    this.pointer = new THREE.Vector2();
 
     const colA = new THREE.Color( 0xffffff );
     const colB = new THREE.Color( 0x283844 );
@@ -255,7 +292,8 @@ export default class SplashHero {
         uniforms: Object.assign( { 
           color1: { value: colB },
           color2: { value: colA },
-          uTime: { value: 0.0 }
+          uTime: { value: 0.0 },
+          pointer:{ value: this.pointer },
         }, uniforms ),
         vertexShader: textVert,
         fragmentShader: textFrag,
