@@ -25,9 +25,9 @@ export default {
   entry: 'assets/js/src/main.js',
   plugins: [
     nodeResolve( {
-      jsnext: true,
-      module: true,
-      browser: true,
+      // jsnext: true,
+      // module: true,
+      // browser: true,
     } ),
     commonjs( {
       namedExports: {
@@ -41,7 +41,7 @@ export default {
     babel( {
       compact: false,
       exclude: ['node_modules/**', 'src/shaders/**'],
-      babelrc: false,
+      // babelrc: false,
       presets: ['es2015-loose-rollup'],
 
     } ),
