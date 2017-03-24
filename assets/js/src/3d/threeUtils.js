@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-let fontLoader;
+let fontLoader, objectLoader;
 
 const createBufferAttribute = ( bufferGeometry, name, itemSize, count ) => {
   const buffer = new Float32Array( count * itemSize );
@@ -309,7 +309,19 @@ export default {
     const promiseLoader = url => new Promise( ( resolve, reject ) => {
       if ( !fontLoader ) fontLoader = new THREE.FontLoader();
       fontLoader.load( url, resolve );
-      // reject( console.error( 'Couldn\'t load font ' + url ) );
+    } );
+
+    return promiseLoader( url )
+    .then( ( object ) => {
+      return object;
+    })
+  },
+
+    // promisified version of THREE.FontLoader
+  ObjectLoader: ( url ) => {
+    const promiseLoader = url => new Promise( ( resolve, reject ) => {
+      if ( !objectLoader ) objectLoader = new THREE.ObjectLoader();
+      objectLoader.load( url, resolve );
     } );
 
     return promiseLoader( url )

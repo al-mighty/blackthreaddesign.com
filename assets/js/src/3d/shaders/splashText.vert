@@ -1,13 +1,8 @@
 uniform float uTime;
-uniform vec3 uAxis;
 uniform vec2 pointer;
 
-uniform float uAngle;
 attribute vec2 aAnimation;
 attribute vec3 aEndPosition;
-
-// Currently not used
-// attribute vec4 aAxisAngle;
 
 varying vec2 screenUV;
 

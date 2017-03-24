@@ -32,9 +32,23 @@ const randomPointInSphere = ( radius ) => {
   const normalizationFactor = 1 / Math.sqrt( x * x + y * y + z * z );
 
   v.x = x * normalizationFactor * radius;
-  v.y = x * normalizationFactor * radius;
-  v.z = x * normalizationFactor * radius;
+  v.y = y * normalizationFactor * radius;
+  v.z = z * normalizationFactor * radius;
 
+  return v;
+}
+
+const alignPointToVertices = ( vertices, vertexNum ) => {
+  const len = vertices.length;
+
+  vertexNum =  vertexNum % len;
+
+  // v.set( mesh.geometry.vertices[ vertexNum ] );
+
+  v.x = vertices[ vertexNum ].x;
+  v.y = vertices[ vertexNum ].y;
+  v.z = vertices[ vertexNum ].z;
+  
   return v;
 }
 
@@ -78,9 +92,11 @@ export default class SplashHero {
 
     self.addBackground();
 
-    self.addText();
+    self.loadWolf();
 
-    // self.addControls();
+    
+
+    self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -111,7 +127,7 @@ export default class SplashHero {
       // }
 
       // set on repeat (for testing)
-      // if ( uTime <= 0.1 ) uTime = 1.0;
+      if ( uTime <= 0.1 ) uTime = 1.0;
 
       if ( uTime >= 0.1 && self.app.delta < 100 ) {
         uTime += ( -1.0 * self.app.delta / 8000 );
@@ -135,6 +151,9 @@ export default class SplashHero {
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
     };
+
+    self.addTestLight();
+
 
     self.app.play();
 
@@ -160,8 +179,17 @@ export default class SplashHero {
   }
 
   initBufferAnimation( bufferGeometry, geometry ) {
+    const self = this;
+
+    const shape = self.wolf[0].geometry;
+
+    const vertices = shape.vertices;
+    const verticesLen = vertices.length;
+    
     const faceCount = geometry.faces.length;
     const vertexCount = geometry.vertices.length;
+
+    console.log( faceCount, vertexCount );
 
     threeUtils.setBufferGeometryIndicesFromFaces( bufferGeometry, faceCount, geometry.faces );
     threeUtils.bufferPositions( bufferGeometry, geometry.vertices );
@@ -169,9 +197,6 @@ export default class SplashHero {
     const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
     const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
     
-    // Currently not used
-    // const aAxisAngle = threeUtils.createBufferAttribute( bufferGeometry, 'aAxisAngle', 4, vertexCount );
-
     let i;
     let i2;
     let i3;
@@ -180,20 +205,15 @@ export default class SplashHero {
 
     const maxDelay = 0.0;
     const minDuration = 1.0;
-    const maxDuration = 100.0;
+    const maxDuration = 1.0;
 
-    const stretch = 0.1;
+    const stretch = 0.001;
     const lengthFactor = 0.0001;
 
     const maxLength = geometry.boundingBox.max.length();
 
     this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
     this._animationProgress = 0;
-
-    const axis = new THREE.Vector3();
-    let angle;
-
-    // const scaleMartix = new THREE.Matrix4();
 
     for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
       const face = geometry.faces[i];
@@ -211,34 +231,18 @@ export default class SplashHero {
       }
 
       // end position
-      const point = randomPointInDisk( 300 );
+      // const point = randomPointInSphere( 300 );
+
+      const point = alignPointToVertices( vertices, i );
+
+      // const point = v.set( vertices[ verticesLen % i ] );
 
       for ( v = 0; v < 9; v += 3 ) {
-        // scaleMartix.makeScale( 1, 1, THREE.Math.randFloat(1.0, 1.1) );
-        // point.applyMatrix4(scaleMartix);
         aEndPosition.array[i3 + v] = point.x;
         aEndPosition.array[i3 + v + 1] = point.y;
         aEndPosition.array[i3 + v + 2] = point.z;
       }
 
-      // Currently not used
-
-      // axis angle
-      // axis.x = centroidN.x;
-      // axis.y = -centroidN.y;
-      // axis.z = -centroidN.z;
-
-      // axis.normalize();
-
-      // 
-      // angle = Math.PI * THREE.Math.randFloat( 0.1, 2.0 );
-
-      // for ( v = 0; v < 12; v += 4 ) {
-      //   aAxisAngle.array[i4 + v] = axis.x;
-      //   aAxisAngle.array[i4 + v + 1] = axis.y;
-      //   aAxisAngle.array[i4 + v + 2] = axis.z;
-      //   aAxisAngle.array[i4 + v + 3] = angle;
-      // }
     }
   }
 
@@ -259,7 +263,7 @@ export default class SplashHero {
 
     const tesselationLevel = (window.innerWidth >= 1300 ) ? 2 : 1;
 
-    threeUtils.tessellateRecursive( textGeometry, 10.0, tesselationLevel );
+    threeUtils.tessellateRecursive( textGeometry, 1.0, tesselationLevel );
 
     threeUtils.explodeModifier( textGeometry );
 
@@ -279,7 +283,7 @@ export default class SplashHero {
 
     this.offset = new THREE.Vector2( 0, 0 );
     this.smooth = new THREE.Vector2( 1.0, 1.0 );
-    this.pointer = new THREE.Vector2();
+    this.pointer = new THREE.Vector2( 100, 100 );
 
     const colA = new THREE.Color( 0xffffff );
     const colB = new THREE.Color( 0x283844 );
@@ -327,6 +331,41 @@ export default class SplashHero {
 
   addControls() {
     this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
+  }
+
+  loadWolf() {
+    const self = this;
+    threeUtils.ObjectLoader( 'assets/models/wolf/wolf.json' )
+    .then( ( scene ) => {
+
+      const body = scene.children[0].children[1];
+      const hair = scene.children[0].children[2];
+
+      self.wolf = [body, hair];
+
+      self.wolf.forEach( ( mesh ) => {
+        mesh.rotation.set( 0, 0, -Math.PI / 2 );
+
+        mesh.geometry.rotateX( -Math.PI / 2 );
+        // mesh.geometry.rotateZ( -Math.PI / 2 );
+
+        mesh.geometry.scale( 500, 500, 500 );
+
+        mesh.scale.set( 1, 1, 1 );
+
+        self.app.scene.add( mesh );
+        console.log(mesh)
+      });
+
+      self.addText();
+
+    });
+    
+  }
+
+  addTestLight() {
+    const light = new THREE.HemisphereLight( 0xffffff, 0x000000, 1 );
+    this.app.scene.add( light );
   }
 
 }
