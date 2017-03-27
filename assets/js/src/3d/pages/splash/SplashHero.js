@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 
-import threeUtils from '../App/threeUtils.js';
-import StatisticsOverlay from '../App/StatisticsOverlay.js';
-import App from '../App/App.js';
-import OrbitControls from '../modules/OrbitControls.module.js';
+import threeUtils from '../../App/threeUtils.js';
+import StatisticsOverlay from '../../App/StatisticsOverlay.js';
+import App from '../../App/App.js';
+import OrbitControls from '../../modules/OrbitControls.module.js';
 
-import backgroundVert from '../shaders/splashBackground.vert';
-import backgroundFrag from '../shaders/splashBackground.frag';
-import textVert from '../shaders/splashText.vert';
-import textFrag from '../shaders/splashText.frag';
+import backgroundVert from '../../shaders/splashBackground.vert';
+import backgroundFrag from '../../shaders/splashBackground.frag';
+import textVert from '../../shaders/splashText.vert';
+import textFrag from '../../shaders/splashText.frag';
 
-import utils from '../../utilities.js';
+import utils from '../../../utilities.js';
 
 const v = new THREE.Vector3();
 
