@@ -15,8 +15,6 @@ void main() {
   float d = length( position.xy - pointer );
   float dist = 1.0 / d;
 
-  // float animTime = clamp( uTime +  ( dist / 4.0 ), 0.0, 1.0 );
-
   // Set up animation
   float tDelay = aAnimation.x;
   float tDuration = aAnimation.y;
@@ -27,8 +25,8 @@ void main() {
   // Mix between initial and final position
   vec3 transformed = mix(position, aEndPosition, tProgress);
 
-  float moveAmount= 0.0;
-  if(uTime <= 0.1) moveAmount = clamp( dist * 200.0, 0.0, 10.0 );
+  // Move this amount based on pointer position
+  float moveAmount = clamp( dist * 200.0, 0.0, 10.0 );
 
   transformed.x = transformed.x + moveAmount;
   transformed.y = transformed.y + moveAmount;
