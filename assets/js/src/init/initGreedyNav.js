@@ -1,4 +1,4 @@
-import Greedy from '../../vendor/greedy-nav.js';
+import Greedy from '../vendor/greedy-nav.js';
 
 // Initialise menu
 export default function () {

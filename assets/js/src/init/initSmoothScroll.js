@@ -1,4 +1,4 @@
-import jump from '../../vendor/jump/jump.js';
+import jump from '../vendor/jump/jump.js';
 
 const links = document.querySelectorAll( 'a' );
 

@@ -7,7 +7,7 @@ import 'babel-polyfill';
 // import 'gsap/src/uncompressed/TimelineLite';
 // import 'gsap/src/uncompressed/easing/EasePack';
 
-import PNLTRI from '../vendor/pnltri/pnltri.js';
+import PNLTRI from './vendor/pnltri/pnltri.js';
 
 import utils from './utilities.js';
 
