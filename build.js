@@ -62,8 +62,6 @@ const config = ( entry, dest, moduleName, plugins ) => {
   }
 }
 
-// const mainConfig = config( 'assets/js/src/entry/main.js', 'assets/js/main.js', defaultPlugins );
-
 // stderr to stderr to keep `rollup main.js > bundle.js` from breaking
 const stderr = console.error.bind( console );
 
@@ -88,10 +86,6 @@ const eventHandler = ( file ) => {
   };
 };
 
-// const watcher = watch( rollup, mainConfig );
-
-// watcher.on( 'event', eventHandler );
-
 // Read all files in a folder
 fs.readdir( 'assets/js/src/entry', ( err, files ) => {
   files.forEach( ( file ) => {
@@ -101,4 +95,3 @@ fs.readdir( 'assets/js/src/entry', ( err, files ) => {
     watcher.on( 'event', entryEventHandler );
   } );
 } );
-

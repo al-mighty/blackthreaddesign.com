@@ -1,3 +1,7 @@
+import * as Hammer from 'hammerjs';
+  // Set up any globals
+window.Hammer = Hammer.default;
+
   /* ****************************************
   Keep track of mouse / pointer position
   use something like
@@ -15,7 +19,7 @@ const pointerPos = {
   y: 0,
 };
 
-export default {
+const utils = {
   // Simple uuid function
   uuid: function b( a ) {
     return a ? ( a ^ Math.random() * 16 >> a / 4 ).toString( 16 ) :
@@ -35,3 +39,10 @@ export default {
     }
   }
 }
+
+// Set up app wide event listeners for touch and mouse
+window.addEventListener( 'mousemove', utils.moveHandler );
+new window.Hammer( document.querySelector( 'body' ) )
+  .on( 'pan', utils.moveHandler );
+
+export default utils;

@@ -1,5 +1,11 @@
 <script src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
 
+{% if page.js %}
+  {% for file in page.js %}
+  <script src='/assets/js/build/{{ file }}.js'></script>
+  {% endfor %}
+{% endif %}
+
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <script async src="/assets/js/analytics.js"></script>
 
