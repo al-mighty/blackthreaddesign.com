@@ -62,7 +62,7 @@ const cameraZPos = ( aspect ) => {
 export default class SplashHero {
 
   constructor( showStats ) {
-
+    
     const self = this;
 
     self.container = document.querySelector( '#splash-hero-container' );

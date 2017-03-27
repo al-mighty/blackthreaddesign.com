@@ -266,6 +266,7 @@ var RGBFormat = 1022;
 var RGBAFormat = 1023;
 var LuminanceFormat = 1024;
 var LuminanceAlphaFormat = 1025;
+var RGBEFormat = RGBAFormat;
 var DepthFormat = 1026;
 var DepthStencilFormat = 1027;
 var RGB_S3TC_DXT1_Format = 2001;
@@ -1957,7 +1958,10 @@ WebGLRenderTarget.prototype = {
 Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12014,8 +12018,6 @@ BufferAttribute.prototype = {
 
 };
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12045,6 +12047,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -23889,7 +23895,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -23918,6 +23924,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -35398,10 +35405,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -36812,33 +36816,13 @@ PropertyBinding.findNode = function( root, nodeName ) {
 
 /**
  *
- * A group of objects that receives a shared animation state.
+ * Action provided by AnimationMixer for scheduling clip playback on specific
+ * objects.
  *
- * Usage:
- *
- * 	-	Add objects you would otherwise pass as 'root' to the
- * 		constructor or the .clipAction method of AnimationMixer.
- *
- * 	-	Instead pass this object as 'root'.
- *
- * 	-	You can also add and remove objects later when the mixer
- * 		is running.
- *
- * Note:
- *
- *  	Objects of this class appear as one object to the mixer,
- *  	so cache control of the individual objects must be done
- *  	on the group.
- *
- * Limitation:
- *
- * 	- 	The animated properties must be compatible among the
- * 		all objects in the group.
- *
- *  -	A single property can either be controlled through a
- *  	target group or directly, but not both.
- *
+ * @author Ben Houston / http://clara.io/
+ * @author David Sarno / http://lighthaus.us/
  * @author tschw
+ *
  */
 
 function AnimationAction( mixer, clip, localRoot ) {
@@ -38247,7 +38231,13 @@ Uniform.prototype.clone = function () {
 };
 
 /**
- * @author benaadams / https://twitter.com/ben_a_adams
+ * @author bhouston / http://clara.io
+ * @author WestLangley / http://github.com/WestLangley
+ *
+ * Ref: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+ *
+ * The poles (phi) are at the positive and negative y axis.
+ * The equator starts at positive z.
  */
 
 function Spherical( radius, phi, theta ) {
@@ -38323,11 +38313,9 @@ Spherical.prototype = {
 };
 
 /**
- * @author Mugen87 / https://github.com/Mugen87
- *
- * Ref: https://en.wikipedia.org/wiki/Cylindrical_coordinate_system
- *
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -38476,6 +38464,90 @@ VertexNormalsHelper.prototype.update = ( function () {
  * @author WestLangley / http://github.com/WestLangley
 */
 
+function SpotLightHelper( light ) {
+
+	Object3D.call( this );
+
+	this.light = light;
+	this.light.updateMatrixWorld();
+
+	this.matrix = light.matrixWorld;
+	this.matrixAutoUpdate = false;
+
+	var geometry = new BufferGeometry();
+
+	var positions = [
+		0, 0, 0,   0,   0,   1,
+		0, 0, 0,   1,   0,   1,
+		0, 0, 0, - 1,   0,   1,
+		0, 0, 0,   0,   1,   1,
+		0, 0, 0,   0, - 1,   1
+	];
+
+	for ( var i = 0, j = 1, l = 32; i < l; i ++, j ++ ) {
+
+		var p1 = ( i / l ) * Math.PI * 2;
+		var p2 = ( j / l ) * Math.PI * 2;
+
+		positions.push(
+			Math.cos( p1 ), Math.sin( p1 ), 1,
+			Math.cos( p2 ), Math.sin( p2 ), 1
+		);
+
+	}
+
+	geometry.addAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+
+	var material = new LineBasicMaterial( { fog: false } );
+
+	this.cone = new LineSegments( geometry, material );
+	this.add( this.cone );
+
+	this.update();
+
+}
+
+SpotLightHelper.prototype = Object.create( Object3D.prototype );
+SpotLightHelper.prototype.constructor = SpotLightHelper;
+
+SpotLightHelper.prototype.dispose = function () {
+
+	this.cone.geometry.dispose();
+	this.cone.material.dispose();
+
+};
+
+SpotLightHelper.prototype.update = function () {
+
+	var vector = new Vector3();
+	var vector2 = new Vector3();
+
+	return function update() {
+
+		var coneLength = this.light.distance ? this.light.distance : 1000;
+		var coneWidth = coneLength * Math.tan( this.light.angle );
+
+		this.cone.scale.set( coneWidth, coneWidth, coneLength );
+
+		vector.setFromMatrixPosition( this.light.matrixWorld );
+		vector2.setFromMatrixPosition( this.light.target.matrixWorld );
+
+		this.cone.lookAt( vector2.sub( vector ) );
+
+		this.cone.material.color.copy( this.light.color ).multiplyScalar( this.light.intensity );
+
+	};
+
+}();
+
+/**
+ * @author Sean Griffin / http://twitter.com/sgrif
+ * @author Michael Guerrero / http://realitymeltdown.com
+ * @author mrdoob / http://mrdoob.com/
+ * @author ikerr / http://verold.com
+ * @author Mugen87 / https://github.com/Mugen87
+ */
+
 function SkeletonHelper( object ) {
 
 	this.bones = this.getBoneList( object );
@@ -38584,8 +38656,114 @@ SkeletonHelper.prototype.update = function () {
 }();
 
 /**
+ * @author abelnation / http://github.com/abelnation
+ * @author Mugen87 / http://github.com/Mugen87
+ */
+
+function RectAreaLightHelper( light ) {
+
+	Object3D.call( this );
+
+	this.light = light;
+	this.light.updateMatrixWorld();
+
+	var materialFront = new MeshBasicMaterial( {
+		color: light.color,
+		fog: false
+	} );
+
+	var materialBack = new MeshBasicMaterial( {
+		color: light.color,
+		fog: false,
+		wireframe: true
+	} );
+
+	var geometry = new BufferGeometry();
+
+	geometry.addAttribute( 'position', new BufferAttribute( new Float32Array( 6 * 3 ), 3 ) );
+
+	// shows the "front" of the light, e.g. where light comes from
+
+	this.add( new Mesh( geometry, materialFront ) );
+
+	// shows the "back" of the light, which does not emit light
+
+	this.add( new Mesh( geometry, materialBack ) );
+
+	this.update();
+
+}
+
+RectAreaLightHelper.prototype = Object.create( Object3D.prototype );
+RectAreaLightHelper.prototype.constructor = RectAreaLightHelper;
+
+RectAreaLightHelper.prototype.dispose = function () {
+
+	this.children[ 0 ].geometry.dispose();
+	this.children[ 0 ].material.dispose();
+	this.children[ 1 ].geometry.dispose();
+	this.children[ 1 ].material.dispose();
+
+};
+
+RectAreaLightHelper.prototype.update = function () {
+
+	var vector1 = new Vector3();
+	var vector2 = new Vector3();
+
+	return function update() {
+
+		var mesh1 = this.children[ 0 ];
+		var mesh2 = this.children[ 1 ];
+
+		if ( this.light.target ) {
+
+			vector1.setFromMatrixPosition( this.light.matrixWorld );
+			vector2.setFromMatrixPosition( this.light.target.matrixWorld );
+
+			var lookVec = vector2.clone().sub( vector1 );
+			mesh1.lookAt( lookVec );
+			mesh2.lookAt( lookVec );
+
+		}
+
+		// update materials
+
+		mesh1.material.color.copy( this.light.color ).multiplyScalar( this.light.intensity );
+		mesh2.material.color.copy( this.light.color ).multiplyScalar( this.light.intensity );
+
+		// calculate new dimensions of the helper
+
+		var hx = this.light.width * 0.5;
+		var hy = this.light.height * 0.5;
+
+		// because the buffer attribute is shared over both geometries, we only have to update once
+
+		var position = mesh1.geometry.getAttribute( 'position' );
+		var array = position.array;
+
+		// first face
+
+		array[  0 ] =   hx; array[  1 ] = - hy; array[  2 ] = 0;
+		array[  3 ] =   hx; array[  4 ] =   hy; array[  5 ] = 0;
+		array[  6 ] = - hx; array[  7 ] =   hy; array[  8 ] = 0;
+
+		// second face
+
+		array[  9 ] = - hx; array[ 10 ] =   hy; array[ 11 ] = 0;
+		array[ 12 ] = - hx; array[ 13 ] = - hy; array[ 14 ] = 0;
+		array[ 15 ] =   hx; array[ 16 ] = - hy; array[ 17 ] = 0;
+
+		position.needsUpdate = true;
+
+	};
+
+}();
+
+/**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -38658,7 +38836,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -38770,6 +38949,90 @@ FaceNormalsHelper.prototype.update = ( function () {
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
  * @author WestLangley / http://github.com/WestLangley
+ */
+
+function DirectionalLightHelper( light, size ) {
+
+	Object3D.call( this );
+
+	this.light = light;
+	this.light.updateMatrixWorld();
+
+	this.matrix = light.matrixWorld;
+	this.matrixAutoUpdate = false;
+
+	if ( size === undefined ) size = 1;
+
+	var geometry = new BufferGeometry();
+	geometry.addAttribute( 'position', new Float32BufferAttribute( [
+		- size,   size, 0,
+		  size,   size, 0,
+		  size, - size, 0,
+		- size, - size, 0,
+		- size,   size, 0
+	], 3 ) );
+
+	var material = new LineBasicMaterial( { fog: false } );
+
+	this.add( new Line( geometry, material ) );
+
+	geometry = new BufferGeometry();
+	geometry.addAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0, 0, 0, 1 ], 3 ) );
+
+	this.add( new Line( geometry, material ));
+
+	this.update();
+
+}
+
+DirectionalLightHelper.prototype = Object.create( Object3D.prototype );
+DirectionalLightHelper.prototype.constructor = DirectionalLightHelper;
+
+DirectionalLightHelper.prototype.dispose = function () {
+
+	var lightPlane = this.children[ 0 ];
+	var targetLine = this.children[ 1 ];
+
+	lightPlane.geometry.dispose();
+	lightPlane.material.dispose();
+	targetLine.geometry.dispose();
+	targetLine.material.dispose();
+
+};
+
+DirectionalLightHelper.prototype.update = function () {
+
+	var v1 = new Vector3();
+	var v2 = new Vector3();
+	var v3 = new Vector3();
+
+	return function update() {
+
+		v1.setFromMatrixPosition( this.light.matrixWorld );
+		v2.setFromMatrixPosition( this.light.target.matrixWorld );
+		v3.subVectors( v2, v1 );
+
+		var lightPlane = this.children[ 0 ];
+		var targetLine = this.children[ 1 ];
+
+		lightPlane.lookAt( v3 );
+		lightPlane.material.color.copy( this.light.color ).multiplyScalar( this.light.intensity );
+
+		targetLine.lookAt( v3 );
+		targetLine.scale.z = v3.length();
+
+	};
+
+}();
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ * @author Mugen87 / https://github.com/Mugen87
+ *
+ *	- shows frustum, line of sight and up of the camera
+ *	- suitable for fast updates
+ * 	- based on frustum visualization in lightgl.js shadowmap example
+ *		http://evanw.github.com/lightgl.js/tests/shadowmap.html
  */
 
 function CameraHelper( camera ) {
@@ -38965,6 +39228,219 @@ CameraHelper.prototype.update = function () {
  * @author mrdoob / http://mrdoob.com/
  */
 
+function BoxHelper( object, color ) {
+
+	if ( color === undefined ) color = 0xffff00;
+
+	var indices = new Uint16Array( [ 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 ] );
+	var positions = new Float32Array( 8 * 3 );
+
+	var geometry = new BufferGeometry();
+	geometry.setIndex( new BufferAttribute( indices, 1 ) );
+	geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) );
+
+	LineSegments.call( this, geometry, new LineBasicMaterial( { color: color } ) );
+
+	if ( object !== undefined ) {
+
+		this.update( object );
+
+	}
+
+}
+
+BoxHelper.prototype = Object.create( LineSegments.prototype );
+BoxHelper.prototype.constructor = BoxHelper;
+
+BoxHelper.prototype.update = ( function () {
+
+	var box = new Box3();
+
+	return function update( object ) {
+
+		if ( object && object.isBox3 ) {
+
+			box.copy( object );
+
+		} else {
+
+			box.setFromObject( object );
+
+		}
+
+		if ( box.isEmpty() ) return;
+
+		var min = box.min;
+		var max = box.max;
+
+		/*
+		  5____4
+		1/___0/|
+		| 6__|_7
+		2/___3/
+
+		0: max.x, max.y, max.z
+		1: min.x, max.y, max.z
+		2: min.x, min.y, max.z
+		3: max.x, min.y, max.z
+		4: max.x, max.y, min.z
+		5: min.x, max.y, min.z
+		6: min.x, min.y, min.z
+		7: max.x, min.y, min.z
+		*/
+
+		var position = this.geometry.attributes.position;
+		var array = position.array;
+
+		array[  0 ] = max.x; array[  1 ] = max.y; array[  2 ] = max.z;
+		array[  3 ] = min.x; array[  4 ] = max.y; array[  5 ] = max.z;
+		array[  6 ] = min.x; array[  7 ] = min.y; array[  8 ] = max.z;
+		array[  9 ] = max.x; array[ 10 ] = min.y; array[ 11 ] = max.z;
+		array[ 12 ] = max.x; array[ 13 ] = max.y; array[ 14 ] = min.z;
+		array[ 15 ] = min.x; array[ 16 ] = max.y; array[ 17 ] = min.z;
+		array[ 18 ] = min.x; array[ 19 ] = min.y; array[ 20 ] = min.z;
+		array[ 21 ] = max.x; array[ 22 ] = min.y; array[ 23 ] = min.z;
+
+		position.needsUpdate = true;
+
+		this.geometry.computeBoundingSphere();
+
+	};
+
+} )();
+
+/**
+ * @author WestLangley / http://github.com/WestLangley
+ * @author zz85 / http://github.com/zz85
+ * @author bhouston / http://clara.io
+ *
+ * Creates an arrow for visualizing directions
+ *
+ * Parameters:
+ *  dir - Vector3
+ *  origin - Vector3
+ *  length - Number
+ *  color - color in hex value
+ *  headLength - Number
+ *  headWidth - Number
+ */
+
+var lineGeometry;
+var coneGeometry;
+
+function ArrowHelper( dir, origin, length, color, headLength, headWidth ) {
+
+	// dir is assumed to be normalized
+
+	Object3D.call( this );
+
+	if ( color === undefined ) color = 0xffff00;
+	if ( length === undefined ) length = 1;
+	if ( headLength === undefined ) headLength = 0.2 * length;
+	if ( headWidth === undefined ) headWidth = 0.2 * headLength;
+
+	if ( lineGeometry === undefined ) {
+
+		lineGeometry = new BufferGeometry();
+		lineGeometry.addAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0, 0, 1, 0 ], 3 ) );
+
+		coneGeometry = new CylinderBufferGeometry( 0, 0.5, 1, 5, 1 );
+		coneGeometry.translate( 0, - 0.5, 0 );
+
+	}
+
+	this.position.copy( origin );
+
+	this.line = new Line( lineGeometry, new LineBasicMaterial( { color: color } ) );
+	this.line.matrixAutoUpdate = false;
+	this.add( this.line );
+
+	this.cone = new Mesh( coneGeometry, new MeshBasicMaterial( { color: color } ) );
+	this.cone.matrixAutoUpdate = false;
+	this.add( this.cone );
+
+	this.setDirection( dir );
+	this.setLength( length, headLength, headWidth );
+
+}
+
+ArrowHelper.prototype = Object.create( Object3D.prototype );
+ArrowHelper.prototype.constructor = ArrowHelper;
+
+ArrowHelper.prototype.setDirection = ( function () {
+
+	var axis = new Vector3();
+	var radians;
+
+	return function setDirection( dir ) {
+
+		// dir is assumed to be normalized
+
+		if ( dir.y > 0.99999 ) {
+
+			this.quaternion.set( 0, 0, 0, 1 );
+
+		} else if ( dir.y < - 0.99999 ) {
+
+			this.quaternion.set( 1, 0, 0, 0 );
+
+		} else {
+
+			axis.set( dir.z, 0, - dir.x ).normalize();
+
+			radians = Math.acos( dir.y );
+
+			this.quaternion.setFromAxisAngle( axis, radians );
+
+		}
+
+	};
+
+}() );
+
+ArrowHelper.prototype.setLength = function ( length, headLength, headWidth ) {
+
+	if ( headLength === undefined ) headLength = 0.2 * length;
+	if ( headWidth === undefined ) headWidth = 0.2 * headLength;
+
+	this.line.scale.set( 1, Math.max( 0, length - headLength ), 1 );
+	this.line.updateMatrix();
+
+	this.cone.scale.set( headWidth, headLength, headWidth );
+	this.cone.position.y = length;
+	this.cone.updateMatrix();
+
+};
+
+ArrowHelper.prototype.setColor = function ( color ) {
+
+	this.line.material.color.copy( color );
+	this.cone.material.color.copy( color );
+
+};
+
+/**
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
+ */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
+
 function CubicPoly() {
 
 	var c0 = 0, c1 = 0, c2 = 0, c3 = 0;
@@ -39118,6 +39594,49 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+var SceneUtils = {
+
+	createMultiMaterialObject: function ( geometry, materials ) {
+
+		var group = new Group();
+
+		for ( var i = 0, l = materials.length; i < l; i ++ ) {
+
+			group.add( new Mesh( geometry, materials[ i ] ) );
+
+		}
+
+		return group;
+
+	},
+
+	detach: function ( child, parent, scene ) {
+
+		child.applyMatrix( parent.matrixWorld );
+		parent.remove( child );
+		scene.add( child );
+
+	},
+
+	attach: function ( child, scene, parent ) {
+
+		var matrixWorldInverse = new Matrix4();
+		matrixWorldInverse.getInverse( parent.matrixWorld );
+		child.applyMatrix( matrixWorldInverse );
+
+		scene.remove( child );
+		parent.add( child );
+
+	}
+
+};
+
+//
+
 Curve.create = function ( construct, getPoint ) {
 
 	console.log( 'THREE.Curve.create() has been deprecated' );
@@ -39164,6 +39683,7 @@ Object.assign( Spline.prototype, {
 } );
 
 //
+
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -40168,9 +40688,55 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
+var ImageUtils = {
 
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+	crossOrigin: undefined,
+
+	loadTexture: function ( url, mapping, onLoad, onError ) {
+
+		console.warn( 'THREE.ImageUtils.loadTexture has been deprecated. Use THREE.TextureLoader() instead.' );
+
+		var loader = new TextureLoader();
+		loader.setCrossOrigin( this.crossOrigin );
+
+		var texture = loader.load( url, onLoad, undefined, onError );
+
+		if ( mapping ) texture.mapping = mapping;
+
+		return texture;
+
+	},
+
+	loadTextureCube: function ( urls, mapping, onLoad, onError ) {
+
+		console.warn( 'THREE.ImageUtils.loadTextureCube has been deprecated. Use THREE.CubeTextureLoader() instead.' );
+
+		var loader = new CubeTextureLoader();
+		loader.setCrossOrigin( this.crossOrigin );
+
+		var texture = loader.load( urls, onLoad, undefined, onError );
+
+		if ( mapping ) texture.mapping = mapping;
+
+		return texture;
+
+	},
+
+	loadCompressedTexture: function () {
+
+		console.error( 'THREE.ImageUtils.loadCompressedTexture has been removed. Use THREE.DDSLoader instead.' );
+
+	},
+
+	loadCompressedTextureCube: function () {
+
+		console.error( 'THREE.ImageUtils.loadCompressedTextureCube has been removed. Use THREE.DDSLoader instead.' );
+
+	}
+
+};
+
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
 
 function interopDefault(ex) {
 	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
@@ -42839,7 +43405,7 @@ var _global$1 = interopDefault(_global);
 
 
 var require$$3 = Object.freeze({
-	default: _global$1
+  default: _global$1
 });
 
 var _has = createCommonjsModule(function (module) {
@@ -42853,7 +43419,7 @@ var _has$1 = interopDefault(_has);
 
 
 var require$$4 = Object.freeze({
-	default: _has$1
+  default: _has$1
 });
 
 var _fails = createCommonjsModule(function (module) {
@@ -42870,7 +43436,7 @@ var _fails$1 = interopDefault(_fails);
 
 
 var require$$1$1 = Object.freeze({
-	default: _fails$1
+  default: _fails$1
 });
 
 var _descriptors = createCommonjsModule(function (module) {
@@ -42884,7 +43450,7 @@ var _descriptors$1 = interopDefault(_descriptors);
 
 
 var require$$1 = Object.freeze({
-	default: _descriptors$1
+  default: _descriptors$1
 });
 
 var _core = createCommonjsModule(function (module) {
@@ -42910,7 +43476,7 @@ var _isObject$1 = interopDefault(_isObject);
 
 
 var require$$0$1 = Object.freeze({
-	default: _isObject$1
+  default: _isObject$1
 });
 
 var _anObject = createCommonjsModule(function (module) {
@@ -42925,7 +43491,7 @@ var _anObject$1 = interopDefault(_anObject);
 
 
 var require$$5 = Object.freeze({
-	default: _anObject$1
+  default: _anObject$1
 });
 
 var _domCreate = createCommonjsModule(function (module) {
@@ -42942,7 +43508,7 @@ var _domCreate$1 = interopDefault(_domCreate);
 
 
 var require$$2$2 = Object.freeze({
-	default: _domCreate$1
+  default: _domCreate$1
 });
 
 var _ie8DomDefine = createCommonjsModule(function (module) {
@@ -42955,7 +43521,7 @@ var _ie8DomDefine$1 = interopDefault(_ie8DomDefine);
 
 
 var require$$1$3 = Object.freeze({
-	default: _ie8DomDefine$1
+  default: _ie8DomDefine$1
 });
 
 var _toPrimitive = createCommonjsModule(function (module) {
@@ -42977,7 +43543,7 @@ var _toPrimitive$1 = interopDefault(_toPrimitive);
 
 
 var require$$4$1 = Object.freeze({
-	default: _toPrimitive$1
+  default: _toPrimitive$1
 });
 
 var _objectDp = createCommonjsModule(function (module, exports) {
@@ -43000,11 +43566,11 @@ exports.f = interopDefault(require$$1) ? Object.defineProperty : function define
 });
 
 var _objectDp$1 = interopDefault(_objectDp);
-var f$1 = _objectDp.f;
+var f = _objectDp.f;
 
 var require$$2$1 = Object.freeze({
-	default: _objectDp$1,
-	f: f$1
+  default: _objectDp$1,
+  f: f
 });
 
 var _propertyDesc = createCommonjsModule(function (module) {
@@ -43022,7 +43588,7 @@ var _propertyDesc$1 = interopDefault(_propertyDesc);
 
 
 var require$$2$3 = Object.freeze({
-	default: _propertyDesc$1
+  default: _propertyDesc$1
 });
 
 var _hide = createCommonjsModule(function (module) {
@@ -43040,7 +43606,7 @@ var _hide$1 = interopDefault(_hide);
 
 
 var require$$2 = Object.freeze({
-	default: _hide$1
+  default: _hide$1
 });
 
 var _uid = createCommonjsModule(function (module) {
@@ -43055,7 +43621,7 @@ var _uid$1 = interopDefault(_uid);
 
 
 var require$$12 = Object.freeze({
-	default: _uid$1
+  default: _uid$1
 });
 
 var _redefine = createCommonjsModule(function (module) {
@@ -43097,7 +43663,7 @@ var _redefine$1 = interopDefault(_redefine);
 
 
 var require$$4$2 = Object.freeze({
-	default: _redefine$1
+  default: _redefine$1
 });
 
 var _aFunction = createCommonjsModule(function (module) {
@@ -43111,7 +43677,7 @@ var _aFunction$1 = interopDefault(_aFunction);
 
 
 var require$$0$2 = Object.freeze({
-	default: _aFunction$1
+  default: _aFunction$1
 });
 
 var _ctx = createCommonjsModule(function (module) {
@@ -43141,7 +43707,7 @@ var _ctx$1 = interopDefault(_ctx);
 
 
 var require$$31 = Object.freeze({
-	default: _ctx$1
+  default: _ctx$1
 });
 
 var _export = createCommonjsModule(function (module) {
@@ -43194,7 +43760,7 @@ var _export$1 = interopDefault(_export);
 
 
 var require$$1$2 = Object.freeze({
-	default: _export$1
+  default: _export$1
 });
 
 var _meta = createCommonjsModule(function (module) {
@@ -43261,12 +43827,12 @@ var getWeak = _meta.getWeak;
 var onFreeze = _meta.onFreeze;
 
 var require$$6 = Object.freeze({
-	default: _meta$1,
-	KEY: KEY,
-	NEED: NEED,
-	fastKey: fastKey,
-	getWeak: getWeak,
-	onFreeze: onFreeze
+  default: _meta$1,
+  KEY: KEY,
+  NEED: NEED,
+  fastKey: fastKey,
+  getWeak: getWeak,
+  onFreeze: onFreeze
 });
 
 var _shared = createCommonjsModule(function (module) {
@@ -43282,7 +43848,7 @@ var _shared$1 = interopDefault(_shared);
 
 
 var require$$1$4 = Object.freeze({
-	default: _shared$1
+  default: _shared$1
 });
 
 var _wks = createCommonjsModule(function (module) {
@@ -43303,7 +43869,7 @@ var _wks$1 = interopDefault(_wks);
 
 
 var require$$0$4 = Object.freeze({
-	default: _wks$1
+  default: _wks$1
 });
 
 var _setToStringTag = createCommonjsModule(function (module) {
@@ -43320,7 +43886,7 @@ var _setToStringTag$1 = interopDefault(_setToStringTag);
 
 
 var require$$0$3 = Object.freeze({
-	default: _setToStringTag$1
+  default: _setToStringTag$1
 });
 
 var _wksExt = createCommonjsModule(function (module, exports) {
@@ -43328,11 +43894,11 @@ exports.f = interopDefault(require$$0$4);
 });
 
 var _wksExt$1 = interopDefault(_wksExt);
-var f$2 = _wksExt.f;
+var f$1 = _wksExt.f;
 
 var require$$1$5 = Object.freeze({
 	default: _wksExt$1,
-	f: f$2
+	f: f$1
 });
 
 var _library = createCommonjsModule(function (module) {
@@ -43362,7 +43928,7 @@ var _wksDefine$1 = interopDefault(_wksDefine);
 
 
 var require$$0$5 = Object.freeze({
-	default: _wksDefine$1
+  default: _wksDefine$1
 });
 
 var _cof = createCommonjsModule(function (module) {
@@ -43377,7 +43943,7 @@ var _cof$1 = interopDefault(_cof);
 
 
 var require$$0$6 = Object.freeze({
-	default: _cof$1
+  default: _cof$1
 });
 
 var _iobject = createCommonjsModule(function (module) {
@@ -43392,7 +43958,7 @@ var _iobject$1 = interopDefault(_iobject);
 
 
 var require$$1$8 = Object.freeze({
-	default: _iobject$1
+  default: _iobject$1
 });
 
 var _defined = createCommonjsModule(function (module) {
@@ -43407,7 +43973,7 @@ var _defined$1 = interopDefault(_defined);
 
 
 var require$$4$3 = Object.freeze({
-	default: _defined$1
+  default: _defined$1
 });
 
 var _toIobject = createCommonjsModule(function (module) {
@@ -43423,7 +43989,7 @@ var _toIobject$1 = interopDefault(_toIobject);
 
 
 var require$$1$7 = Object.freeze({
-	default: _toIobject$1
+  default: _toIobject$1
 });
 
 var _toInteger = createCommonjsModule(function (module) {
@@ -43439,7 +44005,7 @@ var _toInteger$1 = interopDefault(_toInteger);
 
 
 var require$$26 = Object.freeze({
-	default: _toInteger$1
+  default: _toInteger$1
 });
 
 var _toLength = createCommonjsModule(function (module) {
@@ -43455,7 +44021,7 @@ var _toLength$1 = interopDefault(_toLength);
 
 
 var require$$3$1 = Object.freeze({
-	default: _toLength$1
+  default: _toLength$1
 });
 
 var _toIndex = createCommonjsModule(function (module) {
@@ -43472,7 +44038,7 @@ var _toIndex$1 = interopDefault(_toIndex);
 
 
 var require$$24 = Object.freeze({
-	default: _toIndex$1
+  default: _toIndex$1
 });
 
 var _arrayIncludes = createCommonjsModule(function (module) {
@@ -43503,7 +44069,7 @@ var _arrayIncludes$1 = interopDefault(_arrayIncludes);
 
 
 var require$$1$9 = Object.freeze({
-	default: _arrayIncludes$1
+  default: _arrayIncludes$1
 });
 
 var _sharedKey = createCommonjsModule(function (module) {
@@ -43518,7 +44084,7 @@ var _sharedKey$1 = interopDefault(_sharedKey);
 
 
 var require$$0$7 = Object.freeze({
-	default: _sharedKey$1
+  default: _sharedKey$1
 });
 
 var _objectKeysInternal = createCommonjsModule(function (module) {
@@ -43545,7 +44111,7 @@ var _objectKeysInternal$1 = interopDefault(_objectKeysInternal);
 
 
 var require$$1$6 = Object.freeze({
-	default: _objectKeysInternal$1
+  default: _objectKeysInternal$1
 });
 
 var _enumBugKeys = createCommonjsModule(function (module) {
@@ -43559,7 +44125,7 @@ var _enumBugKeys$1 = interopDefault(_enumBugKeys);
 
 
 var require$$0$8 = Object.freeze({
-	default: _enumBugKeys$1
+  default: _enumBugKeys$1
 });
 
 var _objectKeys = createCommonjsModule(function (module) {
@@ -43576,7 +44142,7 @@ var _objectKeys$1 = interopDefault(_objectKeys);
 
 
 var require$$2$5 = Object.freeze({
-	default: _objectKeys$1
+  default: _objectKeys$1
 });
 
 var _keyof = createCommonjsModule(function (module) {
@@ -43596,7 +44162,7 @@ var _keyof$1 = interopDefault(_keyof);
 
 
 var require$$16 = Object.freeze({
-	default: _keyof$1
+  default: _keyof$1
 });
 
 var _objectGops = createCommonjsModule(function (module, exports) {
@@ -43604,11 +44170,11 @@ exports.f = Object.getOwnPropertySymbols;
 });
 
 var _objectGops$1 = interopDefault(_objectGops);
-var f$3 = _objectGops.f;
+var f$2 = _objectGops.f;
 
 var require$$2$6 = Object.freeze({
 	default: _objectGops$1,
-	f: f$3
+	f: f$2
 });
 
 var _objectPie = createCommonjsModule(function (module, exports) {
@@ -43616,11 +44182,11 @@ exports.f = {}.propertyIsEnumerable;
 });
 
 var _objectPie$1 = interopDefault(_objectPie);
-var f$4 = _objectPie.f;
+var f$3 = _objectPie.f;
 
 var require$$0$9 = Object.freeze({
 	default: _objectPie$1,
-	f: f$4
+	f: f$3
 });
 
 var _enumKeys = createCommonjsModule(function (module) {
@@ -43645,7 +44211,7 @@ var _enumKeys$1 = interopDefault(_enumKeys);
 
 
 var require$$15 = Object.freeze({
-	default: _enumKeys$1
+  default: _enumKeys$1
 });
 
 var _isArray = createCommonjsModule(function (module) {
@@ -43660,7 +44226,7 @@ var _isArray$1 = interopDefault(_isArray);
 
 
 var require$$1$10 = Object.freeze({
-	default: _isArray$1
+  default: _isArray$1
 });
 
 var _objectDps = createCommonjsModule(function (module) {
@@ -43683,7 +44249,7 @@ var _objectDps$1 = interopDefault(_objectDps);
 
 
 var require$$0$10 = Object.freeze({
-	default: _objectDps$1
+  default: _objectDps$1
 });
 
 var _html = createCommonjsModule(function (module) {
@@ -43745,7 +44311,7 @@ var _objectCreate$1 = interopDefault(_objectCreate);
 
 
 var require$$6$1 = Object.freeze({
-	default: _objectCreate$1
+  default: _objectCreate$1
 });
 
 var _objectGopn = createCommonjsModule(function (module, exports) {
@@ -43759,11 +44325,11 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 });
 
 var _objectGopn$1 = interopDefault(_objectGopn);
-var f$6 = _objectGopn.f;
+var f$5 = _objectGopn.f;
 
 var require$$3$3 = Object.freeze({
-	default: _objectGopn$1,
-	f: f$6
+  default: _objectGopn$1,
+  f: f$5
 });
 
 var _objectGopnExt = createCommonjsModule(function (module) {
@@ -43789,11 +44355,11 @@ module.exports.f = function getOwnPropertyNames(it){
 });
 
 var _objectGopnExt$1 = interopDefault(_objectGopnExt);
-var f$5 = _objectGopnExt.f;
+var f$4 = _objectGopnExt.f;
 
 var require$$0$11 = Object.freeze({
-	default: _objectGopnExt$1,
-	f: f$5
+  default: _objectGopnExt$1,
+  f: f$4
 });
 
 var _objectGopd = createCommonjsModule(function (module, exports) {
@@ -43816,11 +44382,11 @@ exports.f = interopDefault(require$$1) ? gOPD : function getOwnPropertyDescripto
 });
 
 var _objectGopd$1 = interopDefault(_objectGopd);
-var f$7 = _objectGopd.f;
+var f$6 = _objectGopd.f;
 
 var require$$2$7 = Object.freeze({
-	default: _objectGopd$1,
-	f: f$7
+  default: _objectGopd$1,
+  f: f$6
 });
 
 var es6_symbol = createCommonjsModule(function (module) {
@@ -43983,7 +44549,7 @@ if(!USE_NATIVE){
 
   wksExt.f = function(name){
     return wrap(wks(name));
-  };
+  }
 }
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Symbol: $Symbol});
@@ -44061,11 +44627,15 @@ setToStringTag(Math, 'Math', true);
 setToStringTag(global.JSON, 'JSON', true);
 });
 
+interopDefault(es6_symbol);
+
 var es6_object_create = createCommonjsModule(function (module) {
-var $export = interopDefault(require$$1$2);
+var $export = interopDefault(require$$1$2)
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 $export($export.S, 'Object', {create: interopDefault(require$$6$1)});
 });
+
+interopDefault(es6_object_create);
 
 var es6_object_defineProperty = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
@@ -44073,11 +44643,15 @@ var $export = interopDefault(require$$1$2);
 $export($export.S + $export.F * !interopDefault(require$$1), 'Object', {defineProperty: interopDefault(require$$2$1).f});
 });
 
+interopDefault(es6_object_defineProperty);
+
 var es6_object_defineProperties = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
 $export($export.S + $export.F * !interopDefault(require$$1), 'Object', {defineProperties: interopDefault(require$$0$10)});
 });
+
+interopDefault(es6_object_defineProperties);
 
 var _objectSap = createCommonjsModule(function (module) {
 // most Object methods by ES6 should accept primitives
@@ -44096,7 +44670,7 @@ var _objectSap$1 = interopDefault(_objectSap);
 
 
 var require$$0$12 = Object.freeze({
-	default: _objectSap$1
+  default: _objectSap$1
 });
 
 var es6_object_getOwnPropertyDescriptor = createCommonjsModule(function (module) {
@@ -44111,6 +44685,8 @@ interopDefault(require$$0$12)('getOwnPropertyDescriptor', function(){
 });
 });
 
+interopDefault(es6_object_getOwnPropertyDescriptor);
+
 var _toObject = createCommonjsModule(function (module) {
 // 7.1.13 ToObject(argument)
 var defined = interopDefault(require$$4$3);
@@ -44123,7 +44699,7 @@ var _toObject$1 = interopDefault(_toObject);
 
 
 var require$$5$1 = Object.freeze({
-	default: _toObject$1
+  default: _toObject$1
 });
 
 var _objectGpo = createCommonjsModule(function (module) {
@@ -44146,7 +44722,7 @@ var _objectGpo$1 = interopDefault(_objectGpo);
 
 
 var require$$0$13 = Object.freeze({
-	default: _objectGpo$1
+  default: _objectGpo$1
 });
 
 var es6_object_getPrototypeOf = createCommonjsModule(function (module) {
@@ -44161,6 +44737,8 @@ interopDefault(require$$0$12)('getPrototypeOf', function(){
 });
 });
 
+interopDefault(es6_object_getPrototypeOf);
+
 var es6_object_keys = createCommonjsModule(function (module) {
 // 19.1.2.14 Object.keys(O)
 var toObject = interopDefault(require$$5$1)
@@ -44173,12 +44751,16 @@ interopDefault(require$$0$12)('keys', function(){
 });
 });
 
+interopDefault(es6_object_keys);
+
 var es6_object_getOwnPropertyNames = createCommonjsModule(function (module) {
 // 19.1.2.7 Object.getOwnPropertyNames(O)
 interopDefault(require$$0$12)('getOwnPropertyNames', function(){
   return interopDefault(require$$0$11).f;
 });
 });
+
+interopDefault(es6_object_getOwnPropertyNames);
 
 var es6_object_freeze = createCommonjsModule(function (module) {
 // 19.1.2.5 Object.freeze(O)
@@ -44192,6 +44774,8 @@ interopDefault(require$$0$12)('freeze', function($freeze){
 });
 });
 
+interopDefault(es6_object_freeze);
+
 var es6_object_seal = createCommonjsModule(function (module) {
 // 19.1.2.17 Object.seal(O)
 var isObject = interopDefault(require$$0$1)
@@ -44203,6 +44787,8 @@ interopDefault(require$$0$12)('seal', function($seal){
   };
 });
 });
+
+interopDefault(es6_object_seal);
 
 var es6_object_preventExtensions = createCommonjsModule(function (module) {
 // 19.1.2.15 Object.preventExtensions(O)
@@ -44216,6 +44802,8 @@ interopDefault(require$$0$12)('preventExtensions', function($preventExtensions){
 });
 });
 
+interopDefault(es6_object_preventExtensions);
+
 var es6_object_isFrozen = createCommonjsModule(function (module) {
 // 19.1.2.12 Object.isFrozen(O)
 var isObject = interopDefault(require$$0$1);
@@ -44226,6 +44814,8 @@ interopDefault(require$$0$12)('isFrozen', function($isFrozen){
   };
 });
 });
+
+interopDefault(es6_object_isFrozen);
 
 var es6_object_isSealed = createCommonjsModule(function (module) {
 // 19.1.2.13 Object.isSealed(O)
@@ -44238,6 +44828,8 @@ interopDefault(require$$0$12)('isSealed', function($isSealed){
 });
 });
 
+interopDefault(es6_object_isSealed);
+
 var es6_object_isExtensible = createCommonjsModule(function (module) {
 // 19.1.2.11 Object.isExtensible(O)
 var isObject = interopDefault(require$$0$1);
@@ -44248,6 +44840,8 @@ interopDefault(require$$0$12)('isExtensible', function($isExtensible){
   };
 });
 });
+
+interopDefault(es6_object_isExtensible);
 
 var _objectAssign = createCommonjsModule(function (module) {
 'use strict';
@@ -44289,7 +44883,7 @@ var _objectAssign$1 = interopDefault(_objectAssign);
 
 
 var require$$3$4 = Object.freeze({
-	default: _objectAssign$1
+  default: _objectAssign$1
 });
 
 var es6_object_assign = createCommonjsModule(function (module) {
@@ -44298,6 +44892,8 @@ var $export = interopDefault(require$$1$2);
 
 $export($export.S + $export.F, 'Object', {assign: interopDefault(require$$3$4)});
 });
+
+interopDefault(es6_object_assign);
 
 var _sameValue = createCommonjsModule(function (module) {
 // 7.2.9 SameValue(x, y)
@@ -44310,7 +44906,7 @@ var _sameValue$1 = interopDefault(_sameValue);
 
 
 var require$$21 = Object.freeze({
-	default: _sameValue$1
+  default: _sameValue$1
 });
 
 var es6_object_is = createCommonjsModule(function (module) {
@@ -44318,6 +44914,8 @@ var es6_object_is = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 $export($export.S, 'Object', {is: interopDefault(require$$21)});
 });
+
+interopDefault(es6_object_is);
 
 var _setProto = createCommonjsModule(function (module) {
 // Works with __proto__ only. Old v8 can't work with null proto objects.
@@ -44352,9 +44950,9 @@ var set = _setProto.set;
 var check = _setProto.check;
 
 var require$$0$14 = Object.freeze({
-	default: _setProto$1,
-	set: set,
-	check: check
+  default: _setProto$1,
+  set: set,
+  check: check
 });
 
 var es6_object_setPrototypeOf = createCommonjsModule(function (module) {
@@ -44362,6 +44960,8 @@ var es6_object_setPrototypeOf = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 $export($export.S, 'Object', {setPrototypeOf: interopDefault(require$$0$14).set});
 });
+
+interopDefault(es6_object_setPrototypeOf);
 
 var _classof = createCommonjsModule(function (module) {
 // getting tag from 19.1.3.6 Object.prototype.toString()
@@ -44393,7 +44993,7 @@ var _classof$1 = interopDefault(_classof);
 
 
 var require$$1$11 = Object.freeze({
-	default: _classof$1
+  default: _classof$1
 });
 
 var es6_object_toString = createCommonjsModule(function (module) {
@@ -44408,6 +45008,8 @@ if(test + '' != '[object z]'){
   }, true);
 }
 });
+
+interopDefault(es6_object_toString);
 
 var _invoke = createCommonjsModule(function (module) {
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
@@ -44432,7 +45034,7 @@ var _invoke$1 = interopDefault(_invoke);
 
 
 var require$$1$13 = Object.freeze({
-	default: _invoke$1
+  default: _invoke$1
 });
 
 var _bind = createCommonjsModule(function (module) {
@@ -44466,7 +45068,7 @@ var _bind$1 = interopDefault(_bind);
 
 
 var require$$1$12 = Object.freeze({
-	default: _bind$1
+  default: _bind$1
 });
 
 var es6_function_bind = createCommonjsModule(function (module) {
@@ -44475,6 +45077,8 @@ var $export = interopDefault(require$$1$2);
 
 $export($export.P, 'Function', {bind: interopDefault(require$$1$12)});
 });
+
+interopDefault(es6_function_bind);
 
 var es6_function_name = createCommonjsModule(function (module) {
 var dP         = interopDefault(require$$2$1).f
@@ -44504,6 +45108,8 @@ NAME in FProto || interopDefault(require$$1) && dP(FProto, NAME, {
 });
 });
 
+interopDefault(es6_function_name);
+
 var es6_function_hasInstance = createCommonjsModule(function (module) {
 'use strict';
 var isObject       = interopDefault(require$$0$1)
@@ -44520,6 +45126,8 @@ if(!(HAS_INSTANCE in FunctionProto))interopDefault(require$$2$1).f(FunctionProto
 }});
 });
 
+interopDefault(es6_function_hasInstance);
+
 var _stringWs = createCommonjsModule(function (module) {
 module.exports = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
   '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028\u2029\uFEFF';
@@ -44529,7 +45137,7 @@ var _stringWs$1 = interopDefault(_stringWs);
 
 
 var require$$0$17 = Object.freeze({
-	default: _stringWs$1
+  default: _stringWs$1
 });
 
 var _stringTrim = createCommonjsModule(function (module) {
@@ -44569,7 +45177,7 @@ var _stringTrim$1 = interopDefault(_stringTrim);
 
 
 var require$$0$16 = Object.freeze({
-	default: _stringTrim$1
+  default: _stringTrim$1
 });
 
 var _parseInt = createCommonjsModule(function (module) {
@@ -44588,7 +45196,7 @@ var _parseInt$1 = interopDefault(_parseInt);
 
 
 var require$$0$15 = Object.freeze({
-	default: _parseInt$1
+  default: _parseInt$1
 });
 
 var es6_parseInt = createCommonjsModule(function (module) {
@@ -44597,6 +45205,8 @@ var $export   = interopDefault(require$$1$2)
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
 });
+
+interopDefault(es6_parseInt);
 
 var _parseFloat = createCommonjsModule(function (module) {
 var $parseFloat = interopDefault(require$$3).parseFloat
@@ -44613,7 +45223,7 @@ var _parseFloat$1 = interopDefault(_parseFloat);
 
 
 var require$$0$18 = Object.freeze({
-	default: _parseFloat$1
+  default: _parseFloat$1
 });
 
 var es6_parseFloat = createCommonjsModule(function (module) {
@@ -44622,6 +45232,8 @@ var $export     = interopDefault(require$$1$2)
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), {parseFloat: $parseFloat});
 });
+
+interopDefault(es6_parseFloat);
 
 var _inheritIfRequired = createCommonjsModule(function (module) {
 var isObject       = interopDefault(require$$0$1)
@@ -44638,7 +45250,7 @@ var _inheritIfRequired$1 = interopDefault(_inheritIfRequired);
 
 
 var require$$0$19 = Object.freeze({
-	default: _inheritIfRequired$1
+  default: _inheritIfRequired$1
 });
 
 var es6_number_constructor = createCommonjsModule(function (module) {
@@ -44713,6 +45325,8 @@ if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
 }
 });
 
+interopDefault(es6_number_constructor);
+
 var _aNumberValue = createCommonjsModule(function (module) {
 var cof = interopDefault(require$$0$6);
 module.exports = function(it, msg){
@@ -44725,7 +45339,7 @@ var _aNumberValue$1 = interopDefault(_aNumberValue);
 
 
 var require$$0$20 = Object.freeze({
-	default: _aNumberValue$1
+  default: _aNumberValue$1
 });
 
 var _stringRepeat = createCommonjsModule(function (module) {
@@ -44747,7 +45361,7 @@ var _stringRepeat$1 = interopDefault(_stringRepeat);
 
 
 var require$$1$14 = Object.freeze({
-	default: _stringRepeat$1
+  default: _stringRepeat$1
 });
 
 var es6_number_toFixed = createCommonjsModule(function (module) {
@@ -44866,6 +45480,8 @@ $export($export.P + $export.F * (!!$toFixed && (
 });
 });
 
+interopDefault(es6_number_toFixed);
+
 var es6_number_toPrecision = createCommonjsModule(function (module) {
 'use strict';
 var $export      = interopDefault(require$$1$2)
@@ -44887,12 +45503,16 @@ $export($export.P + $export.F * ($fails(function(){
 });
 });
 
+interopDefault(es6_number_toPrecision);
+
 var es6_number_epsilon = createCommonjsModule(function (module) {
 // 20.1.2.1 Number.EPSILON
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
 });
+
+interopDefault(es6_number_epsilon);
 
 var es6_number_isFinite = createCommonjsModule(function (module) {
 // 20.1.2.2 Number.isFinite(number)
@@ -44905,6 +45525,8 @@ $export($export.S, 'Number', {
   }
 });
 });
+
+interopDefault(es6_number_isFinite);
 
 var _isInteger = createCommonjsModule(function (module) {
 // 20.1.2.3 Number.isInteger(number)
@@ -44919,7 +45541,7 @@ var _isInteger$1 = interopDefault(_isInteger);
 
 
 var require$$0$21 = Object.freeze({
-	default: _isInteger$1
+  default: _isInteger$1
 });
 
 var es6_number_isInteger = createCommonjsModule(function (module) {
@@ -44928,6 +45550,8 @@ var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Number', {isInteger: interopDefault(require$$0$21)});
 });
+
+interopDefault(es6_number_isInteger);
 
 var es6_number_isNan = createCommonjsModule(function (module) {
 // 20.1.2.4 Number.isNaN(number)
@@ -44939,6 +45563,8 @@ $export($export.S, 'Number', {
   }
 });
 });
+
+interopDefault(es6_number_isNan);
 
 var es6_number_isSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.5 Number.isSafeInteger(number)
@@ -44953,12 +45579,16 @@ $export($export.S, 'Number', {
 });
 });
 
+interopDefault(es6_number_isSafeInteger);
+
 var es6_number_maxSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
 });
+
+interopDefault(es6_number_maxSafeInteger);
 
 var es6_number_minSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
@@ -44967,6 +45597,8 @@ var $export = interopDefault(require$$1$2);
 $export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
 });
 
+interopDefault(es6_number_minSafeInteger);
+
 var es6_number_parseFloat = createCommonjsModule(function (module) {
 var $export     = interopDefault(require$$1$2)
   , $parseFloat = interopDefault(require$$0$18);
@@ -44974,12 +45606,16 @@ var $export     = interopDefault(require$$1$2)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', {parseFloat: $parseFloat});
 });
 
+interopDefault(es6_number_parseFloat);
+
 var es6_number_parseInt = createCommonjsModule(function (module) {
 var $export   = interopDefault(require$$1$2)
   , $parseInt = interopDefault(require$$0$15);
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', {parseInt: $parseInt});
 });
+
+interopDefault(es6_number_parseInt);
 
 var _mathLog1p = createCommonjsModule(function (module) {
 // 20.2.2.20 Math.log1p(x)
@@ -44992,7 +45628,7 @@ var _mathLog1p$1 = interopDefault(_mathLog1p);
 
 
 var require$$0$22 = Object.freeze({
-	default: _mathLog1p$1
+  default: _mathLog1p$1
 });
 
 var es6_math_acosh = createCommonjsModule(function (module) {
@@ -45016,6 +45652,8 @@ $export($export.S + $export.F * !($acosh
 });
 });
 
+interopDefault(es6_math_acosh);
+
 var es6_math_asinh = createCommonjsModule(function (module) {
 // 20.2.2.5 Math.asinh(x)
 var $export = interopDefault(require$$1$2)
@@ -45028,6 +45666,8 @@ function asinh(x){
 // Tor Browser bug: Math.asinh(0) -> -0 
 $export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
 });
+
+interopDefault(es6_math_asinh);
 
 var es6_math_atanh = createCommonjsModule(function (module) {
 // 20.2.2.7 Math.atanh(x)
@@ -45042,6 +45682,8 @@ $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
 });
 });
 
+interopDefault(es6_math_atanh);
+
 var _mathSign = createCommonjsModule(function (module) {
 // 20.2.2.28 Math.sign(x)
 module.exports = Math.sign || function sign(x){
@@ -45053,7 +45695,7 @@ var _mathSign$1 = interopDefault(_mathSign);
 
 
 var require$$0$23 = Object.freeze({
-	default: _mathSign$1
+  default: _mathSign$1
 });
 
 var es6_math_cbrt = createCommonjsModule(function (module) {
@@ -45068,6 +45710,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_cbrt);
+
 var es6_math_clz32 = createCommonjsModule(function (module) {
 // 20.2.2.11 Math.clz32(x)
 var $export = interopDefault(require$$1$2);
@@ -45078,6 +45722,8 @@ $export($export.S, 'Math', {
   }
 });
 });
+
+interopDefault(es6_math_clz32);
 
 var es6_math_cosh = createCommonjsModule(function (module) {
 // 20.2.2.12 Math.cosh(x)
@@ -45090,6 +45736,8 @@ $export($export.S, 'Math', {
   }
 });
 });
+
+interopDefault(es6_math_cosh);
 
 var _mathExpm1 = createCommonjsModule(function (module) {
 // 20.2.2.14 Math.expm1(x)
@@ -45108,7 +45756,7 @@ var _mathExpm1$1 = interopDefault(_mathExpm1);
 
 
 var require$$0$24 = Object.freeze({
-	default: _mathExpm1$1
+  default: _mathExpm1$1
 });
 
 var es6_math_expm1 = createCommonjsModule(function (module) {
@@ -45118,6 +45766,8 @@ var $export = interopDefault(require$$1$2)
 
 $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
 });
+
+interopDefault(es6_math_expm1);
 
 var es6_math_fround = createCommonjsModule(function (module) {
 // 20.2.2.16 Math.fround(x)
@@ -45148,6 +45798,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_fround);
+
 var es6_math_hypot = createCommonjsModule(function (module) {
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
 var $export = interopDefault(require$$1$2)
@@ -45176,6 +45828,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_hypot);
+
 var es6_math_imul = createCommonjsModule(function (module) {
 // 20.2.2.18 Math.imul(x, y)
 var $export = interopDefault(require$$1$2)
@@ -45196,6 +45850,8 @@ $export($export.S + $export.F * interopDefault(require$$1$1)(function(){
 });
 });
 
+interopDefault(es6_math_imul);
+
 var es6_math_log10 = createCommonjsModule(function (module) {
 // 20.2.2.21 Math.log10(x)
 var $export = interopDefault(require$$1$2);
@@ -45207,12 +45863,16 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_log10);
+
 var es6_math_log1p = createCommonjsModule(function (module) {
 // 20.2.2.20 Math.log1p(x)
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {log1p: interopDefault(require$$0$22)});
 });
+
+interopDefault(es6_math_log1p);
 
 var es6_math_log2 = createCommonjsModule(function (module) {
 // 20.2.2.22 Math.log2(x)
@@ -45225,12 +45885,16 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_log2);
+
 var es6_math_sign = createCommonjsModule(function (module) {
 // 20.2.2.28 Math.sign(x)
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {sign: interopDefault(require$$0$23)});
 });
+
+interopDefault(es6_math_sign);
 
 var es6_math_sinh = createCommonjsModule(function (module) {
 // 20.2.2.30 Math.sinh(x)
@@ -45250,6 +45914,8 @@ $export($export.S + $export.F * interopDefault(require$$1$1)(function(){
 });
 });
 
+interopDefault(es6_math_sinh);
+
 var es6_math_tanh = createCommonjsModule(function (module) {
 // 20.2.2.33 Math.tanh(x)
 var $export = interopDefault(require$$1$2)
@@ -45265,6 +45931,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es6_math_tanh);
+
 var es6_math_trunc = createCommonjsModule(function (module) {
 // 20.2.2.34 Math.trunc(x)
 var $export = interopDefault(require$$1$2);
@@ -45275,6 +45943,8 @@ $export($export.S, 'Math', {
   }
 });
 });
+
+interopDefault(es6_math_trunc);
 
 var es6_string_fromCodePoint = createCommonjsModule(function (module) {
 var $export        = interopDefault(require$$1$2)
@@ -45302,6 +45972,8 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
 });
 });
 
+interopDefault(es6_string_fromCodePoint);
+
 var es6_string_raw = createCommonjsModule(function (module) {
 var $export   = interopDefault(require$$1$2)
   , toIObject = interopDefault(require$$1$7)
@@ -45323,6 +45995,8 @@ $export($export.S, 'String', {
 });
 });
 
+interopDefault(es6_string_raw);
+
 var es6_string_trim = createCommonjsModule(function (module) {
 'use strict';
 // 21.1.3.25 String.prototype.trim()
@@ -45332,6 +46006,8 @@ interopDefault(require$$0$16)('trim', function($trim){
   };
 });
 });
+
+interopDefault(es6_string_trim);
 
 var _stringAt = createCommonjsModule(function (module) {
 var toInteger = interopDefault(require$$26)
@@ -45357,7 +46033,7 @@ var _stringAt$1 = interopDefault(_stringAt);
 
 
 var require$$0$25 = Object.freeze({
-	default: _stringAt$1
+  default: _stringAt$1
 });
 
 var _iterators = createCommonjsModule(function (module) {
@@ -45391,7 +46067,7 @@ var _iterCreate$1 = interopDefault(_iterCreate);
 
 
 var require$$0$26 = Object.freeze({
-	default: _iterCreate$1
+  default: _iterCreate$1
 });
 
 var _iterDefine = createCommonjsModule(function (module) {
@@ -45471,7 +46147,7 @@ var _iterDefine$1 = interopDefault(_iterDefine);
 
 
 var require$$4$4 = Object.freeze({
-	default: _iterDefine$1
+  default: _iterDefine$1
 });
 
 var es6_string_iterator = createCommonjsModule(function (module) {
@@ -45494,6 +46170,8 @@ interopDefault(require$$4$4)(String, 'String', function(iterated){
 });
 });
 
+interopDefault(es6_string_iterator);
+
 var es6_string_codePointAt = createCommonjsModule(function (module) {
 'use strict';
 var $export = interopDefault(require$$1$2)
@@ -45505,6 +46183,8 @@ $export($export.P, 'String', {
   }
 });
 });
+
+interopDefault(es6_string_codePointAt);
 
 var _isRegexp = createCommonjsModule(function (module) {
 // 7.2.8 IsRegExp(argument)
@@ -45521,7 +46201,7 @@ var _isRegexp$1 = interopDefault(_isRegexp);
 
 
 var require$$2$8 = Object.freeze({
-	default: _isRegexp$1
+  default: _isRegexp$1
 });
 
 var _stringContext = createCommonjsModule(function (module) {
@@ -45539,7 +46219,7 @@ var _stringContext$1 = interopDefault(_stringContext);
 
 
 var require$$1$16 = Object.freeze({
-	default: _stringContext$1
+  default: _stringContext$1
 });
 
 var _failsIsRegexp = createCommonjsModule(function (module) {
@@ -45561,7 +46241,7 @@ var _failsIsRegexp$1 = interopDefault(_failsIsRegexp);
 
 
 var require$$0$27 = Object.freeze({
-	default: _failsIsRegexp$1
+  default: _failsIsRegexp$1
 });
 
 var es6_string_endsWith = createCommonjsModule(function (module) {
@@ -45587,6 +46267,8 @@ $export($export.P + $export.F * interopDefault(require$$0$27)(ENDS_WITH), 'Strin
 });
 });
 
+interopDefault(es6_string_endsWith);
+
 var es6_string_includes = createCommonjsModule(function (module) {
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 'use strict';
@@ -45602,6 +46284,8 @@ $export($export.P + $export.F * interopDefault(require$$0$27)(INCLUDES), 'String
 });
 });
 
+interopDefault(es6_string_includes);
+
 var es6_string_repeat = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
@@ -45610,6 +46294,8 @@ $export($export.P, 'String', {
   repeat: interopDefault(require$$1$14)
 });
 });
+
+interopDefault(es6_string_repeat);
 
 var es6_string_startsWith = createCommonjsModule(function (module) {
 // 21.1.3.18 String.prototype.startsWith(searchString [, position ])
@@ -45631,6 +46317,8 @@ $export($export.P + $export.F * interopDefault(require$$0$27)(STARTS_WITH), 'Str
   }
 });
 });
+
+interopDefault(es6_string_startsWith);
 
 var _stringHtml = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2)
@@ -45658,7 +46346,7 @@ var _stringHtml$1 = interopDefault(_stringHtml);
 
 
 var require$$0$28 = Object.freeze({
-	default: _stringHtml$1
+  default: _stringHtml$1
 });
 
 var es6_string_anchor = createCommonjsModule(function (module) {
@@ -45671,6 +46359,8 @@ interopDefault(require$$0$28)('anchor', function(createHTML){
 });
 });
 
+interopDefault(es6_string_anchor);
+
 var es6_string_big = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.3 String.prototype.big()
@@ -45680,6 +46370,8 @@ interopDefault(require$$0$28)('big', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_big);
 
 var es6_string_blink = createCommonjsModule(function (module) {
 'use strict';
@@ -45691,6 +46383,8 @@ interopDefault(require$$0$28)('blink', function(createHTML){
 });
 });
 
+interopDefault(es6_string_blink);
+
 var es6_string_bold = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.5 String.prototype.bold()
@@ -45700,6 +46394,8 @@ interopDefault(require$$0$28)('bold', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_bold);
 
 var es6_string_fixed = createCommonjsModule(function (module) {
 'use strict';
@@ -45711,6 +46407,8 @@ interopDefault(require$$0$28)('fixed', function(createHTML){
 });
 });
 
+interopDefault(es6_string_fixed);
+
 var es6_string_fontcolor = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.7 String.prototype.fontcolor(color)
@@ -45720,6 +46418,8 @@ interopDefault(require$$0$28)('fontcolor', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_fontcolor);
 
 var es6_string_fontsize = createCommonjsModule(function (module) {
 'use strict';
@@ -45731,6 +46431,8 @@ interopDefault(require$$0$28)('fontsize', function(createHTML){
 });
 });
 
+interopDefault(es6_string_fontsize);
+
 var es6_string_italics = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.9 String.prototype.italics()
@@ -45740,6 +46442,8 @@ interopDefault(require$$0$28)('italics', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_italics);
 
 var es6_string_link = createCommonjsModule(function (module) {
 'use strict';
@@ -45751,6 +46455,8 @@ interopDefault(require$$0$28)('link', function(createHTML){
 });
 });
 
+interopDefault(es6_string_link);
+
 var es6_string_small = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.11 String.prototype.small()
@@ -45760,6 +46466,8 @@ interopDefault(require$$0$28)('small', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_small);
 
 var es6_string_strike = createCommonjsModule(function (module) {
 'use strict';
@@ -45771,6 +46479,8 @@ interopDefault(require$$0$28)('strike', function(createHTML){
 });
 });
 
+interopDefault(es6_string_strike);
+
 var es6_string_sub = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.13 String.prototype.sub()
@@ -45780,6 +46490,8 @@ interopDefault(require$$0$28)('sub', function(createHTML){
   }
 });
 });
+
+interopDefault(es6_string_sub);
 
 var es6_string_sup = createCommonjsModule(function (module) {
 'use strict';
@@ -45791,12 +46503,16 @@ interopDefault(require$$0$28)('sup', function(createHTML){
 });
 });
 
+interopDefault(es6_string_sup);
+
 var es6_date_now = createCommonjsModule(function (module) {
 // 20.3.3.1 / 15.9.4.4 Date.now()
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
 });
+
+interopDefault(es6_date_now);
 
 var es6_date_toJson = createCommonjsModule(function (module) {
 'use strict';
@@ -45814,6 +46530,8 @@ $export($export.P + $export.F * interopDefault(require$$1$1)(function(){
   }
 });
 });
+
+interopDefault(es6_date_toJson);
 
 var es6_date_toIsoString = createCommonjsModule(function (module) {
 'use strict';
@@ -45846,6 +46564,8 @@ $export($export.P + $export.F * (fails(function(){
 });
 });
 
+interopDefault(es6_date_toIsoString);
+
 var es6_date_toString = createCommonjsModule(function (module) {
 var DateProto    = Date.prototype
   , INVALID_DATE = 'Invalid Date'
@@ -45859,6 +46579,8 @@ if(new Date(NaN) + '' != INVALID_DATE){
   });
 }
 });
+
+interopDefault(es6_date_toString);
 
 var _dateToPrimitive = createCommonjsModule(function (module) {
 'use strict';
@@ -45876,7 +46598,7 @@ var _dateToPrimitive$1 = interopDefault(_dateToPrimitive);
 
 
 var require$$0$29 = Object.freeze({
-	default: _dateToPrimitive$1
+  default: _dateToPrimitive$1
 });
 
 var es6_date_toPrimitive = createCommonjsModule(function (module) {
@@ -45886,12 +46608,16 @@ var TO_PRIMITIVE = interopDefault(require$$0$4)('toPrimitive')
 if(!(TO_PRIMITIVE in proto))interopDefault(require$$2)(proto, TO_PRIMITIVE, interopDefault(require$$0$29));
 });
 
+interopDefault(es6_date_toPrimitive);
+
 var es6_array_isArray = createCommonjsModule(function (module) {
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Array', {isArray: interopDefault(require$$1$10)});
 });
+
+interopDefault(es6_array_isArray);
 
 var _iterCall = createCommonjsModule(function (module) {
 // call something on iterator step with safe closing on error
@@ -45912,7 +46638,7 @@ var _iterCall$1 = interopDefault(_iterCall);
 
 
 var require$$4$5 = Object.freeze({
-	default: _iterCall$1
+  default: _iterCall$1
 });
 
 var _isArrayIter = createCommonjsModule(function (module) {
@@ -45930,7 +46656,7 @@ var _isArrayIter$1 = interopDefault(_isArrayIter);
 
 
 var require$$17 = Object.freeze({
-	default: _isArrayIter$1
+  default: _isArrayIter$1
 });
 
 var _createProperty = createCommonjsModule(function (module) {
@@ -45948,7 +46674,7 @@ var _createProperty$1 = interopDefault(_createProperty);
 
 
 var require$$0$30 = Object.freeze({
-	default: _createProperty$1
+  default: _createProperty$1
 });
 
 var core_getIteratorMethod = createCommonjsModule(function (module) {
@@ -45966,7 +46692,7 @@ var core_getIteratorMethod$1 = interopDefault(core_getIteratorMethod);
 
 
 var require$$13 = Object.freeze({
-	default: core_getIteratorMethod$1
+  default: core_getIteratorMethod$1
 });
 
 var _iterDetect = createCommonjsModule(function (module) {
@@ -45997,7 +46723,7 @@ var _iterDetect$1 = interopDefault(_iterDetect);
 
 
 var require$$5$2 = Object.freeze({
-	default: _iterDetect$1
+  default: _iterDetect$1
 });
 
 var es6_array_from = createCommonjsModule(function (module) {
@@ -46040,6 +46766,8 @@ $export($export.S + $export.F * !interopDefault(require$$5$2)(function(iter){ Ar
 });
 });
 
+interopDefault(es6_array_from);
+
 var es6_array_of = createCommonjsModule(function (module) {
 'use strict';
 var $export        = interopDefault(require$$1$2)
@@ -46062,6 +46790,8 @@ $export($export.S + $export.F * interopDefault(require$$1$1)(function(){
 });
 });
 
+interopDefault(es6_array_of);
+
 var _strictMethod = createCommonjsModule(function (module) {
 var fails = interopDefault(require$$1$1);
 
@@ -46076,7 +46806,7 @@ var _strictMethod$1 = interopDefault(_strictMethod);
 
 
 var require$$0$31 = Object.freeze({
-	default: _strictMethod$1
+  default: _strictMethod$1
 });
 
 var es6_array_join = createCommonjsModule(function (module) {
@@ -46093,6 +46823,8 @@ $export($export.P + $export.F * (interopDefault(require$$1$8) != Object || !inte
   }
 });
 });
+
+interopDefault(es6_array_join);
 
 var es6_array_slice = createCommonjsModule(function (module) {
 'use strict';
@@ -46125,6 +46857,8 @@ $export($export.P + $export.F * interopDefault(require$$1$1)(function(){
 });
 });
 
+interopDefault(es6_array_slice);
+
 var es6_array_sort = createCommonjsModule(function (module) {
 'use strict';
 var $export   = interopDefault(require$$1$2)
@@ -46151,6 +46885,8 @@ $export($export.P + $export.F * (fails(function(){
 });
 });
 
+interopDefault(es6_array_sort);
+
 var _arraySpeciesConstructor = createCommonjsModule(function (module) {
 var isObject = interopDefault(require$$0$1)
   , isArray  = interopDefault(require$$1$10)
@@ -46174,7 +46910,7 @@ var _arraySpeciesConstructor$1 = interopDefault(_arraySpeciesConstructor);
 
 
 var require$$0$33 = Object.freeze({
-	default: _arraySpeciesConstructor$1
+  default: _arraySpeciesConstructor$1
 });
 
 var _arraySpeciesCreate = createCommonjsModule(function (module) {
@@ -46190,7 +46926,7 @@ var _arraySpeciesCreate$1 = interopDefault(_arraySpeciesCreate);
 
 
 var require$$0$32 = Object.freeze({
-	default: _arraySpeciesCreate$1
+  default: _arraySpeciesCreate$1
 });
 
 var _arrayMethods = createCommonjsModule(function (module) {
@@ -46244,7 +46980,7 @@ var _arrayMethods$1 = interopDefault(_arrayMethods);
 
 
 var require$$10 = Object.freeze({
-	default: _arrayMethods$1
+  default: _arrayMethods$1
 });
 
 var es6_array_forEach = createCommonjsModule(function (module) {
@@ -46261,6 +46997,8 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 });
 });
 
+interopDefault(es6_array_forEach);
+
 var es6_array_map = createCommonjsModule(function (module) {
 'use strict';
 var $export = interopDefault(require$$1$2)
@@ -46273,6 +47011,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].map, true), 'A
   }
 });
 });
+
+interopDefault(es6_array_map);
 
 var es6_array_filter = createCommonjsModule(function (module) {
 'use strict';
@@ -46287,6 +47027,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].filter, true),
 });
 });
 
+interopDefault(es6_array_filter);
+
 var es6_array_some = createCommonjsModule(function (module) {
 'use strict';
 var $export = interopDefault(require$$1$2)
@@ -46300,6 +47042,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].some, true), '
 });
 });
 
+interopDefault(es6_array_some);
+
 var es6_array_every = createCommonjsModule(function (module) {
 'use strict';
 var $export = interopDefault(require$$1$2)
@@ -46312,6 +47056,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].every, true), 
   }
 });
 });
+
+interopDefault(es6_array_every);
 
 var _arrayReduce = createCommonjsModule(function (module) {
 var aFunction = interopDefault(require$$0$2)
@@ -46348,7 +47094,7 @@ var _arrayReduce$1 = interopDefault(_arrayReduce);
 
 
 var require$$1$17 = Object.freeze({
-	default: _arrayReduce$1
+  default: _arrayReduce$1
 });
 
 var es6_array_reduce = createCommonjsModule(function (module) {
@@ -46364,6 +47110,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].reduce, true),
 });
 });
 
+interopDefault(es6_array_reduce);
+
 var es6_array_reduceRight = createCommonjsModule(function (module) {
 'use strict';
 var $export = interopDefault(require$$1$2)
@@ -46376,6 +47124,8 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].reduceRight, t
   }
 });
 });
+
+interopDefault(es6_array_reduceRight);
 
 var es6_array_indexOf = createCommonjsModule(function (module) {
 'use strict';
@@ -46394,6 +47144,8 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$31)
   }
 });
 });
+
+interopDefault(es6_array_indexOf);
 
 var es6_array_lastIndexOf = createCommonjsModule(function (module) {
 'use strict';
@@ -46419,6 +47171,8 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$31)
   }
 });
 });
+
+interopDefault(es6_array_lastIndexOf);
 
 var _arrayCopyWithin = createCommonjsModule(function (module) {
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
@@ -46453,7 +47207,7 @@ var _arrayCopyWithin$1 = interopDefault(_arrayCopyWithin);
 
 
 var require$$2$9 = Object.freeze({
-	default: _arrayCopyWithin$1
+  default: _arrayCopyWithin$1
 });
 
 var _addToUnscopables = createCommonjsModule(function (module) {
@@ -46470,7 +47224,7 @@ var _addToUnscopables$1 = interopDefault(_addToUnscopables);
 
 
 var require$$0$34 = Object.freeze({
-	default: _addToUnscopables$1
+  default: _addToUnscopables$1
 });
 
 var es6_array_copyWithin = createCommonjsModule(function (module) {
@@ -46481,6 +47235,8 @@ $export($export.P, 'Array', {copyWithin: interopDefault(require$$2$9)});
 
 interopDefault(require$$0$34)('copyWithin');
 });
+
+interopDefault(es6_array_copyWithin);
 
 var _arrayFill = createCommonjsModule(function (module) {
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
@@ -46504,7 +47260,7 @@ var _arrayFill$1 = interopDefault(_arrayFill);
 
 
 var require$$3$5 = Object.freeze({
-	default: _arrayFill$1
+  default: _arrayFill$1
 });
 
 var es6_array_fill = createCommonjsModule(function (module) {
@@ -46515,6 +47271,8 @@ $export($export.P, 'Array', {fill: interopDefault(require$$3$5)});
 
 interopDefault(require$$0$34)('fill');
 });
+
+interopDefault(es6_array_fill);
 
 var es6_array_find = createCommonjsModule(function (module) {
 'use strict';
@@ -46533,6 +47291,8 @@ $export($export.P + $export.F * forced, 'Array', {
 interopDefault(require$$0$34)(KEY);
 });
 
+interopDefault(es6_array_find);
+
 var es6_array_findIndex = createCommonjsModule(function (module) {
 'use strict';
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
@@ -46549,6 +47309,8 @@ $export($export.P + $export.F * forced, 'Array', {
 });
 interopDefault(require$$0$34)(KEY);
 });
+
+interopDefault(es6_array_findIndex);
 
 var _setSpecies = createCommonjsModule(function (module) {
 'use strict';
@@ -46570,12 +47332,14 @@ var _setSpecies$1 = interopDefault(_setSpecies);
 
 
 var require$$0$35 = Object.freeze({
-	default: _setSpecies$1
+  default: _setSpecies$1
 });
 
 var es6_array_species = createCommonjsModule(function (module) {
 interopDefault(require$$0$35)('Array');
 });
+
+interopDefault(es6_array_species);
 
 var _iterStep = createCommonjsModule(function (module) {
 module.exports = function(done, value){
@@ -46587,7 +47351,7 @@ var _iterStep$1 = interopDefault(_iterStep);
 
 
 var require$$3$6 = Object.freeze({
-	default: _iterStep$1
+  default: _iterStep$1
 });
 
 var es6_array_iterator = createCommonjsModule(function (module) {
@@ -46631,7 +47395,7 @@ var es6_array_iterator$1 = interopDefault(es6_array_iterator);
 
 
 var require$$5$3 = Object.freeze({
-	default: es6_array_iterator$1
+  default: es6_array_iterator$1
 });
 
 var _flags = createCommonjsModule(function (module) {
@@ -46654,7 +47418,7 @@ var _flags$1 = interopDefault(_flags);
 
 
 var require$$1$18 = Object.freeze({
-	default: _flags$1
+  default: _flags$1
 });
 
 var es6_regexp_constructor = createCommonjsModule(function (module) {
@@ -46677,14 +47441,14 @@ if(interopDefault(require$$1) && (!CORRECT_NEW || interopDefault(require$$1$1)(f
   // RegExp constructor can alter flags and IsRegExp works correct with @@match
   return $RegExp(re1) != re1 || $RegExp(re2) == re2 || $RegExp(re1, 'i') != '/a/i';
 }))){
-  $RegExp = function RegExp(p, f$$1){
+  $RegExp = function RegExp(p, f){
     var tiRE = this instanceof $RegExp
       , piRE = isRegExp(p)
-      , fiU  = f$$1 === undefined;
+      , fiU  = f === undefined;
     return !tiRE && piRE && p.constructor === $RegExp && fiU ? p
       : inheritIfRequired(CORRECT_NEW
-        ? new Base(piRE && !fiU ? p.source : p, f$$1)
-        : Base((piRE = p instanceof $RegExp) ? p.source : p, piRE && fiU ? $flags.call(p) : f$$1)
+        ? new Base(piRE && !fiU ? p.source : p, f)
+        : Base((piRE = p instanceof $RegExp) ? p.source : p, piRE && fiU ? $flags.call(p) : f)
       , tiRE ? this : proto, $RegExp);
   };
   var proxy = function(key){
@@ -46703,6 +47467,8 @@ if(interopDefault(require$$1) && (!CORRECT_NEW || interopDefault(require$$1$1)(f
 interopDefault(require$$0$35)('RegExp');
 });
 
+interopDefault(es6_regexp_constructor);
+
 var es6_regexp_flags = createCommonjsModule(function (module) {
 // 21.2.5.3 get RegExp.prototype.flags()
 if(interopDefault(require$$1) && /./g.flags != 'g')interopDefault(require$$2$1).f(RegExp.prototype, 'flags', {
@@ -46710,6 +47476,8 @@ if(interopDefault(require$$1) && /./g.flags != 'g')interopDefault(require$$2$1).
   get: interopDefault(require$$1$18)
 });
 });
+
+interopDefault(es6_regexp_flags);
 
 var es6_regexp_toString = createCommonjsModule(function (module) {
 'use strict';
@@ -46738,6 +47506,8 @@ if(interopDefault(require$$1$1)(function(){ return $toString.call({source: 'a', 
   });
 }
 });
+
+interopDefault(es6_regexp_toString);
 
 var _fixReWks = createCommonjsModule(function (module) {
 'use strict';
@@ -46774,7 +47544,7 @@ var _fixReWks$1 = interopDefault(_fixReWks);
 
 
 var require$$1$19 = Object.freeze({
-	default: _fixReWks$1
+  default: _fixReWks$1
 });
 
 var es6_regexp_match = createCommonjsModule(function (module) {
@@ -46789,6 +47559,8 @@ interopDefault(require$$1$19)('match', 1, function(defined, MATCH, $match){
   }, $match];
 });
 });
+
+interopDefault(es6_regexp_match);
 
 var es6_regexp_replace = createCommonjsModule(function (module) {
 // @@replace logic
@@ -46805,6 +47577,8 @@ interopDefault(require$$1$19)('replace', 2, function(defined, REPLACE, $replace)
 });
 });
 
+interopDefault(es6_regexp_replace);
+
 var es6_regexp_search = createCommonjsModule(function (module) {
 // @@search logic
 interopDefault(require$$1$19)('search', 1, function(defined, SEARCH, $search){
@@ -46817,6 +47591,8 @@ interopDefault(require$$1$19)('search', 1, function(defined, SEARCH, $search){
   }, $search];
 });
 });
+
+interopDefault(es6_regexp_search);
 
 var es6_regexp_split = createCommonjsModule(function (module) {
 // @@split logic
@@ -46891,6 +47667,8 @@ interopDefault(require$$1$19)('split', 2, function(defined, SPLIT, $split){
 });
 });
 
+interopDefault(es6_regexp_split);
+
 var _anInstance = createCommonjsModule(function (module) {
 module.exports = function(it, Constructor, name, forbiddenField){
   if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
@@ -46903,7 +47681,7 @@ var _anInstance$1 = interopDefault(_anInstance);
 
 
 var require$$4$6 = Object.freeze({
-	default: _anInstance$1
+  default: _anInstance$1
 });
 
 var _forOf = createCommonjsModule(function (module) {
@@ -46938,7 +47716,7 @@ var _forOf$1 = interopDefault(_forOf);
 
 
 var require$$1$20 = Object.freeze({
-	default: _forOf$1
+  default: _forOf$1
 });
 
 var _speciesConstructor = createCommonjsModule(function (module) {
@@ -46956,7 +47734,7 @@ var _speciesConstructor$1 = interopDefault(_speciesConstructor);
 
 
 var require$$8 = Object.freeze({
-	default: _speciesConstructor$1
+  default: _speciesConstructor$1
 });
 
 var _task = createCommonjsModule(function (module) {
@@ -47042,9 +47820,9 @@ var set$1 = _task.set;
 var clear = _task.clear;
 
 var require$$0$36 = Object.freeze({
-	default: _task$1,
-	set: set$1,
-	clear: clear
+  default: _task$1,
+  set: set$1,
+  clear: clear
 });
 
 var _microtask = createCommonjsModule(function (module) {
@@ -47122,7 +47900,7 @@ var _microtask$1 = interopDefault(_microtask);
 
 
 var require$$8$1 = Object.freeze({
-	default: _microtask$1
+  default: _microtask$1
 });
 
 var _redefineAll = createCommonjsModule(function (module) {
@@ -47137,7 +47915,7 @@ var _redefineAll$1 = interopDefault(_redefineAll);
 
 
 var require$$3$7 = Object.freeze({
-	default: _redefineAll$1
+  default: _redefineAll$1
 });
 
 var es6_promise = createCommonjsModule(function (module) {
@@ -47442,6 +48220,8 @@ $export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$5$2)(fun
 });
 });
 
+interopDefault(es6_promise);
+
 var _collectionStrong = createCommonjsModule(function (module) {
 'use strict';
 var dP          = interopDefault(require$$2$1).f
@@ -47455,12 +48235,12 @@ var dP          = interopDefault(require$$2$1).f
   , step        = interopDefault(require$$3$6)
   , setSpecies  = interopDefault(require$$0$35)
   , DESCRIPTORS = interopDefault(require$$1)
-  , fastKey$$1     = interopDefault(require$$6).fastKey
+  , fastKey     = interopDefault(require$$6).fastKey
   , SIZE        = DESCRIPTORS ? '_s' : 'size';
 
 var getEntry = function(that, key){
   // fast case
-  var index = fastKey$$1(key), entry;
+  var index = fastKey(key), entry;
   if(index !== 'F')return that._i[index];
   // frozen object case
   for(entry = that._f; entry; entry = entry.n){
@@ -47511,10 +48291,10 @@ module.exports = {
       // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
       forEach: function forEach(callbackfn /*, that = undefined */){
         anInstance(this, C, 'forEach');
-        var f$$1 = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3)
+        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3)
           , entry;
         while(entry = entry ? entry.n : this._f){
-          f$$1(entry.v, entry.k, this);
+          f(entry.v, entry.k, this);
           // revert to the last existing entry
           while(entry && entry.r)entry = entry.p;
         }
@@ -47541,7 +48321,7 @@ module.exports = {
     // create new entry
     } else {
       that._l = entry = {
-        i: index = fastKey$$1(key, true), // <- index
+        i: index = fastKey(key, true), // <- index
         k: key,                        // <- key
         v: value,                      // <- value
         p: prev = that._l,             // <- previous entry
@@ -47594,11 +48374,11 @@ var getEntry = _collectionStrong.getEntry;
 var setStrong = _collectionStrong.setStrong;
 
 var require$$1$21 = Object.freeze({
-	default: _collectionStrong$1,
-	getConstructor: getConstructor,
-	def: def,
-	getEntry: getEntry,
-	setStrong: setStrong
+  default: _collectionStrong$1,
+  getConstructor: getConstructor,
+  def: def,
+  getEntry: getEntry,
+  setStrong: setStrong
 });
 
 var _collection = createCommonjsModule(function (module) {
@@ -47622,16 +48402,16 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
     , ADDER = IS_MAP ? 'set' : 'add'
     , proto = C && C.prototype
     , O     = {};
-  var fixMethod = function(KEY$$1){
-    var fn = proto[KEY$$1];
-    redefine(proto, KEY$$1,
-      KEY$$1 == 'delete' ? function(a){
+  var fixMethod = function(KEY){
+    var fn = proto[KEY];
+    redefine(proto, KEY,
+      KEY == 'delete' ? function(a){
         return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY$$1 == 'has' ? function has(a){
+      } : KEY == 'has' ? function has(a){
         return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY$$1 == 'get' ? function get(a){
+      } : KEY == 'get' ? function get(a){
         return IS_WEAK && !isObject(a) ? undefined : fn.call(this, a === 0 ? 0 : a);
-      } : KEY$$1 == 'add' ? function add(a){ fn.call(this, a === 0 ? 0 : a); return this; }
+      } : KEY == 'add' ? function add(a){ fn.call(this, a === 0 ? 0 : a); return this; }
         : function set(a, b){ fn.call(this, a === 0 ? 0 : a, b); return this; }
     );
   };
@@ -47693,7 +48473,7 @@ var _collection$1 = interopDefault(_collection);
 
 
 var require$$0$37 = Object.freeze({
-	default: _collection$1
+  default: _collection$1
 });
 
 var es6_map = createCommonjsModule(function (module) {
@@ -47720,7 +48500,7 @@ var es6_map$1 = interopDefault(es6_map);
 
 
 var require$$3$8 = Object.freeze({
-	default: es6_map$1
+  default: es6_map$1
 });
 
 var es6_set = createCommonjsModule(function (module) {
@@ -47742,13 +48522,13 @@ var es6_set$1 = interopDefault(es6_set);
 
 
 var require$$4$7 = Object.freeze({
-	default: es6_set$1
+  default: es6_set$1
 });
 
 var _collectionWeak = createCommonjsModule(function (module) {
 'use strict';
 var redefineAll       = interopDefault(require$$3$7)
-  , getWeak$$1           = interopDefault(require$$6).getWeak
+  , getWeak           = interopDefault(require$$6).getWeak
   , anObject          = interopDefault(require$$5)
   , isObject          = interopDefault(require$$0$1)
   , anInstance        = interopDefault(require$$4$6)
@@ -47806,7 +48586,7 @@ module.exports = {
       // 23.4.3.3 WeakSet.prototype.delete(value)
       'delete': function(key){
         if(!isObject(key))return false;
-        var data = getWeak$$1(key);
+        var data = getWeak(key);
         if(data === true)return uncaughtFrozenStore(this)['delete'](key);
         return data && $has(data, this._i) && delete data[this._i];
       },
@@ -47814,7 +48594,7 @@ module.exports = {
       // 23.4.3.4 WeakSet.prototype.has(value)
       has: function has(key){
         if(!isObject(key))return false;
-        var data = getWeak$$1(key);
+        var data = getWeak(key);
         if(data === true)return uncaughtFrozenStore(this).has(key);
         return data && $has(data, this._i);
       }
@@ -47822,7 +48602,7 @@ module.exports = {
     return C;
   },
   def: function(that, key, value){
-    var data = getWeak$$1(anObject(key), true);
+    var data = getWeak(anObject(key), true);
     if(data === true)uncaughtFrozenStore(that).set(key, value);
     else data[that._i] = value;
     return that;
@@ -47837,10 +48617,10 @@ var def$1 = _collectionWeak.def;
 var ufstore = _collectionWeak.ufstore;
 
 var require$$1$22 = Object.freeze({
-	default: _collectionWeak$1,
-	getConstructor: getConstructor$1,
-	def: def$1,
-	ufstore: ufstore
+  default: _collectionWeak$1,
+  getConstructor: getConstructor$1,
+  def: def$1,
+  ufstore: ufstore
 });
 
 var es6_weakMap = createCommonjsModule(function (module) {
@@ -47851,7 +48631,7 @@ var each         = interopDefault(require$$10)(0)
   , assign       = interopDefault(require$$3$4)
   , weak         = interopDefault(require$$1$22)
   , isObject     = interopDefault(require$$0$1)
-  , getWeak$$1      = meta.getWeak
+  , getWeak      = meta.getWeak
   , isExtensible = Object.isExtensible
   , uncaughtFrozenStore = weak.ufstore
   , tmp          = {}
@@ -47867,7 +48647,7 @@ var methods = {
   // 23.3.3.3 WeakMap.prototype.get(key)
   get: function get(key){
     if(isObject(key)){
-      var data = getWeak$$1(key);
+      var data = getWeak(key);
       if(data === true)return uncaughtFrozenStore(this).get(key);
       return data ? data[this._i] : undefined;
     }
@@ -47906,7 +48686,7 @@ var es6_weakMap$1 = interopDefault(es6_weakMap);
 
 
 var require$$0$38 = Object.freeze({
-	default: es6_weakMap$1
+  default: es6_weakMap$1
 });
 
 var es6_weakSet = createCommonjsModule(function (module) {
@@ -47923,6 +48703,8 @@ interopDefault(require$$0$37)('WeakSet', function(get){
   }
 }, weak, false, true);
 });
+
+interopDefault(es6_weakSet);
 
 var _typed = createCommonjsModule(function (module) {
 var global = interopDefault(require$$3)
@@ -47960,11 +48742,11 @@ var TYPED = _typed.TYPED;
 var VIEW = _typed.VIEW;
 
 var require$$33 = Object.freeze({
-	default: _typed$1,
-	ABV: ABV,
-	CONSTR: CONSTR,
-	TYPED: TYPED,
-	VIEW: VIEW
+  default: _typed$1,
+  ABV: ABV,
+  CONSTR: CONSTR,
+  TYPED: TYPED,
+  VIEW: VIEW
 });
 
 var _typedBuffer = createCommonjsModule(function (module, exports) {
@@ -48016,7 +48798,7 @@ var packIEEE754 = function(value, mLen, nBytes){
     , i      = 0
     , s      = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0
     , e, m, c;
-  value = abs(value);
+  value = abs(value)
   if(value != value || value === Infinity){
     m = value != value ? 1 : 0;
     e = eMax;
@@ -48219,7 +49001,7 @@ if(!$typed.ABV){
     var ArrayBufferProto = $ArrayBuffer[PROTOTYPE] = BaseBuffer[PROTOTYPE];
     for(var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j; ){
       if(!((key = keys[j++]) in $ArrayBuffer))hide($ArrayBuffer, key, BaseBuffer[key]);
-    }
+    };
     if(!LIBRARY)ArrayBufferProto.constructor = $ArrayBuffer;
   }
   // iOS Safari 7.x bug
@@ -48247,7 +49029,7 @@ var _typedBuffer$1 = interopDefault(_typedBuffer);
 
 
 var require$$32 = Object.freeze({
-	default: _typedBuffer$1
+  default: _typedBuffer$1
 });
 
 var es6_typed_arrayBuffer = createCommonjsModule(function (module) {
@@ -48265,7 +49047,7 @@ var $export      = interopDefault(require$$1$2)
   , $DataView    = buffer.DataView
   , $isView      = $typed.ABV && ArrayBuffer.isView
   , $slice       = $ArrayBuffer.prototype.slice
-  , VIEW$$1         = $typed.VIEW
+  , VIEW         = $typed.VIEW
   , ARRAY_BUFFER = 'ArrayBuffer';
 
 $export($export.G + $export.W + $export.F * (ArrayBuffer !== $ArrayBuffer), {ArrayBuffer: $ArrayBuffer});
@@ -48273,7 +49055,7 @@ $export($export.G + $export.W + $export.F * (ArrayBuffer !== $ArrayBuffer), {Arr
 $export($export.S + $export.F * !$typed.CONSTR, ARRAY_BUFFER, {
   // 24.1.3.1 ArrayBuffer.isView(arg)
   isView: function isView(it){
-    return $isView && $isView(it) || isObject(it) && VIEW$$1 in it;
+    return $isView && $isView(it) || isObject(it) && VIEW in it;
   }
 });
 
@@ -48299,12 +49081,16 @@ $export($export.P + $export.U + $export.F * interopDefault(require$$1$1)(functio
 interopDefault(require$$0$35)(ARRAY_BUFFER);
 });
 
+interopDefault(es6_typed_arrayBuffer);
+
 var es6_typed_dataView = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 $export($export.G + $export.W + $export.F * !interopDefault(require$$33).ABV, {
   DataView: interopDefault(require$$32).DataView
 });
 });
+
+interopDefault(es6_typed_dataView);
 
 var _typedArray = createCommonjsModule(function (module) {
 'use strict';
@@ -48384,7 +49170,7 @@ if(interopDefault(require$$1)){
     , DEF_CONSTRUCTOR     = uid('def_constructor')
     , ALL_CONSTRUCTORS    = $typed.CONSTR
     , TYPED_ARRAY         = $typed.TYPED
-    , VIEW$$1                = $typed.VIEW
+    , VIEW                = $typed.VIEW
     , WRONG_LENGTH        = 'Wrong length!';
 
   var $map = createArrayMethod(1, function(O, length){
@@ -48616,7 +49402,7 @@ if(interopDefault(require$$1)){
   if(fails(function(){ arrayToString.call({}); })){
     arrayToString = arrayToLocaleString = function toString(){
       return arrayJoin.call(this);
-    };
+    }
   }
 
   var $TypedArrayPrototype$ = redefineAll({}, proto);
@@ -48676,7 +49462,7 @@ if(interopDefault(require$$1)){
           , offset = 0
           , buffer, byteLength, length, klass;
         if(!isObject(data)){
-          length     = strictToLength(data, true);
+          length     = strictToLength(data, true)
           byteLength = length * BYTES;
           buffer     = new $ArrayBuffer(byteLength);
         } else if(data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER){
@@ -48741,7 +49527,7 @@ if(interopDefault(require$$1)){
       , $iterator         = $iterators.values;
     hide(TypedArray, TYPED_CONSTRUCTOR, true);
     hide(TypedArrayPrototype, TYPED_ARRAY, NAME);
-    hide(TypedArrayPrototype, VIEW$$1, true);
+    hide(TypedArrayPrototype, VIEW, true);
     hide(TypedArrayPrototype, DEF_CONSTRUCTOR, TypedArray);
 
     if(CLAMPED ? new TypedArray(1)[TAG] != NAME : !(TAG in TypedArrayPrototype)){
@@ -48792,7 +49578,7 @@ var _typedArray$1 = interopDefault(_typedArray);
 
 
 var require$$0$39 = Object.freeze({
-	default: _typedArray$1
+  default: _typedArray$1
 });
 
 var es6_typed_int8Array = createCommonjsModule(function (module) {
@@ -48803,6 +49589,8 @@ interopDefault(require$$0$39)('Int8', 1, function(init){
 });
 });
 
+interopDefault(es6_typed_int8Array);
+
 var es6_typed_uint8Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Uint8', 1, function(init){
   return function Uint8Array(data, byteOffset, length){
@@ -48810,6 +49598,8 @@ interopDefault(require$$0$39)('Uint8', 1, function(init){
   };
 });
 });
+
+interopDefault(es6_typed_uint8Array);
 
 var es6_typed_uint8ClampedArray = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Uint8', 1, function(init){
@@ -48819,6 +49609,8 @@ interopDefault(require$$0$39)('Uint8', 1, function(init){
 }, true);
 });
 
+interopDefault(es6_typed_uint8ClampedArray);
+
 var es6_typed_int16Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Int16', 2, function(init){
   return function Int16Array(data, byteOffset, length){
@@ -48826,6 +49618,8 @@ interopDefault(require$$0$39)('Int16', 2, function(init){
   };
 });
 });
+
+interopDefault(es6_typed_int16Array);
 
 var es6_typed_uint16Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Uint16', 2, function(init){
@@ -48835,6 +49629,8 @@ interopDefault(require$$0$39)('Uint16', 2, function(init){
 });
 });
 
+interopDefault(es6_typed_uint16Array);
+
 var es6_typed_int32Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Int32', 4, function(init){
   return function Int32Array(data, byteOffset, length){
@@ -48842,6 +49638,8 @@ interopDefault(require$$0$39)('Int32', 4, function(init){
   };
 });
 });
+
+interopDefault(es6_typed_int32Array);
 
 var es6_typed_uint32Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Uint32', 4, function(init){
@@ -48851,6 +49649,8 @@ interopDefault(require$$0$39)('Uint32', 4, function(init){
 });
 });
 
+interopDefault(es6_typed_uint32Array);
+
 var es6_typed_float32Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Float32', 4, function(init){
   return function Float32Array(data, byteOffset, length){
@@ -48859,6 +49659,8 @@ interopDefault(require$$0$39)('Float32', 4, function(init){
 });
 });
 
+interopDefault(es6_typed_float32Array);
+
 var es6_typed_float64Array = createCommonjsModule(function (module) {
 interopDefault(require$$0$39)('Float64', 8, function(init){
   return function Float64Array(data, byteOffset, length){
@@ -48866,6 +49668,8 @@ interopDefault(require$$0$39)('Float64', 8, function(init){
   };
 });
 });
+
+interopDefault(es6_typed_float64Array);
 
 var es6_reflect_apply = createCommonjsModule(function (module) {
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
@@ -48885,6 +49689,8 @@ $export($export.S + $export.F * !interopDefault(require$$1$1)(function(){
   }
 });
 });
+
+interopDefault(es6_reflect_apply);
 
 var es6_reflect_construct = createCommonjsModule(function (module) {
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
@@ -48936,6 +49742,8 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
 });
 });
 
+interopDefault(es6_reflect_construct);
+
 var es6_reflect_defineProperty = createCommonjsModule(function (module) {
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
 var dP          = interopDefault(require$$2$1)
@@ -48961,6 +49769,8 @@ $export($export.S + $export.F * interopDefault(require$$1$1)(function(){
 });
 });
 
+interopDefault(es6_reflect_defineProperty);
+
 var es6_reflect_deleteProperty = createCommonjsModule(function (module) {
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
 var $export  = interopDefault(require$$1$2)
@@ -48974,6 +49784,8 @@ $export($export.S, 'Reflect', {
   }
 });
 });
+
+interopDefault(es6_reflect_deleteProperty);
 
 var es6_reflect_enumerate = createCommonjsModule(function (module) {
 'use strict';
@@ -49004,6 +49816,8 @@ $export($export.S, 'Reflect', {
 });
 });
 
+interopDefault(es6_reflect_enumerate);
+
 var es6_reflect_get = createCommonjsModule(function (module) {
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
 var gOPD           = interopDefault(require$$2$7)
@@ -49028,6 +49842,8 @@ function get(target, propertyKey/*, receiver*/){
 $export($export.S, 'Reflect', {get: get});
 });
 
+interopDefault(es6_reflect_get);
+
 var es6_reflect_getOwnPropertyDescriptor = createCommonjsModule(function (module) {
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
 var gOPD     = interopDefault(require$$2$7)
@@ -49040,6 +49856,8 @@ $export($export.S, 'Reflect', {
   }
 });
 });
+
+interopDefault(es6_reflect_getOwnPropertyDescriptor);
 
 var es6_reflect_getPrototypeOf = createCommonjsModule(function (module) {
 // 26.1.8 Reflect.getPrototypeOf(target)
@@ -49054,6 +49872,8 @@ $export($export.S, 'Reflect', {
 });
 });
 
+interopDefault(es6_reflect_getPrototypeOf);
+
 var es6_reflect_has = createCommonjsModule(function (module) {
 // 26.1.9 Reflect.has(target, propertyKey)
 var $export = interopDefault(require$$1$2);
@@ -49064,6 +49884,8 @@ $export($export.S, 'Reflect', {
   }
 });
 });
+
+interopDefault(es6_reflect_has);
 
 var es6_reflect_isExtensible = createCommonjsModule(function (module) {
 // 26.1.10 Reflect.isExtensible(target)
@@ -49078,6 +49900,8 @@ $export($export.S, 'Reflect', {
   }
 });
 });
+
+interopDefault(es6_reflect_isExtensible);
 
 var _ownKeys = createCommonjsModule(function (module) {
 // all object keys, includes non-enumerable and symbols
@@ -49096,7 +49920,7 @@ var _ownKeys$1 = interopDefault(_ownKeys);
 
 
 var require$$3$9 = Object.freeze({
-	default: _ownKeys$1
+  default: _ownKeys$1
 });
 
 var es6_reflect_ownKeys = createCommonjsModule(function (module) {
@@ -49105,6 +49929,8 @@ var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Reflect', {ownKeys: interopDefault(require$$3$9)});
 });
+
+interopDefault(es6_reflect_ownKeys);
 
 var es6_reflect_preventExtensions = createCommonjsModule(function (module) {
 // 26.1.12 Reflect.preventExtensions(target)
@@ -49124,6 +49950,8 @@ $export($export.S, 'Reflect', {
   }
 });
 });
+
+interopDefault(es6_reflect_preventExtensions);
 
 var es6_reflect_set = createCommonjsModule(function (module) {
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
@@ -49159,6 +49987,8 @@ function set(target, propertyKey, V/*, receiver*/){
 $export($export.S, 'Reflect', {set: set});
 });
 
+interopDefault(es6_reflect_set);
+
 var es6_reflect_setPrototypeOf = createCommonjsModule(function (module) {
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
 var $export  = interopDefault(require$$1$2)
@@ -49177,6 +50007,8 @@ if(setProto)$export($export.S, 'Reflect', {
 });
 });
 
+interopDefault(es6_reflect_setPrototypeOf);
+
 var es7_array_includes = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/tc39/Array.prototype.includes
@@ -49192,6 +50024,8 @@ $export($export.P, 'Array', {
 interopDefault(require$$0$34)('includes');
 });
 
+interopDefault(es7_array_includes);
+
 var es7_string_at = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/mathiasbynens/String.prototype.at
@@ -49204,6 +50038,8 @@ $export($export.P, 'String', {
   }
 });
 });
+
+interopDefault(es7_string_at);
 
 var _stringPad = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-string-pad-start-end
@@ -49228,7 +50064,7 @@ var _stringPad$1 = interopDefault(_stringPad);
 
 
 var require$$0$40 = Object.freeze({
-	default: _stringPad$1
+  default: _stringPad$1
 });
 
 var es7_string_padStart = createCommonjsModule(function (module) {
@@ -49244,6 +50080,8 @@ $export($export.P, 'String', {
 });
 });
 
+interopDefault(es7_string_padStart);
+
 var es7_string_padEnd = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
@@ -49257,6 +50095,8 @@ $export($export.P, 'String', {
 });
 });
 
+interopDefault(es7_string_padEnd);
+
 var es7_string_trimLeft = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
@@ -49267,6 +50107,8 @@ interopDefault(require$$0$16)('trimLeft', function($trim){
 }, 'trimStart');
 });
 
+interopDefault(es7_string_trimLeft);
+
 var es7_string_trimRight = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
@@ -49276,6 +50118,8 @@ interopDefault(require$$0$16)('trimRight', function($trim){
   };
 }, 'trimEnd');
 });
+
+interopDefault(es7_string_trimRight);
 
 var es7_string_matchAll = createCommonjsModule(function (module) {
 'use strict';
@@ -49310,13 +50154,19 @@ $export($export.P, 'String', {
 });
 });
 
+interopDefault(es7_string_matchAll);
+
 var es7_symbol_asyncIterator = createCommonjsModule(function (module) {
 interopDefault(require$$0$5)('asyncIterator');
 });
 
+interopDefault(es7_symbol_asyncIterator);
+
 var es7_symbol_observable = createCommonjsModule(function (module) {
 interopDefault(require$$0$5)('observable');
 });
+
+interopDefault(es7_symbol_observable);
 
 var es7_object_getOwnPropertyDescriptors = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
@@ -49339,6 +50189,8 @@ $export($export.S, 'Object', {
   }
 });
 });
+
+interopDefault(es7_object_getOwnPropertyDescriptors);
 
 var _objectToArray = createCommonjsModule(function (module) {
 var getKeys   = interopDefault(require$$2$5)
@@ -49363,7 +50215,7 @@ var _objectToArray$1 = interopDefault(_objectToArray);
 
 
 var require$$0$41 = Object.freeze({
-	default: _objectToArray$1
+  default: _objectToArray$1
 });
 
 var es7_object_values = createCommonjsModule(function (module) {
@@ -49378,6 +50230,8 @@ $export($export.S, 'Object', {
 });
 });
 
+interopDefault(es7_object_values);
+
 var es7_object_entries = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-object-values-entries
 var $export  = interopDefault(require$$1$2)
@@ -49389,6 +50243,8 @@ $export($export.S, 'Object', {
   }
 });
 });
+
+interopDefault(es7_object_entries);
 
 var _objectForcedPam = createCommonjsModule(function (module) {
 // Forced replacement prototype accessors methods
@@ -49404,7 +50260,7 @@ var _objectForcedPam$1 = interopDefault(_objectForcedPam);
 
 
 var require$$0$42 = Object.freeze({
-	default: _objectForcedPam$1
+  default: _objectForcedPam$1
 });
 
 var es7_object_defineGetter = createCommonjsModule(function (module) {
@@ -49422,6 +50278,8 @@ interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42),
 });
 });
 
+interopDefault(es7_object_defineGetter);
+
 var es7_object_defineSetter = createCommonjsModule(function (module) {
 'use strict';
 var $export         = interopDefault(require$$1$2)
@@ -49436,6 +50294,8 @@ interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42),
   }
 });
 });
+
+interopDefault(es7_object_defineSetter);
 
 var es7_object_lookupGetter = createCommonjsModule(function (module) {
 'use strict';
@@ -49458,6 +50318,8 @@ interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42),
 });
 });
 
+interopDefault(es7_object_lookupGetter);
+
 var es7_object_lookupSetter = createCommonjsModule(function (module) {
 'use strict';
 var $export                  = interopDefault(require$$1$2)
@@ -49479,6 +50341,8 @@ interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42),
 });
 });
 
+interopDefault(es7_object_lookupSetter);
+
 var _arrayFromIterable = createCommonjsModule(function (module) {
 var forOf = interopDefault(require$$1$20);
 
@@ -49493,7 +50357,7 @@ var _arrayFromIterable$1 = interopDefault(_arrayFromIterable);
 
 
 var require$$3$10 = Object.freeze({
-	default: _arrayFromIterable$1
+  default: _arrayFromIterable$1
 });
 
 var _collectionToJson = createCommonjsModule(function (module) {
@@ -49512,7 +50376,7 @@ var _collectionToJson$1 = interopDefault(_collectionToJson);
 
 
 var require$$0$43 = Object.freeze({
-	default: _collectionToJson$1
+  default: _collectionToJson$1
 });
 
 var es7_map_toJson = createCommonjsModule(function (module) {
@@ -49522,6 +50386,8 @@ var $export  = interopDefault(require$$1$2);
 $export($export.P + $export.R, 'Map', {toJSON: interopDefault(require$$0$43)('Map')});
 });
 
+interopDefault(es7_map_toJson);
+
 var es7_set_toJson = createCommonjsModule(function (module) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export  = interopDefault(require$$1$2);
@@ -49529,12 +50395,16 @@ var $export  = interopDefault(require$$1$2);
 $export($export.P + $export.R, 'Set', {toJSON: interopDefault(require$$0$43)('Set')});
 });
 
+interopDefault(es7_set_toJson);
+
 var es7_system_global = createCommonjsModule(function (module) {
 // https://github.com/ljharb/proposal-global
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'System', {global: interopDefault(require$$3)});
 });
+
+interopDefault(es7_system_global);
 
 var es7_error_isError = createCommonjsModule(function (module) {
 // https://github.com/ljharb/proposal-is-error
@@ -49547,6 +50417,8 @@ $export($export.S, 'Error', {
   }
 });
 });
+
+interopDefault(es7_error_isError);
 
 var es7_math_iaddh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -49562,6 +50434,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es7_math_iaddh);
+
 var es7_math_isubh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = interopDefault(require$$1$2);
@@ -49575,6 +50449,8 @@ $export($export.S, 'Math', {
   }
 });
 });
+
+interopDefault(es7_math_isubh);
 
 var es7_math_imulh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
@@ -49595,6 +50471,8 @@ $export($export.S, 'Math', {
 });
 });
 
+interopDefault(es7_math_imulh);
+
 var es7_math_umulh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = interopDefault(require$$1$2);
@@ -49613,6 +50491,8 @@ $export($export.S, 'Math', {
   }
 });
 });
+
+interopDefault(es7_math_umulh);
 
 var _metadata = createCommonjsModule(function (module) {
 var Map     = interopDefault(require$$3$8)
@@ -49679,15 +50559,15 @@ var key = _metadata.key;
 var exp = _metadata.exp;
 
 var require$$2$10 = Object.freeze({
-	default: _metadata$1,
-	store: store,
-	map: map,
-	has: has,
-	get: get,
-	set: set$2,
-	keys: keys,
-	key: key,
-	exp: exp
+  default: _metadata$1,
+  store: store,
+  map: map,
+  has: has,
+  get: get,
+  set: set$2,
+  keys: keys,
+  key: key,
+  exp: exp
 });
 
 var es7_reflect_defineMetadata = createCommonjsModule(function (module) {
@@ -49701,23 +50581,27 @@ metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue
 }});
 });
 
+interopDefault(es7_reflect_defineMetadata);
+
 var es7_reflect_deleteMetadata = createCommonjsModule(function (module) {
 var metadata               = interopDefault(require$$2$10)
   , anObject               = interopDefault(require$$5)
   , toMetaKey              = metadata.key
   , getOrCreateMetadataMap = metadata.map
-  , store$$1                  = metadata.store;
+  , store                  = metadata.store;
 
 metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, targetKey */){
   var targetKey   = arguments.length < 3 ? undefined : toMetaKey(arguments[2])
     , metadataMap = getOrCreateMetadataMap(anObject(target), targetKey, false);
   if(metadataMap === undefined || !metadataMap['delete'](metadataKey))return false;
   if(metadataMap.size)return true;
-  var targetMetadata = store$$1.get(target);
+  var targetMetadata = store.get(target);
   targetMetadata['delete'](targetKey);
-  return !!targetMetadata.size || store$$1['delete'](target);
+  return !!targetMetadata.size || store['delete'](target);
 }});
 });
+
+interopDefault(es7_reflect_deleteMetadata);
 
 var es7_reflect_getMetadata = createCommonjsModule(function (module) {
 var metadata               = interopDefault(require$$2$10)
@@ -49738,6 +50622,8 @@ metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKe
   return ordinaryGetMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
 });
+
+interopDefault(es7_reflect_getMetadata);
 
 var es7_reflect_getMetadataKeys = createCommonjsModule(function (module) {
 var Set                     = interopDefault(require$$4$7)
@@ -49761,6 +50647,8 @@ metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */)
 }});
 });
 
+interopDefault(es7_reflect_getMetadataKeys);
+
 var es7_reflect_getOwnMetadata = createCommonjsModule(function (module) {
 var metadata               = interopDefault(require$$2$10)
   , anObject               = interopDefault(require$$5)
@@ -49773,6 +50661,8 @@ metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, ta
 }});
 });
 
+interopDefault(es7_reflect_getOwnMetadata);
+
 var es7_reflect_getOwnMetadataKeys = createCommonjsModule(function (module) {
 var metadata                = interopDefault(require$$2$10)
   , anObject                = interopDefault(require$$5)
@@ -49783,6 +50673,8 @@ metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetK
   return ordinaryOwnMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 }});
 });
+
+interopDefault(es7_reflect_getOwnMetadataKeys);
 
 var es7_reflect_hasMetadata = createCommonjsModule(function (module) {
 var metadata               = interopDefault(require$$2$10)
@@ -49803,6 +50695,8 @@ metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKe
 }});
 });
 
+interopDefault(es7_reflect_hasMetadata);
+
 var es7_reflect_hasOwnMetadata = createCommonjsModule(function (module) {
 var metadata               = interopDefault(require$$2$10)
   , anObject               = interopDefault(require$$5)
@@ -49814,6 +50708,8 @@ metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, ta
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 }});
 });
+
+interopDefault(es7_reflect_hasOwnMetadata);
 
 var es7_reflect_metadata = createCommonjsModule(function (module) {
 var metadata                  = interopDefault(require$$2$10)
@@ -49833,6 +50729,8 @@ metadata.exp({metadata: function metadata(metadataKey, metadataValue){
 }});
 });
 
+interopDefault(es7_reflect_metadata);
+
 var es7_asap = createCommonjsModule(function (module) {
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
 var $export   = interopDefault(require$$1$2)
@@ -49847,6 +50745,8 @@ $export($export.G, {
   }
 });
 });
+
+interopDefault(es7_asap);
 
 var es7_observable = createCommonjsModule(function (module) {
 'use strict';
@@ -50050,6 +50950,8 @@ $export($export.G, {Observable: $Observable});
 interopDefault(require$$0$35)('Observable');
 });
 
+interopDefault(es7_observable);
+
 var _path = createCommonjsModule(function (module) {
 module.exports = interopDefault(require$$3);
 });
@@ -50091,7 +50993,7 @@ var _partial$1 = interopDefault(_partial);
 
 
 var require$$0$44 = Object.freeze({
-	default: _partial$1
+  default: _partial$1
 });
 
 var web_timers = createCommonjsModule(function (module) {
@@ -50117,6 +51019,8 @@ $export($export.G + $export.B + $export.F * MSIE, {
 });
 });
 
+interopDefault(web_timers);
+
 var web_immediate = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2)
   , $task   = interopDefault(require$$0$36);
@@ -50125,6 +51029,8 @@ $export($export.G + $export.B, {
   clearImmediate: $task.clear
 });
 });
+
+interopDefault(web_immediate);
 
 var web_dom_iterable = createCommonjsModule(function (module) {
 var $iterators    = interopDefault(require$$5$3)
@@ -50151,9 +51057,13 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
 }
 });
 
+interopDefault(web_dom_iterable);
+
 var shim = createCommonjsModule(function (module) {
 module.exports = interopDefault(require$$0);
 });
+
+interopDefault(shim);
 
 var runtime = createCommonjsModule(function (module) {
 /**
@@ -50881,6 +51791,8 @@ var runtime = createCommonjsModule(function (module) {
 );
 });
 
+interopDefault(runtime);
+
 var _replacer = createCommonjsModule(function (module) {
 module.exports = function(regExp, replace){
   var replacer = replace === Object(replace) ? function(part){
@@ -50896,7 +51808,7 @@ var _replacer$1 = interopDefault(_replacer);
 
 
 var require$$0$45 = Object.freeze({
-	default: _replacer$1
+  default: _replacer$1
 });
 
 var core_regexp_escape = createCommonjsModule(function (module) {
@@ -50907,9 +51819,13 @@ var $export = interopDefault(require$$1$2)
 $export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
 });
 
+interopDefault(core_regexp_escape);
+
 var _escape = createCommonjsModule(function (module) {
 module.exports = interopDefault(require$$0).RegExp.escape;
 });
+
+interopDefault(_escape);
 
 var index = createCommonjsModule(function (module) {
 "use strict";
@@ -50941,6 +51857,8 @@ define(String.prototype, "padRight", "".padEnd);
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
 });
+
+interopDefault(index);
 
 // pnltri.js / raw.github.com/jahting/pnltri.js/master/LICENSE
 /**
@@ -52938,7 +53856,7 @@ var bind = createCommonjsModule(function (module, exports) {
 var bind$1 = interopDefault(bind);
 
 var require$$0$46 = Object.freeze({
-	default: bind$1
+  default: bind$1
 });
 
 var html = createCommonjsModule(function (module, exports) {
@@ -53072,17 +53990,17 @@ var createNextButton = html.createNextButton;
 var createPreviousButton = html.createPreviousButton;
 
 var require$$1$23 = Object.freeze({
-	default: html$1,
-	appendChild: appendChild,
-	show: show,
-	hide: hide,
-	getOverlayBox: getOverlayBox,
-	createSpinnerWrapper: createSpinnerWrapper,
-	createSpinner: createSpinner,
-	createOverlayBox: createOverlayBox,
-	createFrame: createFrame,
-	createNextButton: createNextButton,
-	createPreviousButton: createPreviousButton
+  default: html$1,
+  appendChild: appendChild,
+  show: show,
+  hide: hide,
+  getOverlayBox: getOverlayBox,
+  createSpinnerWrapper: createSpinnerWrapper,
+  createSpinner: createSpinner,
+  createOverlayBox: createOverlayBox,
+  createFrame: createFrame,
+  createNextButton: createNextButton,
+  createPreviousButton: createPreviousButton
 });
 
 var avalonbox = createCommonjsModule(function (module) {
@@ -53282,7 +54200,7 @@ var avalonbox = createCommonjsModule(function (module) {
 
 var avalonbox$1 = interopDefault(avalonbox);
 
-var initLightBox = function () {
+function initLightBox () {
   document.querySelectorAll('.gallery').forEach(function (gallery) {
     if (!gallery.id) gallery.id = utils.uuid();
     avalonbox$1.run(gallery.id);
@@ -53292,7 +54210,7 @@ var initLightBox = function () {
     if (!image.id) image.id = utils.uuid();
     avalonbox$1.run(image.id);
   });
-};
+}
 
 var Greedy = function Greedy(options) {
   this.element = document.querySelector(options.element);
@@ -53394,12 +54312,13 @@ Greedy.prototype.toggleHiddenLinks = function () {
   this.toggleButton.classList.toggle('links-displayed');
 };
 
-var initGreedyNav = function () {
+// Initialise menu
+function initGreedyNav () {
   var menu = new Greedy({
     element: '.greedy-nav',
     counter: true
   });
-};
+}
 
 // Robert Penner's easeInOutQuad
 
@@ -53566,7 +54485,7 @@ var links = document.querySelectorAll('a');
 // Filename of current page
 var fileName = location.href.split('/').pop().split('#')[0];
 
-var initSmoothScroll = function () {
+function initSmoothScroll () {
     links.forEach(function (a) {
         //check if it's a link to another location on the page
         if (~a.href.indexOf(fileName + '#')) {
@@ -53576,7 +54495,7 @@ var initSmoothScroll = function () {
             };
         }
     });
-};
+}
 
 var index$2 = createCommonjsModule(function (module) {
 /**
@@ -54022,6 +54941,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -54036,11 +54956,11 @@ var setBodyMargin = function setBodyMargin() {
   document.querySelector('body').style.marginBottom = height + 'px';
 };
 
-var initFooter = function () {
+function initFooter () {
   setBodyMargin();
 
   window.addEventListener('resize', throttle(setBodyMargin, 250));
-};
+}
 
 var fluidVids = createCommonjsModule(function (module) {
   var fluidvids = {
@@ -54100,11 +55020,11 @@ var fluidVids = createCommonjsModule(function (module) {
 
 var fluidvids = interopDefault(fluidVids);
 
-var initVideos = function () {
+function initVideos () {
     fluidvids.init({
         selector: ['iframe', 'object'], // runs querySelectorAll()
         players: ['www.youtube.com', 'player.vimeo.com'] });
-};
+}
 
 var useLoadingManager = true;
 
@@ -54164,7 +55084,6 @@ function initSplashLayout() {
 
 var fontLoader = void 0;
 var objectLoader = void 0;
-
 var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
   var buffer = new Float32Array(count * itemSize);
   var attribute = new BufferAttribute(buffer, itemSize);
@@ -54534,13 +55453,126 @@ var threeUtils = {
 
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a;}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length);},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now();},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576);}return c},update:function(){g=this.end();},domElement:c,setMode:k}};
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
 Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p));}}};"object"===typeof module&&(module.exports=Stats);
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 });
 
 var Stats = interopDefault(stats_min);
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -54788,6 +55820,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -54971,6 +56008,21 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -55783,7 +56835,7 @@ function OrbitControls(object, domElement) {
 	// force an update at start
 
 	this.update();
-}
+};
 
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
@@ -56197,6 +57249,12 @@ function initSplash(showStats) {
   var splashHero = new SplashHero(showStats);
 }
 
+// Adds TweenLite, TimeLineLite etc as globals
+// import 'gsap/src/uncompressed/TimelineLite';
+// import 'gsap/src/uncompressed/easing/EasePack';
+
+// TODO: refactor as functions to allow these to be run after initLoader
+// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
@@ -56211,9 +57269,6 @@ initVideos();
 
 // Set up any globals
 window.Hammer = hammer$1;
-
-// Set up THREE
-Cache.enabled = true;
 
 //Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
