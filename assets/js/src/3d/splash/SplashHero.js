@@ -38,19 +38,15 @@ const randomPointInSphere = ( radius ) => {
   return v;
 }
 
-const alignPointToVertices = ( vertices, vertexNum ) => {
-  const len = vertices.length;
+// const alignPointToVertices = ( vertices, vertexNum ) => {
+//   const len = vertices.length;
 
-  vertexNum =  vertexNum % len;
+//   vertexNum = vertexNum % len;
 
-  // v.set( mesh.geometry.vertices[ vertexNum ] );
-
-  v.x = vertices[ vertexNum ].x;
-  v.y = vertices[ vertexNum ].y;
-  v.z = vertices[ vertexNum ].z;
+//   v.copy( vertices[vertexNum] );
   
-  return v;
-}
+//   return v;
+// }
 
 const pointerPosToCanvasCentre = ( canvas ) => {
   const halfWidth = canvas.clientWidth / 2;
@@ -94,7 +90,6 @@ export default class SplashHero {
 
     self.loadWolf();
 
-    
 
     self.addControls();
 
@@ -120,20 +115,19 @@ export default class SplashHero {
     };
 
     let uTime = 1.0;
+    const minTime = 0.1;
 
     const updateAnimation = function () {
-      // if ( uTime >= 1.5 || uTime <= -0.5 ) {
-      //   uTime = 1.0;
-      // }
 
       // set on repeat (for testing)
-      if ( uTime <= 0.1 ) uTime = 1.0;
+      // if ( uTime <= minTime ) uTime = 1.0;
 
-      if ( uTime >= 0.1 && self.app.delta < 100 ) {
+      // Ignore large values of delta (caused by window not be being focused for a while)
+      if ( uTime >= minTime && self.app.delta < 100 ) {
         uTime += ( -1.0 * self.app.delta / 8000 );
       }
 
-      self.textMat.uniforms.uTime.value = uTime;
+      self.textMat.uniforms.uTime.value = 1.0;
     };
 
     self.app.onUpdate = function () {
@@ -149,7 +143,6 @@ export default class SplashHero {
     self.app.onWindowResize = function () { 
       self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
-
     };
 
     self.addTestLight();
@@ -165,7 +158,7 @@ export default class SplashHero {
     threeUtils.fontLoader( 'assets/fonts/json/droid_sans_mono_regular.typeface.json' )
     .then( ( font ) => {
 
-      const textGeometry = self.createTextGeometry( font );
+      const textGeometry = SplashHero.createTextGeometry( font );
 
       const bufferGeometry = new THREE.BufferGeometry( textGeometry );
 
@@ -185,7 +178,7 @@ export default class SplashHero {
 
     const vertices = shape.vertices;
     const verticesLen = vertices.length;
-    
+
     const faceCount = geometry.faces.length;
     const vertexCount = geometry.vertices.length;
 
@@ -196,28 +189,28 @@ export default class SplashHero {
 
     const aAnimation = threeUtils.createBufferAttribute( bufferGeometry, 'aAnimation', 2, vertexCount );
     const aEndPosition = threeUtils.createBufferAttribute( bufferGeometry, 'aEndPosition', 3, vertexCount );
-    
+
     let i;
     let i2;
     let i3;
     let i4;
     let v;
 
-    const maxDelay = 0.0;
+    const maxDelay = 1.0;
     const minDuration = 1.0;
     const maxDuration = 1.0;
 
-    const stretch = 0.001;
-    const lengthFactor = 0.0001;
+    const stretch = 1.0;
+    const lengthFactor = 0.001;
 
     const maxLength = geometry.boundingBox.max.length();
 
     this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
     this._animationProgress = 0;
 
-    for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12 ) {
+    for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9 ) {
       const face = geometry.faces[i];
-    
+
       const centroid = threeUtils.computeCentroid( geometry, face );
       // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
 
@@ -233,9 +226,10 @@ export default class SplashHero {
       // end position
       // const point = randomPointInSphere( 300 );
 
-      const point = alignPointToVertices( vertices, i );
 
-      // const point = v.set( vertices[ verticesLen % i ] );
+      // const point = vertices[THREE.Math.randInt( 0, verticesLen - 1 )].clone();
+
+      const point = vertices[i % verticesLen].clone();
 
       for ( v = 0; v < 9; v += 3 ) {
         aEndPosition.array[i3 + v] = point.x;
@@ -246,11 +240,11 @@ export default class SplashHero {
     }
   }
 
-  createTextGeometry( font ) {
+  static createTextGeometry( font ) {
     const textGeometry = new THREE.TextGeometry( 'Black Thread Design', {
       size: 40,
       height: 3,
-      font: font,
+      font,
       weight: 'normal',
       style: 'normal',
       curveSegments: 24,
@@ -276,7 +270,7 @@ export default class SplashHero {
     this.app.scene.add( this.bgMesh );
   }
 
-  initMaterials () {
+  initMaterials() {
     const loader = new THREE.TextureLoader();
     const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
     noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
@@ -336,31 +330,32 @@ export default class SplashHero {
   loadWolf() {
     const self = this;
     threeUtils.ObjectLoader( 'assets/models/wolf/wolf.json' )
-    .then( ( scene ) => {
+    .then( ( obj ) => {
 
-      const body = scene.children[0].children[1];
-      const hair = scene.children[0].children[2];
+      const body = obj.children[0];
+      const hair = obj.children[1];
+      const claws = obj.children[2];
 
-      self.wolf = [body, hair];
+      self.wolf = [body, hair, claws];
 
       self.wolf.forEach( ( mesh ) => {
-        mesh.rotation.set( 0, 0, -Math.PI / 2 );
 
+        mesh.geometry.rotateZ( -Math.PI / 2 );
         mesh.geometry.rotateX( -Math.PI / 2 );
-        // mesh.geometry.rotateZ( -Math.PI / 2 );
+
 
         mesh.geometry.scale( 500, 500, 500 );
 
-        mesh.scale.set( 1, 1, 1 );
+        mesh.material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
 
         self.app.scene.add( mesh );
-        console.log(mesh)
-      });
+
+      } );
 
       self.addText();
 
-    });
-    
+    } );
+
   }
 
   addTestLight() {

@@ -55944,326 +55944,319 @@ var textVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec2 pointer;\n
 
 var textFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-var v = new Vector3();
+// const alignPointToVertices = ( vertices, vertexNum ) => {
+//   const len = vertices.length;
 
-var alignPointToVertices = function (vertices, vertexNum) {
-  var len = vertices.length;
+//   vertexNum = vertexNum % len;
 
-  vertexNum = vertexNum % len;
+//   v.copy( vertices[vertexNum] );
 
-  // v.set( mesh.geometry.vertices[ vertexNum ] );
-
-  v.x = vertices[vertexNum].x;
-  v.y = vertices[vertexNum].y;
-  v.z = vertices[vertexNum].z;
-
-  return v;
-};
+//   return v;
+// }
 
 var pointerPosToCanvasCentre = function (canvas) {
-  var halfWidth = canvas.clientWidth / 2;
-  var halfHeight = canvas.clientHeight / 2 + document.querySelector('.masthead').clientHeight;
-  return {
-    x: utils.pointerPos.x <= halfWidth ? -halfWidth + utils.pointerPos.x : utils.pointerPos.x - halfWidth,
-    // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
-    y: halfHeight - utils.pointerPos.y
-  };
+    var halfWidth = canvas.clientWidth / 2;
+    var halfHeight = canvas.clientHeight / 2 + document.querySelector('.masthead').clientHeight;
+    return {
+        x: utils.pointerPos.x <= halfWidth ? -halfWidth + utils.pointerPos.x : utils.pointerPos.x - halfWidth,
+        // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
+        y: halfHeight - utils.pointerPos.y
+    };
 };
 // computed using least squares fit from a few tests
 var cameraZPos = function (aspect) {
-  if (aspect <= 0.9) return -960 * aspect + 1350;else if (aspect <= 1.2) return -430 * aspect + 900;else if (aspect <= 3) return -110 * aspect + 500;else if (aspect <= 4.5) return -40 * aspect + 300;
-  return 100;
+    if (aspect <= 0.9) return -960 * aspect + 1350;else if (aspect <= 1.2) return -430 * aspect + 900;else if (aspect <= 3) return -110 * aspect + 500;else if (aspect <= 4.5) return -40 * aspect + 300;
+    return 100;
 };
 
 var SplashHero = function () {
-  function SplashHero(showStats) {
-    classCallCheck(this, SplashHero);
+    function SplashHero(showStats) {
+        classCallCheck(this, SplashHero);
 
 
-    var self = this;
+        var self = this;
 
-    self.container = document.querySelector('#splash-hero-container');
+        self.container = document.querySelector('#splash-hero-container');
 
-    self.app = new App(document.querySelector('#splash-hero-canvas'));
+        self.app = new App(document.querySelector('#splash-hero-canvas'));
 
-    self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
+        self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
 
-    // TODO: not working in Edge
-    var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-    self.initMaterials();
+        self.initMaterials();
 
-    self.addBackground();
+        self.addBackground();
 
-    self.loadWolf();
+        self.loadWolf();
 
-    self.addControls();
+        self.addControls();
 
-    this.pauseWhenOffscreen();
+        this.pauseWhenOffscreen();
 
-    var mastHeadHeight = document.querySelector('.masthead').clientHeight;
+        var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
-    var updateMaterials = function () {
-      // Pan events on mobile sometimes register as (0,0); ignore these
-      if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
-        var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-        var offsetY = 1 - (utils.pointerPos.y - mastHeadHeight) / self.app.canvas.clientHeight;
+        var updateMaterials = function () {
+            // Pan events on mobile sometimes register as (0,0); ignore these
+            if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
+                var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
+                var offsetY = 1 - (utils.pointerPos.y - mastHeadHeight) / self.app.canvas.clientHeight;
 
-        // make the line well defined when moving the pointer off the top of the canvas
-        offsetY = offsetY > 0.99 ? 0.999 : offsetY;
+                // make the line well defined when moving the pointer off the top of the canvas
+                offsetY = offsetY > 0.99 ? 0.999 : offsetY;
 
-        self.offset.set(offsetX, offsetY);
-        self.smooth.set(1.0, offsetY);
+                self.offset.set(offsetX, offsetY);
+                self.smooth.set(1.0, offsetY);
 
-        var pointer = pointerPosToCanvasCentre(self.app.canvas);
-        self.pointer.set(pointer.x, pointer.y);
-      }
-    };
+                var pointer = pointerPosToCanvasCentre(self.app.canvas);
+                self.pointer.set(pointer.x, pointer.y);
+            }
+        };
 
-    var uTime = 1.0;
+        var uTime = 1.0;
+        var minTime = 0.1;
 
-    var updateAnimation = function () {
-      // if ( uTime >= 1.5 || uTime <= -0.5 ) {
-      //   uTime = 1.0;
-      // }
+        var updateAnimation = function () {
 
-      // set on repeat (for testing)
-      if (uTime <= 0.1) uTime = 1.0;
+            // set on repeat (for testing)
+            // if ( uTime <= minTime ) uTime = 1.0;
 
-      if (uTime >= 0.1 && self.app.delta < 100) {
-        uTime += -1.0 * self.app.delta / 8000;
-      }
+            // Ignore large values of delta (caused by window not be being focused for a while)
+            if (uTime >= minTime && self.app.delta < 100) {
+                uTime += -1.0 * self.app.delta / 8000;
+            }
 
-      self.textMat.uniforms.uTime.value = uTime;
-    };
+            self.textMat.uniforms.uTime.value = 1.0;
+        };
 
-    self.app.onUpdate = function () {
-      updateMaterials();
+        self.app.onUpdate = function () {
+            updateMaterials();
 
-      updateAnimation();
+            updateAnimation();
 
-      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
-    };
+            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+        };
 
-    self.app.onWindowResize = function () {
-      self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
-      mastHeadHeight = document.querySelector('.masthead').clientHeight;
-    };
+        self.app.onWindowResize = function () {
+            self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
+            mastHeadHeight = document.querySelector('.masthead').clientHeight;
+        };
 
-    self.addTestLight();
+        self.addTestLight();
 
-    self.app.play();
-  }
-
-  SplashHero.prototype.addText = function addText() {
-    var self = this;
-
-    threeUtils.fontLoader('assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
-
-      var textGeometry = self.createTextGeometry(font);
-
-      var bufferGeometry = new BufferGeometry(textGeometry);
-
-      self.initBufferAnimation(bufferGeometry, textGeometry);
-
-      var textMesh = new Mesh(bufferGeometry, self.textMat);
-
-      self.app.scene.add(textMesh);
-    });
-  };
-
-  SplashHero.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
-    var self = this;
-
-    var shape = self.wolf[0].geometry;
-
-    var vertices = shape.vertices;
-    var verticesLen = vertices.length;
-
-    var faceCount = geometry.faces.length;
-    var vertexCount = geometry.vertices.length;
-
-    console.log(faceCount, vertexCount);
-
-    threeUtils.setBufferGeometryIndicesFromFaces(bufferGeometry, faceCount, geometry.faces);
-    threeUtils.bufferPositions(bufferGeometry, geometry.vertices);
-
-    var aAnimation = threeUtils.createBufferAttribute(bufferGeometry, 'aAnimation', 2, vertexCount);
-    var aEndPosition = threeUtils.createBufferAttribute(bufferGeometry, 'aEndPosition', 3, vertexCount);
-
-    var i = void 0;
-    var i2 = void 0;
-    var i3 = void 0;
-    var i4 = void 0;
-    var v = void 0;
-
-    var maxDelay = 0.0;
-    var minDuration = 1.0;
-    var maxDuration = 1.0;
-
-    var stretch = 0.001;
-    var lengthFactor = 0.0001;
-
-    var maxLength = geometry.boundingBox.max.length();
-
-    this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
-    this._animationProgress = 0;
-
-    for (i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9, i4 += 12) {
-      var face = geometry.faces[i];
-
-      var centroid = threeUtils.computeCentroid(geometry, face);
-      // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
-
-      // animation
-      var delay = (maxLength - centroid.length()) * lengthFactor;
-      var duration = _Math.randFloat(minDuration, maxDuration);
-
-      for (v = 0; v < 6; v += 2) {
-        aAnimation.array[i2 + v] = delay + stretch * 0.5;
-        aAnimation.array[i2 + v + 1] = duration;
-      }
-
-      // end position
-      // const point = randomPointInSphere( 300 );
-
-      var point = alignPointToVertices(vertices, i);
-
-      // const point = v.set( vertices[ verticesLen % i ] );
-
-      for (v = 0; v < 9; v += 3) {
-        aEndPosition.array[i3 + v] = point.x;
-        aEndPosition.array[i3 + v + 1] = point.y;
-        aEndPosition.array[i3 + v + 2] = point.z;
-      }
+        self.app.play();
     }
-  };
 
-  SplashHero.prototype.createTextGeometry = function createTextGeometry(font) {
-    var textGeometry = new TextGeometry('Black Thread Design', {
-      size: 40,
-      height: 3,
-      font: font,
-      weight: 'normal',
-      style: 'normal',
-      curveSegments: 24,
-      bevelSize: 2,
-      bevelThickness: 2,
-      bevelEnabled: true
-    });
+    SplashHero.prototype.addText = function addText() {
+        var self = this;
 
-    threeUtils.positionTextGeometry(textGeometry, { x: 0.5, y: 0.0, z: 0.0 });
+        threeUtils.fontLoader('assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
 
-    var tesselationLevel = window.innerWidth >= 1300 ? 2 : 1;
+            var textGeometry = SplashHero.createTextGeometry(font);
 
-    threeUtils.tessellateRecursive(textGeometry, 1.0, tesselationLevel);
+            var bufferGeometry = new BufferGeometry(textGeometry);
 
-    threeUtils.explodeModifier(textGeometry);
+            self.initBufferAnimation(bufferGeometry, textGeometry);
 
-    return textGeometry;
-  };
+            var textMesh = new Mesh(bufferGeometry, self.textMat);
 
-  SplashHero.prototype.addBackground = function addBackground() {
-    var geometry = new PlaneBufferGeometry(2, 2, 1);
-    this.bgMesh = new Mesh(geometry, this.backgroundMat);
-    this.app.scene.add(this.bgMesh);
-  };
-
-  SplashHero.prototype.initMaterials = function initMaterials() {
-    var loader = new TextureLoader();
-    var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-    noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
-
-    this.offset = new Vector2(0, 0);
-    this.smooth = new Vector2(1.0, 1.0);
-    this.pointer = new Vector2(100, 100);
-
-    var colA = new Color(0xffffff);
-    var colB = new Color(0x283844);
-
-    var uniforms = {
-      noiseTexture: { value: noiseTexture },
-      offset: { value: this.offset },
-      smooth: { value: this.smooth }
+            self.app.scene.add(textMesh);
+        });
     };
 
-    this.textMat = new ShaderMaterial({
-      uniforms: Object.assign({
-        color1: { value: colB },
-        color2: { value: colA },
-        uTime: { value: 0.0 },
-        pointer: { value: this.pointer }
-      }, uniforms),
-      vertexShader: textVert,
-      fragmentShader: textFrag,
-      side: DoubleSide
-    });
+    SplashHero.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
+        var self = this;
 
-    this.backgroundMat = new RawShaderMaterial({
-      uniforms: Object.assign({
-        color1: { value: colA },
-        color2: { value: colB }
-      }, uniforms),
-      vertexShader: backgroundVert,
-      fragmentShader: backgroundFrag
-    });
-  };
+        var shape = self.wolf[0].geometry;
 
-  // Pause if the canvas is not onscreen
-  // TODO: Make this a part of App
-  // TODO: Currently only works when scrolling down
+        var vertices = shape.vertices;
+        var verticesLen = vertices.length;
+
+        var faceCount = geometry.faces.length;
+        var vertexCount = geometry.vertices.length;
+
+        console.log(faceCount, vertexCount);
+
+        threeUtils.setBufferGeometryIndicesFromFaces(bufferGeometry, faceCount, geometry.faces);
+        threeUtils.bufferPositions(bufferGeometry, geometry.vertices);
+
+        var aAnimation = threeUtils.createBufferAttribute(bufferGeometry, 'aAnimation', 2, vertexCount);
+        var aEndPosition = threeUtils.createBufferAttribute(bufferGeometry, 'aEndPosition', 3, vertexCount);
+
+        var i = void 0;
+        var i2 = void 0;
+        var i3 = void 0;
+        var i4 = void 0;
+        var v = void 0;
+
+        var maxDelay = 1.0;
+        var minDuration = 1.0;
+        var maxDuration = 1.0;
+
+        var stretch = 1.0;
+        var lengthFactor = 0.001;
+
+        var maxLength = geometry.boundingBox.max.length();
+
+        this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
+        this._animationProgress = 0;
+
+        for (i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9) {
+            var face = geometry.faces[i];
+
+            var centroid = threeUtils.computeCentroid(geometry, face);
+            // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
+
+            // animation
+            var delay = (maxLength - centroid.length()) * lengthFactor;
+            var duration = _Math.randFloat(minDuration, maxDuration);
+
+            for (v = 0; v < 6; v += 2) {
+                aAnimation.array[i2 + v] = delay + stretch * 0.5;
+                aAnimation.array[i2 + v + 1] = duration;
+            }
+
+            // end position
+            // const point = randomPointInSphere( 300 );
 
 
-  SplashHero.prototype.pauseWhenOffscreen = function pauseWhenOffscreen() {
-    var _this = this;
+            // const point = vertices[THREE.Math.randInt( 0, verticesLen - 1 )].clone();
 
-    window.addEventListener('scroll', function () {
-      if (!_this.app.isPaused && window.scrollY > _this.app.canvas.offsetTop + _this.app.canvas.clientHeight) {
-        _this.app.pause();
-      } else if (_this.app.isPaused) {
-        _this.app.play();
-      }
-    });
-  };
+            var point = vertices[i % verticesLen].clone();
 
-  SplashHero.prototype.addControls = function addControls() {
-    this.controls = new OrbitControls(this.app.camera, this.app.renderer.domElement);
-  };
+            for (v = 0; v < 9; v += 3) {
+                aEndPosition.array[i3 + v] = point.x;
+                aEndPosition.array[i3 + v + 1] = point.y;
+                aEndPosition.array[i3 + v + 2] = point.z;
+            }
+        }
+    };
 
-  SplashHero.prototype.loadWolf = function loadWolf() {
-    var self = this;
-    threeUtils.ObjectLoader('assets/models/wolf/wolf.json').then(function (scene) {
+    SplashHero.createTextGeometry = function createTextGeometry(font) {
+        var textGeometry = new TextGeometry('Black Thread Design', {
+            size: 40,
+            height: 3,
+            font: font,
+            weight: 'normal',
+            style: 'normal',
+            curveSegments: 24,
+            bevelSize: 2,
+            bevelThickness: 2,
+            bevelEnabled: true
+        });
 
-      var body = scene.children[0].children[1];
-      var hair = scene.children[0].children[2];
+        threeUtils.positionTextGeometry(textGeometry, { x: 0.5, y: 0.0, z: 0.0 });
 
-      self.wolf = [body, hair];
+        var tesselationLevel = window.innerWidth >= 1300 ? 2 : 1;
 
-      self.wolf.forEach(function (mesh) {
-        mesh.rotation.set(0, 0, -Math.PI / 2);
+        threeUtils.tessellateRecursive(textGeometry, 1.0, tesselationLevel);
 
-        mesh.geometry.rotateX(-Math.PI / 2);
-        // mesh.geometry.rotateZ( -Math.PI / 2 );
+        threeUtils.explodeModifier(textGeometry);
 
-        mesh.geometry.scale(500, 500, 500);
+        return textGeometry;
+    };
 
-        mesh.scale.set(1, 1, 1);
+    SplashHero.prototype.addBackground = function addBackground() {
+        var geometry = new PlaneBufferGeometry(2, 2, 1);
+        this.bgMesh = new Mesh(geometry, this.backgroundMat);
+        this.app.scene.add(this.bgMesh);
+    };
 
-        self.app.scene.add(mesh);
-        console.log(mesh);
-      });
+    SplashHero.prototype.initMaterials = function initMaterials() {
+        var loader = new TextureLoader();
+        var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+        noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
 
-      self.addText();
-    });
-  };
+        this.offset = new Vector2(0, 0);
+        this.smooth = new Vector2(1.0, 1.0);
+        this.pointer = new Vector2(100, 100);
 
-  SplashHero.prototype.addTestLight = function addTestLight() {
-    var light = new HemisphereLight(0xffffff, 0x000000, 1);
-    this.app.scene.add(light);
-  };
+        var colA = new Color(0xffffff);
+        var colB = new Color(0x283844);
 
-  return SplashHero;
+        var uniforms = {
+            noiseTexture: { value: noiseTexture },
+            offset: { value: this.offset },
+            smooth: { value: this.smooth }
+        };
+
+        this.textMat = new ShaderMaterial({
+            uniforms: Object.assign({
+                color1: { value: colB },
+                color2: { value: colA },
+                uTime: { value: 0.0 },
+                pointer: { value: this.pointer }
+            }, uniforms),
+            vertexShader: textVert,
+            fragmentShader: textFrag,
+            side: DoubleSide
+        });
+
+        this.backgroundMat = new RawShaderMaterial({
+            uniforms: Object.assign({
+                color1: { value: colA },
+                color2: { value: colB }
+            }, uniforms),
+            vertexShader: backgroundVert,
+            fragmentShader: backgroundFrag
+        });
+    };
+
+    // Pause if the canvas is not onscreen
+    // TODO: Make this a part of App
+    // TODO: Currently only works when scrolling down
+
+
+    SplashHero.prototype.pauseWhenOffscreen = function pauseWhenOffscreen() {
+        var _this = this;
+
+        window.addEventListener('scroll', function () {
+            if (!_this.app.isPaused && window.scrollY > _this.app.canvas.offsetTop + _this.app.canvas.clientHeight) {
+                _this.app.pause();
+            } else if (_this.app.isPaused) {
+                _this.app.play();
+            }
+        });
+    };
+
+    SplashHero.prototype.addControls = function addControls() {
+        this.controls = new OrbitControls(this.app.camera, this.app.renderer.domElement);
+    };
+
+    SplashHero.prototype.loadWolf = function loadWolf() {
+        var self = this;
+        threeUtils.ObjectLoader('assets/models/wolf/wolf.json').then(function (obj) {
+
+            var body = obj.children[0];
+            var hair = obj.children[1];
+            var claws = obj.children[2];
+
+            self.wolf = [body, hair, claws];
+
+            self.wolf.forEach(function (mesh) {
+
+                mesh.geometry.rotateZ(-Math.PI / 2);
+                mesh.geometry.rotateX(-Math.PI / 2);
+
+                mesh.geometry.scale(500, 500, 500);
+
+                mesh.material = new MeshBasicMaterial({ color: 0x000000 });
+
+                self.app.scene.add(mesh);
+            });
+
+            self.addText();
+        });
+    };
+
+    SplashHero.prototype.addTestLight = function addTestLight() {
+        var light = new HemisphereLight(0xffffff, 0x000000, 1);
+        this.app.scene.add(light);
+    };
+
+    return SplashHero;
 }();
 
 function initSplash(showStats) {
