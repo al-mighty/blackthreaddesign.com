@@ -3,7 +3,10 @@ const watch = require( 'rollup-watch' );
 const babel = require( 'rollup-plugin-babel' );
 const nodeResolve = require( 'rollup-plugin-node-resolve' );
 const commonjs = require( 'rollup-plugin-commonjs' );
+
 const glslify = require( 'glslify' );
+
+const fs = require( 'fs' );
 
 const glsl = () => {
   return {
@@ -48,40 +51,54 @@ const defaultPlugins = [
 ];
 
 // config to feed the watcher function
-const config = (entry, dest, plugins ) => {
+const config = ( entry, dest, moduleName, plugins ) => {
   return {
-    entry: entry,
-    dest: dest,
+    entry,
+    dest,
     format: 'iife',
     // sourceMap: true,
-    plugins: plugins
+    moduleName,
+    plugins,
   }
 }
 
-const mainConfig = config( 'assets/js/src/main.js', 'assets/js/main.js', defaultPlugins );
-
-const watcher = watch( rollup, mainConfig );
+// const mainConfig = config( 'assets/js/src/entry/main.js', 'assets/js/main.js', defaultPlugins );
 
 // stderr to stderr to keep `rollup main.js > bundle.js` from breaking
 const stderr = console.error.bind( console );
 
-const eventHandler = (event) => {
-  switch ( event.code ) {
-    case 'STARTING':
-      stderr( 'checking rollup-watch version...' );
-      break;
-    case 'BUILD_START':
-      stderr( 'bundling...' );
-      break;
-    case 'BUILD_END':
-      stderr( `bundled in ${event.duration}ms. Watching for changes...` );
-      break;
-    case 'ERROR':
-      stderr( `error: ${event.error}` );
-      break;
-    default:
-      stderr( `unknown event: ${event}` );
-  }
+const eventHandler = ( file ) => {
+  return ( event ) => {
+    switch ( event.code ) {
+      case 'STARTING':
+        stderr( 'checking rollup-watch version...' );
+        break;
+      case 'BUILD_START':
+        stderr( `bundling ${file}...` );
+        break;
+      case 'BUILD_END':
+        stderr( `bundled ${file} in ${event.duration}ms. Watching for changes...` );
+        break;
+      case 'ERROR':
+        stderr( `error: ${event.error} with ${file}` );
+        break;
+      default:
+        stderr( `unknown event: ${event} from ${file}` );
+    }
+  };
 };
 
-watcher.on( 'event', eventHandler );
+// const watcher = watch( rollup, mainConfig );
+
+// watcher.on( 'event', eventHandler );
+
+// Read all files in a folder
+fs.readdir( 'assets/js/src/entry', ( err, files ) => {
+  files.forEach( ( file ) => {
+    const entryConfig = config( 'assets/js/src/entry/' + file, 'assets/js/build/' + file, file, defaultPlugins );
+    const watcher = watch( rollup, entryConfig );
+    const entryEventHandler = eventHandler( file );
+    watcher.on( 'event', entryEventHandler );
+  } );
+} );
+
