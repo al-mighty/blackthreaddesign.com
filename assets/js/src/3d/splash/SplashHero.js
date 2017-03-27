@@ -38,16 +38,6 @@ const randomPointInSphere = ( radius ) => {
   return v;
 }
 
-// const alignPointToVertices = ( vertices, vertexNum ) => {
-//   const len = vertices.length;
-
-//   vertexNum = vertexNum % len;
-
-//   v.copy( vertices[vertexNum] );
-  
-//   return v;
-// }
-
 const pointerPosToCanvasCentre = ( canvas ) => {
   const halfWidth = canvas.clientWidth / 2;
   const halfHeight = ( canvas.clientHeight / 2) + document.querySelector( '.masthead' ).clientHeight;
@@ -88,10 +78,9 @@ export default class SplashHero {
 
     self.addBackground();
 
-    self.loadWolf();
+    self.addText();
 
-
-    self.addControls();
+    // self.addControls();
 
     this.pauseWhenOffscreen();
 
@@ -116,6 +105,7 @@ export default class SplashHero {
 
     let uTime = 1.0;
     const minTime = 0.1;
+    const animSpeed = 8000;
 
     const updateAnimation = function () {
 
@@ -124,10 +114,10 @@ export default class SplashHero {
 
       // Ignore large values of delta (caused by window not be being focused for a while)
       if ( uTime >= minTime && self.app.delta < 100 ) {
-        uTime += ( -1.0 * self.app.delta / 8000 );
+        uTime += ( -self.app.delta / animSpeed );
       }
 
-      self.textMat.uniforms.uTime.value = 1.0;
+      self.textMat.uniforms.uTime.value = uTime;
     };
 
     self.app.onUpdate = function () {
@@ -144,9 +134,6 @@ export default class SplashHero {
       self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
     };
-
-    self.addTestLight();
-
 
     self.app.play();
 
@@ -174,15 +161,8 @@ export default class SplashHero {
   initBufferAnimation( bufferGeometry, geometry ) {
     const self = this;
 
-    const shape = self.wolf[0].geometry;
-
-    const vertices = shape.vertices;
-    const verticesLen = vertices.length;
-
     const faceCount = geometry.faces.length;
     const vertexCount = geometry.vertices.length;
-
-    console.log( faceCount, vertexCount );
 
     threeUtils.setBufferGeometryIndicesFromFaces( bufferGeometry, faceCount, geometry.faces );
     threeUtils.bufferPositions( bufferGeometry, geometry.vertices );
@@ -196,12 +176,12 @@ export default class SplashHero {
     let i4;
     let v;
 
-    const maxDelay = 1.0;
+    const maxDelay = 0.0;
     const minDuration = 1.0;
-    const maxDuration = 1.0;
+    const maxDuration = 100.0;
 
-    const stretch = 1.0;
-    const lengthFactor = 0.001;
+    const stretch = 0.1;
+    const lengthFactor = 0.0001;
 
     const maxLength = geometry.boundingBox.max.length();
 
@@ -212,7 +192,6 @@ export default class SplashHero {
       const face = geometry.faces[i];
 
       const centroid = threeUtils.computeCentroid( geometry, face );
-      // const centroidN = new THREE.Vector3().copy( centroid ).normalize();
 
       // animation
       const delay = ( maxLength - centroid.length() ) * lengthFactor;
@@ -224,12 +203,7 @@ export default class SplashHero {
       }
 
       // end position
-      // const point = randomPointInSphere( 300 );
-
-
-      // const point = vertices[THREE.Math.randInt( 0, verticesLen - 1 )].clone();
-
-      const point = vertices[i % verticesLen].clone();
+      const point = randomPointInSphere( 300 );
 
       for ( v = 0; v < 9; v += 3 ) {
         aEndPosition.array[i3 + v] = point.x;
@@ -325,37 +299,6 @@ export default class SplashHero {
 
   addControls() {
     this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
-  }
-
-  loadWolf() {
-    const self = this;
-    threeUtils.ObjectLoader( 'assets/models/wolf/wolf.json' )
-    .then( ( obj ) => {
-
-      const body = obj.children[0];
-      const hair = obj.children[1];
-      const claws = obj.children[2];
-
-      self.wolf = [body, hair, claws];
-
-      self.wolf.forEach( ( mesh ) => {
-
-        mesh.geometry.rotateZ( -Math.PI / 2 );
-        mesh.geometry.rotateX( -Math.PI / 2 );
-
-
-        mesh.geometry.scale( 500, 500, 500 );
-
-        mesh.material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-
-        self.app.scene.add( mesh );
-
-      } );
-
-      self.addText();
-
-    } );
-
   }
 
   addTestLight() {
