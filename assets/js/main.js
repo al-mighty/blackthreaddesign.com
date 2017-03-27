@@ -55923,15 +55923,17 @@ var randomPointInSphere = function (radius) {
   return v;
 };
 
+var mastHeadHeight = document.querySelector('.masthead').clientHeight;
+
 var pointerPosToCanvasCentre = function (canvas) {
   var halfWidth = canvas.clientWidth / 2;
-  var halfHeight = canvas.clientHeight / 2 + document.querySelector('.masthead').clientHeight;
+  var halfHeight = canvas.clientHeight / 2 + mastHeadHeight;
   return {
     x: utils.pointerPos.x <= halfWidth ? -halfWidth + utils.pointerPos.x : utils.pointerPos.x - halfWidth,
-    // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
     y: halfHeight - utils.pointerPos.y
   };
 };
+
 // computed using least squares fit from a few tests
 var cameraZPos = function (aspect) {
   if (aspect <= 0.9) return -960 * aspect + 1350;else if (aspect <= 1.2) return -430 * aspect + 900;else if (aspect <= 3) return -110 * aspect + 500;else if (aspect <= 4.5) return -40 * aspect + 300;
@@ -55964,8 +55966,6 @@ var SplashHero = function () {
     // self.addControls();
 
     this.pauseWhenOffscreen();
-
-    var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
     var updateMaterials = function () {
       // Pan events on mobile sometimes register as (0,0); ignore these

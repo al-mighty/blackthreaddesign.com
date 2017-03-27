@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
-import threeUtils from '../threeUtils.js';
-import StatisticsOverlay from '../StatisticsOverlay.js';
-import App from '../App.js';
-import OrbitControls from '../controls/OrbitControls.js';
+import threeUtils from '../App/threeUtils.js';
+import StatisticsOverlay from '../App/StatisticsOverlay.js';
+import App from '../App/App.js';
+import OrbitControls from '../modules/OrbitControls.module.js';
 
 import backgroundVert from '../shaders/splashBackground.vert';
 import backgroundFrag from '../shaders/splashBackground.frag';
@@ -13,7 +13,6 @@ import textFrag from '../shaders/splashText.frag';
 import utils from '../../utilities.js';
 
 const v = new THREE.Vector3();
-
 
 const randomPointInDisk = ( radius ) => {
   const r = THREE.Math.randFloat( 0, 1 );
@@ -38,17 +37,19 @@ const randomPointInSphere = ( radius ) => {
   return v;
 }
 
+let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
 const pointerPosToCanvasCentre = ( canvas ) => {
   const halfWidth = canvas.clientWidth / 2;
-  const halfHeight = ( canvas.clientHeight / 2) + document.querySelector( '.masthead' ).clientHeight;
+  const halfHeight = ( canvas.clientHeight / 2 ) + mastHeadHeight;
   return {
-    x: ( utils.pointerPos.x <= halfWidth ) 
-      ? -halfWidth + utils.pointerPos.x 
+    x: ( utils.pointerPos.x <= halfWidth )
+      ? -halfWidth + utils.pointerPos.x
       : utils.pointerPos.x - halfWidth,
-    // x: ( utils.pointerPos.x / canvas.clientWidth ) * 2 - 1,
     y: halfHeight - utils.pointerPos.y
-  }
-}
+  };
+};
+
 // computed using least squares fit from a few tests
 const cameraZPos = ( aspect ) => {
   if ( aspect <= 0.9 ) return -960 * aspect + 1350;
@@ -83,8 +84,6 @@ export default class SplashHero {
     // self.addControls();
 
     this.pauseWhenOffscreen();
-
-    let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
     const updateMaterials = function () {
         // Pan events on mobile sometimes register as (0,0); ignore these
