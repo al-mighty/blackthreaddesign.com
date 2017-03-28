@@ -11,6 +11,12 @@
     <!--<div id="breakpoint">
       
     </div>-->
+
+    {% if jekyll.environment == "production" %}
+      <script>
+        console.log('production');
+      </script>
+    {% endif %}
     
     {% if page.loadingOverlay %}{% include loading_overlay %}{% endif %}
     {% include browser-upgrade.html %}

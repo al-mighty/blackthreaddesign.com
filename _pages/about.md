@@ -1,7 +1,7 @@
 ---
-layout: single
+layout: canvas-full
 title: About
 permalink: /about/
 ---
 
-Forthcoming...
+Welcome to my homep

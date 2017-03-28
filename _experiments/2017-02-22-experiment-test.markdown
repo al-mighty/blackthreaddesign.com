@@ -2,6 +2,7 @@
 layout: single
 title:  "Experiment Test"
 date:   2017-02-22 13:00:35 +0700
+loadingOverlay: true
 categories: experiments
 comments: true
 excerpt: "testing..."
@@ -34,7 +35,13 @@ image-gallery2:
   - url: /assets/images/test2.png
     image_path: /assets/images/test2.png
     alt: "Test 2"
+js: 
+  - experimentTest
 ---
+
+<div id="test-canvas-container"><canvas id="test-canvas"></canvas></div>
+
+
 
 * This is the first experiment test. It will soon be moved into `_drafts`, and will serve to demonstrate things.
 

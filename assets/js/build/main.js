@@ -11639,6 +11639,7 @@ Greedy.prototype.toggleHiddenLinks = function () {
   this.toggleButton.classList.toggle('links-displayed');
 };
 
+// Initialise menu
 function initGreedyNav () {
   var menu = new Greedy({
     element: '.greedy-nav',
@@ -12267,6 +12268,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -12387,6 +12389,10 @@ function initLoader() {
   }, 3000);
 }
 
+// TODO: refactor as functions to allow these to be run after initLoader
+// import initSplash from '../splash/splashMain.js';
+
+// Set up any globals
 window.Hammer = hammer$1;
 
 // Set up loading overlay
