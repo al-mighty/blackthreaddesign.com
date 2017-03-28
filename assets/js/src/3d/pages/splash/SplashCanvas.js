@@ -99,7 +99,7 @@ export default class SplashCanvas {
   addText() {
     const self = this;
 
-    threeUtils.fontLoader( 'assets/fonts/json/droid_sans_mono_regular.typeface.json' )
+    threeUtils.fontLoader( '/assets/fonts/json/droid_sans_mono_regular.typeface.json' )
     .then( ( font ) => {
 
       const textGeometry = createTextGeometry( font );

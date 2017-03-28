@@ -46223,7 +46223,6 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
-//Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
   var pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts(points) {
@@ -47853,7 +47852,7 @@ var SplashCanvas = function () {
     SplashCanvas.prototype.addText = function addText() {
         var self = this;
 
-        threeUtils.fontLoader('assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+        threeUtils.fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
 
             var textGeometry = createTextGeometry(font);
 
