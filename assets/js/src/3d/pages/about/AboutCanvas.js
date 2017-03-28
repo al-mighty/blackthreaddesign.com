@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
-import PNLTRI from '../../vendor/pnltri/pnltri.js';
-
 import threeUtils from '../../App/threeUtils.js';
+import utils from '../../../utilities.js';
+import './aboutCanvasSetup.js';
+
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
 import OrbitControls from '../../modules/OrbitControls.module.js';
@@ -12,73 +13,11 @@ import backgroundFrag from '../../shaders/splashBackground.frag';
 import textVert from '../../shaders/splashText.vert';
 import textFrag from '../../shaders/splashText.frag';
 
-import utils from '../../../utilities.js'
+import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './aboutCanvasHelpers.js';
 
-// Set up THREE
-THREE.Cache.enabled = true;
-
-//Use PNLTRI for triangualtion
-THREE.ShapeUtils.triangulateShape = ( () => {
-  const pnlTriangulator = new PNLTRI.Triangulator();
-  function removeDupEndPts( points ) {
-    const l = points.length;
-    if ( l > 2 && points[l - 1].equals( points[0] ) ) {
-      points.pop();
-    }
-  }
-  return function triangulateShape( contour, holes ) {
-    removeDupEndPts( contour );
-    holes.forEach( removeDupEndPts );
-    return pnlTriangulator.triangulate_polygon( [contour].concat( holes ) );
-  };
-} )();
-
-const v = new THREE.Vector3();
-
-const randomPointInDisk = ( radius ) => {
-  const r = THREE.Math.randFloat( 0, 1 );
-  const t = THREE.Math.randFloat( 0, Math.PI * 2 );
-
-  v.x = Math.sqrt( r ) * Math.cos( t ) * radius;
-  v.y = Math.sqrt( r ) * Math.sin( t ) * radius;
-
-  return v;
-}
-
-const randomPointInSphere = ( radius ) => {
-  const x = THREE.Math.randFloat( -1, 1 );
-  const y = THREE.Math.randFloat( -1, 1 );
-  const z = THREE.Math.randFloat( -1, 1 );
-  const normalizationFactor = 1 / Math.sqrt( x * x + y * y + z * z );
-
-  v.x = x * normalizationFactor * radius;
-  v.y = y * normalizationFactor * radius;
-  v.z = z * normalizationFactor * radius;
-
-  return v;
-}
 
 let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
-const pointerPosToCanvasCentre = ( canvas ) => {
-  const halfWidth = canvas.clientWidth / 2;
-  const halfHeight = ( canvas.clientHeight / 2 ) + mastHeadHeight;
-  return {
-    x: ( utils.pointerPos.x <= halfWidth )
-      ? -halfWidth + utils.pointerPos.x
-      : utils.pointerPos.x - halfWidth,
-    y: halfHeight - utils.pointerPos.y
-  };
-};
-
-// computed using least squares fit from a few tests
-const cameraZPos = ( aspect ) => {
-  if ( aspect <= 0.9 ) return -960 * aspect + 1350;
-  else if ( aspect <= 1.2 ) return -430 * aspect + 900;
-  else if ( aspect <= 3 ) return -110 * aspect + 500;
-  else if ( aspect <= 4.5 ) return -40 * aspect + 300;
-  return 100;
-}
 
 export default class AboutCanvas {
 
@@ -102,8 +41,6 @@ export default class AboutCanvas {
 
     self.addText();
 
-    // self.addControls();
-
     this.pauseWhenOffscreen();
 
     const updateMaterials = function () {
@@ -118,7 +55,7 @@ export default class AboutCanvas {
         self.offset.set( offsetX, offsetY );
         self.smooth.set( 1.0, offsetY );
 
-        const pointer = pointerPosToCanvasCentre ( self.app.canvas );
+        const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
         self.pointer.set( pointer.x, pointer.y );
       }
     };
@@ -165,7 +102,7 @@ export default class AboutCanvas {
     threeUtils.fontLoader( '/assets/fonts/json/droid_sans_mono_regular.typeface.json' )
     .then( ( font ) => {
 
-      const textGeometry = AboutCanvas.createTextGeometry( font );
+      const textGeometry = createTextGeometry( font );
 
       const bufferGeometry = new THREE.BufferGeometry( textGeometry );
 
@@ -179,8 +116,6 @@ export default class AboutCanvas {
   }
 
   initBufferAnimation( bufferGeometry, geometry ) {
-    const self = this;
-
     const faceCount = geometry.faces.length;
     const vertexCount = geometry.vertices.length;
 
@@ -315,15 +250,6 @@ export default class AboutCanvas {
         this.app.play();
       }
     } );
-  }
-
-  addControls() {
-    this.controls = new OrbitControls( this.app.camera, this.app.renderer.domElement );
-  }
-
-  addTestLight() {
-    const light = new THREE.HemisphereLight( 0xffffff, 0x000000, 1 );
-    this.app.scene.add( light );
   }
 
 }
