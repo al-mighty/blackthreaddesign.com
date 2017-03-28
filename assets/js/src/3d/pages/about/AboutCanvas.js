@@ -88,7 +88,7 @@ export default class AboutCanvas {
 
     self.container = document.querySelector( '.fullpage-canvas-container' );
 
-    self.app = new App( document.querySelector( '#about_canvas' ) );
+    self.app = new App( document.querySelector( '#about-canvas' ) );
 
     self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
 
