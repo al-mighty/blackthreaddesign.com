@@ -171,7 +171,7 @@ gems:
   - jekyll-sitemap
   - jekyll-gist
   - jemoji
-  - jekyll-assets
+  # - jekyll-assets
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -217,11 +217,17 @@ compress_html:
     envs: development
 
 
-assets:
-  autoprefixer:
-    browsers:
-      - "last 3 versions"
-      - "IE > 9"
+# assets:
+#   autoprefixer:
+#     browsers:
+#       - "last 3 versions"
+#       - "IE > 9"
+  
+  # prefix: "/assets"
+
+  # sources:
+  #   - _assets/css
+
 
 collections:
   tutorials:
