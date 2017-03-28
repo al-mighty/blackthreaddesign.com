@@ -1,5 +1,5 @@
 import initSplashLayout from '../pages/splash/splashLayout.js';
-import SplashHero from '../3d/pages/splash/SplashHero.js';
+import SplashHero from '../3d/pages/splash/SplashCanvas.js';
 
 
 function initSplash( showStats ) {

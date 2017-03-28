@@ -1,6 +1,8 @@
 import * as THREE from 'three';
+import utils from '../../utilities.js';
 
-let fontLoader, objectLoader;
+let fontLoader;
+let objectLoader;
 
 const createBufferAttribute = ( bufferGeometry, name, itemSize, count ) => {
   const buffer = new Float32Array( count * itemSize );
@@ -12,6 +14,17 @@ const createBufferAttribute = ( bufferGeometry, name, itemSize, count ) => {
 };
 
 export default {
+  pointerPosToCanvasCentre: ( canvas, offsetY = 0, offsetX = 0 ) => {
+    const halfWidth = canvas.clientWidth / 2 + offsetX;
+    const halfHeight = ( canvas.clientHeight / 2 ) + offsetY;
+    return {
+      x: ( utils.pointerPos.x <= halfWidth )
+        ? -halfWidth + utils.pointerPos.x
+        : utils.pointerPos.x - halfWidth,
+      y: halfHeight - utils.pointerPos.y
+    };
+  },
+
   /**
    * Duplicates vertices so each face becomes separate.
    * copied from  THREE.ExplodeModifier.
