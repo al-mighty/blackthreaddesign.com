@@ -42,3 +42,6 @@ jspm_packages
 
 #Visual Studio
 /.vscode
+
+#jekyll assets
+/.asset-cache
