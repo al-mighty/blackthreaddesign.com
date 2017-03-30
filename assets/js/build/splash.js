@@ -47919,30 +47919,6 @@ var SplashCanvas = function () {
         }
     };
 
-    SplashCanvas.createTextGeometry = function createTextGeometry(font) {
-        var textGeometry = new TextGeometry('Black Thread Design', {
-            size: 40,
-            height: 3,
-            font: font,
-            weight: 'normal',
-            style: 'normal',
-            curveSegments: 24,
-            bevelSize: 2,
-            bevelThickness: 2,
-            bevelEnabled: true
-        });
-
-        threeUtils.positionTextGeometry(textGeometry, { x: 0.5, y: 0.0, z: 0.0 });
-
-        var tesselationLevel = window.innerWidth >= 1300 ? 2 : 1;
-
-        threeUtils.tessellateRecursive(textGeometry, 1.0, tesselationLevel);
-
-        threeUtils.explodeModifier(textGeometry);
-
-        return textGeometry;
-    };
-
     SplashCanvas.prototype.addBackground = function addBackground() {
         var geometry = new PlaneBufferGeometry(2, 2, 1);
         this.bgMesh = new Mesh(geometry, this.backgroundMat);

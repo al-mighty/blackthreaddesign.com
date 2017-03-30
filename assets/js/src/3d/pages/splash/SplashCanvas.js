@@ -8,10 +8,10 @@ import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
 import OrbitControls from '../../modules/OrbitControls.module.js';
 
-import backgroundVert from '../../shaders/splashBackground.vert';
-import backgroundFrag from '../../shaders/splashBackground.frag';
-import textVert from '../../shaders/splashText.vert';
-import textFrag from '../../shaders/splashText.frag';
+import backgroundVert from './shaders/background.vert';
+import backgroundFrag from './shaders/background.frag';
+import textVert from './shaders/text.vert';
+import textFrag from './shaders/text.frag';
 
 import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './splashCanvasHelpers.js';
 
@@ -22,7 +22,7 @@ let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 export default class SplashCanvas {
 
   constructor( showStats ) {
-    
+
     const self = this;
 
     self.container = document.querySelector( '#splash-hero-container' );
@@ -167,30 +167,6 @@ export default class SplashCanvas {
       }
 
     }
-  }
-
-  static createTextGeometry( font ) {
-    const textGeometry = new THREE.TextGeometry( 'Black Thread Design', {
-      size: 40,
-      height: 3,
-      font,
-      weight: 'normal',
-      style: 'normal',
-      curveSegments: 24,
-      bevelSize: 2,
-      bevelThickness: 2,
-      bevelEnabled: true,
-    } );
-
-    threeUtils.positionTextGeometry( textGeometry, { x: 0.5, y: 0.0, z: 0.0 } );
-
-    const tesselationLevel = (window.innerWidth >= 1300 ) ? 2 : 1;
-
-    threeUtils.tessellateRecursive( textGeometry, 1.0, tesselationLevel );
-
-    threeUtils.explodeModifier( textGeometry );
-
-    return textGeometry;
   }
 
   addBackground() {
