@@ -12,9 +12,6 @@
   animation: intro 0.3s both;
   animation-delay: 0.35s;
 
-  @include breakpoint($x-large) {
-    //max-width: $x-large;
-  }
 }
 
 .page {
@@ -38,6 +35,8 @@
 .page__title {
   margin-top: 0;
   line-height: 1;
+
+  text-align: center;
 
   & + .page__meta {
     margin-top: -0.5em;
@@ -127,7 +126,7 @@
 		height: 100%;
 
     a {
-      color: #fff;
+      color: $text-color;
     }
 
     .wrapper {
@@ -143,7 +142,7 @@
     .page__meta,
     .page__lead,
     .btn {
-      color: #fff;
+      color: $text-color;
       text-shadow: 1px 1px 4px rgba(#000, 0.5);
     }
 
