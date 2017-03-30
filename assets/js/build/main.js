@@ -11126,7 +11126,6 @@ define(String.prototype, "padRight", "".padEnd);
 
 interopDefault(index);
 
-// Set up any globals
 window.Hammer = hammer$1;
 
 /* ****************************************
@@ -11639,8 +11638,23 @@ Greedy.prototype.toggleHiddenLinks = function () {
   this.toggleButton.classList.toggle('links-displayed');
 };
 
+var addActiveToCurrentNavLink = function () {
+  var menuItems = Array.prototype.slice.call(document.querySelectorAll('.masthead__menu-item'));
+  menuItems.shift();
+
+  var loc = location.href.split('/')[3];
+
+  menuItems.forEach(function (item) {
+    var href = item.firstChild.href.split('/')[3];
+
+    if (href === loc) item.classList.add('active');
+  });
+};
+
 // Initialise menu
 function initGreedyNav () {
+  addActiveToCurrentNavLink();
+
   var menu = new Greedy({
     element: '.greedy-nav',
     counter: true
@@ -12268,7 +12282,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -12389,10 +12402,6 @@ function initLoader() {
   }, 3000);
 }
 
-// TODO: refactor as functions to allow these to be run after initLoader
-// import initSplash from '../splash/splashMain.js';
-
-// Set up any globals
 window.Hammer = hammer$1;
 
 // Set up loading overlay

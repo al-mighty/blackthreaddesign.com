@@ -44,3 +44,10 @@
     font-weight: 700;
   }
 }
+
+.active {
+  a {
+    color: mix( $masthead-link-color, $masthead-link-color-hover, 50%) !important;
+    border-bottom: 1px solid mix( $masthead-link-color, $masthead-link-color-hover, 50%);
+  }
+}
