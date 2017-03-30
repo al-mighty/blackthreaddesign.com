@@ -168,6 +168,8 @@ gems:
   - jekyll-gist
   - jemoji
   - jekyll-assets
+  - font-awesome-sass
+  - autoprefixer-rails
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -218,6 +220,14 @@ assets:
     browsers:
       - "last 3 versions"
       - "IE > 9"
+  sources:
+  # - _assets/css
+  - _assets/images
+  # - _assets/javascripts
+  # - _assets/stylesheets
+  # - _assets/fonts
+  # - _assets/img
+  - _assets/js
 
 collections:
   tutorials:
