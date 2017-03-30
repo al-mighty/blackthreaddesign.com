@@ -1,5 +1,3 @@
----
----
 /*
    Variables
    ========================================================================== */
@@ -8,17 +6,18 @@
 @import "colors";
 @import "variables";
 
+
 /*
    Vendor
    ========================================================================== */
-
 
 /* Breakpoint - media query mixins */
 @import "vendor/breakpoint/breakpoint";
 @include breakpoint-set("to ems", true);
 
 /* Font Awesome - icon font set */
-@import "vendor/font-awesome/font-awesome";
+@import 'font-awesome-sprockets'; 
+@import 'font-awesome';
 
 /* Avalon lightbox - responsive lightbox */
 @import "vendor/avalonbox";
