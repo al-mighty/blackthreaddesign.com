@@ -154,13 +154,6 @@ kramdown:
   smart_quotes: lsquo,rsquo,ldquo,rdquo
   enable_coderay: false
 
-
-# Sass/SCSS
-# sass:
-#   sass_dir: _sass
-  #style: compressed # http://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
-
-
 # Outputting
 permalink: /:collection/:title.html
 #paginate: 5 # amount of posts to show
@@ -221,23 +214,10 @@ compress_html:
 
 
 assets:
-  # digest: true
-  # autowrite: true
   autoprefixer:
     browsers:
       - "last 3 versions"
       - "IE > 9"
-  
-  assets:
-    # - "fonts/fontawesome-webfont.woff2"
-    # - "bundle.css"
-  
-  # prefix: "/assets"
-
-  sources:
-    # - _assets/css
-    # - _assets/fonts
-
 
 collections:
   tutorials:
