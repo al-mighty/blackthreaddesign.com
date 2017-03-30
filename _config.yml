@@ -156,8 +156,8 @@ kramdown:
 
 
 # Sass/SCSS
-sass:
-  sass_dir: _sass
+# sass:
+#   sass_dir: _sass
   #style: compressed # http://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
 
 
@@ -221,15 +221,22 @@ compress_html:
 
 
 assets:
+  # digest: true
+  # autowrite: true
   autoprefixer:
     browsers:
       - "last 3 versions"
       - "IE > 9"
   
+  assets:
+    # - "fonts/fontawesome-webfont.woff2"
+    # - "bundle.css"
+  
   # prefix: "/assets"
 
-  # sources:
-  #   - _assets/css
+  sources:
+    # - _assets/css
+    # - _assets/fonts
 
 
 collections:
