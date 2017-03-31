@@ -35,8 +35,8 @@ image-gallery2:
   - url: /assets/images/test2.png
     image_path: /assets/images/test2.png
     alt: "Test 2"
-js: 
-  - experimentTest
+#js: 
+#  - experimentTest
 ---
 
 <div id="test-canvas-container"><canvas id="test-canvas"></canvas></div>

@@ -41107,4902 +41107,6 @@ var ImageUtils = {
 
 //
 
-var hammer = createCommonjsModule(function (module) {
-/*! Hammer.JS - v2.0.7 - 2016-04-22
- * http://hammerjs.github.io/
- *
- * Copyright (c) 2016 Jorik Tangelder;
- * Licensed under the MIT license */
-(function(window, document, exportName, undefined) {
-  'use strict';
-
-var VENDOR_PREFIXES = ['', 'webkit', 'Moz', 'MS', 'ms', 'o'];
-var TEST_ELEMENT = document.createElement('div');
-
-var TYPE_FUNCTION = 'function';
-
-var round = Math.round;
-var abs = Math.abs;
-var now = Date.now;
-
-/**
- * set a timeout with a given scope
- * @param {Function} fn
- * @param {Number} timeout
- * @param {Object} context
- * @returns {number}
- */
-function setTimeoutContext(fn, timeout, context) {
-    return setTimeout(bindFn(fn, context), timeout);
-}
-
-/**
- * if the argument is an array, we want to execute the fn on each entry
- * if it aint an array we don't want to do a thing.
- * this is used by all the methods that accept a single and array argument.
- * @param {*|Array} arg
- * @param {String} fn
- * @param {Object} [context]
- * @returns {Boolean}
- */
-function invokeArrayArg(arg, fn, context) {
-    if (Array.isArray(arg)) {
-        each(arg, context[fn], context);
-        return true;
-    }
-    return false;
-}
-
-/**
- * walk objects and arrays
- * @param {Object} obj
- * @param {Function} iterator
- * @param {Object} context
- */
-function each(obj, iterator, context) {
-    var i;
-
-    if (!obj) {
-        return;
-    }
-
-    if (obj.forEach) {
-        obj.forEach(iterator, context);
-    } else if (obj.length !== undefined) {
-        i = 0;
-        while (i < obj.length) {
-            iterator.call(context, obj[i], i, obj);
-            i++;
-        }
-    } else {
-        for (i in obj) {
-            obj.hasOwnProperty(i) && iterator.call(context, obj[i], i, obj);
-        }
-    }
-}
-
-/**
- * wrap a method with a deprecation warning and stack trace
- * @param {Function} method
- * @param {String} name
- * @param {String} message
- * @returns {Function} A new function wrapping the supplied method.
- */
-function deprecate(method, name, message) {
-    var deprecationMessage = 'DEPRECATED METHOD: ' + name + '\n' + message + ' AT \n';
-    return function() {
-        var e = new Error('get-stack-trace');
-        var stack = e && e.stack ? e.stack.replace(/^[^\(]+?[\n$]/gm, '')
-            .replace(/^\s+at\s+/gm, '')
-            .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@') : 'Unknown Stack Trace';
-
-        var log = window.console && (window.console.warn || window.console.log);
-        if (log) {
-            log.call(window.console, deprecationMessage, stack);
-        }
-        return method.apply(this, arguments);
-    };
-}
-
-/**
- * extend object.
- * means that properties in dest will be overwritten by the ones in src.
- * @param {Object} target
- * @param {...Object} objects_to_assign
- * @returns {Object} target
- */
-var assign;
-if (typeof Object.assign !== 'function') {
-    assign = function assign(target) {
-        if (target === undefined || target === null) {
-            throw new TypeError('Cannot convert undefined or null to object');
-        }
-
-        var output = Object(target);
-        for (var index = 1; index < arguments.length; index++) {
-            var source = arguments[index];
-            if (source !== undefined && source !== null) {
-                for (var nextKey in source) {
-                    if (source.hasOwnProperty(nextKey)) {
-                        output[nextKey] = source[nextKey];
-                    }
-                }
-            }
-        }
-        return output;
-    };
-} else {
-    assign = Object.assign;
-}
-
-/**
- * extend object.
- * means that properties in dest will be overwritten by the ones in src.
- * @param {Object} dest
- * @param {Object} src
- * @param {Boolean} [merge=false]
- * @returns {Object} dest
- */
-var extend = deprecate(function extend(dest, src, merge) {
-    var keys = Object.keys(src);
-    var i = 0;
-    while (i < keys.length) {
-        if (!merge || (merge && dest[keys[i]] === undefined)) {
-            dest[keys[i]] = src[keys[i]];
-        }
-        i++;
-    }
-    return dest;
-}, 'extend', 'Use `assign`.');
-
-/**
- * merge the values from src in the dest.
- * means that properties that exist in dest will not be overwritten by src
- * @param {Object} dest
- * @param {Object} src
- * @returns {Object} dest
- */
-var merge = deprecate(function merge(dest, src) {
-    return extend(dest, src, true);
-}, 'merge', 'Use `assign`.');
-
-/**
- * simple class inheritance
- * @param {Function} child
- * @param {Function} base
- * @param {Object} [properties]
- */
-function inherit(child, base, properties) {
-    var baseP = base.prototype,
-        childP;
-
-    childP = child.prototype = Object.create(baseP);
-    childP.constructor = child;
-    childP._super = baseP;
-
-    if (properties) {
-        assign(childP, properties);
-    }
-}
-
-/**
- * simple function bind
- * @param {Function} fn
- * @param {Object} context
- * @returns {Function}
- */
-function bindFn(fn, context) {
-    return function boundFn() {
-        return fn.apply(context, arguments);
-    };
-}
-
-/**
- * let a boolean value also be a function that must return a boolean
- * this first item in args will be used as the context
- * @param {Boolean|Function} val
- * @param {Array} [args]
- * @returns {Boolean}
- */
-function boolOrFn(val, args) {
-    if (typeof val == TYPE_FUNCTION) {
-        return val.apply(args ? args[0] || undefined : undefined, args);
-    }
-    return val;
-}
-
-/**
- * use the val2 when val1 is undefined
- * @param {*} val1
- * @param {*} val2
- * @returns {*}
- */
-function ifUndefined(val1, val2) {
-    return (val1 === undefined) ? val2 : val1;
-}
-
-/**
- * addEventListener with multiple events at once
- * @param {EventTarget} target
- * @param {String} types
- * @param {Function} handler
- */
-function addEventListeners(target, types, handler) {
-    each(splitStr(types), function(type) {
-        target.addEventListener(type, handler, false);
-    });
-}
-
-/**
- * removeEventListener with multiple events at once
- * @param {EventTarget} target
- * @param {String} types
- * @param {Function} handler
- */
-function removeEventListeners(target, types, handler) {
-    each(splitStr(types), function(type) {
-        target.removeEventListener(type, handler, false);
-    });
-}
-
-/**
- * find if a node is in the given parent
- * @method hasParent
- * @param {HTMLElement} node
- * @param {HTMLElement} parent
- * @return {Boolean} found
- */
-function hasParent(node, parent) {
-    while (node) {
-        if (node == parent) {
-            return true;
-        }
-        node = node.parentNode;
-    }
-    return false;
-}
-
-/**
- * small indexOf wrapper
- * @param {String} str
- * @param {String} find
- * @returns {Boolean} found
- */
-function inStr(str, find) {
-    return str.indexOf(find) > -1;
-}
-
-/**
- * split string on whitespace
- * @param {String} str
- * @returns {Array} words
- */
-function splitStr(str) {
-    return str.trim().split(/\s+/g);
-}
-
-/**
- * find if a array contains the object using indexOf or a simple polyFill
- * @param {Array} src
- * @param {String} find
- * @param {String} [findByKey]
- * @return {Boolean|Number} false when not found, or the index
- */
-function inArray(src, find, findByKey) {
-    if (src.indexOf && !findByKey) {
-        return src.indexOf(find);
-    } else {
-        var i = 0;
-        while (i < src.length) {
-            if ((findByKey && src[i][findByKey] == find) || (!findByKey && src[i] === find)) {
-                return i;
-            }
-            i++;
-        }
-        return -1;
-    }
-}
-
-/**
- * convert array-like objects to real arrays
- * @param {Object} obj
- * @returns {Array}
- */
-function toArray(obj) {
-    return Array.prototype.slice.call(obj, 0);
-}
-
-/**
- * unique array with objects based on a key (like 'id') or just by the array's value
- * @param {Array} src [{id:1},{id:2},{id:1}]
- * @param {String} [key]
- * @param {Boolean} [sort=False]
- * @returns {Array} [{id:1},{id:2}]
- */
-function uniqueArray(src, key, sort) {
-    var results = [];
-    var values = [];
-    var i = 0;
-
-    while (i < src.length) {
-        var val = key ? src[i][key] : src[i];
-        if (inArray(values, val) < 0) {
-            results.push(src[i]);
-        }
-        values[i] = val;
-        i++;
-    }
-
-    if (sort) {
-        if (!key) {
-            results = results.sort();
-        } else {
-            results = results.sort(function sortUniqueArray(a, b) {
-                return a[key] > b[key];
-            });
-        }
-    }
-
-    return results;
-}
-
-/**
- * get the prefixed property
- * @param {Object} obj
- * @param {String} property
- * @returns {String|Undefined} prefixed
- */
-function prefixed(obj, property) {
-    var prefix, prop;
-    var camelProp = property[0].toUpperCase() + property.slice(1);
-
-    var i = 0;
-    while (i < VENDOR_PREFIXES.length) {
-        prefix = VENDOR_PREFIXES[i];
-        prop = (prefix) ? prefix + camelProp : property;
-
-        if (prop in obj) {
-            return prop;
-        }
-        i++;
-    }
-    return undefined;
-}
-
-/**
- * get a unique id
- * @returns {number} uniqueId
- */
-var _uniqueId = 1;
-function uniqueId() {
-    return _uniqueId++;
-}
-
-/**
- * get the window object of an element
- * @param {HTMLElement} element
- * @returns {DocumentView|Window}
- */
-function getWindowForElement(element) {
-    var doc = element.ownerDocument || element;
-    return (doc.defaultView || doc.parentWindow || window);
-}
-
-var MOBILE_REGEX = /mobile|tablet|ip(ad|hone|od)|android/i;
-
-var SUPPORT_TOUCH = ('ontouchstart' in window);
-var SUPPORT_POINTER_EVENTS = prefixed(window, 'PointerEvent') !== undefined;
-var SUPPORT_ONLY_TOUCH = SUPPORT_TOUCH && MOBILE_REGEX.test(navigator.userAgent);
-
-var INPUT_TYPE_TOUCH = 'touch';
-var INPUT_TYPE_PEN = 'pen';
-var INPUT_TYPE_MOUSE = 'mouse';
-var INPUT_TYPE_KINECT = 'kinect';
-
-var COMPUTE_INTERVAL = 25;
-
-var INPUT_START = 1;
-var INPUT_MOVE = 2;
-var INPUT_END = 4;
-var INPUT_CANCEL = 8;
-
-var DIRECTION_NONE = 1;
-var DIRECTION_LEFT = 2;
-var DIRECTION_RIGHT = 4;
-var DIRECTION_UP = 8;
-var DIRECTION_DOWN = 16;
-
-var DIRECTION_HORIZONTAL = DIRECTION_LEFT | DIRECTION_RIGHT;
-var DIRECTION_VERTICAL = DIRECTION_UP | DIRECTION_DOWN;
-var DIRECTION_ALL = DIRECTION_HORIZONTAL | DIRECTION_VERTICAL;
-
-var PROPS_XY = ['x', 'y'];
-var PROPS_CLIENT_XY = ['clientX', 'clientY'];
-
-/**
- * create new input type manager
- * @param {Manager} manager
- * @param {Function} callback
- * @returns {Input}
- * @constructor
- */
-function Input(manager, callback) {
-    var self = this;
-    this.manager = manager;
-    this.callback = callback;
-    this.element = manager.element;
-    this.target = manager.options.inputTarget;
-
-    // smaller wrapper around the handler, for the scope and the enabled state of the manager,
-    // so when disabled the input events are completely bypassed.
-    this.domHandler = function(ev) {
-        if (boolOrFn(manager.options.enable, [manager])) {
-            self.handler(ev);
-        }
-    };
-
-    this.init();
-
-}
-
-Input.prototype = {
-    /**
-     * should handle the inputEvent data and trigger the callback
-     * @virtual
-     */
-    handler: function() { },
-
-    /**
-     * bind the events
-     */
-    init: function() {
-        this.evEl && addEventListeners(this.element, this.evEl, this.domHandler);
-        this.evTarget && addEventListeners(this.target, this.evTarget, this.domHandler);
-        this.evWin && addEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
-    },
-
-    /**
-     * unbind the events
-     */
-    destroy: function() {
-        this.evEl && removeEventListeners(this.element, this.evEl, this.domHandler);
-        this.evTarget && removeEventListeners(this.target, this.evTarget, this.domHandler);
-        this.evWin && removeEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
-    }
-};
-
-/**
- * create new input type manager
- * called by the Manager constructor
- * @param {Hammer} manager
- * @returns {Input}
- */
-function createInputInstance(manager) {
-    var Type;
-    var inputClass = manager.options.inputClass;
-
-    if (inputClass) {
-        Type = inputClass;
-    } else if (SUPPORT_POINTER_EVENTS) {
-        Type = PointerEventInput;
-    } else if (SUPPORT_ONLY_TOUCH) {
-        Type = TouchInput;
-    } else if (!SUPPORT_TOUCH) {
-        Type = MouseInput;
-    } else {
-        Type = TouchMouseInput;
-    }
-    return new (Type)(manager, inputHandler);
-}
-
-/**
- * handle input events
- * @param {Manager} manager
- * @param {String} eventType
- * @param {Object} input
- */
-function inputHandler(manager, eventType, input) {
-    var pointersLen = input.pointers.length;
-    var changedPointersLen = input.changedPointers.length;
-    var isFirst = (eventType & INPUT_START && (pointersLen - changedPointersLen === 0));
-    var isFinal = (eventType & (INPUT_END | INPUT_CANCEL) && (pointersLen - changedPointersLen === 0));
-
-    input.isFirst = !!isFirst;
-    input.isFinal = !!isFinal;
-
-    if (isFirst) {
-        manager.session = {};
-    }
-
-    // source event is the normalized value of the domEvents
-    // like 'touchstart, mouseup, pointerdown'
-    input.eventType = eventType;
-
-    // compute scale, rotation etc
-    computeInputData(manager, input);
-
-    // emit secret event
-    manager.emit('hammer.input', input);
-
-    manager.recognize(input);
-    manager.session.prevInput = input;
-}
-
-/**
- * extend the data with some usable properties like scale, rotate, velocity etc
- * @param {Object} manager
- * @param {Object} input
- */
-function computeInputData(manager, input) {
-    var session = manager.session;
-    var pointers = input.pointers;
-    var pointersLength = pointers.length;
-
-    // store the first input to calculate the distance and direction
-    if (!session.firstInput) {
-        session.firstInput = simpleCloneInputData(input);
-    }
-
-    // to compute scale and rotation we need to store the multiple touches
-    if (pointersLength > 1 && !session.firstMultiple) {
-        session.firstMultiple = simpleCloneInputData(input);
-    } else if (pointersLength === 1) {
-        session.firstMultiple = false;
-    }
-
-    var firstInput = session.firstInput;
-    var firstMultiple = session.firstMultiple;
-    var offsetCenter = firstMultiple ? firstMultiple.center : firstInput.center;
-
-    var center = input.center = getCenter(pointers);
-    input.timeStamp = now();
-    input.deltaTime = input.timeStamp - firstInput.timeStamp;
-
-    input.angle = getAngle(offsetCenter, center);
-    input.distance = getDistance(offsetCenter, center);
-
-    computeDeltaXY(session, input);
-    input.offsetDirection = getDirection(input.deltaX, input.deltaY);
-
-    var overallVelocity = getVelocity(input.deltaTime, input.deltaX, input.deltaY);
-    input.overallVelocityX = overallVelocity.x;
-    input.overallVelocityY = overallVelocity.y;
-    input.overallVelocity = (abs(overallVelocity.x) > abs(overallVelocity.y)) ? overallVelocity.x : overallVelocity.y;
-
-    input.scale = firstMultiple ? getScale(firstMultiple.pointers, pointers) : 1;
-    input.rotation = firstMultiple ? getRotation(firstMultiple.pointers, pointers) : 0;
-
-    input.maxPointers = !session.prevInput ? input.pointers.length : ((input.pointers.length >
-        session.prevInput.maxPointers) ? input.pointers.length : session.prevInput.maxPointers);
-
-    computeIntervalInputData(session, input);
-
-    // find the correct target
-    var target = manager.element;
-    if (hasParent(input.srcEvent.target, target)) {
-        target = input.srcEvent.target;
-    }
-    input.target = target;
-}
-
-function computeDeltaXY(session, input) {
-    var center = input.center;
-    var offset = session.offsetDelta || {};
-    var prevDelta = session.prevDelta || {};
-    var prevInput = session.prevInput || {};
-
-    if (input.eventType === INPUT_START || prevInput.eventType === INPUT_END) {
-        prevDelta = session.prevDelta = {
-            x: prevInput.deltaX || 0,
-            y: prevInput.deltaY || 0
-        };
-
-        offset = session.offsetDelta = {
-            x: center.x,
-            y: center.y
-        };
-    }
-
-    input.deltaX = prevDelta.x + (center.x - offset.x);
-    input.deltaY = prevDelta.y + (center.y - offset.y);
-}
-
-/**
- * velocity is calculated every x ms
- * @param {Object} session
- * @param {Object} input
- */
-function computeIntervalInputData(session, input) {
-    var last = session.lastInterval || input,
-        deltaTime = input.timeStamp - last.timeStamp,
-        velocity, velocityX, velocityY, direction;
-
-    if (input.eventType != INPUT_CANCEL && (deltaTime > COMPUTE_INTERVAL || last.velocity === undefined)) {
-        var deltaX = input.deltaX - last.deltaX;
-        var deltaY = input.deltaY - last.deltaY;
-
-        var v = getVelocity(deltaTime, deltaX, deltaY);
-        velocityX = v.x;
-        velocityY = v.y;
-        velocity = (abs(v.x) > abs(v.y)) ? v.x : v.y;
-        direction = getDirection(deltaX, deltaY);
-
-        session.lastInterval = input;
-    } else {
-        // use latest velocity info if it doesn't overtake a minimum period
-        velocity = last.velocity;
-        velocityX = last.velocityX;
-        velocityY = last.velocityY;
-        direction = last.direction;
-    }
-
-    input.velocity = velocity;
-    input.velocityX = velocityX;
-    input.velocityY = velocityY;
-    input.direction = direction;
-}
-
-/**
- * create a simple clone from the input used for storage of firstInput and firstMultiple
- * @param {Object} input
- * @returns {Object} clonedInputData
- */
-function simpleCloneInputData(input) {
-    // make a simple copy of the pointers because we will get a reference if we don't
-    // we only need clientXY for the calculations
-    var pointers = [];
-    var i = 0;
-    while (i < input.pointers.length) {
-        pointers[i] = {
-            clientX: round(input.pointers[i].clientX),
-            clientY: round(input.pointers[i].clientY)
-        };
-        i++;
-    }
-
-    return {
-        timeStamp: now(),
-        pointers: pointers,
-        center: getCenter(pointers),
-        deltaX: input.deltaX,
-        deltaY: input.deltaY
-    };
-}
-
-/**
- * get the center of all the pointers
- * @param {Array} pointers
- * @return {Object} center contains `x` and `y` properties
- */
-function getCenter(pointers) {
-    var pointersLength = pointers.length;
-
-    // no need to loop when only one touch
-    if (pointersLength === 1) {
-        return {
-            x: round(pointers[0].clientX),
-            y: round(pointers[0].clientY)
-        };
-    }
-
-    var x = 0, y = 0, i = 0;
-    while (i < pointersLength) {
-        x += pointers[i].clientX;
-        y += pointers[i].clientY;
-        i++;
-    }
-
-    return {
-        x: round(x / pointersLength),
-        y: round(y / pointersLength)
-    };
-}
-
-/**
- * calculate the velocity between two points. unit is in px per ms.
- * @param {Number} deltaTime
- * @param {Number} x
- * @param {Number} y
- * @return {Object} velocity `x` and `y`
- */
-function getVelocity(deltaTime, x, y) {
-    return {
-        x: x / deltaTime || 0,
-        y: y / deltaTime || 0
-    };
-}
-
-/**
- * get the direction between two points
- * @param {Number} x
- * @param {Number} y
- * @return {Number} direction
- */
-function getDirection(x, y) {
-    if (x === y) {
-        return DIRECTION_NONE;
-    }
-
-    if (abs(x) >= abs(y)) {
-        return x < 0 ? DIRECTION_LEFT : DIRECTION_RIGHT;
-    }
-    return y < 0 ? DIRECTION_UP : DIRECTION_DOWN;
-}
-
-/**
- * calculate the absolute distance between two points
- * @param {Object} p1 {x, y}
- * @param {Object} p2 {x, y}
- * @param {Array} [props] containing x and y keys
- * @return {Number} distance
- */
-function getDistance(p1, p2, props) {
-    if (!props) {
-        props = PROPS_XY;
-    }
-    var x = p2[props[0]] - p1[props[0]],
-        y = p2[props[1]] - p1[props[1]];
-
-    return Math.sqrt((x * x) + (y * y));
-}
-
-/**
- * calculate the angle between two coordinates
- * @param {Object} p1
- * @param {Object} p2
- * @param {Array} [props] containing x and y keys
- * @return {Number} angle
- */
-function getAngle(p1, p2, props) {
-    if (!props) {
-        props = PROPS_XY;
-    }
-    var x = p2[props[0]] - p1[props[0]],
-        y = p2[props[1]] - p1[props[1]];
-    return Math.atan2(y, x) * 180 / Math.PI;
-}
-
-/**
- * calculate the rotation degrees between two pointersets
- * @param {Array} start array of pointers
- * @param {Array} end array of pointers
- * @return {Number} rotation
- */
-function getRotation(start, end) {
-    return getAngle(end[1], end[0], PROPS_CLIENT_XY) + getAngle(start[1], start[0], PROPS_CLIENT_XY);
-}
-
-/**
- * calculate the scale factor between two pointersets
- * no scale is 1, and goes down to 0 when pinched together, and bigger when pinched out
- * @param {Array} start array of pointers
- * @param {Array} end array of pointers
- * @return {Number} scale
- */
-function getScale(start, end) {
-    return getDistance(end[0], end[1], PROPS_CLIENT_XY) / getDistance(start[0], start[1], PROPS_CLIENT_XY);
-}
-
-var MOUSE_INPUT_MAP = {
-    mousedown: INPUT_START,
-    mousemove: INPUT_MOVE,
-    mouseup: INPUT_END
-};
-
-var MOUSE_ELEMENT_EVENTS = 'mousedown';
-var MOUSE_WINDOW_EVENTS = 'mousemove mouseup';
-
-/**
- * Mouse events input
- * @constructor
- * @extends Input
- */
-function MouseInput() {
-    this.evEl = MOUSE_ELEMENT_EVENTS;
-    this.evWin = MOUSE_WINDOW_EVENTS;
-
-    this.pressed = false; // mousedown state
-
-    Input.apply(this, arguments);
-}
-
-inherit(MouseInput, Input, {
-    /**
-     * handle mouse events
-     * @param {Object} ev
-     */
-    handler: function MEhandler(ev) {
-        var eventType = MOUSE_INPUT_MAP[ev.type];
-
-        // on start we want to have the left mouse button down
-        if (eventType & INPUT_START && ev.button === 0) {
-            this.pressed = true;
-        }
-
-        if (eventType & INPUT_MOVE && ev.which !== 1) {
-            eventType = INPUT_END;
-        }
-
-        // mouse must be down
-        if (!this.pressed) {
-            return;
-        }
-
-        if (eventType & INPUT_END) {
-            this.pressed = false;
-        }
-
-        this.callback(this.manager, eventType, {
-            pointers: [ev],
-            changedPointers: [ev],
-            pointerType: INPUT_TYPE_MOUSE,
-            srcEvent: ev
-        });
-    }
-});
-
-var POINTER_INPUT_MAP = {
-    pointerdown: INPUT_START,
-    pointermove: INPUT_MOVE,
-    pointerup: INPUT_END,
-    pointercancel: INPUT_CANCEL,
-    pointerout: INPUT_CANCEL
-};
-
-// in IE10 the pointer types is defined as an enum
-var IE10_POINTER_TYPE_ENUM = {
-    2: INPUT_TYPE_TOUCH,
-    3: INPUT_TYPE_PEN,
-    4: INPUT_TYPE_MOUSE,
-    5: INPUT_TYPE_KINECT // see https://twitter.com/jacobrossi/status/480596438489890816
-};
-
-var POINTER_ELEMENT_EVENTS = 'pointerdown';
-var POINTER_WINDOW_EVENTS = 'pointermove pointerup pointercancel';
-
-// IE10 has prefixed support, and case-sensitive
-if (window.MSPointerEvent && !window.PointerEvent) {
-    POINTER_ELEMENT_EVENTS = 'MSPointerDown';
-    POINTER_WINDOW_EVENTS = 'MSPointerMove MSPointerUp MSPointerCancel';
-}
-
-/**
- * Pointer events input
- * @constructor
- * @extends Input
- */
-function PointerEventInput() {
-    this.evEl = POINTER_ELEMENT_EVENTS;
-    this.evWin = POINTER_WINDOW_EVENTS;
-
-    Input.apply(this, arguments);
-
-    this.store = (this.manager.session.pointerEvents = []);
-}
-
-inherit(PointerEventInput, Input, {
-    /**
-     * handle mouse events
-     * @param {Object} ev
-     */
-    handler: function PEhandler(ev) {
-        var store = this.store;
-        var removePointer = false;
-
-        var eventTypeNormalized = ev.type.toLowerCase().replace('ms', '');
-        var eventType = POINTER_INPUT_MAP[eventTypeNormalized];
-        var pointerType = IE10_POINTER_TYPE_ENUM[ev.pointerType] || ev.pointerType;
-
-        var isTouch = (pointerType == INPUT_TYPE_TOUCH);
-
-        // get index of the event in the store
-        var storeIndex = inArray(store, ev.pointerId, 'pointerId');
-
-        // start and mouse must be down
-        if (eventType & INPUT_START && (ev.button === 0 || isTouch)) {
-            if (storeIndex < 0) {
-                store.push(ev);
-                storeIndex = store.length - 1;
-            }
-        } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
-            removePointer = true;
-        }
-
-        // it not found, so the pointer hasn't been down (so it's probably a hover)
-        if (storeIndex < 0) {
-            return;
-        }
-
-        // update the event in the store
-        store[storeIndex] = ev;
-
-        this.callback(this.manager, eventType, {
-            pointers: store,
-            changedPointers: [ev],
-            pointerType: pointerType,
-            srcEvent: ev
-        });
-
-        if (removePointer) {
-            // remove from the store
-            store.splice(storeIndex, 1);
-        }
-    }
-});
-
-var SINGLE_TOUCH_INPUT_MAP = {
-    touchstart: INPUT_START,
-    touchmove: INPUT_MOVE,
-    touchend: INPUT_END,
-    touchcancel: INPUT_CANCEL
-};
-
-var SINGLE_TOUCH_TARGET_EVENTS = 'touchstart';
-var SINGLE_TOUCH_WINDOW_EVENTS = 'touchstart touchmove touchend touchcancel';
-
-/**
- * Touch events input
- * @constructor
- * @extends Input
- */
-function SingleTouchInput() {
-    this.evTarget = SINGLE_TOUCH_TARGET_EVENTS;
-    this.evWin = SINGLE_TOUCH_WINDOW_EVENTS;
-    this.started = false;
-
-    Input.apply(this, arguments);
-}
-
-inherit(SingleTouchInput, Input, {
-    handler: function TEhandler(ev) {
-        var type = SINGLE_TOUCH_INPUT_MAP[ev.type];
-
-        // should we handle the touch events?
-        if (type === INPUT_START) {
-            this.started = true;
-        }
-
-        if (!this.started) {
-            return;
-        }
-
-        var touches = normalizeSingleTouches.call(this, ev, type);
-
-        // when done, reset the started state
-        if (type & (INPUT_END | INPUT_CANCEL) && touches[0].length - touches[1].length === 0) {
-            this.started = false;
-        }
-
-        this.callback(this.manager, type, {
-            pointers: touches[0],
-            changedPointers: touches[1],
-            pointerType: INPUT_TYPE_TOUCH,
-            srcEvent: ev
-        });
-    }
-});
-
-/**
- * @this {TouchInput}
- * @param {Object} ev
- * @param {Number} type flag
- * @returns {undefined|Array} [all, changed]
- */
-function normalizeSingleTouches(ev, type) {
-    var all = toArray(ev.touches);
-    var changed = toArray(ev.changedTouches);
-
-    if (type & (INPUT_END | INPUT_CANCEL)) {
-        all = uniqueArray(all.concat(changed), 'identifier', true);
-    }
-
-    return [all, changed];
-}
-
-var TOUCH_INPUT_MAP = {
-    touchstart: INPUT_START,
-    touchmove: INPUT_MOVE,
-    touchend: INPUT_END,
-    touchcancel: INPUT_CANCEL
-};
-
-var TOUCH_TARGET_EVENTS = 'touchstart touchmove touchend touchcancel';
-
-/**
- * Multi-user touch events input
- * @constructor
- * @extends Input
- */
-function TouchInput() {
-    this.evTarget = TOUCH_TARGET_EVENTS;
-    this.targetIds = {};
-
-    Input.apply(this, arguments);
-}
-
-inherit(TouchInput, Input, {
-    handler: function MTEhandler(ev) {
-        var type = TOUCH_INPUT_MAP[ev.type];
-        var touches = getTouches.call(this, ev, type);
-        if (!touches) {
-            return;
-        }
-
-        this.callback(this.manager, type, {
-            pointers: touches[0],
-            changedPointers: touches[1],
-            pointerType: INPUT_TYPE_TOUCH,
-            srcEvent: ev
-        });
-    }
-});
-
-/**
- * @this {TouchInput}
- * @param {Object} ev
- * @param {Number} type flag
- * @returns {undefined|Array} [all, changed]
- */
-function getTouches(ev, type) {
-    var allTouches = toArray(ev.touches);
-    var targetIds = this.targetIds;
-
-    // when there is only one touch, the process can be simplified
-    if (type & (INPUT_START | INPUT_MOVE) && allTouches.length === 1) {
-        targetIds[allTouches[0].identifier] = true;
-        return [allTouches, allTouches];
-    }
-
-    var i,
-        targetTouches,
-        changedTouches = toArray(ev.changedTouches),
-        changedTargetTouches = [],
-        target = this.target;
-
-    // get target touches from touches
-    targetTouches = allTouches.filter(function(touch) {
-        return hasParent(touch.target, target);
-    });
-
-    // collect touches
-    if (type === INPUT_START) {
-        i = 0;
-        while (i < targetTouches.length) {
-            targetIds[targetTouches[i].identifier] = true;
-            i++;
-        }
-    }
-
-    // filter changed touches to only contain touches that exist in the collected target ids
-    i = 0;
-    while (i < changedTouches.length) {
-        if (targetIds[changedTouches[i].identifier]) {
-            changedTargetTouches.push(changedTouches[i]);
-        }
-
-        // cleanup removed touches
-        if (type & (INPUT_END | INPUT_CANCEL)) {
-            delete targetIds[changedTouches[i].identifier];
-        }
-        i++;
-    }
-
-    if (!changedTargetTouches.length) {
-        return;
-    }
-
-    return [
-        // merge targetTouches with changedTargetTouches so it contains ALL touches, including 'end' and 'cancel'
-        uniqueArray(targetTouches.concat(changedTargetTouches), 'identifier', true),
-        changedTargetTouches
-    ];
-}
-
-/**
- * Combined touch and mouse input
- *
- * Touch has a higher priority then mouse, and while touching no mouse events are allowed.
- * This because touch devices also emit mouse events while doing a touch.
- *
- * @constructor
- * @extends Input
- */
-
-var DEDUP_TIMEOUT = 2500;
-var DEDUP_DISTANCE = 25;
-
-function TouchMouseInput() {
-    Input.apply(this, arguments);
-
-    var handler = bindFn(this.handler, this);
-    this.touch = new TouchInput(this.manager, handler);
-    this.mouse = new MouseInput(this.manager, handler);
-
-    this.primaryTouch = null;
-    this.lastTouches = [];
-}
-
-inherit(TouchMouseInput, Input, {
-    /**
-     * handle mouse and touch events
-     * @param {Hammer} manager
-     * @param {String} inputEvent
-     * @param {Object} inputData
-     */
-    handler: function TMEhandler(manager, inputEvent, inputData) {
-        var isTouch = (inputData.pointerType == INPUT_TYPE_TOUCH),
-            isMouse = (inputData.pointerType == INPUT_TYPE_MOUSE);
-
-        if (isMouse && inputData.sourceCapabilities && inputData.sourceCapabilities.firesTouchEvents) {
-            return;
-        }
-
-        // when we're in a touch event, record touches to  de-dupe synthetic mouse event
-        if (isTouch) {
-            recordTouches.call(this, inputEvent, inputData);
-        } else if (isMouse && isSyntheticEvent.call(this, inputData)) {
-            return;
-        }
-
-        this.callback(manager, inputEvent, inputData);
-    },
-
-    /**
-     * remove the event listeners
-     */
-    destroy: function destroy() {
-        this.touch.destroy();
-        this.mouse.destroy();
-    }
-});
-
-function recordTouches(eventType, eventData) {
-    if (eventType & INPUT_START) {
-        this.primaryTouch = eventData.changedPointers[0].identifier;
-        setLastTouch.call(this, eventData);
-    } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
-        setLastTouch.call(this, eventData);
-    }
-}
-
-function setLastTouch(eventData) {
-    var touch = eventData.changedPointers[0];
-
-    if (touch.identifier === this.primaryTouch) {
-        var lastTouch = {x: touch.clientX, y: touch.clientY};
-        this.lastTouches.push(lastTouch);
-        var lts = this.lastTouches;
-        var removeLastTouch = function() {
-            var i = lts.indexOf(lastTouch);
-            if (i > -1) {
-                lts.splice(i, 1);
-            }
-        };
-        setTimeout(removeLastTouch, DEDUP_TIMEOUT);
-    }
-}
-
-function isSyntheticEvent(eventData) {
-    var x = eventData.srcEvent.clientX, y = eventData.srcEvent.clientY;
-    for (var i = 0; i < this.lastTouches.length; i++) {
-        var t = this.lastTouches[i];
-        var dx = Math.abs(x - t.x), dy = Math.abs(y - t.y);
-        if (dx <= DEDUP_DISTANCE && dy <= DEDUP_DISTANCE) {
-            return true;
-        }
-    }
-    return false;
-}
-
-var PREFIXED_TOUCH_ACTION = prefixed(TEST_ELEMENT.style, 'touchAction');
-var NATIVE_TOUCH_ACTION = PREFIXED_TOUCH_ACTION !== undefined;
-
-// magical touchAction value
-var TOUCH_ACTION_COMPUTE = 'compute';
-var TOUCH_ACTION_AUTO = 'auto';
-var TOUCH_ACTION_MANIPULATION = 'manipulation'; // not implemented
-var TOUCH_ACTION_NONE = 'none';
-var TOUCH_ACTION_PAN_X = 'pan-x';
-var TOUCH_ACTION_PAN_Y = 'pan-y';
-var TOUCH_ACTION_MAP = getTouchActionProps();
-
-/**
- * Touch Action
- * sets the touchAction property or uses the js alternative
- * @param {Manager} manager
- * @param {String} value
- * @constructor
- */
-function TouchAction(manager, value) {
-    this.manager = manager;
-    this.set(value);
-}
-
-TouchAction.prototype = {
-    /**
-     * set the touchAction value on the element or enable the polyfill
-     * @param {String} value
-     */
-    set: function(value) {
-        // find out the touch-action by the event handlers
-        if (value == TOUCH_ACTION_COMPUTE) {
-            value = this.compute();
-        }
-
-        if (NATIVE_TOUCH_ACTION && this.manager.element.style && TOUCH_ACTION_MAP[value]) {
-            this.manager.element.style[PREFIXED_TOUCH_ACTION] = value;
-        }
-        this.actions = value.toLowerCase().trim();
-    },
-
-    /**
-     * just re-set the touchAction value
-     */
-    update: function() {
-        this.set(this.manager.options.touchAction);
-    },
-
-    /**
-     * compute the value for the touchAction property based on the recognizer's settings
-     * @returns {String} value
-     */
-    compute: function() {
-        var actions = [];
-        each(this.manager.recognizers, function(recognizer) {
-            if (boolOrFn(recognizer.options.enable, [recognizer])) {
-                actions = actions.concat(recognizer.getTouchAction());
-            }
-        });
-        return cleanTouchActions(actions.join(' '));
-    },
-
-    /**
-     * this method is called on each input cycle and provides the preventing of the browser behavior
-     * @param {Object} input
-     */
-    preventDefaults: function(input) {
-        var srcEvent = input.srcEvent;
-        var direction = input.offsetDirection;
-
-        // if the touch action did prevented once this session
-        if (this.manager.session.prevented) {
-            srcEvent.preventDefault();
-            return;
-        }
-
-        var actions = this.actions;
-        var hasNone = inStr(actions, TOUCH_ACTION_NONE) && !TOUCH_ACTION_MAP[TOUCH_ACTION_NONE];
-        var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_Y];
-        var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_X];
-
-        if (hasNone) {
-            //do not prevent defaults if this is a tap gesture
-
-            var isTapPointer = input.pointers.length === 1;
-            var isTapMovement = input.distance < 2;
-            var isTapTouchTime = input.deltaTime < 250;
-
-            if (isTapPointer && isTapMovement && isTapTouchTime) {
-                return;
-            }
-        }
-
-        if (hasPanX && hasPanY) {
-            // `pan-x pan-y` means browser handles all scrolling/panning, do not prevent
-            return;
-        }
-
-        if (hasNone ||
-            (hasPanY && direction & DIRECTION_HORIZONTAL) ||
-            (hasPanX && direction & DIRECTION_VERTICAL)) {
-            return this.preventSrc(srcEvent);
-        }
-    },
-
-    /**
-     * call preventDefault to prevent the browser's default behavior (scrolling in most cases)
-     * @param {Object} srcEvent
-     */
-    preventSrc: function(srcEvent) {
-        this.manager.session.prevented = true;
-        srcEvent.preventDefault();
-    }
-};
-
-/**
- * when the touchActions are collected they are not a valid value, so we need to clean things up. *
- * @param {String} actions
- * @returns {*}
- */
-function cleanTouchActions(actions) {
-    // none
-    if (inStr(actions, TOUCH_ACTION_NONE)) {
-        return TOUCH_ACTION_NONE;
-    }
-
-    var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X);
-    var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y);
-
-    // if both pan-x and pan-y are set (different recognizers
-    // for different directions, e.g. horizontal pan but vertical swipe?)
-    // we need none (as otherwise with pan-x pan-y combined none of these
-    // recognizers will work, since the browser would handle all panning
-    if (hasPanX && hasPanY) {
-        return TOUCH_ACTION_NONE;
-    }
-
-    // pan-x OR pan-y
-    if (hasPanX || hasPanY) {
-        return hasPanX ? TOUCH_ACTION_PAN_X : TOUCH_ACTION_PAN_Y;
-    }
-
-    // manipulation
-    if (inStr(actions, TOUCH_ACTION_MANIPULATION)) {
-        return TOUCH_ACTION_MANIPULATION;
-    }
-
-    return TOUCH_ACTION_AUTO;
-}
-
-function getTouchActionProps() {
-    if (!NATIVE_TOUCH_ACTION) {
-        return false;
-    }
-    var touchMap = {};
-    var cssSupports = window.CSS && window.CSS.supports;
-    ['auto', 'manipulation', 'pan-y', 'pan-x', 'pan-x pan-y', 'none'].forEach(function(val) {
-
-        // If css.supports is not supported but there is native touch-action assume it supports
-        // all values. This is the case for IE 10 and 11.
-        touchMap[val] = cssSupports ? window.CSS.supports('touch-action', val) : true;
-    });
-    return touchMap;
-}
-
-/**
- * Recognizer flow explained; *
- * All recognizers have the initial state of POSSIBLE when a input session starts.
- * The definition of a input session is from the first input until the last input, with all it's movement in it. *
- * Example session for mouse-input: mousedown -> mousemove -> mouseup
- *
- * On each recognizing cycle (see Manager.recognize) the .recognize() method is executed
- * which determines with state it should be.
- *
- * If the recognizer has the state FAILED, CANCELLED or RECOGNIZED (equals ENDED), it is reset to
- * POSSIBLE to give it another change on the next cycle.
- *
- *               Possible
- *                  |
- *            +-----+---------------+
- *            |                     |
- *      +-----+-----+               |
- *      |           |               |
- *   Failed      Cancelled          |
- *                          +-------+------+
- *                          |              |
- *                      Recognized       Began
- *                                         |
- *                                      Changed
- *                                         |
- *                                  Ended/Recognized
- */
-var STATE_POSSIBLE = 1;
-var STATE_BEGAN = 2;
-var STATE_CHANGED = 4;
-var STATE_ENDED = 8;
-var STATE_RECOGNIZED = STATE_ENDED;
-var STATE_CANCELLED = 16;
-var STATE_FAILED = 32;
-
-/**
- * Recognizer
- * Every recognizer needs to extend from this class.
- * @constructor
- * @param {Object} options
- */
-function Recognizer(options) {
-    this.options = assign({}, this.defaults, options || {});
-
-    this.id = uniqueId();
-
-    this.manager = null;
-
-    // default is enable true
-    this.options.enable = ifUndefined(this.options.enable, true);
-
-    this.state = STATE_POSSIBLE;
-
-    this.simultaneous = {};
-    this.requireFail = [];
-}
-
-Recognizer.prototype = {
-    /**
-     * @virtual
-     * @type {Object}
-     */
-    defaults: {},
-
-    /**
-     * set options
-     * @param {Object} options
-     * @return {Recognizer}
-     */
-    set: function(options) {
-        assign(this.options, options);
-
-        // also update the touchAction, in case something changed about the directions/enabled state
-        this.manager && this.manager.touchAction.update();
-        return this;
-    },
-
-    /**
-     * recognize simultaneous with an other recognizer.
-     * @param {Recognizer} otherRecognizer
-     * @returns {Recognizer} this
-     */
-    recognizeWith: function(otherRecognizer) {
-        if (invokeArrayArg(otherRecognizer, 'recognizeWith', this)) {
-            return this;
-        }
-
-        var simultaneous = this.simultaneous;
-        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
-        if (!simultaneous[otherRecognizer.id]) {
-            simultaneous[otherRecognizer.id] = otherRecognizer;
-            otherRecognizer.recognizeWith(this);
-        }
-        return this;
-    },
-
-    /**
-     * drop the simultaneous link. it doesnt remove the link on the other recognizer.
-     * @param {Recognizer} otherRecognizer
-     * @returns {Recognizer} this
-     */
-    dropRecognizeWith: function(otherRecognizer) {
-        if (invokeArrayArg(otherRecognizer, 'dropRecognizeWith', this)) {
-            return this;
-        }
-
-        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
-        delete this.simultaneous[otherRecognizer.id];
-        return this;
-    },
-
-    /**
-     * recognizer can only run when an other is failing
-     * @param {Recognizer} otherRecognizer
-     * @returns {Recognizer} this
-     */
-    requireFailure: function(otherRecognizer) {
-        if (invokeArrayArg(otherRecognizer, 'requireFailure', this)) {
-            return this;
-        }
-
-        var requireFail = this.requireFail;
-        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
-        if (inArray(requireFail, otherRecognizer) === -1) {
-            requireFail.push(otherRecognizer);
-            otherRecognizer.requireFailure(this);
-        }
-        return this;
-    },
-
-    /**
-     * drop the requireFailure link. it does not remove the link on the other recognizer.
-     * @param {Recognizer} otherRecognizer
-     * @returns {Recognizer} this
-     */
-    dropRequireFailure: function(otherRecognizer) {
-        if (invokeArrayArg(otherRecognizer, 'dropRequireFailure', this)) {
-            return this;
-        }
-
-        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
-        var index = inArray(this.requireFail, otherRecognizer);
-        if (index > -1) {
-            this.requireFail.splice(index, 1);
-        }
-        return this;
-    },
-
-    /**
-     * has require failures boolean
-     * @returns {boolean}
-     */
-    hasRequireFailures: function() {
-        return this.requireFail.length > 0;
-    },
-
-    /**
-     * if the recognizer can recognize simultaneous with an other recognizer
-     * @param {Recognizer} otherRecognizer
-     * @returns {Boolean}
-     */
-    canRecognizeWith: function(otherRecognizer) {
-        return !!this.simultaneous[otherRecognizer.id];
-    },
-
-    /**
-     * You should use `tryEmit` instead of `emit` directly to check
-     * that all the needed recognizers has failed before emitting.
-     * @param {Object} input
-     */
-    emit: function(input) {
-        var self = this;
-        var state = this.state;
-
-        function emit(event) {
-            self.manager.emit(event, input);
-        }
-
-        // 'panstart' and 'panmove'
-        if (state < STATE_ENDED) {
-            emit(self.options.event + stateStr(state));
-        }
-
-        emit(self.options.event); // simple 'eventName' events
-
-        if (input.additionalEvent) { // additional event(panleft, panright, pinchin, pinchout...)
-            emit(input.additionalEvent);
-        }
-
-        // panend and pancancel
-        if (state >= STATE_ENDED) {
-            emit(self.options.event + stateStr(state));
-        }
-    },
-
-    /**
-     * Check that all the require failure recognizers has failed,
-     * if true, it emits a gesture event,
-     * otherwise, setup the state to FAILED.
-     * @param {Object} input
-     */
-    tryEmit: function(input) {
-        if (this.canEmit()) {
-            return this.emit(input);
-        }
-        // it's failing anyway
-        this.state = STATE_FAILED;
-    },
-
-    /**
-     * can we emit?
-     * @returns {boolean}
-     */
-    canEmit: function() {
-        var i = 0;
-        while (i < this.requireFail.length) {
-            if (!(this.requireFail[i].state & (STATE_FAILED | STATE_POSSIBLE))) {
-                return false;
-            }
-            i++;
-        }
-        return true;
-    },
-
-    /**
-     * update the recognizer
-     * @param {Object} inputData
-     */
-    recognize: function(inputData) {
-        // make a new copy of the inputData
-        // so we can change the inputData without messing up the other recognizers
-        var inputDataClone = assign({}, inputData);
-
-        // is is enabled and allow recognizing?
-        if (!boolOrFn(this.options.enable, [this, inputDataClone])) {
-            this.reset();
-            this.state = STATE_FAILED;
-            return;
-        }
-
-        // reset when we've reached the end
-        if (this.state & (STATE_RECOGNIZED | STATE_CANCELLED | STATE_FAILED)) {
-            this.state = STATE_POSSIBLE;
-        }
-
-        this.state = this.process(inputDataClone);
-
-        // the recognizer has recognized a gesture
-        // so trigger an event
-        if (this.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED | STATE_CANCELLED)) {
-            this.tryEmit(inputDataClone);
-        }
-    },
-
-    /**
-     * return the state of the recognizer
-     * the actual recognizing happens in this method
-     * @virtual
-     * @param {Object} inputData
-     * @returns {Const} STATE
-     */
-    process: function(inputData) { }, // jshint ignore:line
-
-    /**
-     * return the preferred touch-action
-     * @virtual
-     * @returns {Array}
-     */
-    getTouchAction: function() { },
-
-    /**
-     * called when the gesture isn't allowed to recognize
-     * like when another is being recognized or it is disabled
-     * @virtual
-     */
-    reset: function() { }
-};
-
-/**
- * get a usable string, used as event postfix
- * @param {Const} state
- * @returns {String} state
- */
-function stateStr(state) {
-    if (state & STATE_CANCELLED) {
-        return 'cancel';
-    } else if (state & STATE_ENDED) {
-        return 'end';
-    } else if (state & STATE_CHANGED) {
-        return 'move';
-    } else if (state & STATE_BEGAN) {
-        return 'start';
-    }
-    return '';
-}
-
-/**
- * direction cons to string
- * @param {Const} direction
- * @returns {String}
- */
-function directionStr(direction) {
-    if (direction == DIRECTION_DOWN) {
-        return 'down';
-    } else if (direction == DIRECTION_UP) {
-        return 'up';
-    } else if (direction == DIRECTION_LEFT) {
-        return 'left';
-    } else if (direction == DIRECTION_RIGHT) {
-        return 'right';
-    }
-    return '';
-}
-
-/**
- * get a recognizer by name if it is bound to a manager
- * @param {Recognizer|String} otherRecognizer
- * @param {Recognizer} recognizer
- * @returns {Recognizer}
- */
-function getRecognizerByNameIfManager(otherRecognizer, recognizer) {
-    var manager = recognizer.manager;
-    if (manager) {
-        return manager.get(otherRecognizer);
-    }
-    return otherRecognizer;
-}
-
-/**
- * This recognizer is just used as a base for the simple attribute recognizers.
- * @constructor
- * @extends Recognizer
- */
-function AttrRecognizer() {
-    Recognizer.apply(this, arguments);
-}
-
-inherit(AttrRecognizer, Recognizer, {
-    /**
-     * @namespace
-     * @memberof AttrRecognizer
-     */
-    defaults: {
-        /**
-         * @type {Number}
-         * @default 1
-         */
-        pointers: 1
-    },
-
-    /**
-     * Used to check if it the recognizer receives valid input, like input.distance > 10.
-     * @memberof AttrRecognizer
-     * @param {Object} input
-     * @returns {Boolean} recognized
-     */
-    attrTest: function(input) {
-        var optionPointers = this.options.pointers;
-        return optionPointers === 0 || input.pointers.length === optionPointers;
-    },
-
-    /**
-     * Process the input and return the state for the recognizer
-     * @memberof AttrRecognizer
-     * @param {Object} input
-     * @returns {*} State
-     */
-    process: function(input) {
-        var state = this.state;
-        var eventType = input.eventType;
-
-        var isRecognized = state & (STATE_BEGAN | STATE_CHANGED);
-        var isValid = this.attrTest(input);
-
-        // on cancel input and we've recognized before, return STATE_CANCELLED
-        if (isRecognized && (eventType & INPUT_CANCEL || !isValid)) {
-            return state | STATE_CANCELLED;
-        } else if (isRecognized || isValid) {
-            if (eventType & INPUT_END) {
-                return state | STATE_ENDED;
-            } else if (!(state & STATE_BEGAN)) {
-                return STATE_BEGAN;
-            }
-            return state | STATE_CHANGED;
-        }
-        return STATE_FAILED;
-    }
-});
-
-/**
- * Pan
- * Recognized when the pointer is down and moved in the allowed direction.
- * @constructor
- * @extends AttrRecognizer
- */
-function PanRecognizer() {
-    AttrRecognizer.apply(this, arguments);
-
-    this.pX = null;
-    this.pY = null;
-}
-
-inherit(PanRecognizer, AttrRecognizer, {
-    /**
-     * @namespace
-     * @memberof PanRecognizer
-     */
-    defaults: {
-        event: 'pan',
-        threshold: 10,
-        pointers: 1,
-        direction: DIRECTION_ALL
-    },
-
-    getTouchAction: function() {
-        var direction = this.options.direction;
-        var actions = [];
-        if (direction & DIRECTION_HORIZONTAL) {
-            actions.push(TOUCH_ACTION_PAN_Y);
-        }
-        if (direction & DIRECTION_VERTICAL) {
-            actions.push(TOUCH_ACTION_PAN_X);
-        }
-        return actions;
-    },
-
-    directionTest: function(input) {
-        var options = this.options;
-        var hasMoved = true;
-        var distance = input.distance;
-        var direction = input.direction;
-        var x = input.deltaX;
-        var y = input.deltaY;
-
-        // lock to axis?
-        if (!(direction & options.direction)) {
-            if (options.direction & DIRECTION_HORIZONTAL) {
-                direction = (x === 0) ? DIRECTION_NONE : (x < 0) ? DIRECTION_LEFT : DIRECTION_RIGHT;
-                hasMoved = x != this.pX;
-                distance = Math.abs(input.deltaX);
-            } else {
-                direction = (y === 0) ? DIRECTION_NONE : (y < 0) ? DIRECTION_UP : DIRECTION_DOWN;
-                hasMoved = y != this.pY;
-                distance = Math.abs(input.deltaY);
-            }
-        }
-        input.direction = direction;
-        return hasMoved && distance > options.threshold && direction & options.direction;
-    },
-
-    attrTest: function(input) {
-        return AttrRecognizer.prototype.attrTest.call(this, input) &&
-            (this.state & STATE_BEGAN || (!(this.state & STATE_BEGAN) && this.directionTest(input)));
-    },
-
-    emit: function(input) {
-
-        this.pX = input.deltaX;
-        this.pY = input.deltaY;
-
-        var direction = directionStr(input.direction);
-
-        if (direction) {
-            input.additionalEvent = this.options.event + direction;
-        }
-        this._super.emit.call(this, input);
-    }
-});
-
-/**
- * Pinch
- * Recognized when two or more pointers are moving toward (zoom-in) or away from each other (zoom-out).
- * @constructor
- * @extends AttrRecognizer
- */
-function PinchRecognizer() {
-    AttrRecognizer.apply(this, arguments);
-}
-
-inherit(PinchRecognizer, AttrRecognizer, {
-    /**
-     * @namespace
-     * @memberof PinchRecognizer
-     */
-    defaults: {
-        event: 'pinch',
-        threshold: 0,
-        pointers: 2
-    },
-
-    getTouchAction: function() {
-        return [TOUCH_ACTION_NONE];
-    },
-
-    attrTest: function(input) {
-        return this._super.attrTest.call(this, input) &&
-            (Math.abs(input.scale - 1) > this.options.threshold || this.state & STATE_BEGAN);
-    },
-
-    emit: function(input) {
-        if (input.scale !== 1) {
-            var inOut = input.scale < 1 ? 'in' : 'out';
-            input.additionalEvent = this.options.event + inOut;
-        }
-        this._super.emit.call(this, input);
-    }
-});
-
-/**
- * Press
- * Recognized when the pointer is down for x ms without any movement.
- * @constructor
- * @extends Recognizer
- */
-function PressRecognizer() {
-    Recognizer.apply(this, arguments);
-
-    this._timer = null;
-    this._input = null;
-}
-
-inherit(PressRecognizer, Recognizer, {
-    /**
-     * @namespace
-     * @memberof PressRecognizer
-     */
-    defaults: {
-        event: 'press',
-        pointers: 1,
-        time: 251, // minimal time of the pointer to be pressed
-        threshold: 9 // a minimal movement is ok, but keep it low
-    },
-
-    getTouchAction: function() {
-        return [TOUCH_ACTION_AUTO];
-    },
-
-    process: function(input) {
-        var options = this.options;
-        var validPointers = input.pointers.length === options.pointers;
-        var validMovement = input.distance < options.threshold;
-        var validTime = input.deltaTime > options.time;
-
-        this._input = input;
-
-        // we only allow little movement
-        // and we've reached an end event, so a tap is possible
-        if (!validMovement || !validPointers || (input.eventType & (INPUT_END | INPUT_CANCEL) && !validTime)) {
-            this.reset();
-        } else if (input.eventType & INPUT_START) {
-            this.reset();
-            this._timer = setTimeoutContext(function() {
-                this.state = STATE_RECOGNIZED;
-                this.tryEmit();
-            }, options.time, this);
-        } else if (input.eventType & INPUT_END) {
-            return STATE_RECOGNIZED;
-        }
-        return STATE_FAILED;
-    },
-
-    reset: function() {
-        clearTimeout(this._timer);
-    },
-
-    emit: function(input) {
-        if (this.state !== STATE_RECOGNIZED) {
-            return;
-        }
-
-        if (input && (input.eventType & INPUT_END)) {
-            this.manager.emit(this.options.event + 'up', input);
-        } else {
-            this._input.timeStamp = now();
-            this.manager.emit(this.options.event, this._input);
-        }
-    }
-});
-
-/**
- * Rotate
- * Recognized when two or more pointer are moving in a circular motion.
- * @constructor
- * @extends AttrRecognizer
- */
-function RotateRecognizer() {
-    AttrRecognizer.apply(this, arguments);
-}
-
-inherit(RotateRecognizer, AttrRecognizer, {
-    /**
-     * @namespace
-     * @memberof RotateRecognizer
-     */
-    defaults: {
-        event: 'rotate',
-        threshold: 0,
-        pointers: 2
-    },
-
-    getTouchAction: function() {
-        return [TOUCH_ACTION_NONE];
-    },
-
-    attrTest: function(input) {
-        return this._super.attrTest.call(this, input) &&
-            (Math.abs(input.rotation) > this.options.threshold || this.state & STATE_BEGAN);
-    }
-});
-
-/**
- * Swipe
- * Recognized when the pointer is moving fast (velocity), with enough distance in the allowed direction.
- * @constructor
- * @extends AttrRecognizer
- */
-function SwipeRecognizer() {
-    AttrRecognizer.apply(this, arguments);
-}
-
-inherit(SwipeRecognizer, AttrRecognizer, {
-    /**
-     * @namespace
-     * @memberof SwipeRecognizer
-     */
-    defaults: {
-        event: 'swipe',
-        threshold: 10,
-        velocity: 0.3,
-        direction: DIRECTION_HORIZONTAL | DIRECTION_VERTICAL,
-        pointers: 1
-    },
-
-    getTouchAction: function() {
-        return PanRecognizer.prototype.getTouchAction.call(this);
-    },
-
-    attrTest: function(input) {
-        var direction = this.options.direction;
-        var velocity;
-
-        if (direction & (DIRECTION_HORIZONTAL | DIRECTION_VERTICAL)) {
-            velocity = input.overallVelocity;
-        } else if (direction & DIRECTION_HORIZONTAL) {
-            velocity = input.overallVelocityX;
-        } else if (direction & DIRECTION_VERTICAL) {
-            velocity = input.overallVelocityY;
-        }
-
-        return this._super.attrTest.call(this, input) &&
-            direction & input.offsetDirection &&
-            input.distance > this.options.threshold &&
-            input.maxPointers == this.options.pointers &&
-            abs(velocity) > this.options.velocity && input.eventType & INPUT_END;
-    },
-
-    emit: function(input) {
-        var direction = directionStr(input.offsetDirection);
-        if (direction) {
-            this.manager.emit(this.options.event + direction, input);
-        }
-
-        this.manager.emit(this.options.event, input);
-    }
-});
-
-/**
- * A tap is ecognized when the pointer is doing a small tap/click. Multiple taps are recognized if they occur
- * between the given interval and position. The delay option can be used to recognize multi-taps without firing
- * a single tap.
- *
- * The eventData from the emitted event contains the property `tapCount`, which contains the amount of
- * multi-taps being recognized.
- * @constructor
- * @extends Recognizer
- */
-function TapRecognizer() {
-    Recognizer.apply(this, arguments);
-
-    // previous time and center,
-    // used for tap counting
-    this.pTime = false;
-    this.pCenter = false;
-
-    this._timer = null;
-    this._input = null;
-    this.count = 0;
-}
-
-inherit(TapRecognizer, Recognizer, {
-    /**
-     * @namespace
-     * @memberof PinchRecognizer
-     */
-    defaults: {
-        event: 'tap',
-        pointers: 1,
-        taps: 1,
-        interval: 300, // max time between the multi-tap taps
-        time: 250, // max time of the pointer to be down (like finger on the screen)
-        threshold: 9, // a minimal movement is ok, but keep it low
-        posThreshold: 10 // a multi-tap can be a bit off the initial position
-    },
-
-    getTouchAction: function() {
-        return [TOUCH_ACTION_MANIPULATION];
-    },
-
-    process: function(input) {
-        var options = this.options;
-
-        var validPointers = input.pointers.length === options.pointers;
-        var validMovement = input.distance < options.threshold;
-        var validTouchTime = input.deltaTime < options.time;
-
-        this.reset();
-
-        if ((input.eventType & INPUT_START) && (this.count === 0)) {
-            return this.failTimeout();
-        }
-
-        // we only allow little movement
-        // and we've reached an end event, so a tap is possible
-        if (validMovement && validTouchTime && validPointers) {
-            if (input.eventType != INPUT_END) {
-                return this.failTimeout();
-            }
-
-            var validInterval = this.pTime ? (input.timeStamp - this.pTime < options.interval) : true;
-            var validMultiTap = !this.pCenter || getDistance(this.pCenter, input.center) < options.posThreshold;
-
-            this.pTime = input.timeStamp;
-            this.pCenter = input.center;
-
-            if (!validMultiTap || !validInterval) {
-                this.count = 1;
-            } else {
-                this.count += 1;
-            }
-
-            this._input = input;
-
-            // if tap count matches we have recognized it,
-            // else it has began recognizing...
-            var tapCount = this.count % options.taps;
-            if (tapCount === 0) {
-                // no failing requirements, immediately trigger the tap event
-                // or wait as long as the multitap interval to trigger
-                if (!this.hasRequireFailures()) {
-                    return STATE_RECOGNIZED;
-                } else {
-                    this._timer = setTimeoutContext(function() {
-                        this.state = STATE_RECOGNIZED;
-                        this.tryEmit();
-                    }, options.interval, this);
-                    return STATE_BEGAN;
-                }
-            }
-        }
-        return STATE_FAILED;
-    },
-
-    failTimeout: function() {
-        this._timer = setTimeoutContext(function() {
-            this.state = STATE_FAILED;
-        }, this.options.interval, this);
-        return STATE_FAILED;
-    },
-
-    reset: function() {
-        clearTimeout(this._timer);
-    },
-
-    emit: function() {
-        if (this.state == STATE_RECOGNIZED) {
-            this._input.tapCount = this.count;
-            this.manager.emit(this.options.event, this._input);
-        }
-    }
-});
-
-/**
- * Simple way to create a manager with a default set of recognizers.
- * @param {HTMLElement} element
- * @param {Object} [options]
- * @constructor
- */
-function Hammer(element, options) {
-    options = options || {};
-    options.recognizers = ifUndefined(options.recognizers, Hammer.defaults.preset);
-    return new Manager(element, options);
-}
-
-/**
- * @const {string}
- */
-Hammer.VERSION = '2.0.7';
-
-/**
- * default settings
- * @namespace
- */
-Hammer.defaults = {
-    /**
-     * set if DOM events are being triggered.
-     * But this is slower and unused by simple implementations, so disabled by default.
-     * @type {Boolean}
-     * @default false
-     */
-    domEvents: false,
-
-    /**
-     * The value for the touchAction property/fallback.
-     * When set to `compute` it will magically set the correct value based on the added recognizers.
-     * @type {String}
-     * @default compute
-     */
-    touchAction: TOUCH_ACTION_COMPUTE,
-
-    /**
-     * @type {Boolean}
-     * @default true
-     */
-    enable: true,
-
-    /**
-     * EXPERIMENTAL FEATURE -- can be removed/changed
-     * Change the parent input target element.
-     * If Null, then it is being set the to main element.
-     * @type {Null|EventTarget}
-     * @default null
-     */
-    inputTarget: null,
-
-    /**
-     * force an input class
-     * @type {Null|Function}
-     * @default null
-     */
-    inputClass: null,
-
-    /**
-     * Default recognizer setup when calling `Hammer()`
-     * When creating a new Manager these will be skipped.
-     * @type {Array}
-     */
-    preset: [
-        // RecognizerClass, options, [recognizeWith, ...], [requireFailure, ...]
-        [RotateRecognizer, {enable: false}],
-        [PinchRecognizer, {enable: false}, ['rotate']],
-        [SwipeRecognizer, {direction: DIRECTION_HORIZONTAL}],
-        [PanRecognizer, {direction: DIRECTION_HORIZONTAL}, ['swipe']],
-        [TapRecognizer],
-        [TapRecognizer, {event: 'doubletap', taps: 2}, ['tap']],
-        [PressRecognizer]
-    ],
-
-    /**
-     * Some CSS properties can be used to improve the working of Hammer.
-     * Add them to this method and they will be set when creating a new Manager.
-     * @namespace
-     */
-    cssProps: {
-        /**
-         * Disables text selection to improve the dragging gesture. Mainly for desktop browsers.
-         * @type {String}
-         * @default 'none'
-         */
-        userSelect: 'none',
-
-        /**
-         * Disable the Windows Phone grippers when pressing an element.
-         * @type {String}
-         * @default 'none'
-         */
-        touchSelect: 'none',
-
-        /**
-         * Disables the default callout shown when you touch and hold a touch target.
-         * On iOS, when you touch and hold a touch target such as a link, Safari displays
-         * a callout containing information about the link. This property allows you to disable that callout.
-         * @type {String}
-         * @default 'none'
-         */
-        touchCallout: 'none',
-
-        /**
-         * Specifies whether zooming is enabled. Used by IE10>
-         * @type {String}
-         * @default 'none'
-         */
-        contentZooming: 'none',
-
-        /**
-         * Specifies that an entire element should be draggable instead of its contents. Mainly for desktop browsers.
-         * @type {String}
-         * @default 'none'
-         */
-        userDrag: 'none',
-
-        /**
-         * Overrides the highlight color shown when the user taps a link or a JavaScript
-         * clickable element in iOS. This property obeys the alpha value, if specified.
-         * @type {String}
-         * @default 'rgba(0,0,0,0)'
-         */
-        tapHighlightColor: 'rgba(0,0,0,0)'
-    }
-};
-
-var STOP = 1;
-var FORCED_STOP = 2;
-
-/**
- * Manager
- * @param {HTMLElement} element
- * @param {Object} [options]
- * @constructor
- */
-function Manager(element, options) {
-    this.options = assign({}, Hammer.defaults, options || {});
-
-    this.options.inputTarget = this.options.inputTarget || element;
-
-    this.handlers = {};
-    this.session = {};
-    this.recognizers = [];
-    this.oldCssProps = {};
-
-    this.element = element;
-    this.input = createInputInstance(this);
-    this.touchAction = new TouchAction(this, this.options.touchAction);
-
-    toggleCssProps(this, true);
-
-    each(this.options.recognizers, function(item) {
-        var recognizer = this.add(new (item[0])(item[1]));
-        item[2] && recognizer.recognizeWith(item[2]);
-        item[3] && recognizer.requireFailure(item[3]);
-    }, this);
-}
-
-Manager.prototype = {
-    /**
-     * set options
-     * @param {Object} options
-     * @returns {Manager}
-     */
-    set: function(options) {
-        assign(this.options, options);
-
-        // Options that need a little more setup
-        if (options.touchAction) {
-            this.touchAction.update();
-        }
-        if (options.inputTarget) {
-            // Clean up existing event listeners and reinitialize
-            this.input.destroy();
-            this.input.target = options.inputTarget;
-            this.input.init();
-        }
-        return this;
-    },
-
-    /**
-     * stop recognizing for this session.
-     * This session will be discarded, when a new [input]start event is fired.
-     * When forced, the recognizer cycle is stopped immediately.
-     * @param {Boolean} [force]
-     */
-    stop: function(force) {
-        this.session.stopped = force ? FORCED_STOP : STOP;
-    },
-
-    /**
-     * run the recognizers!
-     * called by the inputHandler function on every movement of the pointers (touches)
-     * it walks through all the recognizers and tries to detect the gesture that is being made
-     * @param {Object} inputData
-     */
-    recognize: function(inputData) {
-        var session = this.session;
-        if (session.stopped) {
-            return;
-        }
-
-        // run the touch-action polyfill
-        this.touchAction.preventDefaults(inputData);
-
-        var recognizer;
-        var recognizers = this.recognizers;
-
-        // this holds the recognizer that is being recognized.
-        // so the recognizer's state needs to be BEGAN, CHANGED, ENDED or RECOGNIZED
-        // if no recognizer is detecting a thing, it is set to `null`
-        var curRecognizer = session.curRecognizer;
-
-        // reset when the last recognizer is recognized
-        // or when we're in a new session
-        if (!curRecognizer || (curRecognizer && curRecognizer.state & STATE_RECOGNIZED)) {
-            curRecognizer = session.curRecognizer = null;
-        }
-
-        var i = 0;
-        while (i < recognizers.length) {
-            recognizer = recognizers[i];
-
-            // find out if we are allowed try to recognize the input for this one.
-            // 1.   allow if the session is NOT forced stopped (see the .stop() method)
-            // 2.   allow if we still haven't recognized a gesture in this session, or the this recognizer is the one
-            //      that is being recognized.
-            // 3.   allow if the recognizer is allowed to run simultaneous with the current recognized recognizer.
-            //      this can be setup with the `recognizeWith()` method on the recognizer.
-            if (session.stopped !== FORCED_STOP && ( // 1
-                    !curRecognizer || recognizer == curRecognizer || // 2
-                    recognizer.canRecognizeWith(curRecognizer))) { // 3
-                recognizer.recognize(inputData);
-            } else {
-                recognizer.reset();
-            }
-
-            // if the recognizer has been recognizing the input as a valid gesture, we want to store this one as the
-            // current active recognizer. but only if we don't already have an active recognizer
-            if (!curRecognizer && recognizer.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED)) {
-                curRecognizer = session.curRecognizer = recognizer;
-            }
-            i++;
-        }
-    },
-
-    /**
-     * get a recognizer by its event name.
-     * @param {Recognizer|String} recognizer
-     * @returns {Recognizer|Null}
-     */
-    get: function(recognizer) {
-        if (recognizer instanceof Recognizer) {
-            return recognizer;
-        }
-
-        var recognizers = this.recognizers;
-        for (var i = 0; i < recognizers.length; i++) {
-            if (recognizers[i].options.event == recognizer) {
-                return recognizers[i];
-            }
-        }
-        return null;
-    },
-
-    /**
-     * add a recognizer to the manager
-     * existing recognizers with the same event name will be removed
-     * @param {Recognizer} recognizer
-     * @returns {Recognizer|Manager}
-     */
-    add: function(recognizer) {
-        if (invokeArrayArg(recognizer, 'add', this)) {
-            return this;
-        }
-
-        // remove existing
-        var existing = this.get(recognizer.options.event);
-        if (existing) {
-            this.remove(existing);
-        }
-
-        this.recognizers.push(recognizer);
-        recognizer.manager = this;
-
-        this.touchAction.update();
-        return recognizer;
-    },
-
-    /**
-     * remove a recognizer by name or instance
-     * @param {Recognizer|String} recognizer
-     * @returns {Manager}
-     */
-    remove: function(recognizer) {
-        if (invokeArrayArg(recognizer, 'remove', this)) {
-            return this;
-        }
-
-        recognizer = this.get(recognizer);
-
-        // let's make sure this recognizer exists
-        if (recognizer) {
-            var recognizers = this.recognizers;
-            var index = inArray(recognizers, recognizer);
-
-            if (index !== -1) {
-                recognizers.splice(index, 1);
-                this.touchAction.update();
-            }
-        }
-
-        return this;
-    },
-
-    /**
-     * bind event
-     * @param {String} events
-     * @param {Function} handler
-     * @returns {EventEmitter} this
-     */
-    on: function(events, handler) {
-        if (events === undefined) {
-            return;
-        }
-        if (handler === undefined) {
-            return;
-        }
-
-        var handlers = this.handlers;
-        each(splitStr(events), function(event) {
-            handlers[event] = handlers[event] || [];
-            handlers[event].push(handler);
-        });
-        return this;
-    },
-
-    /**
-     * unbind event, leave emit blank to remove all handlers
-     * @param {String} events
-     * @param {Function} [handler]
-     * @returns {EventEmitter} this
-     */
-    off: function(events, handler) {
-        if (events === undefined) {
-            return;
-        }
-
-        var handlers = this.handlers;
-        each(splitStr(events), function(event) {
-            if (!handler) {
-                delete handlers[event];
-            } else {
-                handlers[event] && handlers[event].splice(inArray(handlers[event], handler), 1);
-            }
-        });
-        return this;
-    },
-
-    /**
-     * emit event to the listeners
-     * @param {String} event
-     * @param {Object} data
-     */
-    emit: function(event, data) {
-        // we also want to trigger dom events
-        if (this.options.domEvents) {
-            triggerDomEvent(event, data);
-        }
-
-        // no handlers, so skip it all
-        var handlers = this.handlers[event] && this.handlers[event].slice();
-        if (!handlers || !handlers.length) {
-            return;
-        }
-
-        data.type = event;
-        data.preventDefault = function() {
-            data.srcEvent.preventDefault();
-        };
-
-        var i = 0;
-        while (i < handlers.length) {
-            handlers[i](data);
-            i++;
-        }
-    },
-
-    /**
-     * destroy the manager and unbinds all events
-     * it doesn't unbind dom events, that is the user own responsibility
-     */
-    destroy: function() {
-        this.element && toggleCssProps(this, false);
-
-        this.handlers = {};
-        this.session = {};
-        this.input.destroy();
-        this.element = null;
-    }
-};
-
-/**
- * add/remove the css properties as defined in manager.options.cssProps
- * @param {Manager} manager
- * @param {Boolean} add
- */
-function toggleCssProps(manager, add) {
-    var element = manager.element;
-    if (!element.style) {
-        return;
-    }
-    var prop;
-    each(manager.options.cssProps, function(value, name) {
-        prop = prefixed(element.style, name);
-        if (add) {
-            manager.oldCssProps[prop] = element.style[prop];
-            element.style[prop] = value;
-        } else {
-            element.style[prop] = manager.oldCssProps[prop] || '';
-        }
-    });
-    if (!add) {
-        manager.oldCssProps = {};
-    }
-}
-
-/**
- * trigger dom event
- * @param {String} event
- * @param {Object} data
- */
-function triggerDomEvent(event, data) {
-    var gestureEvent = document.createEvent('Event');
-    gestureEvent.initEvent(event, true, true);
-    gestureEvent.gesture = data;
-    data.target.dispatchEvent(gestureEvent);
-}
-
-assign(Hammer, {
-    INPUT_START: INPUT_START,
-    INPUT_MOVE: INPUT_MOVE,
-    INPUT_END: INPUT_END,
-    INPUT_CANCEL: INPUT_CANCEL,
-
-    STATE_POSSIBLE: STATE_POSSIBLE,
-    STATE_BEGAN: STATE_BEGAN,
-    STATE_CHANGED: STATE_CHANGED,
-    STATE_ENDED: STATE_ENDED,
-    STATE_RECOGNIZED: STATE_RECOGNIZED,
-    STATE_CANCELLED: STATE_CANCELLED,
-    STATE_FAILED: STATE_FAILED,
-
-    DIRECTION_NONE: DIRECTION_NONE,
-    DIRECTION_LEFT: DIRECTION_LEFT,
-    DIRECTION_RIGHT: DIRECTION_RIGHT,
-    DIRECTION_UP: DIRECTION_UP,
-    DIRECTION_DOWN: DIRECTION_DOWN,
-    DIRECTION_HORIZONTAL: DIRECTION_HORIZONTAL,
-    DIRECTION_VERTICAL: DIRECTION_VERTICAL,
-    DIRECTION_ALL: DIRECTION_ALL,
-
-    Manager: Manager,
-    Input: Input,
-    TouchAction: TouchAction,
-
-    TouchInput: TouchInput,
-    MouseInput: MouseInput,
-    PointerEventInput: PointerEventInput,
-    TouchMouseInput: TouchMouseInput,
-    SingleTouchInput: SingleTouchInput,
-
-    Recognizer: Recognizer,
-    AttrRecognizer: AttrRecognizer,
-    Tap: TapRecognizer,
-    Pan: PanRecognizer,
-    Swipe: SwipeRecognizer,
-    Pinch: PinchRecognizer,
-    Rotate: RotateRecognizer,
-    Press: PressRecognizer,
-
-    on: addEventListeners,
-    off: removeEventListeners,
-    each: each,
-    merge: merge,
-    extend: extend,
-    assign: assign,
-    inherit: inherit,
-    bindFn: bindFn,
-    prefixed: prefixed
-});
-
-// this prevents errors when Hammer is loaded in the presence of an AMD
-//  style loader but by script tag, not by the loader.
-var freeGlobal = (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {})); // jshint ignore:line
-freeGlobal.Hammer = Hammer;
-
-if (typeof define === 'function' && define.amd) {
-    define(function() {
-        return Hammer;
-    });
-} else if (typeof module != 'undefined' && module.exports) {
-    module.exports = Hammer;
-} else {
-    window[exportName] = Hammer;
-}
-
-})(window, document, 'Hammer');
-});
-
-var hammer$1 = interopDefault(hammer);
-
-window.Hammer = hammer$1;
-
-/* ****************************************
-Keep track of mouse / pointer position
-use something like
-  import utils from './utilities.js';
-window.addEventListener('mousemove', utils.moveHandler); //use once globally
-  utils.pointerPos
-  to access the position
-*/
-
-var pointerPos = {
-  x: 0,
-  y: 0
-};
-
-var utils = {
-  // Simple uuid function
-  uuid: function b(a) {
-    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, b);
-  },
-
-  pointerPos: pointerPos,
-
-  moveHandler: function (e) {
-    if (e.pointerType === 'touch') {
-
-      pointerPos.x = e.center.x;
-      pointerPos.y = e.center.y;
-    } else {
-      pointerPos.x = e.pageX;
-      pointerPos.y = e.pageY;
-    }
-  }
-};
-
-// Set up app wide event listeners for touch and mouse
-window.addEventListener('mousemove', utils.moveHandler);
-new window.Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
-
-// pnltri.js / raw.github.com/jahting/pnltri.js/master/LICENSE
-/**
- * @author jahting / http://www.ameco.tv/
- *
- *	(Simple) Polygon Near-Linear Triangulation
- *	  with fast ear-clipping for polygons without holes
- *
- */
-
-var PNLTRI = { REVISION: '2.1.1' };
-
-//	#####  Global Constants  #####
-
-
-//	#####  Global Variables  #####
-
-
-/**
- * @author jahting / http://www.ameco.tv/
- */
-
-PNLTRI.Math = {
-
-	random: Math.random, // function to use for random number generation
-
-	// generate random ordering in place:
-	//	Fisher-Yates shuffle
-	array_shuffle: function (inoutArray) {
-		for (var i = inoutArray.length - 1; i > 0; i--) {
-			var j = Math.floor(PNLTRI.Math.random() * (i + 1));
-			var tmp = inoutArray[i];
-			inoutArray[i] = inoutArray[j];
-			inoutArray[j] = tmp;
-		}
-		return inoutArray;
-	},
-
-	//	like compare (<=>)
-	//		yA > yB resp. xA > xB: 1, equal: 0, otherwise: -1
-	compare_pts_yx: function (inPtA, inPtB) {
-		var deltaY = inPtA.y - inPtB.y;
-		if (deltaY < PNLTRI.Math.EPSILON_N) {
-			return -1;
-		} else if (deltaY > PNLTRI.Math.EPSILON_P) {
-			return 1;
-		} else {
-			var deltaX = inPtA.x - inPtB.x;
-			if (deltaX < PNLTRI.Math.EPSILON_N) {
-				return -1;
-			} else if (deltaX > PNLTRI.Math.EPSILON_P) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-	},
-
-	ptsCrossProd: function (inPtVertex, inPtFrom, inPtTo) {
-		// two vectors: ( v0: inPtVertex -> inPtFrom ), ( v1: inPtVertex -> inPtTo )
-		// CROSS_SINE: sin(theta) * len(v0) * len(v1)
-		return (inPtFrom.x - inPtVertex.x) * (inPtTo.y - inPtVertex.y) - (inPtFrom.y - inPtVertex.y) * (inPtTo.x - inPtVertex.x);
-		// <=> crossProd( inPtFrom-inPtVertex, inPtTo-inPtVertex )
-		// == 0: colinear (angle == 0 or 180 deg == PI rad)
-		// > 0:  v1 lies left of v0, CCW angle from v0 to v1 is convex ( < 180 deg )
-		// < 0:  v1 lies right of v0, CW angle from v0 to v1 is convex ( < 180 deg )
-	}
-
-};
-
-// precision of floating point arithmetic
-//	PNLTRI.Math.EPSILON_P = Math.pow(2,-32);	// ~ 0.0000000001
-PNLTRI.Math.EPSILON_P = Math.pow(2, -43); // ~ 0.0000000000001
-PNLTRI.Math.EPSILON_N = -PNLTRI.Math.EPSILON_P;
-
-//	Problem with EPSILON-compares:
-//	- especially when there is a x-coordinate ordering on equal y-coordinates
-//		=> either NO EPSILON-compares on y-coordinates, since almost equal y
-//			can have very different x - so they are not nearly close
-//		or EPSILON must be bigger: Solution so far.
-/**
- * @author jahting / http://www.ameco.tv/
- */
-
-/** @constructor */
-PNLTRI.PolygonData = function (inPolygonChainList) {
-
-	// list of polygon vertices
-	//	.x, .y: coordinates
-	this.vertices = [];
-
-	// list of polygon segments, original polygons ane holes
-	//	and additional ones added during the subdivision into
-	//	uni-y-monotone polygons (s. this.monoSubPolyChains)
-	//	doubly linked by: snext, sprev
-	this.segments = [];
-	this.diagonals = [];
-
-	// for the ORIGINAL polygon chains
-	this.idNextPolyChain = 0;
-	//	for each original chain: lies the polygon inside to the left?
-	//	"true": winding order is CCW for a contour or CW for a hole
-	//	"false": winding order is CW for a contour or CCW for a hole
-	this.PolyLeftArr = [];
-
-	// indices into this.segments: at least one for each monoton chain for the polygon
-	//  these subdivide the polygon into uni-y-monotone polygons, that is
-	//  polygons that have only one segment between ymax and ymin on one side
-	//  and the other side has monotone increasing y from ymin to ymax
-	// the monoSubPolyChains are doubly linked by: mnext, mprev
-	this.monoSubPolyChains = [];
-
-	// list of triangles: each 3 indices into this.vertices
-	this.triangles = [];
-
-	// initialize optional polygon chains
-	if (inPolygonChainList) {
-		for (var i = 0, j = inPolygonChainList.length; i < j; i++) {
-			this.addPolygonChain(inPolygonChainList[i]);
-		}
-	}
-};
-
-PNLTRI.PolygonData.prototype = {
-
-	constructor: PNLTRI.PolygonData,
-
-	/*	Accessors  */
-
-	nbVertices: function () {
-		return this.vertices.length;
-	},
-	getSegments: function () {
-		return this.segments;
-	},
-	getFirstSegment: function () {
-		return this.segments[0];
-	},
-	getMonoSubPolys: function () {
-		return this.monoSubPolyChains;
-	},
-	getTriangles: function () {
-		return this.triangles.concat();
-	},
-
-	nbPolyChains: function () {
-		return this.idNextPolyChain;
-	},
-
-	// for the polygon data AFTER triangulation
-	//	returns an Array of flags, one flag for each polygon chain:
-	//		lies the inside of the polygon to the left?
-	//		"true" implies CCW for contours and CW for holes
-	get_PolyLeftArr: function () {
-		return this.PolyLeftArr.concat();
-	},
-	set_PolyLeft_wrong: function (inChainId) {
-		this.PolyLeftArr[inChainId] = false;
-	},
-
-	/*	Helper  */
-
-	// checks winding order by calculating the area of the polygon
-	isClockWise: function (inStartSeg) {
-		var cursor = inStartSeg,
-		    doubleArea = 0;
-		do {
-			doubleArea += (cursor.vFrom.x - cursor.vTo.x) * (cursor.vFrom.y + cursor.vTo.y);
-			cursor = cursor.snext;
-		} while (cursor != inStartSeg);
-		return doubleArea < 0;
-	},
-
-	/*	Operations  */
-
-	appendVertexEntry: function (inVertexX, inVertexY) {
-		// private
-		var vertex = {
-			id: this.vertices.length, // vertex id, representing input sequence
-			x: inVertexX, // coordinates
-			y: inVertexY
-		};
-		this.vertices.push(vertex);
-		return vertex;
-	},
-
-	createSegmentEntry: function (inVertexFrom, inVertexTo) {
-		// private
-		return {
-			chainId: this.idNextPolyChain,
-			// end points of segment
-			vFrom: inVertexFrom, // -> start point entry in vertices
-			vTo: inVertexTo, // -> end point entry in vertices
-			// upward segment? (i.e. vTo > vFrom) !!! only valid for sprev,snext NOT for mprev,mnext !!!
-			upward: PNLTRI.Math.compare_pts_yx(inVertexTo, inVertexFrom) == 1,
-			// doubly linked list of original polygon chains (not the monoChains !)
-			sprev: null, // previous segment
-			snext: null, // next segment
-			//
-			//	for performance reasons:
-			//	 initialization of all fields added later
-			//
-			// for trapezoids
-			rootFrom: null, // root of partial tree where vFrom is located
-			rootTo: null, // root of partial tree where vTo is located
-			is_inserted: false, // already inserted into QueryStructure ?
-			// for assigning depth: trapezoids
-			trLeft: null, // one trapezoid bordering on the left of this segment
-			trRight: null, // one trapezoid bordering on the right of this segment
-			// for monochains
-			mprev: null, // doubly linked list for monotone chains (sub-polygons)
-			mnext: null,
-			marked: false };
-	},
-
-	appendSegmentEntry: function (inSegment) {
-		// private
-		this.segments.push(inSegment);
-		return inSegment;
-	},
-
-	appendDiagonalsEntry: function (inDiagonal) {
-		// <<<<<	public
-		this.diagonals.push(inDiagonal);
-		return inDiagonal;
-	},
-
-	addVertexChain: function (inRawPointList) {
-		// private
-
-		function verts_equal(inVert1, inVert2) {
-			return Math.abs(inVert1.x - inVert2.x) < PNLTRI.Math.EPSILON_P && Math.abs(inVert1.y - inVert2.y) < PNLTRI.Math.EPSILON_P;
-		}
-
-		function verts_colinear_chain(inVert1, inVert2, inVert3) {
-			if (Math.abs(PNLTRI.Math.ptsCrossProd(inVert2, inVert1, inVert3)) > PNLTRI.Math.EPSILON_P) return false;
-			// only real sequences, not direction reversals
-			var low, middle, high;
-			if (Math.abs(inVert1.y - inVert2.y) < PNLTRI.Math.EPSILON_P) {
-				// horizontal line
-				middle = inVert2.x;
-				if (inVert1.x < inVert3.x) {
-					low = inVert1.x;
-					high = inVert3.x;
-				} else {
-					low = inVert3.x;
-					high = inVert1.x;
-				}
-			} else {
-				middle = inVert2.y;
-				if (inVert1.y < inVert3.y) {
-					low = inVert1.y;
-					high = inVert3.y;
-				} else {
-					low = inVert3.y;
-					high = inVert1.y;
-				}
-			}
-			return low - middle < PNLTRI.Math.EPSILON_P && middle - high < PNLTRI.Math.EPSILON_P;
-		}
-
-		var newVertices = [];
-		var newVertex, acceptVertex, lastIdx;
-		for (var i = 0; i < inRawPointList.length; i++) {
-			newVertex = this.appendVertexEntry(inRawPointList[i].x, inRawPointList[i].y);
-			// suppresses zero-length segments
-			acceptVertex = true;
-			lastIdx = newVertices.length - 1;
-			if (lastIdx >= 0) {
-				if (verts_equal(newVertex, newVertices[lastIdx])) {
-					acceptVertex = false;
-				} else if (lastIdx > 0) {
-					if (verts_colinear_chain(newVertices[lastIdx - 1], newVertices[lastIdx], newVertex)) {
-						newVertices.pop();
-					}
-				}
-			}
-			if (acceptVertex) newVertices.push(newVertex);
-		}
-		// compare last vertices to first: suppresses zero-length and co-linear segments
-		lastIdx = newVertices.length - 1;
-		if (lastIdx > 0 && verts_equal(newVertices[lastIdx], newVertices[0])) {
-			newVertices.pop();
-			lastIdx--;
-		}
-		if (lastIdx > 1) {
-			if (verts_colinear_chain(newVertices[lastIdx - 1], newVertices[lastIdx], newVertices[0])) {
-				newVertices.pop();
-				lastIdx--;
-			}
-			if (lastIdx > 1 && verts_colinear_chain(newVertices[lastIdx], newVertices[0], newVertices[1])) {
-				newVertices.shift();
-			}
-		}
-
-		return newVertices;
-	},
-
-	addPolygonChain: function (inRawPointList) {
-		// <<<<<< public
-
-		// vertices
-		var newVertices = this.addVertexChain(inRawPointList);
-		if (newVertices.length < 3) {
-			console.log("Polygon has < 3 vertices!", newVertices);
-			return 0;
-		}
-
-		// segments
-		var saveSegListLength = this.segments.length;
-		//
-		var segment, firstSeg, prevSeg;
-		for (var i = 0; i < newVertices.length - 1; i++) {
-			segment = this.createSegmentEntry(newVertices[i], newVertices[i + 1]);
-			if (prevSeg) {
-				segment.sprev = prevSeg;
-				prevSeg.snext = segment;
-			} else {
-				firstSeg = segment;
-			}
-			prevSeg = segment;
-			this.appendSegmentEntry(segment);
-		}
-		// close polygon
-		segment = this.createSegmentEntry(newVertices[newVertices.length - 1], newVertices[0]);
-		segment.sprev = prevSeg;
-		prevSeg.snext = segment;
-		this.appendSegmentEntry(segment);
-		firstSeg.sprev = segment;
-		segment.snext = firstSeg;
-
-		this.PolyLeftArr[this.idNextPolyChain++] = true;
-		return this.segments.length - saveSegListLength;
-	},
-
-	/* Monotone Polygon Chains */
-
-	// Generate the uni-y-monotone sub-polygons from
-	//	the trapezoidation of the polygon.
-
-	create_mono_chains: function () {
-		// <<<<<< public
-		var newMono, newMonoTo, toFirstOutSeg, fromRevSeg;
-		for (var i = 0, j = this.segments.length; i < j; i++) {
-			newMono = this.segments[i];
-			if (this.PolyLeftArr[newMono.chainId]) {
-				// preserve winding order
-				newMonoTo = newMono.vTo; // target of segment
-				newMono.mprev = newMono.sprev; // doubly linked list for monotone chains (sub-polygons)
-				newMono.mnext = newMono.snext;
-			} else {
-				// reverse winding order
-				newMonoTo = newMono.vFrom;
-				newMono = newMono.snext;
-				newMono.mprev = newMono.snext;
-				newMono.mnext = newMono.sprev;
-			}
-			if (fromRevSeg = newMono.vFrom.lastInDiag) {
-				// assignment !
-				fromRevSeg.mnext = newMono;
-				newMono.mprev = fromRevSeg;
-				newMono.vFrom.lastInDiag = null; // cleanup
-			}
-			if (toFirstOutSeg = newMonoTo.firstOutDiag) {
-				// assignment !
-				toFirstOutSeg.mprev = newMono;
-				newMono.mnext = toFirstOutSeg;
-				newMonoTo.firstOutDiag = null; // cleanup
-			}
-		}
-	},
-
-	// For each monotone polygon, find the ymax (to determine the two
-	// y-monotone chains) and skip duplicate monotone polygons
-
-	unique_monotone_chains_max: function () {
-		// <<<<<< public
-
-		function find_monotone_chain_max(frontMono) {
-			var frontPt, firstPt, ymaxPt;
-
-			var monoPosmax = frontMono;
-			firstPt = ymaxPt = frontMono.vFrom;
-
-			frontMono.marked = true;
-			frontMono = frontMono.mnext;
-			while (frontPt = frontMono.vFrom) {
-				// assignment !
-				if (frontMono.marked) {
-					if (frontPt == firstPt) break; // mono chain completed
-					console.log("ERR unique_monotone: segment in two chains", firstPt, frontMono);
-					return null;
-				} else {
-					/*					if ( frontPt == firstPt ) {			// check for robustness
-     						console.log("ERR unique_monotone: point double", firstPt, frontMono );
-     					}		*/
-					frontMono.marked = true;
-				}
-				if (PNLTRI.Math.compare_pts_yx(frontPt, ymaxPt) == 1) {
-					ymaxPt = frontPt;
-					monoPosmax = frontMono;
-				}
-				frontMono = frontMono.mnext;
-			}
-			return monoPosmax;
-		}
-
-		var frontMono, monoPosmax;
-
-		// assumes attribute "marked" is NOT yet "true" for any mono chain segment
-		this.monoSubPolyChains = [];
-		// loop through all original segments
-		for (var i = 0, j = this.segments.length; i < j; i++) {
-			frontMono = this.segments[i];
-			if (frontMono.marked) continue; // already in a processed mono chain
-			monoPosmax = find_monotone_chain_max(frontMono);
-			if (monoPosmax) this.monoSubPolyChains.push(monoPosmax);
-		}
-		// loop through all additional segments (diagonals)			// TODO: Testcase for mono chain without original segments !!!
-		/*		for ( var i = 0, j = this.diagonals.length; i < j; i++ ) {
-  			frontMono = this.diagonals[i];
-  			if ( frontMono.marked )		continue;		// already in a processed mono chain
-  			monoPosmax = find_monotone_chain_max( frontMono );
-  			if ( monoPosmax )	this.monoSubPolyChains.push( monoPosmax );
-  		}	*/
-		return this.monoSubPolyChains;
-	},
-
-	/* Triangles */
-
-	clearTriangles: function () {
-		this.triangles = [];
-	},
-
-	addTriangle: function (inVert1, inVert2, inVert3) {
-		this.triangles.push([inVert1.id, inVert2.id, inVert3.id]);
-	}
-
-};
-
-/**
- * Simple Polygon Triangulation by Ear Clipping
- *
- * description of technique employed:
- *	http://www.siggraph.org/education/materials/HyperGraph/scanline/outprims/polygon1.htm
- *
- * This code is a quick port of code written in C++ which was submitted to
- *	flipcode.com by John W. Ratcliff  // July 22, 2000
- * See original code and more information here:
- *	http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
- *
- * ported to actionscript by Zevan Rosser
- *	http://actionsnippet.com/?p=1462
- *
- * ported to javascript by Joshua Koo
- *	http://www.lab4games.net/zz85/blog
- *
- * adapted to doubly linked list by Juergen Ahting
- *	http://www.ameco.tv
- *
- */
-
-/** @constructor */
-PNLTRI.EarClipTriangulator = function (inPolygonData) {
-
-	this.polyData = inPolygonData;
-};
-
-PNLTRI.EarClipTriangulator.prototype = {
-
-	constructor: PNLTRI.EarClipTriangulator,
-
-	// triangulates first doubly linked segment list in this.polyData
-	//	algorithm uses ear-clipping and runs in O(n^2) time
-
-	triangulate_polygon_no_holes: function () {
-
-		function isEarAt(vertex) {
-
-			var prevX = vertex.mprev.vFrom.x;
-			var prevY = vertex.mprev.vFrom.y;
-
-			var vertX = vertex.vFrom.x;
-			var vertY = vertex.vFrom.y;
-
-			var nextX = vertex.mnext.vFrom.x;
-			var nextY = vertex.mnext.vFrom.y;
-
-			var vnX = nextX - vertX,
-			    vnY = nextY - vertY;
-			var npX = prevX - nextX,
-			    npY = prevY - nextY;
-			var pvX = vertX - prevX,
-			    pvY = vertY - prevY;
-
-			// concave angle at vertex -> not an ear to cut off
-			if (PNLTRI.Math.EPSILON_P > pvX * vnY - vnX * pvY) return false;
-
-			// check whether any other point lieas within the triangle abc
-			var vStop = vertex.mprev.mprev;
-			var vOther = vertex.mnext;
-			while (vOther != vStop) {
-				vOther = vOther.mnext;
-				var otherX = vOther.vFrom.x;
-				var otherY = vOther.vFrom.y;
-
-				var poX = otherX - prevX,
-				    poY = otherY - prevY;
-				// just in case there are several vertices with the same coordinate
-				if (poX === 0 && poY === 0) continue; // vOther == vertex.mprev
-				var voX = otherX - vertX,
-				    voY = otherY - vertY;
-				if (voX === 0 && voY === 0) continue; // vOther == vertex
-				var noX = otherX - nextX,
-				    noY = otherY - nextY;
-				if (noX === 0 && noY === 0) continue; // vOther == vertex.mnext
-
-				// if vOther is inside triangle abc -> not an ear to cut off
-				if (vnX * voY - vnY * voX >= PNLTRI.Math.EPSILON_N && pvX * poY - pvY * poX >= PNLTRI.Math.EPSILON_N && npX * noY - npY * noX >= PNLTRI.Math.EPSILON_N) return false;
-			}
-			return true;
-		}
-
-		var myPolyData = this.polyData;
-		var startSeg = myPolyData.getFirstSegment();
-
-		// create a counter-clockwise ordered doubly linked list (monoChain links)
-
-		var cursor = startSeg;
-		if (myPolyData.isClockWise(startSeg)) {
-			do {
-				// reverses chain order
-				cursor.mprev = cursor.snext;
-				cursor.mnext = cursor.sprev;
-				cursor = cursor.sprev;
-			} while (cursor != startSeg);
-			myPolyData.set_PolyLeft_wrong(0);
-		} else {
-			do {
-				cursor.mprev = cursor.sprev;
-				cursor.mnext = cursor.snext;
-				cursor = cursor.snext;
-			} while (cursor != startSeg);
-		}
-
-		//  remove all vertices except 2, creating 1 triangle every time
-
-		var vertex = startSeg;
-		var fullLoop = vertex; // prevent infinite loop on "defective" polygons
-
-		while (vertex.mnext != vertex.mprev) {
-			if (isEarAt(vertex)) {
-				// found a triangle ear to cut off
-				this.polyData.addTriangle(vertex.mprev.vFrom, vertex.vFrom, vertex.mnext.vFrom);
-				// remove vertex from the remaining chain
-				vertex.mprev.mnext = vertex.mnext;
-				vertex.mnext.mprev = vertex.mprev;
-				vertex = vertex.mnext;
-				fullLoop = vertex; // reset error detection
-			} else {
-				vertex = vertex.mnext;
-				// loop?: probably non-simple polygon -> stop with error
-				if (vertex == fullLoop) return false;
-			}
-		}
-
-		return true;
-	}
-
-};
-
-/**
- * @author jahting / http://www.ameco.tv/
- *
- *	Algorithm to create the trapezoidation of a polygon with holes
- *	 according to Seidel's algorithm [Sei91]
- */
-
-/** @constructor */
-PNLTRI.Trapezoid = function (inHigh, inLow, inLeft, inRight) {
-
-	this.vHigh = inHigh ? inHigh : { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY };
-	this.vLow = inLow ? inLow : { x: Number.NEGATIVE_INFINITY, y: Number.NEGATIVE_INFINITY };
-
-	this.lseg = inLeft;
-	this.rseg = inRight;
-
-	//	this.uL = null;				// -> Trapezoid: upper left neighbor
-	//	this.uR = null;				// -> Trapezoid: upper right neighbor
-	//	this.dL = null;				// -> Trapezoid: lower left neighbor
-	//	this.dR = null;				// -> Trapezoid: lower right neighbor
-
-	//	this.sink = null;			// link to corresponding SINK-Node in QueryStructure
-
-	//	this.usave = null;			// temp: uL/uR, preserved for next step
-	//	this.uleft = null;			// temp: from uL? (true) or uR (false)
-
-	this.depth = -1; // no depth assigned yet
-
-	this.monoDone = false; // monotonization: done with trying to split this trapezoid ?
-};
-
-PNLTRI.Trapezoid.prototype = {
-
-	constructor: PNLTRI.Trapezoid,
-
-	clone: function () {
-		var newTrap = new PNLTRI.Trapezoid(this.vHigh, this.vLow, this.lseg, this.rseg);
-
-		newTrap.uL = this.uL;
-		newTrap.uR = this.uR;
-
-		newTrap.dL = this.dL;
-		newTrap.dR = this.dR;
-
-		newTrap.sink = this.sink;
-
-		return newTrap;
-	},
-
-	splitOffLower: function (inSplitPt) {
-		var trLower = this.clone(); // new lower trapezoid
-
-		this.vLow = trLower.vHigh = inSplitPt;
-
-		// L/R unknown, anyway changed later
-		this.dL = trLower; // setBelow
-		trLower.uL = this; // setAbove
-		this.dR = trLower.uR = null;
-
-		// setAbove
-		if (trLower.dL) trLower.dL.uL = trLower; // dL always connects to uL
-		if (trLower.dR) trLower.dR.uR = trLower; // dR always connects to uR
-
-		return trLower;
-	}
-
-};
-
-/*==============================================================================
- *
- *============================================================================*/
-
-// PNLTRI.qsCounter = 0;
-
-/** @constructor */
-PNLTRI.QsNode = function (inTrapezoid) {
-	//	this.qsId = PNLTRI.qsCounter++;				// Debug only
-	// Only SINK-nodes are created directly.
-	// The others originate from splitting trapezoids
-	// - by a horizontal line: SINK-Node -> Y-Node
-	// - by a segment: SINK-Node -> X-Node
-	this.trap = inTrapezoid;
-	inTrapezoid.sink = this;
-};
-
-PNLTRI.QsNode.prototype = {
-
-	constructor: PNLTRI.QsNode
-
-};
-
-/*==============================================================================
- *
- *============================================================================*/
-
-/** @constructor */
-PNLTRI.QueryStructure = function (inPolygonData) {
-	// initialise the query structure and trapezoid list
-	var initialTrap = new PNLTRI.Trapezoid(null, null, null, null);
-	this.trapArray = [];
-	this.appendTrapEntry(initialTrap);
-
-	//	PNLTRI.qsCounter = 0;
-	this.root = new PNLTRI.QsNode(initialTrap);
-
-	if (inPolygonData) {
-		/*
-   * adds and initializes specific attributes for all segments
-   *	// -> QueryStructure: roots of partial tree where vertex is located
-   *	rootFrom, rootTo:	for vFrom, vTo
-   *	// marker
-   *	is_inserted:	already inserted into QueryStructure ?
-   */
-		var segListArray = inPolygonData.getSegments();
-		for (var i = 0; i < segListArray.length; i++) {
-			segListArray[i].rootFrom = segListArray[i].rootTo = this.root;
-			segListArray[i].is_inserted = false;
-		}
-	}
-};
-
-PNLTRI.QueryStructure.prototype = {
-
-	constructor: PNLTRI.QueryStructure,
-
-	getRoot: function () {
-		return this.root;
-	},
-
-	appendTrapEntry: function (inTrapezoid) {
-		inTrapezoid.trapID = this.trapArray.length; // for Debug
-		this.trapArray.push(inTrapezoid);
-	},
-	cloneTrap: function (inTrapezoid) {
-		var trap = inTrapezoid.clone();
-		this.appendTrapEntry(trap);
-		return trap;
-	},
-
-	splitNodeAtPoint: function (inNode, inPoint, inReturnUpper) {
-		// inNode: SINK-Node with trapezoid containing inPoint
-		var trUpper = inNode.trap; // trUpper: trapezoid includes the point
-		if (trUpper.vHigh == inPoint) return inNode; // (ERROR) inPoint is already inserted
-		if (trUpper.vLow == inPoint) return inNode; // (ERROR) inPoint is already inserted
-		var trLower = trUpper.splitOffLower(inPoint); // trLower: new lower trapezoid
-		this.appendTrapEntry(trLower);
-
-		// SINK-Node -> Y-Node
-		inNode.yval = inPoint;
-		inNode.trap = null;
-
-		inNode.right = new PNLTRI.QsNode(trUpper); // Upper trapezoid sink
-		inNode.left = new PNLTRI.QsNode(trLower); // Lower trapezoid sink
-
-		return inReturnUpper ? trUpper.sink : trLower.sink;
-	},
-
-	/*
-  * Mathematics & Geometry helper methods
-  */
-
-	fpEqual: function (inNum0, inNum1) {
-		return Math.abs(inNum0 - inNum1) < PNLTRI.Math.EPSILON_P;
-	},
-
-	// Checks, whether the vertex inPt is to the left of line segment inSeg.
-	//	Returns:
-	//		>0: inPt is left of inSeg,
-	//		<0: inPt is right of inSeg,
-	//		=0: inPt is co-linear with inSeg
-	//
-	//	ATTENTION: always viewed from -y, not as if moving along the segment chain !!
-
-	is_left_of: function (inSeg, inPt, inBetweenY) {
-		var retVal;
-		var dXfrom = inSeg.vFrom.x - inPt.x;
-		var dXto = inSeg.vTo.x - inPt.x;
-		var dYfromZero = this.fpEqual(inSeg.vFrom.y, inPt.y);
-		if (this.fpEqual(inSeg.vTo.y, inPt.y)) {
-			if (dYfromZero) return 0; // all points on a horizontal line
-			retVal = dXto;
-		} else if (dYfromZero) {
-			retVal = dXfrom;
-			/*		} else if ( inBetweenY && ( dXfrom * dXto > 0 ) ) {
-   			// both x-coordinates of inSeg are on the same side of inPt
-   			if ( Math.abs( dXto ) >= PNLTRI.Math.EPSILON_P )	return	dXto;
-   			retVal = dXfrom;	*/
-		} else {
-			if (inSeg.upward) {
-				return PNLTRI.Math.ptsCrossProd(inSeg.vFrom, inSeg.vTo, inPt);
-			} else {
-				return PNLTRI.Math.ptsCrossProd(inSeg.vTo, inSeg.vFrom, inPt);
-			}
-		}
-		if (Math.abs(retVal) < PNLTRI.Math.EPSILON_P) return 0;
-		return retVal;
-	},
-
-	/*
-  * Query structure main methods
-  */
-
-	//	This method finds the Nodes in the QueryStructure corresponding
-	//   to the trapezoids that contain the endpoints of inSegment,
-	//	 starting from Nodes rootFrom/rootTo and replacing them with the results.
-
-	segNodes: function (inSegment) {
-		this.ptNode(inSegment, true);
-		this.ptNode(inSegment, false);
-	},
-
-	// TODO: may need to prevent infinite loop in case of messed up
-	//	trapezoid structure (s. test_add_segment_special_6)
-
-	ptNode: function (inSegment, inUseFrom) {
-		var ptMain, ptOther, qsNode;
-		if (inUseFrom) {
-			ptMain = inSegment.vFrom;
-			ptOther = inSegment.vTo; // used if ptMain is not sufficient
-			qsNode = inSegment.rootFrom;
-		} else {
-			ptMain = inSegment.vTo;
-			ptOther = inSegment.vFrom;
-			qsNode = inSegment.rootTo;
-		}
-		var compPt, compRes;
-		var isInSegmentShorter;
-
-		while (qsNode) {
-			if (qsNode.yval) {
-				// Y-Node: horizontal line
-				// 4 times as often as X-Node
-				qsNode = PNLTRI.Math.compare_pts_yx(ptMain == qsNode.yval ? // is the point already inserted ?
-				ptOther : ptMain, qsNode.yval) == -1 ? qsNode.left : qsNode.right; // below : above
-			} else if (qsNode.seg) {
-				// X-Node: segment (~vertical line)
-				// 0.8 to 1.5 times as often as SINK-Node
-				if (ptMain == qsNode.seg.vFrom || ptMain == qsNode.seg.vTo) {
-					// the point is already inserted
-					if (this.fpEqual(ptMain.y, ptOther.y)) {
-						// horizontal segment
-						if (!this.fpEqual(qsNode.seg.vFrom.y, qsNode.seg.vTo.y)) {
-							qsNode = ptOther.x < ptMain.x ? qsNode.left : qsNode.right; // left : right
-						} else {
-							// co-linear horizontal reversal: test_add_segment_special_7
-							if (ptMain == qsNode.seg.vFrom) {
-								// connected at qsNode.seg.vFrom
-								//								console.log("ptNode: co-linear horizontal reversal, connected at qsNode.seg.vFrom", inUseFrom, inSegment, qsNode )
-								isInSegmentShorter = inSegment.upward ? ptOther.x >= qsNode.seg.vTo.x : ptOther.x < qsNode.seg.vTo.x;
-								qsNode = (isInSegmentShorter ? inSegment.sprev.upward : qsNode.seg.snext.upward) ? qsNode.right : qsNode.left; // above : below
-							} else {
-								// connected at qsNode.seg.vTo
-								//								console.log("ptNode: co-linear horizontal reversal, connected at qsNode.seg.vTo", inUseFrom, inSegment, qsNode );
-								isInSegmentShorter = inSegment.upward ? ptOther.x < qsNode.seg.vFrom.x : ptOther.x >= qsNode.seg.vFrom.x;
-								qsNode = (isInSegmentShorter ? inSegment.snext.upward : qsNode.seg.sprev.upward) ? qsNode.left : qsNode.right; // below : above
-							}
-						}
-						continue;
-					} else {
-						compRes = this.is_left_of(qsNode.seg, ptOther, false);
-						if (compRes === 0) {
-							// co-linear reversal (not horizontal)
-							//	a co-linear continuation would not reach this point
-							//  since the previous Y-node comparison would have led to a sink instead
-							//							console.log("ptNode: co-linear, going back on previous segment", ptMain, ptOther, qsNode );
-							// now as we have two consecutive co-linear segments we have to avoid a cross-over
-							//	for this we need the far point on the "next" segment to the SHORTER of our two
-							//	segments to avoid that "next" segment to cross the longer of our two segments
-							if (ptMain == qsNode.seg.vFrom) {
-								// connected at qsNode.seg.vFrom
-								//								console.log("ptNode: co-linear, going back on previous segment, connected at qsNode.seg.vFrom", ptMain, ptOther, qsNode );
-								isInSegmentShorter = inSegment.upward ? ptOther.y >= qsNode.seg.vTo.y : ptOther.y < qsNode.seg.vTo.y;
-								compRes = isInSegmentShorter ? this.is_left_of(qsNode.seg, inSegment.sprev.vFrom, false) : -this.is_left_of(qsNode.seg, qsNode.seg.snext.vTo, false);
-							} else {
-								// connected at qsNode.seg.vTo
-								//								console.log("ptNode: co-linear, going back on previous segment, connected at qsNode.seg.vTo", ptMain, ptOther, qsNode );
-								isInSegmentShorter = inSegment.upward ? ptOther.y < qsNode.seg.vFrom.y : ptOther.y >= qsNode.seg.vFrom.y;
-								compRes = isInSegmentShorter ? this.is_left_of(qsNode.seg, inSegment.snext.vTo, false) : -this.is_left_of(qsNode.seg, qsNode.seg.sprev.vFrom, false);
-							}
-						}
-					}
-				} else {
-					/*					if ( ( PNLTRI.Math.compare_pts_yx( ptMain, qsNode.seg.vFrom ) *			// TODO: Testcase
-     							PNLTRI.Math.compare_pts_yx( ptMain, qsNode.seg.vTo )
-     						   ) == 0 ) {
-     						console.log("ptNode: Pts too close together#2: ", ptMain, qsNode.seg );
-     					}		*/
-					compRes = this.is_left_of(qsNode.seg, ptMain, true);
-					if (compRes === 0) {
-						// touching: ptMain lies on qsNode.seg but is none of its endpoints
-						//	should happen quite seldom
-						compRes = this.is_left_of(qsNode.seg, ptOther, false);
-						if (compRes === 0) {
-							// co-linear: inSegment and qsNode.seg
-							//	includes case with ptOther connected to qsNode.seg
-							var tmpPtOther = inUseFrom ? inSegment.sprev.vFrom : inSegment.snext.vTo;
-							compRes = this.is_left_of(qsNode.seg, tmpPtOther, false);
-						}
-					}
-				}
-				if (compRes > 0) {
-					qsNode = qsNode.left;
-				} else if (compRes < 0) {
-					qsNode = qsNode.right;
-				} else {
-					// ???	TODO - not reached with current tests
-					//				possible at all ?
-					return qsNode;
-					// qsNode = qsNode.left;		// left
-					// qsNode = qsNode.right;		// right
-				}
-			} else {
-				// SINK-Node: trapezoid area
-				// least often
-				if (!qsNode.trap) {
-					console.log("ptNode: unknown type", qsNode);
-				}
-				if (inUseFrom) {
-					inSegment.rootFrom = qsNode;
-				} else {
-					inSegment.rootTo = qsNode;
-				}
-				return qsNode;
-			}
-		} // end while - should not exit here
-	},
-
-	// Add a new segment into the trapezoidation and update QueryStructure and Trapezoids
-	// 1) locates the two endpoints of the segment in the QueryStructure and inserts them
-	// 2) goes from the high-end trapezoid down to the low-end trapezoid
-	//		changing all the trapezoids in between.
-	// Except for the high-end and low-end no new trapezoids are created.
-	// For all in between either:
-	// - the existing trapezoid is restricted to the left of the new segment
-	//		and on the right side the trapezoid from above is extended downwards
-	// - or the other way round:
-	//	 the existing trapezoid is restricted to the right of the new segment
-	//		and on the left side the trapezoid from above is extended downwards
-
-	add_segment: function (inSegment) {
-		var scope = this;
-
-		// functions handling the relationship to the upper neighbors (uL, uR)
-		//	of trNewLeft and trNewRight
-
-		function fresh_seg_or_upward_cusp() {
-			// trCurrent has at most 1 upper neighbor
-			//	and should also have at least 1, since the high-point trapezoid
-			//	has been split off another one, which is now above
-			var trUpper = trCurrent.uL || trCurrent.uR;
-
-			// trNewLeft and trNewRight CANNOT have been extended from above
-			if (trUpper.dL && trUpper.dR) {
-				// upward cusp: top forms a triangle
-
-				// ATTENTION: the decision whether trNewLeft or trNewRight is the
-				//	triangle trapezoid formed by the two segments has already been taken
-				//	when selecting trCurrent as the left or right lower neighbor to trUpper !!
-
-				if (trCurrent == trUpper.dL) {
-					//	*** Case: FUC_UC_LEFT; prev: ----
-					// console.log( "fresh_seg_or_upward_cusp: upward cusp, new seg to the left!" );
-					//		  upper
-					//   -------*-------
-					//		   + \
-					//	  NL  +   \
-					//		 +	NR \
-					//		+		\
-					trNewRight.uL = null; // setAbove; trNewRight.uR, trNewLeft unchanged
-					trUpper.dL = trNewLeft; // setBelow; dR: unchanged, NEVER null
-				} else {
-					//	*** Case: FUC_UC_RIGHT; prev: ----
-					// console.log( "fresh_seg_or_upward_cusp: upward cusp, new seg from the right!" );
-					//		  upper
-					//   -------*-------
-					//		   / +
-					//		  /   +	 NR
-					//		 /	NL +
-					//		/		+
-					trNewLeft.uR = null; // setAbove; trNewLeft.uL, trNewRight unchanged
-					trUpper.dR = trNewRight; // setBelow; dL: unchanged, NEVER null
-				}
-			} else {
-				//	*** Case: FUC_FS; prev: "splitOffLower"
-				// console.log( "fresh_seg_or_upward_cusp: fresh segment, high adjacent segment still missing" );
-				//		  upper
-				//   -------*-------
-				//		   +
-				//	  NL  +
-				//		 +	NR
-				//		+
-				trNewRight.uL = null; // setAbove; trNewLeft unchanged, set by "splitOffLower"
-				trNewRight.uR = trUpper;
-				trUpper.dR = trNewRight; // setBelow; trUpper.dL unchanged, set by "splitOffLower"
-			}
-		}
-
-		function continue_chain_from_above() {
-			// trCurrent has at least 2 upper neighbors
-			if (trCurrent.usave) {
-				// 3 upper neighbors (part II)
-				if (trCurrent.uleft) {
-					//	*** Case: CC_3UN_LEFT; prev: 1B_3UN_LEFT
-					// console.log( "continue_chain_from_above: 3 upper neighbors (part II): u0a, u0b, uR(usave)" );
-					// => left gets one, right gets two of the upper neighbors
-					// !! trNewRight cannot have been extended from above
-					//		and trNewLeft must have been !!
-					//		   +		/
-					//	  C.uL  + C.uR / C.usave
-					//    - - - -+----*----------
-					//		NL	  +		NR
-					trNewRight.uL = trCurrent.uR; // setAbove
-					trNewRight.uR = trCurrent.usave;
-					trNewRight.uL.dL = trNewRight; // setBelow; trNewRight.uL.dR == null, unchanged
-					trNewRight.uR.dR = trNewRight; // setBelow; trNewRight.uR.dL == null, unchanged
-				} else {
-					//	*** Case: CC_3UN_RIGHT; prev: 1B_3UN_RIGHT
-					// console.log( "continue_chain_from_above: 3 upper neighbors (part II): uL(usave), u1a, u1b" );
-					// => left gets two, right gets one of the upper neighbors
-					// !! trNewLeft cannot have been extended from above
-					//		and trNewRight must have been !!
-					//			\		 +
-					//	 C.usave \ C.uL + C.uR
-					//   ---------*----+- - - -
-					//			NL    +   NR
-					trNewLeft.uR = trCurrent.uL; // setAbove; first uR !!!
-					trNewLeft.uL = trCurrent.usave;
-					trNewLeft.uL.dL = trNewLeft; // setBelow; dR == null, unchanged
-					trNewLeft.uR.dR = trNewLeft; // setBelow; dL == null, unchanged
-				}
-				trNewLeft.usave = trNewRight.usave = null;
-			} else if (trCurrent.vHigh == trFirst.vHigh) {
-				// && meetsHighAdjSeg ??? TODO
-				//	*** Case: CC_2UN_CONN; prev: ----
-				// console.log( "continue_chain_from_above: 2 upper neighbors, fresh seg, continues high adjacent seg" );
-				// !! trNewLeft and trNewRight cannot have been extended from above !!
-				//	  C.uL	 /  C.uR
-				//   -------*---------
-				//	   NL  +	NR
-				trNewRight.uR.dR = trNewRight; // setBelow; dL == null, unchanged
-				trNewLeft.uR = trNewRight.uL = null; // setAbove; trNewLeft.uL, trNewRight.uR unchanged
-			} else {
-				//	*** Case: CC_2UN; prev: 1B_1UN_CONT, 2B_NOCON_RIGHT/LEFT, 2B_TOUCH_RIGHT/LEFT, 2B_COLIN_RIGHT/LEFT
-				// console.log( "continue_chain_from_above: simple case, 2 upper neighbors (no usave, not fresh seg)" );
-				// !! trNewLeft XOR trNewRight will have been extended from above !!
-				//	  C.uL	 +  C.uR
-				//   -------+---------
-				//	   NL  +	NR
-				if (trNewRight == trCurrent) {
-					// trNewLeft has been extended from above
-					// setAbove
-					trNewRight.uL = trNewRight.uR;
-					trNewRight.uR = null;
-					// setBelow; dR: unchanged, is NOT always null (prev: 2B_NOCON_LEFT, 2B_TOUCH_LEFT, 2B_COLIN_LEFT)
-					trNewRight.uL.dL = trNewRight;
-				} else {
-					// trNewRight has been extended from above
-					trNewLeft.uR = trNewLeft.uL; // setAbove; first uR !!!
-					trNewLeft.uL = null;
-				}
-			}
-		}
-
-		// functions handling the relationship to the lower neighbors (dL, dR)
-		//	of trNewLeft and trNewRight
-		// trNewLeft or trNewRight MIGHT have been extended from above
-		//  !! in that case dL and dR are different from trCurrent and MUST be set here !!
-
-		function only_one_trap_below(inTrNext) {
-
-			if (trCurrent.vLow == trLast.vLow) {
-				// final part of segment
-
-				if (meetsLowAdjSeg) {
-					// downward cusp: bottom forms a triangle
-
-					// ATTENTION: the decision whether trNewLeft and trNewRight are to the
-					//	left or right of the already inserted segment the new one meets here
-					//	has already been taken when selecting trLast to the left or right
-					//	of that already inserted segment !!
-
-					if (trCurrent.dL) {
-						//	*** Case: 1B_DC_LEFT; next: ----
-						// console.log( "only_one_trap_below: downward cusp, new seg from the left!" );
-						//		+		/
-						//		 +  NR /
-						//	  NL  +	  /
-						//		   + /
-						//   -------*-------
-						//	   C.dL = next
-
-						// setAbove
-						inTrNext.uL = trNewLeft; // uR: unchanged, NEVER null
-						// setBelow part 1
-						trNewLeft.dL = inTrNext;
-						trNewRight.dR = null;
-					} else {
-						//	*** Case: 1B_DC_RIGHT; next: ----
-						// console.log( "only_one_trap_below: downward cusp, new seg to the right!" );
-						//		\		+
-						//		 \  NL +
-						//		  \	  +  NR
-						//		   \ +
-						//   -------*-------
-						//	   C.dR = next
-
-						// setAbove
-						inTrNext.uR = trNewRight; // uL: unchanged, NEVER null
-						// setBelow part 1
-						trNewLeft.dL = null;
-						trNewRight.dR = inTrNext;
-					}
-				} else {
-					//	*** Case: 1B_1UN_END; next: ----
-					// console.log( "only_one_trap_below: simple case, new seg ends here, low adjacent seg still missing" );
-					//			  +
-					//		NL	 +  NR
-					//			+
-					//   ------*-------
-					//		  next
-
-					// setAbove
-					inTrNext.uL = trNewLeft; // trNewLeft must
-					inTrNext.uR = trNewRight; // must
-					// setBelow part 1
-					trNewLeft.dL = trNewRight.dR = inTrNext; // Error
-					//					trNewRight.dR = inTrNext;
-				}
-				// setBelow part 2
-				trNewLeft.dR = trNewRight.dL = null;
-			} else {
-				// NOT final part of segment
-
-				if (inTrNext.uL && inTrNext.uR) {
-					// inTrNext has two upper neighbors
-					// => a segment ends on the upper Y-line of inTrNext
-					// => inTrNext has temporarily 3 upper neighbors
-					// => marks whether the new segment cuts through
-					//		uL or uR of inTrNext and saves the other in .usave
-					if (inTrNext.uL == trCurrent) {
-						//	*** Case: 1B_3UN_LEFT; next: CC_3UN_LEFT
-						// console.log( "only_one_trap_below: inTrNext has 3 upper neighbors (part I): u0a, u0b, uR(usave)" );
-						//		 +		  /
-						//	  NL  +	 NR	 /
-						//		   +	/
-						//   - - - -+--*----
-						//			 +
-						//		  next
-						//						if ( inTrNext.uR != trNewRight ) {		// for robustness	TODO: prevent
-						inTrNext.usave = inTrNext.uR;
-						inTrNext.uleft = true;
-						// trNewLeft: L/R undefined, will be extended down and changed anyway
-						// } else {
-						// ERROR: should not happen
-						// console.log( "ERR add_segment: Trapezoid Loop right", inTrNext, trCurrent, trNewLeft, trNewRight, inSegment, this );
-						//						}
-					} else {
-						//	*** Case: 1B_3UN_RIGHT; next: CC_3UN_RIGHT
-						// console.log( "only_one_trap_below: inTrNext has 3 upper neighbors (part I): uL(usave), u1a, u1b" );
-						//	 \		   +
-						//	  \	  NL  +  NR
-						//	   \	 +
-						//   ---*---+- - - -
-						//		   +
-						//		  next
-						//						if ( inTrNext.uL != trNewLeft ) {		// for robustness	TODO: prevent
-						inTrNext.usave = inTrNext.uL;
-						inTrNext.uleft = false;
-						// trNewRight: L/R undefined, will be extended down and changed anyway
-						// } else {
-						// ERROR: should not happen
-						// console.log( "ERR add_segment: Trapezoid Loop left", inTrNext, trCurrent, trNewLeft, trNewRight, inSegment, this );
-						//						}
-					}
-					//} else {
-					//	*** Case: 1B_1UN_CONT; next: CC_2UN
-					// console.log( "only_one_trap_below: simple case, new seg continues down" );
-					//			  +
-					//		NL	 +  NR
-					//			+
-					//   ------+-------
-					//	 	  +
-					//		next
-
-					// L/R for one side undefined, which one is not fixed
-					//	but that one will be extended down and changed anyway
-					// for the other side, vLow must lie at the opposite end
-					//	thus both are set accordingly
-				}
-				// setAbove
-				inTrNext.uL = trNewLeft;
-				inTrNext.uR = trNewRight;
-				// setBelow
-				trNewLeft.dR = trNewRight.dL = inTrNext;
-				trNewLeft.dL = trNewRight.dR = null;
-			}
-		}
-
-		function two_trap_below() {
-			// Find out which one (dL,dR) is intersected by this segment and
-			//	continue down that one
-			var trNext;
-			if (trCurrent.vLow == trLast.vLow && meetsLowAdjSeg) {
-				// meetsLowAdjSeg necessary? TODO
-				//	*** Case: 2B_CON_END; next: ----
-				// console.log( "two_trap_below: finished, meets low adjacent segment" );
-				//			  +
-				//		NL	 +  NR
-				//			+
-				//   ------*-------
-				//	 		\  C.dR
-				//	  C.dL	 \
-
-				// setAbove
-				trCurrent.dL.uL = trNewLeft;
-				trCurrent.dR.uR = trNewRight;
-				// setBelow; sequence of assignments essential, just in case: trCurrent == trNewLeft
-				trNewLeft.dL = trCurrent.dL;
-				trNewRight.dR = trCurrent.dR;
-				trNewLeft.dR = trNewRight.dL = null;
-
-				trNext = null; // segment finished
-			} else {
-				// setAbove part 1
-				trCurrent.dL.uL = trNewLeft;
-				trCurrent.dR.uR = trNewRight;
-
-				var goDownRight;
-				// passes left or right of an already inserted NOT connected segment
-				//	trCurrent.vLow: high-end of existing segment
-				var compRes = scope.is_left_of(inSegment, trCurrent.vLow, true);
-				if (compRes > 0) {
-					// trCurrent.vLow is left of inSegment
-					//	*** Case: 2B_NOCON_RIGHT; next: CC_2UN
-					// console.log( "two_trap_below: (intersecting dR)" );
-					//		 +
-					//	  NL  +  NR
-					//		   +
-					//   ---*---+- - - -
-					//		 \	 +
-					//	 C.dL \	C.dR
-					goDownRight = true;
-				} else if (compRes < 0) {
-					// trCurrent.vLow is right of inSegment
-					//	*** Case: 2B_NOCON_LEFT; next: CC_2UN
-					// console.log( "two_trap_below: (intersecting dL)" );
-					//			  +
-					//		NL	 +  NR
-					//			+
-					//    - - -+---*-------
-					//	 	  +		\  C.dR
-					//	 	 C.dL	 \
-					goDownRight = false;
-				} else {
-					// trCurrent.vLow lies ON inSegment
-					var vLowSeg = trCurrent.dL.rseg;
-					var directionIsUp = vLowSeg.upward;
-					var otherPt = directionIsUp ? vLowSeg.vFrom : vLowSeg.vTo;
-					compRes = scope.is_left_of(inSegment, otherPt, false);
-					if (compRes > 0) {
-						// otherPt is left of inSegment
-						//	*** Case: 2B_TOUCH_RIGHT; next: CC_2UN
-						// console.log( "two_trap_below: vLow ON new segment, touching from right" );
-						//		 +
-						//	  NL  +  NR
-						//		   +
-						//   -------*- - - -
-						//		   / +
-						//	 C.dL /	C.dR
-						goDownRight = true; // like intersecting dR
-					} else if (compRes < 0) {
-						// otherPt is right of inSegment
-						//	*** Case: 2B_TOUCH_LEFT; next: CC_2UN
-						// console.log( "two_trap_below: vLow ON new segment, touching from left" );
-						//			  +
-						//		NL	 +  NR
-						//			+
-						//    - - -*-------
-						//	 	  +	\  C.dR
-						//	  C.dL	 \
-						goDownRight = false; // like intersecting dL
-					} else {
-						// otherPt lies ON inSegment
-						vLowSeg = directionIsUp ? vLowSeg.snext : vLowSeg.sprev; // other segment with trCurrent.vLow
-						otherPt = directionIsUp ? vLowSeg.vTo : vLowSeg.vFrom;
-						compRes = scope.is_left_of(inSegment, otherPt, false);
-						if (compRes > 0) {
-							// otherPt is left of inSegment
-							//	*** Case: 2B_COLIN_RIGHT; next: CC_2UN
-							// console.log( "two_trap_below: vLow ON new segment, touching from right" );
-							//		  +
-							//	  NL   +  NR
-							//   -------*- - - -
-							//	  C.dL 	\+  C.dR
-							//			 \+
-							goDownRight = true; // like intersecting dR
-							//	} else if ( compRes == 0 ) {		//	NOT POSSIBLE, since 3 points on a line is prevented during input of polychains
-							//		goDownRight = true;		// like intersecting dR
-						} else {
-							// otherPt is right of inSegment
-							//	*** Case: 2B_COLIN_LEFT; next: CC_2UN
-							// console.log( "two_trap_below: vLow ON new segment, touching from left" );
-							//			   +
-							//		NL	  +  NR
-							//    - - - -*-------
-							//	  C.dL	+/  C.dR
-							//		   +/
-							goDownRight = false; // TODO: for test_add_segment_special_4 -> like intersecting dL
-						}
-					}
-				}
-				if (goDownRight) {
-					trNext = trCurrent.dR;
-					// setAbove part 2
-					trCurrent.dR.uL = trNewLeft;
-					// setBelow part 1
-					trNewLeft.dL = trCurrent.dL;
-					trNewRight.dR = null; // L/R undefined, will be extended down and changed anyway
-				} else {
-					trNext = trCurrent.dL;
-					// setAbove part 2
-					trCurrent.dL.uR = trNewRight;
-					// setBelow part 1
-					trNewRight.dR = trCurrent.dR;
-					trNewLeft.dL = null; // L/R undefined, will be extended down and changed anyway
-				}
-				// setBelow part 2
-				trNewLeft.dR = trNewRight.dL = trNext;
-			}
-
-			return trNext;
-		}
-
-		//
-		//	main function body
-		//
-
-		/*		if ( ( inSegment.sprev.vTo != inSegment.vFrom ) || ( inSegment.vTo != inSegment.snext.vFrom ) ) {
-  			console.log( "add_segment: inconsistent point order of adjacent segments: ",
-  						 inSegment.sprev.vTo, inSegment.vFrom, inSegment.vTo, inSegment.snext.vFrom );
-  			return;
-  		}		*/
-
-		//	Find the top-most and bottom-most intersecting trapezoids -> rootXXX
-		this.segNodes(inSegment);
-
-		var segLowVert, segLowNode, meetsLowAdjSeg; // y-min vertex
-		var segHighVert, segHighNode, meetsHighAdjSeg; // y-max vertex
-
-		if (inSegment.upward) {
-			segLowVert = inSegment.vFrom;
-			segHighVert = inSegment.vTo;
-			segLowNode = inSegment.rootFrom;
-			segHighNode = inSegment.rootTo;
-			// was lower point already inserted earlier? => segments meet at their ends
-			meetsLowAdjSeg = inSegment.sprev.is_inserted;
-			// was higher point already inserted earlier? => segments meet at their ends
-			meetsHighAdjSeg = inSegment.snext.is_inserted;
-		} else {
-			segLowVert = inSegment.vTo;
-			segHighVert = inSegment.vFrom;
-			segLowNode = inSegment.rootTo;
-			segHighNode = inSegment.rootFrom;
-			meetsLowAdjSeg = inSegment.snext.is_inserted;
-			meetsHighAdjSeg = inSegment.sprev.is_inserted;
-		}
-
-		//	insert higher vertex into QueryStructure
-		if (!meetsHighAdjSeg) {
-			// higher vertex not yet inserted => split trapezoid horizontally
-			var tmpNode = this.splitNodeAtPoint(segHighNode, segHighVert, false);
-			// move segLowNode to new (lower) trapezoid, if it was the one which was just split
-			if (segHighNode == segLowNode) segLowNode = tmpNode;
-			segHighNode = tmpNode;
-		}
-		var trFirst = segHighNode.trap; // top-most trapezoid for this segment
-
-		// check for robustness		// TODO: prevent
-		if (!trFirst.uL && !trFirst.uR) {
-			console.log("ERR add_segment: missing trFirst.uX: ", trFirst);
-			return;
-		}
-		if (trFirst.vHigh != segHighVert) {
-			console.log("ERR add_segment: trFirstHigh != segHigh: ", trFirst);
-			return;
-		}
-
-		//	insert lower vertex into QueryStructure
-		if (!meetsLowAdjSeg) {
-			// lower vertex not yet inserted => split trapezoid horizontally
-			segLowNode = this.splitNodeAtPoint(segLowNode, segLowVert, true);
-		}
-		var trLast = segLowNode.trap; // bottom-most trapezoid for this segment
-
-		//
-		// Thread the segment into the query "tree" from top to bottom.
-		// All the trapezoids which are intersected by inSegment are "split" into two.
-		// For each the SINK-QsNode is converted into an X-Node and
-		//  new sinks for the new partial trapezoids are added.
-		// In fact a real split only happens at the top and/or bottom end of the segment
-		//	since at every y-line seperating two trapezoids is traverses it
-		//	cuts off the "beam" from the y-vertex on one side, so that at that side
-		//	the trapezoid from above can be extended down.
-		//
-
-		var trCurrent = trFirst;
-
-		var trNewLeft, trNewRight, trPrevLeft, trPrevRight;
-
-		var counter = this.trapArray.length + 2; // just to prevent infinite loop
-		var trNext;
-		while (trCurrent) {
-			if (--counter < 0) {
-				console.log("ERR add_segment: infinite loop", trCurrent, inSegment, this);
-				return;
-			}
-			if (!trCurrent.dL && !trCurrent.dR) {
-				// ERROR: no successors, cannot arise if data is correct
-				console.log("ERR add_segment: missing successors", trCurrent, inSegment, this);
-				return;
-			}
-
-			var qs_trCurrent = trCurrent.sink;
-			// SINK-Node -> X-Node
-			qs_trCurrent.seg = inSegment;
-			qs_trCurrent.trap = null;
-			//
-			// successive trapezoids bordered by the same segments are merged
-			//  by extending the trPrevRight or trPrevLeft down
-			//  and redirecting the parent X-Node to the extended sink
-			// !!! destroys tree structure since several nodes now point to the same SINK-Node !!!
-			// TODO: maybe it's not a problem;
-			//  merging of X-Nodes is no option, since they are used as "rootFrom/rootTo" !
-			//
-			if (trPrevRight && trPrevRight.rseg == trCurrent.rseg) {
-				// console.log( "add_segment: extending right predecessor down!", trPrevRight );
-				trNewLeft = trCurrent;
-				trNewRight = trPrevRight;
-				trNewRight.vLow = trCurrent.vLow;
-				// redirect parent X-Node to extended sink
-				qs_trCurrent.left = new PNLTRI.QsNode(trNewLeft); // trCurrent -> left SINK-Node
-				qs_trCurrent.right = trPrevRight.sink; // deforms tree by multiple links to trPrevRight.sink
-			} else if (trPrevLeft && trPrevLeft.lseg == trCurrent.lseg) {
-				// console.log( "add_segment: extending left predecessor down!", trPrevLeft );
-				trNewRight = trCurrent;
-				trNewLeft = trPrevLeft;
-				trNewLeft.vLow = trCurrent.vLow;
-				// redirect parent X-Node to extended sink
-				qs_trCurrent.left = trPrevLeft.sink; // deforms tree by multiple links to trPrevLeft.sink
-				qs_trCurrent.right = new PNLTRI.QsNode(trNewRight); // trCurrent -> right SINK-Node
-			} else {
-				trNewLeft = trCurrent;
-				trNewRight = this.cloneTrap(trCurrent);
-				qs_trCurrent.left = new PNLTRI.QsNode(trNewLeft); // trCurrent -> left SINK-Node
-				qs_trCurrent.right = new PNLTRI.QsNode(trNewRight); // new clone -> right SINK-Node
-			}
-
-			// handle neighbors above
-			if (trCurrent.uL && trCurrent.uR) {
-				continue_chain_from_above();
-			} else {
-				fresh_seg_or_upward_cusp();
-			}
-
-			// handle neighbors below
-			if (trCurrent.dL && trCurrent.dR) {
-				trNext = two_trap_below();
-			} else {
-				if (trCurrent.dL) {
-					// console.log( "add_segment: only_one_trap_below! (dL)" );
-					trNext = trCurrent.dL;
-				} else {
-					// console.log( "add_segment: only_one_trap_below! (dR)" );
-					trNext = trCurrent.dR;
-				}
-				only_one_trap_below(trNext);
-			}
-
-			if (trNewLeft.rseg) trNewLeft.rseg.trLeft = trNewRight;
-			if (trNewRight.lseg) trNewRight.lseg.trRight = trNewLeft;
-			trNewLeft.rseg = trNewRight.lseg = inSegment;
-			inSegment.trLeft = trNewLeft;
-			inSegment.trRight = trNewRight;
-
-			// further loop-step down ?
-			if (trCurrent.vLow != trLast.vLow) {
-				trPrevLeft = trNewLeft;
-				trPrevRight = trNewRight;
-
-				trCurrent = trNext;
-			} else {
-				trCurrent = null;
-			}
-		} // end while
-
-		inSegment.is_inserted = true;
-		// console.log( "add_segment: ###### DONE ######" );
-	},
-
-	// Assigns a depth to all trapezoids;
-	//	0: outside, 1: main polygon, 2: holes, 3:polygons in holes, ...
-	// Checks segment orientation and marks those polygon chains for reversal
-	//	where the polygon inside lies to their right (contour in CW, holes in CCW)
-	assignDepths: function (inPolyData) {
-		var thisDepth = [this.trapArray[0]];
-		var nextDepth = [];
-
-		var thisTrap,
-		    borderSeg,
-		    curDepth = 0;
-		do {
-			// rseg should exactely go upward on trapezoids inside the polygon (odd depth)
-			var expectedRsegUpward = curDepth % 2 == 1;
-			while (thisTrap = thisDepth.pop()) {
-				// assignment !
-				if (thisTrap.depth != -1) continue;
-				thisTrap.depth = curDepth;
-				//
-				if (thisTrap.uL) thisDepth.push(thisTrap.uL);
-				if (thisTrap.uR) thisDepth.push(thisTrap.uR);
-				if (thisTrap.dL) thisDepth.push(thisTrap.dL);
-				if (thisTrap.dR) thisDepth.push(thisTrap.dR);
-				//
-				if ((borderSeg = thisTrap.lseg) && borderSeg.trLeft.depth == -1) // assignment !
-					nextDepth.push(borderSeg.trLeft);
-				if (borderSeg = thisTrap.rseg) {
-					// assignment !
-					if (borderSeg.trRight.depth == -1) nextDepth.push(borderSeg.trRight);
-					if (borderSeg.upward != expectedRsegUpward) inPolyData.set_PolyLeft_wrong(borderSeg.chainId);
-				}
-			}
-			thisDepth = nextDepth;nextDepth = [];
-			curDepth++;
-		} while (thisDepth.length > 0);
-	},
-
-	// creates the visibility map:
-	//	for each vertex the list of all vertices in CW order which are directly
-	//	visible through neighboring trapezoids and thus can be connected by a diagonal
-
-	create_visibility_map: function (inPolygonData) {
-		// positional slots for neighboring trapezoid-diagonals
-		var DIAG_UL = 0,
-		    DIAG_UM = 1,
-		    DIAG_ULR = 2,
-		    DIAG_UR = 3;
-		var DIAG_DR = 4,
-		    DIAG_DM = 5,
-		    DIAG_DLR = 6,
-		    DIAG_DL = 7;
-
-		var i, j;
-		var nbVertices = inPolygonData.nbVertices();
-
-		// initialize arrays for neighboring trapezoid-diagonals and vertices
-		var myVisibleDiagonals = new Array(nbVertices);
-		for (i = 0; i < nbVertices; i++) {
-			myVisibleDiagonals[i] = new Array(DIAG_DL + 1);
-		}
-		// create the list of neighboring trapezoid-diagonals
-		//	put into their positional slots
-		var myExternalNeighbors = new Array(nbVertices);
-		for (i = 0, j = this.trapArray.length; i < j; i++) {
-			var curTrap = this.trapArray[i];
-			var highPos = curTrap.uL ? curTrap.uR ? DIAG_DM : DIAG_DL : curTrap.uR ? DIAG_DR : DIAG_DLR;
-			var lowPos = curTrap.dL ? curTrap.dR ? DIAG_UM : DIAG_UL : curTrap.dR ? DIAG_UR : DIAG_ULR;
-
-			if (curTrap.depth % 2 == 1) {
-				// inside ?
-				if (highPos == DIAG_DM || lowPos == DIAG_UM || highPos == DIAG_DL && lowPos == DIAG_UR || highPos == DIAG_DR && lowPos == DIAG_UL) {
-					var lhDiag = inPolygonData.appendDiagonalsEntry({
-						vFrom: curTrap.vLow, vTo: curTrap.vHigh,
-						mprev: null, mnext: null, marked: false });
-					var hlDiag = inPolygonData.appendDiagonalsEntry({
-						vFrom: curTrap.vHigh, vTo: curTrap.vLow, revDiag: lhDiag,
-						mprev: null, mnext: null, marked: false });
-					lhDiag.revDiag = hlDiag;
-					myVisibleDiagonals[curTrap.vLow.id][lowPos] = lhDiag;
-					myVisibleDiagonals[curTrap.vHigh.id][highPos] = hlDiag;
-				}
-			} else {
-				// outside, hole
-				if (curTrap.vHigh.id !== null) myExternalNeighbors[curTrap.vHigh.id] = highPos;
-				if (curTrap.vLow.id !== null) myExternalNeighbors[curTrap.vLow.id] = lowPos;
-			}
-		}
-		// create the list of outgoing diagonals in the right order (CW)
-		//	from the ordered list of neighboring trapezoid-diagonals
-		//	- starting from an external one
-		// and connect those incoming to
-		var curDiag, curDiags, firstElem, fromVertex, lastIncoming;
-		for (i = 0; i < nbVertices; i++) {
-			curDiags = myVisibleDiagonals[i];
-			firstElem = myExternalNeighbors[i];
-			if (firstElem == null) continue; // eg. skipped vertices (zero length, co-linear		// NOT: === !
-			j = firstElem;
-			lastIncoming = null;
-			do {
-				if (j++ > DIAG_DL) j = DIAG_UL; // circular positional list
-				if (curDiag = curDiags[j]) {
-					if (lastIncoming) {
-						curDiag.mprev = lastIncoming;
-						lastIncoming.mnext = curDiag;
-					} else {
-						fromVertex = curDiag.vFrom;
-						fromVertex.firstOutDiag = curDiag;
-					}
-					lastIncoming = curDiag.revDiag;
-				}
-			} while (j != firstElem);
-			if (lastIncoming) fromVertex.lastInDiag = lastIncoming;
-		}
-	}
-
-};
-
-/*==============================================================================
- *
- *============================================================================*/
-
-/** @constructor */
-PNLTRI.Trapezoider = function (inPolygonData) {
-
-	this.polyData = inPolygonData;
-	this.queryStructure = new PNLTRI.QueryStructure(this.polyData);
-};
-
-PNLTRI.Trapezoider.prototype = {
-
-	constructor: PNLTRI.Trapezoider,
-
-	/*
-  * Mathematics helper methods
-  */
-
-	optimise_randomlist: function (inOutSegListArray) {
-		// makes sure that the first N segments are one from each of the N polygon chains
-		var mainIdx = 0;
-		var helpIdx = this.polyData.nbPolyChains();
-		if (helpIdx == 1) return;
-		var chainMarker = new Array(helpIdx);
-		var oldSegListArray = inOutSegListArray.concat();
-		for (var i = 0; i < oldSegListArray.length; i++) {
-			var chainId = oldSegListArray[i].chainId;
-			if (chainMarker[chainId]) {
-				inOutSegListArray[helpIdx++] = oldSegListArray[i];
-			} else {
-				inOutSegListArray[mainIdx++] = oldSegListArray[i];
-				chainMarker[chainId] = true;
-			}
-		}
-	},
-
-	/*
-  * main methods
-  */
-
-	// Creates the trapezoidation of the polygon
-	//  and assigns a depth to all trapezoids (odd: inside, even: outside).
-
-	trapezoide_polygon: function () {
-		// <<<< public
-		var randSegListArray = this.polyData.getSegments().concat();
-		//		console.log( "Polygon Chains: ", dumpSegmentList( randSegListArray ) );
-		PNLTRI.Math.array_shuffle(randSegListArray);
-		this.optimise_randomlist(randSegListArray);
-		//		console.log( "Random Segment Sequence: ", dumpRandomSequence( randSegListArray ) );
-
-		var nbSegs = randSegListArray.length;
-		var myQs = this.queryStructure;
-
-		var i,
-		    current = 0,
-		    logstar = nbSegs;
-		while (current < nbSegs) {
-			// The CENTRAL mechanism for the near-linear performance:
-			//	stratefies the loop through all segments into log* parts
-			//	and computes new root-Nodes for the remaining segments in each
-			//	partition.
-			logstar = Math.log(logstar) / Math.LN2; // == log2(logstar)
-			var partEnd = logstar > 1 ? Math.floor(nbSegs / logstar) : nbSegs;
-
-			// Core: adds next partition of the segments
-			for (; current < partEnd; current++) {
-				myQs.add_segment(randSegListArray[current]);
-			}
-			//			console.log( nbSegs, current );
-
-			// To speed up the segment insertion into the trapezoidation
-			//	the endponts of those segments not yet inserted
-			//	are repeatedly pre-located,
-			// thus their final location-query can start at the top of the
-			//	appropriate sub-tree instead of the root of the whole
-			//	query structure.
-			//
-			for (i = current; i < nbSegs; i++) {
-				this.queryStructure.segNodes(randSegListArray[i]);
-			}
-		}
-
-		myQs.assignDepths(this.polyData);
-		// cleanup to support garbage collection
-		for (i = 0; i < nbSegs; i++) {
-			randSegListArray[i].trLeft = randSegListArray[i].trRight = null;
-		}
-	},
-
-	// Creates a visibility map:
-	//	for each vertex the list of all vertices in CW order which are directly
-	//	visible through neighboring trapezoids and thus can be connected by a diagonal
-
-	create_visibility_map: function () {
-		return this.queryStructure.create_visibility_map(this.polyData);
-	}
-
-};
-
-/**
- * @author jahting / http://www.ameco.tv/
- *
- *	Algorithm to split a polygon into uni-y-monotone sub-polygons
- *
- *	1) creates a trapezoidation of the main polygon according to Seidel's
- *	   algorithm [Sei91]
- *	2) uses diagonals of the trapezoids as additional segments
- *		to split the main polygon into uni-y-monotone sub-polygons
- */
-
-/** @constructor */
-PNLTRI.MonoSplitter = function (inPolygonData) {
-
-	this.polyData = inPolygonData;
-
-	this.trapezoider = null;
-};
-
-PNLTRI.MonoSplitter.prototype = {
-
-	constructor: PNLTRI.MonoSplitter,
-
-	monotonate_trapezoids: function () {
-		// <<<<<<<<<< public
-		// Trapezoidation
-		this.trapezoider = new PNLTRI.Trapezoider(this.polyData);
-		//	=> one triangular trapezoid which lies inside the polygon
-		this.trapezoider.trapezoide_polygon();
-
-		// create segments for diagonals
-		this.trapezoider.create_visibility_map();
-		// create mono chains by inserting diagonals
-		this.polyData.create_mono_chains();
-
-		// create UNIQUE monotone sub-polygons
-		this.polyData.unique_monotone_chains_max();
-	}
-
-};
-
-/**
- * @author jahting / http://www.ameco.tv/
- *
- *	Algorithm to triangulate uni-y-monotone polygons [FoM84]
- *
- *	expects list of doubly linked monoChains, with Y-max as first vertex
- */
-
-/** @constructor */
-PNLTRI.MonoTriangulator = function (inPolygonData) {
-
-	this.polyData = inPolygonData;
-};
-
-PNLTRI.MonoTriangulator.prototype = {
-
-	constructor: PNLTRI.MonoTriangulator,
-
-	// Pass each uni-y-monotone polygon with start at Y-max for greedy triangulation.
-
-	triangulate_all_polygons: function () {
-		// <<<<<<<<<< public
-		var normedMonoChains = this.polyData.getMonoSubPolys();
-		this.polyData.clearTriangles();
-		for (var i = 0; i < normedMonoChains.length; i++) {
-			// loop through uni-y-monotone chains
-			// => monoPosmin is next to monoPosmax (left or right)
-			var monoPosmax = normedMonoChains[i];
-			var prevMono = monoPosmax.mprev;
-			var nextMono = monoPosmax.mnext;
-
-			if (nextMono.mnext == prevMono) {
-				// already a triangle
-				this.polyData.addTriangle(monoPosmax.vFrom, nextMono.vFrom, prevMono.vFrom);
-			} else {
-				// triangulate the polygon
-				this.triangulate_monotone_polygon(monoPosmax);
-			}
-		}
-	},
-
-	//	algorithm to triangulate an uni-y-monotone polygon in O(n) time.[FoM84]
-
-	triangulate_monotone_polygon: function (monoPosmax) {
-		// private
-		var scope = this;
-
-		function error_cleanup() {
-			// Error in algorithm OR polygon is not uni-y-monotone
-			console.log("ERR uni-y-monotone: only concave angles left", vertBackLog);
-			// push all "wrong" triangles => loop ends
-			while (vertBackLogIdx > 1) {
-				vertBackLogIdx--;
-				scope.polyData.addTriangle(vertBackLog[vertBackLogIdx - 1], vertBackLog[vertBackLogIdx], vertBackLog[vertBackLogIdx + 1]);
-			}
-		}
-
-		//
-		// Decisive for this algorithm to work correctly is to make sure
-		//  the polygon stays uni-y-monotone when cutting off ears, i.e.
-		//  to make sure the top-most and bottom-most vertices are removed last
-		// Usually this is done by handling the LHS-case ("LeftHandSide is a single segment")
-		//	and the RHS-case ("RightHandSide segment is a single segment")
-		//	differently by starting at the bottom for LHS and at the top for RHS.
-		// This is not necessary. It can be seen easily, that starting
-		//	from the vertex next to top handles both cases correctly.
-		//
-
-		var frontMono = monoPosmax.mnext; // == LHS: YminPoint; RHS: YmaxPoint.mnext
-		var endVert = monoPosmax.vFrom;
-
-		var vertBackLog = [frontMono.vFrom];
-		var vertBackLogIdx = 0;
-
-		frontMono = frontMono.mnext;
-		var frontVert = frontMono.vFrom;
-
-		// check for robustness		// TODO
-		if (frontVert == endVert) return; // Error: only 2 vertices
-
-		while (frontVert != endVert || vertBackLogIdx > 1) {
-			if (vertBackLogIdx > 0) {
-				// vertBackLog is not empty
-				var insideAngleCCW = PNLTRI.Math.ptsCrossProd(vertBackLog[vertBackLogIdx], frontVert, vertBackLog[vertBackLogIdx - 1]);
-				if (Math.abs(insideAngleCCW) <= PNLTRI.Math.EPSILON_P) {
-					// co-linear
-					if (frontVert == endVert || // all remaining triangles are co-linear (180 degree)
-					PNLTRI.Math.compare_pts_yx(vertBackLog[vertBackLogIdx], frontVert) == // co-linear-reversal
-					PNLTRI.Math.compare_pts_yx(vertBackLog[vertBackLogIdx], vertBackLog[vertBackLogIdx - 1])) {
-						insideAngleCCW = 1; // => create triangle
-					}
-				}
-				if (insideAngleCCW > 0) {
-					// convex corner: cut if off
-					this.polyData.addTriangle(vertBackLog[vertBackLogIdx - 1], vertBackLog[vertBackLogIdx], frontVert);
-					vertBackLogIdx--;
-				} else {
-					// non-convex: add frontVert to the vertBackLog
-					vertBackLog[++vertBackLogIdx] = frontVert;
-					if (frontVert == endVert) error_cleanup(); // should never happen !!
-					else {
-							frontMono = frontMono.mnext;
-							frontVert = frontMono.vFrom;
-						}
-				}
-			} else {
-				// vertBackLog contains only start vertex:
-				//	add frontVert to the vertBackLog and advance frontVert
-				vertBackLog[++vertBackLogIdx] = frontVert;
-				frontMono = frontMono.mnext;
-				frontVert = frontMono.vFrom;
-			}
-		}
-		// reached the last vertex. Add in the triangle formed
-		this.polyData.addTriangle(vertBackLog[vertBackLogIdx - 1], vertBackLog[vertBackLogIdx], frontVert);
-	}
-
-};
-
-/**
- * @author jahting / http://www.ameco.tv/
- */
-
-/*******************************************************************************
- *
- *	Triangulator for Simple Polygons with Holes
- *
- *  polygon with holes:
- *	- one closed contour polygon chain
- *  - zero or more closed hole polygon chains
- *
- *	polygon chain (closed):
- *	- Array of vertex Objects with attributes "x" and "y"
- *		- representing the sequence of line segments
- *		- closing line segment (last->first vertex) is implied
- *		- line segments are non-zero length and non-crossing
- *
- *	"global vertex index":
- *	- vertex number resulting from concatenation all polygon chains (starts with 0)
- *
- *
- *	Parameters (will not be changed):
- *		inPolygonChains:
- *		- Array of polygon chains
- *
- *	Results (are a fresh copy):
- *		triangulate_polygon:
- *		- Array of Triangles ( Array of 3 "global vertex index" values )
- *
- ******************************************************************************/
-
-/** @constructor */
-PNLTRI.Triangulator = function () {
-
-	this.lastPolyData = null; // for Debug purposes only
-};
-
-PNLTRI.Triangulator.prototype = {
-
-	constructor: PNLTRI.Triangulator,
-
-	clear_lastData: function () {
-		// save memory after Debug
-		this.lastPolyData = null;
-	},
-
-	// for the polygon data AFTER triangulation
-	//	returns an Array of flags, one flag for each polygon chain:
-	//		lies the inside of the polygon to the left?
-	//		"true" implies CCW for contours and CW for holes
-	get_PolyLeftArr: function () {
-		if (this.lastPolyData) return this.lastPolyData.get_PolyLeftArr();
-		return null;
-	},
-
-	triangulate_polygon: function (inPolygonChains, inForceTrapezoidation) {
-
-		// collected conditions for selecting EarClipTriangulator over Seidel's algorithm
-		function is_basic_polygon() {
-			if (inForceTrapezoidation) return false;
-			return myPolygonData.nbPolyChains() == 1;
-		}
-
-		this.clear_lastData();
-		if (!inPolygonChains || inPolygonChains.length === 0) return [];
-		//
-		// initializes general polygon data structure
-		//
-		var myPolygonData = new PNLTRI.PolygonData(inPolygonChains);
-		//
-		var basicPolygon = is_basic_polygon();
-		var myTriangulator;
-		if (basicPolygon) {
-			//
-			// triangulates single polygon without holes
-			//
-			myTriangulator = new PNLTRI.EarClipTriangulator(myPolygonData);
-			basicPolygon = myTriangulator.triangulate_polygon_no_holes();
-		}
-		if (!basicPolygon) {
-			//
-			// splits polygon into uni-y-monotone sub-polygons
-			//
-			var myMonoSplitter = new PNLTRI.MonoSplitter(myPolygonData);
-			myMonoSplitter.monotonate_trapezoids();
-			//
-			// triangulates all uni-y-monotone sub-polygons
-			//
-			myTriangulator = new PNLTRI.MonoTriangulator(myPolygonData);
-			myTriangulator.triangulate_all_polygons();
-		}
-		//
-		this.lastPolyData = myPolygonData;
-		return myPolygonData.getTriangles(); // copy of triangle list
-	}
-
-};
-
-ShapeUtils.triangulateShape = function () {
-  var pnlTriangulator = new PNLTRI.Triangulator();
-  function removeDupEndPts(points) {
-    var l = points.length;
-    if (l > 2 && points[l - 1].equals(points[0])) {
-      points.pop();
-    }
-  }
-  return function triangulateShape(contour, holes) {
-    removeDupEndPts(contour);
-    holes.forEach(removeDupEndPts);
-    return pnlTriangulator.triangulate_polygon([contour].concat(holes));
-  };
-}();
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: white;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
-
 /**
  * @author Lewy Blue / https://github.com/looeee
  */
@@ -46309,10 +41413,1116 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-var backgroundVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tscreenUV = vec2(position.x, position.y) * 0.5;\n}";
+Math.sinh = Math.sinh || function sinh(x) {
+  var y = Math.exp(x);
+  return (y - 1 / y) / 2;
+};
 
-var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
+Math.cosh = Math.cosh || function cosh(x) {
+  var y = Math.exp(x);
+  return (y + 1 / y) / 2;
+};
 
+Math.cot = Math.cot || function cot(x) {
+  return 1 / Math.tan(x);
+};
+
+// import * as THREE from 'three';
+
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var minFrame = 1000000;
+var maxFrame = 0;
+
+var StatisticsOverlay = function () {
+    function StatisticsOverlay(app, container) {
+        classCallCheck(this, StatisticsOverlay);
+
+        this.app = app;
+
+        this.container = container || app.renderer.domElement;
+
+        this.show = false;
+
+        this.initStatsContainer();
+
+        this.initHideOverLayCheckbox();
+    }
+
+    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
+        var _this = this;
+
+        var hide = this.container.appendChild(document.createElement('div'));
+        hide.id = 'hideStatsOverlay';
+        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
+
+        var checkbox = hide.appendChild(document.createElement('input'));
+        checkbox.type = 'checkbox';
+
+        var label = hide.appendChild(document.createElement('span'));
+        label.innerText = 'Show Stats';
+        label.style = 'color: white;';
+
+        checkbox.addEventListener('change', function () {
+
+            _this.statsElem.classList.toggle('hidden');
+            _this.show = !_this.show;
+        });
+    };
+
+    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
+
+        this.statsElem = this.container.appendChild(document.createElement('div'));
+        this.statsElem.id = 'infoContainer';
+        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
+
+        this.statsElem.classList.add('hidden');
+
+        var timeCount = this.statsElem.appendChild(document.createElement('span'));
+        timeCount.innerText = 'Total Time: ';
+        this.total = timeCount.appendChild(document.createElement('span'));
+
+        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
+        totalUnscaled.innerText = ' Total Unscaled Time: ';
+        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
+
+        var frameCount = this.statsElem.appendChild(document.createElement('span'));
+        frameCount.innerText = ' Frame Count: ';
+        this.frameCount = frameCount.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        lastFrameTime.innerText = 'Last Frame Time: ';
+        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
+
+        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        minFrameTime.innerText = ' Min Frame Time: ';
+        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
+
+        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        maxFrameTime.innerText = ' Max Frame Time: ';
+        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        avgFrameTime.innerText = 'Average Frame Time: ';
+        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
+
+        var fps = this.statsElem.appendChild(document.createElement('span'));
+        fps.innerText = ' FPS: ';
+        this.fps = fps.appendChild(document.createElement('span'));
+
+        this.hideCheck = document.querySelector('#hideOverlayChk');
+
+        this.stats = new Stats();
+        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
+
+        this.statsElem.appendChild(this.stats.dom);
+    };
+
+    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
+
+        if (!this.show) return;
+
+        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
+        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
+        this.frameCount.innerText = this.app.frameCount;
+
+        if (delta) {
+
+            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
+
+            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
+            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
+
+            this.lastFrameTime.innerText = unscaledDelta;
+        }
+
+        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
+        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
+
+        this.stats.update();
+    };
+
+    return StatisticsOverlay;
+}();
+
+var Point = function () {
+  function Point(x, y) {
+    var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    classCallCheck(this, Point);
+
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
+  // compare two points taking rounding errors into account
+
+
+  Point.prototype.compare = function compare(otherPoint) {
+    if (typeof otherPoint === 'undefined') {
+      console.warn('Compare Points: point not defined.');
+      return false;
+    }
+    var a = toFixed(this.x) === toFixed(otherPoint.x);
+    var b = toFixed(this.y) === toFixed(otherPoint.y);
+    var c = toFixed(this.z) === toFixed(otherPoint.z);
+    if (a && b && c) return true;
+    return false;
+  };
+
+  // move the point to hyperboloid (Weierstrass) space, apply the transform,
+  // then move back
+
+
+  Point.prototype.transform = function transform(_transform) {
+    var mat = _transform.matrix;
+    var p = this.poincareToHyperboloid();
+    var x = p.x * mat[0][0] + p.y * mat[0][1] + p.z * mat[0][2];
+    var y = p.x * mat[1][0] + p.y * mat[1][1] + p.z * mat[1][2];
+    var z = p.x * mat[2][0] + p.y * mat[2][1] + p.z * mat[2][2];
+    var q = new Point(x, y, z);
+    return q.hyperboloidToPoincare();
+  };
+
+  Point.prototype.poincareToHyperboloid = function poincareToHyperboloid() {
+    var factor = 1 / (1 - this.x * this.x - this.y * this.y);
+    var x = 2 * factor * this.x;
+    var y = 2 * factor * this.y;
+    var z = factor * (1 + this.x * this.x + this.y * this.y);
+    var p = new Point(x, y);
+    p.z = z;
+    return p;
+  };
+
+  Point.prototype.hyperboloidToPoincare = function hyperboloidToPoincare() {
+    var factor = 1 / (1 + this.z);
+    var x = factor * this.x;
+    var y = factor * this.y;
+    return new Point(x, y);
+  };
+
+  Point.prototype.clone = function clone() {
+    return new Point(this.x, this.y);
+  };
+
+  return Point;
+}();
+
+// * ***********************************************************************
+// *
+// *   CIRCLE CLASS
+// *   A circle in the Poincare disk is identical to a circle in Euclidean space
+// *
+// *************************************************************************
+
+var Circle = function Circle(centreX, centreY, radius) {
+  classCallCheck(this, Circle);
+
+  this.centre = new Point(centreX, centreY);
+  this.radius = radius;
+};
+
+var toFixed = function (number) {
+  var places = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+  return parseFloat(number.toFixed(places));
+};
+
+var distance = function (point1, point2) {
+  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+};
+
+// does the line connecting p1, p2 go through the point (0,0)?
+var throughOrigin = function (point1, point2) {
+  // vertical line through centre
+  if (toFixed(point1.x) === toFixed(0) && toFixed(point2.x) === toFixed(0)) {
+    return true;
+  }
+  var test = (-point1.x * point2.y + point1.x * point1.y) / (point2.x - point1.x) + point1.y;
+
+  if (toFixed(test) === toFixed(0)) return true;
+  return false;
+};
+
+// Find the length of the smaller arc between two angles on a given circle
+var arcLength = function (circle, startAngle, endAngle) {
+  return Math.abs(startAngle - endAngle) > Math.PI ? circle.radius * (2 * Math.PI - Math.abs(startAngle - endAngle)) : circle.radius * Math.abs(startAngle - endAngle);
+};
+
+// find the two points a distance from a point on the circumference of a circle
+// in the direction of point2
+var directedSpacedPointOnArc = function (circle, point1, point2, spacing) {
+  var cosTheta = -(spacing * spacing / (2 * circle.radius * circle.radius) - 1);
+  var sinThetaPos = Math.sqrt(1 - Math.pow(cosTheta, 2));
+  var sinThetaNeg = -sinThetaPos;
+
+  var xPos = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaPos * (point1.y - circle.centre.y);
+  var xNeg = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaNeg * (point1.y - circle.centre.y);
+  var yPos = circle.centre.y + sinThetaPos * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
+  var yNeg = circle.centre.y + sinThetaNeg * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
+
+  var p1 = new Point(xPos, yPos);
+  var p2 = new Point(xNeg, yNeg);
+
+  var a = distance(p1, point2);
+  var b = distance(p2, point2);
+  return a < b ? p1 : p2;
+};
+
+// calculate the normal vector given 2 points
+var normalVector = function (p1, p2) {
+  var d = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  return new Point((p2.x - p1.x) / d, (p2.y - p1.y) / d);
+};
+
+// find the point at a distance from point1 along line defined by point1, point2,
+// in the direction of point2
+var directedSpacedPointOnLine = function (point1, point2, spacing) {
+  var dv = normalVector(point1, point2);
+  return new Point(point1.x + spacing * dv.x, point1.y + spacing * dv.y);
+};
+
+var multiplyMatrices = function (m1, m2) {
+  var result = [];
+  for (var i = 0; i < m1.length; i++) {
+    result[i] = [];
+    for (var j = 0; j < m2[0].length; j++) {
+      var sum = 0;
+      for (var k = 0; k < m1[0].length; k++) {
+        sum += m1[i][k] * m2[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
+};
+
+// create nxn identityMatrix
+var identityMatrix = function (n) {
+  return Array.apply(undefined, new Array(n)).map(function (x, i, a) {
+    return a.map(function (y, k) {
+      return i === k ? 1 : 0;
+    });
+  });
+};
+
+var HyperbolicArc = function () {
+  function HyperbolicArc(startPoint, endPoint) {
+    classCallCheck(this, HyperbolicArc);
+
+    this.startPoint = startPoint;
+    this.endPoint = endPoint;
+
+    if (throughOrigin(startPoint, endPoint)) {
+      this.straightLine = true;
+      this.arcLength = distance(startPoint, endPoint);
+      this.curvature = 0;
+    } else {
+      this.calculateArc();
+      this.arcLength = arcLength(this.circle, this.startAngle, this.endAngle);
+      this.curvature = this.arcLength / this.circle.radius;
+    }
+  }
+
+  // Calculate the arc using Dunham's method
+
+
+  HyperbolicArc.prototype.calculateArc = function calculateArc() {
+    // calculate centre of the circle the arc lies on relative to unit disk
+    var hp = this.hyperboloidCrossProduct(this.startPoint.poincareToHyperboloid(), this.endPoint.poincareToHyperboloid());
+
+    var arcCentre = new Point(hp.x / hp.z, hp.y / hp.z);
+    var arcRadius = Math.sqrt(Math.pow(this.startPoint.x - arcCentre.x, 2) + Math.pow(this.startPoint.y - arcCentre.y, 2));
+
+    // translate points to origin and calculate arctan
+    this.startAngle = Math.atan2(this.startPoint.y - arcCentre.y, this.startPoint.x - arcCentre.x);
+    this.endAngle = Math.atan2(this.endPoint.y - arcCentre.y, this.endPoint.x - arcCentre.x);
+
+    // angles are in (-pi, pi), transform to (0,2pi)
+    this.startAngle = this.startAngle < 0 ? 2 * Math.PI + this.startAngle : this.startAngle;
+    this.endAngle = this.endAngle < 0 ? 2 * Math.PI + this.endAngle : this.endAngle;
+
+    this.circle = new Circle(arcCentre.x, arcCentre.y, arcRadius);
+  };
+
+  HyperbolicArc.prototype.hyperboloidCrossProduct = function hyperboloidCrossProduct(point3D1, point3D2) {
+    return {
+      x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
+      y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
+      z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
+    };
+  };
+
+  return HyperbolicArc;
+}();
+
+// * ***********************************************************************
+// *
+// *   EDGE CLASS
+// *   Represents a hyperbolic polygon edge
+// *
+// *************************************************************************
+
+
+var HyperbolicEdge = function () {
+  function HyperbolicEdge(startPoint, endPoint) {
+    classCallCheck(this, HyperbolicEdge);
+
+    this.arc = new HyperbolicArc(startPoint, endPoint);
+  }
+
+  // calculate the spacing for subdividing the edge into an even number of pieces.
+  // For the first ( longest ) edge this will be calculated based on spacing
+  // then for the rest of the edges it will be calculated based on the number of
+  // subdivisions of the first edge ( so that all edges are divided into an equal
+  // number of pieces)
+
+
+  HyperbolicEdge.prototype.calculateSpacing = function calculateSpacing(numDivisions) {
+    // subdivision spacing for edges
+    this.spacing = this.arc.arcLength > 0.03 ? this.arc.arcLength / 5 // approx maximum that hides all gaps
+    : 0.02;
+
+    // calculate the number of subdivisions required to break the arc into an
+    // even number of pieces (or 1 in case of tiny polygons)
+    var subdivisions = this.arc.arcLength > 0.01 ? 2 * Math.ceil(this.arc.arcLength / this.spacing / 2) : 1;
+
+    this.numDivisions = numDivisions || subdivisions;
+
+    // recalculate spacing based on number of points
+    this.spacing = this.arc.arcLength / this.numDivisions;
+  };
+
+  // Subdivide the edge into lengths calculated by calculateSpacing()
+
+
+  HyperbolicEdge.prototype.subdivideEdge = function subdivideEdge(numDivisions) {
+    this.calculateSpacing(numDivisions);
+    this.points = [this.arc.startPoint];
+
+    // tiny pgons near the edges of the disk don't need to be subdivided
+    if (this.arc.arcLength > this.spacing) {
+      var p = !this.arc.straightLine ? directedSpacedPointOnArc(this.arc.circle, this.arc.startPoint, this.arc.endPoint, this.spacing) : directedSpacedPointOnLine(this.arc.startPoint, this.arc.endPoint, this.spacing);
+      this.points.push(p);
+
+      for (var i = 0; i < this.numDivisions - 2; i++) {
+        p = !this.arc.straightLine ? directedSpacedPointOnArc(this.arc.circle, p, this.arc.endPoint, this.spacing) : directedSpacedPointOnLine(p, this.arc.endPoint, this.spacing);
+        this.points.push(p);
+      }
+    }
+    // push the final vertex
+    this.points.push(this.arc.endPoint);
+  };
+
+  return HyperbolicEdge;
+}();
+
+// * ***********************************************************************
+// *
+// *  (TRIANGULAR) HYPERBOLIC POLYGON CLASS
+// *
+// *************************************************************************
+// NOTE: sometimes polygons will be backwards facing. Solved with DoubleSide material
+// but may cause problems
+// vertices: array of Points
+// materialIndex: which material from THREE.Multimaterial to use
+
+
+var HyperbolicPolygon = function () {
+  function HyperbolicPolygon(vertices) {
+    var materialIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    classCallCheck(this, HyperbolicPolygon);
+
+    // hyperbolic elenments are calculated on the unit Pointcare so they will
+    // need to be resized before drawing
+    this.needsResizing = true;
+    this.materialIndex = materialIndex;
+    this.vertices = vertices;
+    this.addEdges();
+    this.findSubdivisionEdge();
+    this.subdivideMesh();
+  }
+
+  HyperbolicPolygon.prototype.addEdges = function addEdges() {
+    this.edges = [];
+    for (var i = 0; i < this.vertices.length; i++) {
+      this.edges.push(new HyperbolicEdge(this.vertices[i], this.vertices[(i + 1) % this.vertices.length]));
+    }
+  };
+
+  // The longest edge with radius > 0 should be used to calculate how finely
+  // the polygon gets subdivided
+
+
+  HyperbolicPolygon.prototype.findSubdivisionEdge = function findSubdivisionEdge() {
+    var a = this.edges[0].arc.curvature === 0 ? 0 : this.edges[0].arc.arcLength;
+    var b = this.edges[1].arc.curvature === 0 ? 0 : this.edges[1].arc.arcLength;
+    var c = this.edges[2].arc.curvature === 0 ? 0 : this.edges[2].arc.arcLength;
+    if (a > b && a > c) this.subdivisionEdge = 0;else if (b > c) this.subdivisionEdge = 1;else this.subdivisionEdge = 2;
+  };
+
+  // subdivide the subdivision edge, then subdivide the other two edges with the
+  // same number of points as the subdivision
+
+
+  HyperbolicPolygon.prototype.subdivideEdges = function subdivideEdges() {
+    this.edges[this.subdivisionEdge].subdivideEdge();
+    this.numDivisions = this.edges[this.subdivisionEdge].points.length - 1;
+
+    this.edges[(this.subdivisionEdge + 1) % 3].subdivideEdge(this.numDivisions);
+    this.edges[(this.subdivisionEdge + 2) % 3].subdivideEdge(this.numDivisions);
+  };
+
+  // create triangular subdivision mesh to fill the interior of the polygon
+
+
+  HyperbolicPolygon.prototype.subdivideMesh = function subdivideMesh() {
+    this.subdivideEdges();
+    this.mesh = [].concat(this.edges[0].points);
+
+    for (var i = 1; i < this.numDivisions; i++) {
+      var startPoint = this.edges[2].points[this.numDivisions - i];
+      var endPoint = this.edges[1].points[i];
+      this.subdivideInteriorArc(startPoint, endPoint, i);
+    }
+
+    // push the final vertex
+    this.mesh.push(this.edges[2].points[0]);
+  };
+
+  // find the points along the arc between opposite subdivions of the second two
+  // edges of the polygon. Each subsequent arc will have one less subdivision
+
+
+  HyperbolicPolygon.prototype.subdivideInteriorArc = function subdivideInteriorArc(startPoint, endPoint, arcIndex) {
+    var circle = new HyperbolicArc(startPoint, endPoint).circle;
+    this.mesh.push(startPoint);
+
+    // for each arc, the number of divisions will be reduced by one
+    var divisions = this.numDivisions - arcIndex;
+
+    // if the line get divided add points along line to mesh
+    if (divisions > 1) {
+      var spacing = distance(startPoint, endPoint) / divisions;
+      var nextPoint = directedSpacedPointOnArc(circle, startPoint, endPoint, spacing);
+      for (var j = 0; j < divisions - 1; j++) {
+        this.mesh.push(nextPoint);
+        nextPoint = directedSpacedPointOnArc(circle, nextPoint, endPoint, spacing);
+      }
+    }
+
+    this.mesh.push(endPoint);
+  };
+
+  // Apply a Transform to the polygon
+
+
+  HyperbolicPolygon.prototype.transform = function transform(_transform) {
+    var materialIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.materialIndex;
+
+    var newVertices = [];
+    for (var i = 0; i < this.vertices.length; i++) {
+      newVertices.push(this.vertices[i].transform(_transform));
+    }
+    return new HyperbolicPolygon(newVertices, materialIndex);
+  };
+
+  return HyperbolicPolygon;
+}();
+
+var HyperbolicTransform = function () {
+  function HyperbolicTransform(matrix, orientation, position) {
+    classCallCheck(this, HyperbolicTransform);
+
+    this.matrix = matrix || identityMatrix(3);
+    this.orientation = orientation;
+    this.position = position || false; // position not always required
+  }
+
+  HyperbolicTransform.prototype.multiply = function multiply(transform) {
+    if (!(transform instanceof HyperbolicTransform)) {
+      console.error('Error: ' + transform + ' is not a HyperbolicTransform');
+      return false;
+    }
+    var mat = multiplyMatrices(transform.matrix, this.matrix);
+    var position = transform.position;
+    var orientation = 1; // rotation
+    if (transform.orientation * this.orientation < 0) {
+      orientation = -1;
+    }
+    return new HyperbolicTransform(mat, orientation, position);
+  };
+
+  return HyperbolicTransform;
+}();
+
+// * ***********************************************************************
+// *
+// *  TRANSFORMATIONS CLASS
+// *
+// *
+// *************************************************************************
+
+var HyperbolicTransformations = function () {
+  function HyperbolicTransformations(p, q) {
+    classCallCheck(this, HyperbolicTransformations);
+
+    this.p = p;
+    this.q = q;
+
+    this.initHypotenuseReflection();
+    this.initEdgeReflection();
+    this.initEdgeBisectorReflection();
+
+    this.rot2 = multiplyMatrices(this.edgeReflection.matrix, this.edgeBisectorReflection.matrix);
+
+    this.initPgonRotations();
+    this.initEdges();
+    this.initEdgeTransforms();
+
+    this.identity = new HyperbolicTransform(identityMatrix(3));
+  }
+
+  // reflect across the hypotenuse of the fundamental region of a tesselation
+
+
+  HyperbolicTransformations.prototype.initHypotenuseReflection = function initHypotenuseReflection() {
+    this.hypReflection = new HyperbolicTransform(identityMatrix(3), -1);
+    this.hypReflection.matrix[0][0] = Math.cos(2 * Math.PI / this.p);
+    this.hypReflection.matrix[0][1] = Math.sin(2 * Math.PI / this.p);
+    this.hypReflection.matrix[1][0] = Math.sin(2 * Math.PI / this.p);
+    this.hypReflection.matrix[1][1] = -Math.cos(2 * Math.PI / this.p);
+  };
+
+  // reflect across the first edge of the polygon (which crosses the radius
+  // (0,0) -> (0,1) on unit disk). Combined with rotations we can reflect
+  // across any edge
+
+
+  HyperbolicTransformations.prototype.initEdgeReflection = function initEdgeReflection() {
+    var cosp = Math.cos(Math.PI / this.p);
+    var sinp = Math.sin(Math.PI / this.p);
+    var cos2p = Math.cos(2 * Math.PI / this.p);
+    var sin2p = Math.sin(2 * Math.PI / this.p);
+
+    var coshq = Math.cos(Math.PI / this.q) / sinp;
+    var sinhq = Math.sqrt(coshq * coshq - 1);
+
+    var cosh2q = 2 * coshq * coshq - 1;
+    var sinh2q = 2 * sinhq * coshq;
+    var num = 2;
+    var den = 6;
+    this.edgeReflection = new HyperbolicTransform(identityMatrix(3), -1);
+    this.edgeReflection.matrix[0][0] = -cosh2q;
+    this.edgeReflection.matrix[0][2] = sinh2q;
+    this.edgeReflection.matrix[2][0] = -sinh2q;
+    this.edgeReflection.matrix[2][2] = cosh2q;
+  };
+
+  HyperbolicTransformations.prototype.initEdgeBisectorReflection = function initEdgeBisectorReflection() {
+    this.edgeBisectorReflection = new HyperbolicTransform(identityMatrix(3), -1);
+    this.edgeBisectorReflection.matrix[1][1] = -1;
+  };
+
+  // set up clockwise and anticlockwise rotations which will rotate by
+  // PI/(number of sides of central polygon)
+
+
+  HyperbolicTransformations.prototype.initPgonRotations = function initPgonRotations() {
+    this.rotatePolygonCW = [];
+    this.rotatePolygonCCW = [];
+    for (var i = 0; i < this.p; i++) {
+      this.rotatePolygonCW[i] = new HyperbolicTransform(identityMatrix(3), 1);
+      this.rotatePolygonCW[i].matrix[0][0] = Math.cos(2 * i * Math.PI / this.p);
+      this.rotatePolygonCW[i].matrix[0][1] = -Math.sin(2 * i * Math.PI / this.p);
+      this.rotatePolygonCW[i].matrix[1][0] = Math.sin(2 * i * Math.PI / this.p);
+      this.rotatePolygonCW[i].matrix[1][1] = Math.cos(2 * i * Math.PI / this.p);
+
+      this.rotatePolygonCCW[i] = new HyperbolicTransform(identityMatrix(3), 1);
+      this.rotatePolygonCCW[i].matrix[0][0] = Math.cos(2 * i * Math.PI / this.p);
+      this.rotatePolygonCCW[i].matrix[0][1] = Math.sin(2 * i * Math.PI / this.p);
+      this.rotatePolygonCCW[i].matrix[1][0] = -Math.sin(2 * i * Math.PI / this.p);
+      this.rotatePolygonCCW[i].matrix[1][1] = Math.cos(2 * i * Math.PI / this.p);
+    }
+  };
+
+  // orientation: either reflection = -1 OR rotation = 1
+  // NOTE: hard coded for Circle Limit I
+
+
+  HyperbolicTransformations.prototype.initEdges = function initEdges() {
+    this.edges = [];
+    for (var i = 0; i < this.p; i++) {
+      this.edges.push({
+        orientation: 1,
+        adjacentEdge: i
+      });
+    }
+  };
+
+  HyperbolicTransformations.prototype.initEdgeTransforms = function initEdgeTransforms() {
+    this.edgeTransforms = [];
+
+    for (var i = 0; i < this.p; i++) {
+      var adj = this.edges[i].adjacentEdge;
+      // Case 1: reflection
+      if (this.edges[i].orientation === -1) {
+        var mat = multiplyMatrices(this.rotatePolygonCW[i].matrix, this.edgeReflection.matrix);
+        mat = multiplyMatrices(mat, this.rotatePolygonCCW[adj].matrix);
+        this.edgeTransforms[i] = new HyperbolicTransform(mat);
+      }
+      // Case 2: rotation
+      else if (this.edges[i].orientation === 1) {
+          var _mat = multiplyMatrices(this.rotatePolygonCW[i].matrix, this.rot2);
+          _mat = multiplyMatrices(_mat, this.rotatePolygonCCW[adj].matrix);
+          this.edgeTransforms[i] = new HyperbolicTransform(_mat);
+        } else {
+          console.error('initEdgeTransforms(): invalid orientation value');
+          console.error(this.edges[i]);
+        }
+      this.edgeTransforms[i].orientation = this.edges[adj].orientation;
+      this.edgeTransforms[i].position = adj;
+    }
+  };
+
+  HyperbolicTransformations.prototype.shiftTrans = function shiftTrans(transform, shift) {
+    var newEdge = (transform.position + transform.orientation * shift + 2 * this.p) % this.p;
+    if (newEdge < 0 || newEdge > this.p - 1) {
+      console.error('Error: shiftTran newEdge out of range.');
+    }
+    return transform.multiply(this.edgeTransforms[newEdge]);
+  };
+
+  return HyperbolicTransformations;
+}();
+
+// * ***********************************************************************
+// *
+// *  PARAMETERS CLASS
+// *
+// *  Adapted from the table on pg 19 of Ajit Dajar's thesis (See Documents folder)
+// *************************************************************************
+
+var HyperbolicParameters = function () {
+  function HyperbolicParameters(p, q) {
+    classCallCheck(this, HyperbolicParameters);
+
+    this.p = p;
+    this.q = q;
+
+    this.minExposure = q - 2;
+    this.maxExposure = q - 1;
+  }
+
+  HyperbolicParameters.prototype.exposure = function exposure(layer, vertexNum, pgonNum) {
+    if (layer === 0) {
+      if (pgonNum === 0) {
+        // layer 0, pgon 0
+        if (this.q === 3) return this.maxExposure;
+        return this.minExposure;
+      }
+      return this.maxExposure; // layer 0, pgon != 0
+    }
+    if (vertexNum === 0 && pgonNum === 0) {
+      return this.minExposure;
+    } else if (vertexNum === 0) {
+      if (this.q !== 3) return this.maxExposure;
+      return this.minExposure;
+    } else if (pgonNum === 0) {
+      if (this.q !== 3) return this.minExposure;
+      return this.maxExposure;
+    }
+    return this.maxExposure;
+  };
+
+  HyperbolicParameters.prototype.pSkip = function pSkip(exposure) {
+    if (exposure === this.minExposure) {
+      if (this.q !== 3) return 1;
+      return 3;
+    } else if (exposure === this.maxExposure) {
+      if (this.p === 3) return 1;else if (this.q === 3) return 2;
+      return 0;
+    }
+    console.error('pSkip: wrong exposure value!');
+    return false;
+  };
+
+  HyperbolicParameters.prototype.qSkip = function qSkip(exposure, vertexNum) {
+    if (exposure === this.minExposure) {
+      if (vertexNum === 0) {
+        if (this.q !== 3) return -1;
+        return 0;
+      }
+      if (this.p === 3) return -1;
+      return 0;
+    } else if (exposure === this.maxExposure) {
+      if (vertexNum === 0) {
+        if (this.p === 3 || this.q === 3) return 0;
+        return -1;
+      }
+      return 0;
+    }
+    console.error('qSkip: wrong exposure value!');
+    return false;
+  };
+
+  HyperbolicParameters.prototype.verticesToDo = function verticesToDo(exposure) {
+    if (this.p === 3) return 1;else if (exposure === this.minExposure) {
+      if (this.q === 3) return this.p - 5;
+      return this.p - 3;
+    } else if (exposure === this.maxExposure) {
+      if (this.q === 3) return this.p - 4;
+      return this.p - 2;
+    }
+    console.error('verticesToDo: wrong exposure value!');
+    return false;
+  };
+
+  HyperbolicParameters.prototype.pgonsToDo = function pgonsToDo(exposure, vertexNum) {
+    if (this.q === 3) return 1;else if (vertexNum === 0) return this.q - 3;else if (exposure === this.minExposure) {
+      if (this.p === 3) return this.q - 4;
+      return this.q - 2;
+    } else if (exposure === this.maxExposure) {
+      if (this.p === 3) return this.q - 3;
+      return this.q - 2;
+    }
+    console.error('pgonsToDo: wrong exposure value!');
+    return false;
+  };
+
+  return HyperbolicParameters;
+}();
+
+// import * as E from './mathFunctions.js';
+
+var RegularHyperbolicTesselation = function () {
+  function RegularHyperbolicTesselation(spec) {
+    classCallCheck(this, RegularHyperbolicTesselation);
+
+    this.wireframe = spec.wireframe || false;
+    this.textures = spec.textures;
+    this.p = spec.p || 4;
+    this.q = spec.q || 6;
+
+    // Stop drawing when polygons reach this size (on unit disk)
+    // a value of about 0.02 seems to be the minimum that webgl can handle easily.
+    this.minPolygonSize = spec.minPolygonSize || 0.1;
+
+    console.log('{', this.p, ', ', this.q, '} tiling.');
+
+    this.params = new HyperbolicParameters(this.p, this.q);
+    this.transforms = new HyperbolicTransformations(this.p, this.q);
+
+    if (this.checkParams()) {
+      return false;
+    }
+    return this;
+  }
+
+  // fundamentalRegion calculation using Dunham's method
+  // this is a right angle triangle above the radius on the line (0,0) -> (0,1)
+  // of the central polygon
+
+
+  RegularHyperbolicTesselation.prototype.fundamentalRegion = function fundamentalRegion() {
+    var cosh2 = Math.cot(Math.PI / this.p) * Math.cot(Math.PI / this.q);
+
+    var sinh2 = Math.sqrt(cosh2 * cosh2 - 1);
+
+    var coshq = Math.cos(Math.PI / this.q) / Math.sin(Math.PI / this.p);
+    var sinhq = Math.sqrt(coshq * coshq - 1);
+
+    var rad2 = sinh2 / (cosh2 + 1); // radius of circle containing layer 0
+    var x2pt = sinhq / (coshq + 1); // x coordinate of third vertex of triangle
+
+    // point at end of hypotenuse of fundamental region
+    var xqpt = Math.cos(Math.PI / this.p) * rad2;
+    var yqpt = Math.sin(Math.PI / this.p) * rad2;
+
+    // create points and move them from the unit disk to our radius
+    var p1 = new Point(xqpt, yqpt);
+    var p2 = new Point(x2pt, 0);
+    var p3 = p1.transform(this.transforms.edgeBisectorReflection);
+    var vertices = [new Point(0, 0), p1, p2];
+
+    return new HyperbolicPolygon(vertices, 0);
+  };
+
+  // this is a kite shaped region consisting of two copies of the fundamental
+  // region with different textures applied to create the basic pattern
+  // NOTE: for the time being just using edge bisector reflection to recreate Circle
+  // Limit I, other patterns will require different options
+
+
+  RegularHyperbolicTesselation.prototype.fundamentalPattern = function fundamentalPattern() {
+    var upper = this.fundamentalRegion();
+    var lower = upper.transform(this.transforms.edgeBisectorReflection, 1);
+    return [upper, lower];
+  };
+
+  // The pattern in the central polygon is made up of transformed copies
+  // of the fundamental pattern
+
+
+  RegularHyperbolicTesselation.prototype.buildCentralPattern = function buildCentralPattern() {
+    // add the first two polygons to the central pattern
+    var centralPattern = this.fundamentalPattern();
+
+    // created reflected versions of the two pattern pieces
+    var upperReflected = centralPattern[0].transform(this.transforms.edgeBisectorReflection);
+    var lowerReflected = centralPattern[1].transform(this.transforms.edgeBisectorReflection);
+
+    // add the rest of the pattern pieces to the central pattern
+    for (var i = 1; i < this.p; i++) {
+      if (i % 2 === 1) {
+        centralPattern.push(upperReflected.transform(this.transforms.rotatePolygonCW[i]));
+        centralPattern.push(lowerReflected.transform(this.transforms.rotatePolygonCW[i]));
+      } else {
+        centralPattern.push(centralPattern[0].transform(this.transforms.rotatePolygonCW[i]));
+        centralPattern.push(centralPattern[1].transform(this.transforms.rotatePolygonCW[i]));
+      }
+    }
+
+    return centralPattern;
+  };
+
+  // TODO document this function
+
+
+  RegularHyperbolicTesselation.prototype.generateTiling = function generateTiling() {
+    var designMode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    var tiling = this.buildCentralPattern();
+
+    var pRange = designMode ? 1 : this.p; // if we are in design mode only do one loop
+    for (var i = 0; i < pRange; i++) {
+      var qTransform = this.transforms.edgeTransforms[i];
+
+      var qRange = designMode ? 1 : this.q - 2; // if we are in design mode only do one loop
+      for (var j = 0; j < qRange; j++) {
+        if (this.p === 3 && this.q - 3 === j) {
+          this.addTransformedPattern(tiling, qTransform);
+        } else {
+          this.layerRecursion(this.params.exposure(0, i, j), 1, qTransform, tiling, designMode);
+        }
+        if (-1 % this.p !== 0) {
+          qTransform = this.transforms.shiftTrans(qTransform, -1); // -1 means clockwise
+        }
+      }
+    }
+
+    return tiling;
+  };
+
+  // calculate the polygons in each layer and add them to this.tiling[]
+  // TODO: document this function
+  // TODO: better designMode
+
+
+  RegularHyperbolicTesselation.prototype.layerRecursion = function layerRecursion(exposure, layer, transform, tiling) {
+    var designMode = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+
+    this.addTransformedPattern(tiling, transform);
+    // stop if the current pattern has reached the minimum size
+    // TODO better method as this leaves holes at the edges
+    if (tiling[tiling.length - 1].edges[0].arc.arcLength < this.minPolygonSize) {
+      return;
+    }
+
+    var pSkip = this.params.pSkip(exposure);
+    var verticesToDo = this.params.verticesToDo(exposure);
+
+    var verticesRange = designMode ? 1 : verticesToDo; // if we are in design mode only do one loop
+    for (var i = 0; i < verticesRange; i++) {
+      var pTransform = this.transforms.shiftTrans(transform, pSkip);
+      var qTransform = void 0;
+
+      var qSkip = this.params.qSkip(exposure, i);
+      if (qSkip % this.p !== 0) {
+        qTransform = this.transforms.shiftTrans(pTransform, qSkip);
+      } else {
+        qTransform = pTransform;
+      }
+
+      var pgonsToDo = this.params.pgonsToDo(exposure, i);
+
+      var pgonsRange = designMode ? 1 : pgonsToDo; // if we are in design mode only do one loop
+      for (var j = 0; j < pgonsRange; j++) {
+        if (this.p === 3 && j === pgonsToDo - 1) {
+          this.addTransformedPattern(tiling, qTransform);
+        } else {
+          this.layerRecursion(this.params.exposure(layer, i, j), layer + 1, qTransform, tiling);
+        }
+        if (-1 % this.p !== 0) {
+          qTransform = this.transforms.shiftTrans(qTransform, -1); // -1 means clockwise
+        }
+      }
+      pSkip = (pSkip + 1) % this.p;
+    }
+  };
+
+  // The first p*2 elements of the tiling hold the central pattern
+  // The transform will be applied to these
+
+
+  RegularHyperbolicTesselation.prototype.addTransformedPattern = function addTransformedPattern(tiling, transform) {
+    for (var i = 0; i < this.p * 2; i++) {
+      tiling.push(tiling[i].transform(transform));
+    }
+  };
+
+  // The tesselation requires that (p-2)(q-2) > 4 to work (otherwise it is
+  // either an elliptical or euclidean tesselation);
+
+
+  RegularHyperbolicTesselation.prototype.checkParams = function checkParams() {
+    if ((this.p - 2) * (this.q - 2) <= 4) {
+      console.error('Hyperbolic tesselations require that (p-2)(q-2) > 4!');
+      return true;
+    } else if (this.q < 3 || isNaN(this.q)) {
+      console.error('Tesselation error: at least 3 p-gons must meet at each vertex!');
+      return true;
+    } else if (this.p < 3 || isNaN(this.p)) {
+      console.error('Tesselation error: polygon needs at least 3 sides!');
+      return true;
+    }
+    return false;
+  };
+
+  return RegularHyperbolicTesselation;
+}();
+
+// import utils from '../../../../utilities.js';
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
 var EscherSketchCanvas = function () {
@@ -46332,26 +42542,7 @@ var EscherSketchCanvas = function () {
         var statisticsOverlay = void 0;
         if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-        var updateMaterials = function () {
-            // Pan events on mobile sometimes register as (0,0); ignore these
-            if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
-                var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-                var offsetY = 1 - (utils.pointerPos.y - mastHeadHeight) / self.app.canvas.clientHeight;
-
-                // make the line well defined when moving the pointer off the top of the canvas
-                offsetY = offsetY > 0.99 ? 0.999 : offsetY;
-
-                self.offset.set(offsetX, offsetY);
-                self.smooth.set(1.0, offsetY);
-
-                // const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
-                // self.pointer.set( pointer.x, pointer.y );
-            }
-        };
-
         self.app.onUpdate = function () {
-
-            updateMaterials();
 
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
@@ -46360,44 +42551,28 @@ var EscherSketchCanvas = function () {
             mastHeadHeight = document.querySelector('.masthead').clientHeight;
         };
 
-        self.initMaterials();
-        self.addBackground();
-
         self.app.play();
     }
 
-    EscherSketchCanvas.prototype.addBackground = function addBackground() {
-        var geometry = new PlaneBufferGeometry(2, 2, 1);
-        this.bgMesh = new Mesh(geometry, this.backgroundMat);
-        this.app.scene.add(this.bgMesh);
-    };
+    EscherSketchCanvas.initTiling = function initTiling(spec) {
 
-    EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
-        var loader = new TextureLoader();
-        var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-        noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
+        var imagesPath = '/assets/images/work/escherSketch/';
 
-        this.offset = new Vector2(0, 0);
-        this.smooth = new Vector2(1.0, 1.0);
-        // this.pointer = new THREE.Vector2( 100, 100 );
-
-        var colA = new Color(0xffffff);
-        var colB = new Color(0x283844);
-
-        var uniforms = {
-            noiseTexture: { value: noiseTexture },
-            offset: { value: this.offset },
-            smooth: { value: this.smooth }
+        spec = spec || {
+            wireframe: false,
+            p: 6,
+            q: 6,
+            textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
+            edgeAdjacency: [//array of length p
+            [1, //edge_0 orientation (-1 = reflection, 1 = rotation)
+            5], [1, 4], //edge_1 orientation, adjacency
+            [1, 3], [1, 2], [1, 1], [1, 0]],
+            minPolygonSize: 0.05
         };
 
-        this.backgroundMat = new ShaderMaterial({
-            uniforms: Object.assign({
-                color1: { value: colB },
-                color2: { value: colA }
-            }, uniforms),
-            vertexShader: backgroundVert,
-            fragmentShader: backgroundFrag
-        });
+        var tesselation = new RegularHyperbolicTesselation(spec);
+
+        return tesselation.generateTiling(true);
     };
 
     return EscherSketchCanvas;

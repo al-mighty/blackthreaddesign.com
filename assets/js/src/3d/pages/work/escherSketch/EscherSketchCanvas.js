@@ -1,18 +1,13 @@
 import * as THREE from 'three';
 
-// import threeUtils from '../../App/threeUtils.js';
-import utils from '../../../../utilities.js';
+import App from '../../../App/App.js';
+
+// import utils from '../../../../utilities.js';
 import './escherSketchCanvasSetup.js';
 
 import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 
-import App from '../../../App/App.js';
-
-import backgroundVert from './shaders/background.vert';
-import backgroundFrag from './shaders/background.frag';
-
-
-// import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './escherSketchCanvasHelpers.js';
+import RegularHyperbolicTesselation from './utilities/RegularHyperbolicTesselation.js';
 
 let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
@@ -32,27 +27,9 @@ export default class EscherSketchCanvas {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
-    const updateMaterials = function () {
-        // Pan events on mobile sometimes register as (0,0); ignore these
-      if ( utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0 ) {
-        const offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-        let offsetY = 1 - ( utils.pointerPos.y - mastHeadHeight ) / self.app.canvas.clientHeight;
-
-        // make the line well defined when moving the pointer off the top of the canvas
-        offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
-
-        self.offset.set( offsetX, offsetY );
-        self.smooth.set( 1.0, offsetY );
-
-        // const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
-        // self.pointer.set( pointer.x, pointer.y );
-      }
-    };
 
 
     self.app.onUpdate = function () {
-
-      updateMaterials();
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -62,46 +39,31 @@ export default class EscherSketchCanvas {
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
     };
 
-    self.initMaterials();
-    self.addBackground();
-
     self.app.play();
 
   }
 
+  static initTiling( spec ) {
 
-  addBackground() {
-    const geometry = new THREE.PlaneBufferGeometry( 2, 2, 1 );
-    this.bgMesh = new THREE.Mesh( geometry, this.backgroundMat );
-    this.app.scene.add( this.bgMesh );
-  }
+    const imagesPath = '/assets/images/work/escherSketch/';
 
-  initMaterials() {
-    const loader = new THREE.TextureLoader();
-    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
-    noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
-
-    this.offset = new THREE.Vector2( 0, 0 );
-    this.smooth = new THREE.Vector2( 1.0, 1.0 );
-    // this.pointer = new THREE.Vector2( 100, 100 );
-
-    const colA = new THREE.Color( 0xffffff );
-    const colB = new THREE.Color( 0x283844 );
-
-    const uniforms = {
-      noiseTexture: { value: noiseTexture },
-      offset: { value: this.offset },
-      smooth: { value: this.smooth },
+    spec = spec || {
+      wireframe: false,
+      p: 6,
+      q: 6,
+      textures: [`${imagesPath}fish-black.png`, `${imagesPath}fish-white.png`],
+      edgeAdjacency: [ //array of length p
+                      [1, //edge_0 orientation (-1 = reflection, 1 = rotation)
+                        5, //edge_0 adjacency (range p - 1)
+                      ],
+                      [1, 4], //edge_1 orientation, adjacency
+                      [1, 3], [1, 2], [1, 1], [1, 0]],
+      minPolygonSize: 0.05,
     };
 
-    this.backgroundMat = new THREE.ShaderMaterial( {
-      uniforms: Object.assign( {
-        color1: { value: colB },
-        color2: { value: colA },
-      }, uniforms ),
-      vertexShader: backgroundVert,
-      fragmentShader: backgroundFrag,
-    } );
+    const tesselation = new RegularHyperbolicTesselation( spec );
+
+    return tesselation.generateTiling( true );
   }
 
 }
