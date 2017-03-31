@@ -11126,6 +11126,7 @@ define(String.prototype, "padRight", "".padEnd);
 
 interopDefault(index);
 
+// Set up any globals
 window.Hammer = hammer$1;
 
 /* ****************************************
@@ -12282,6 +12283,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
