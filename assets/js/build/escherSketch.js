@@ -42542,9 +42542,13 @@ var EscherSketchCanvas = function () {
     var statisticsOverlay = void 0;
     if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-    var imagesPath = '/assets/images/work/escherSketch/tiles/';
+    self.initSpec();
 
-    this.drawPolygonArray(this.initTiling(), [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'], 0xffffff, true);
+    self.initMaterials();
+
+    self.tiling = this.initTiling();
+
+    self.drawPolygonArray(self.tiling);
 
     self.app.onUpdate = function () {
 
@@ -42557,14 +42561,13 @@ var EscherSketchCanvas = function () {
 
     self.app.play();
 
-    console.log(self.app.scene);
+    console.log(self.app.scene.children);
   }
 
-  EscherSketchCanvas.prototype.initTiling = function initTiling(spec) {
-
+  EscherSketchCanvas.prototype.initSpec = function initSpec() {
     var imagesPath = '/assets/images/work/escherSketch/tiles/';
 
-    spec = spec || {
+    this.spec = {
       wireframe: false,
       p: 6,
       q: 6,
@@ -42575,13 +42578,17 @@ var EscherSketchCanvas = function () {
       [1, 3], [1, 2], [1, 1], [1, 0]],
       minPolygonSize: 0.05
     };
-
-    var tesselation = new RegularHyperbolicTesselation(spec);
-
-    return tesselation.generateTiling(true);
   };
 
-  EscherSketchCanvas.prototype.drawPolygon = function drawPolygon(polygon, color, textures, wireframe, elem) {
+  EscherSketchCanvas.prototype.initTiling = function initTiling(spec) {
+
+    var tesselation = new RegularHyperbolicTesselation(this.spec);
+
+    return tesselation.generateTiling(false);
+  };
+
+  EscherSketchCanvas.prototype.drawPolygon = function drawPolygon(polygon) {
+    this.radius = 100;
     var divisions = polygon.numDivisions || 1;
     var p = 1 / divisions;
     var geometry = new Geometry();
@@ -42613,16 +42620,15 @@ var EscherSketchCanvas = function () {
       }
       edgeStartingVertex += m;
     }
-    var mesh = this.createMesh(geometry, color, textures, polygon.materialIndex, wireframe, elem);
+    var mesh = this.createMesh(geometry, polygon.materialIndex);
     this.app.scene.add(mesh);
   };
 
-  EscherSketchCanvas.prototype.drawPolygonArray = function drawPolygonArray(array, textureArray, color, wireframe) {
-    color = color || 0xffffff;
-    wireframe = wireframe || false;
+  EscherSketchCanvas.prototype.drawPolygonArray = function drawPolygonArray(array) {
+    console.log(array);
     for (var i = 0; i < array.length; i++) {
 
-      this.drawPolygon(array[i], color, textureArray, wireframe);
+      this.drawPolygon(array[i]);
     }
   };
 
@@ -42630,33 +42636,33 @@ var EscherSketchCanvas = function () {
   // solved this by making material doubles sided
 
 
-  EscherSketchCanvas.prototype.createMesh = function createMesh(geometry, color, textures, materialIndex, wireframe) {
-    if (wireframe === undefined) wireframe = false;
-    if (color === undefined) color = 0xffffff;
+  EscherSketchCanvas.prototype.createMesh = function createMesh(geometry, materialIndex) {
 
-    if (!this.pattern) {
-      this.createPattern(color, textures, wireframe);
-    }
     return new Mesh(geometry, this.pattern.materials[materialIndex]);
   };
 
-  // initMaterials() {
-  //   this.materials = new THREE.MultiMaterial();
-  // }
+  EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
+    var _this = this;
 
-  EscherSketchCanvas.prototype.createPattern = function createPattern(color, textures, wireframe) {
     this.pattern = new MultiMaterial();
 
-    for (var i = 0; i < textures.length; i++) {
+    var _loop = function (i) {
       var material = new MeshBasicMaterial({
-        color: color,
-        wireframe: wireframe
+        color: 0xffffff,
+        wireframe: false,
+        side: DoubleSide
       });
 
-      var texture = new TextureLoader().load(textures[i], function () {});
+      var texture = new TextureLoader().load(_this.spec.textures[i], function () {
+        console.log(i);
+      });
 
       material.map = texture;
-      this.pattern.materials.push(material);
+      _this.pattern.materials.push(material);
+    };
+
+    for (var i = 0; i < this.spec.textures.length; i++) {
+      _loop(i);
     }
   };
 

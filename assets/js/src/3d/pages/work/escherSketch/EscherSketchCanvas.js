@@ -27,9 +27,13 @@ export default class EscherSketchCanvas {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
-    const imagesPath = '/assets/images/work/escherSketch/tiles/';
+    self.initSpec();
 
-    this.drawPolygonArray( this.initTiling(), [`${imagesPath}fish-black.png`, `${imagesPath}fish-white.png`], 0xffffff, true );
+    self.initMaterials();
+
+    self.tiling = this.initTiling();
+
+    self.drawPolygonArray( self.tiling );
 
     self.app.onUpdate = function () {
 
@@ -43,15 +47,14 @@ export default class EscherSketchCanvas {
 
     self.app.play();
 
-    console.log(self.app.scene)
+    console.log( self.app.scene.children );
 
   }
 
-  initTiling( spec ) {
-
+  initSpec() {
     const imagesPath = '/assets/images/work/escherSketch/tiles/';
 
-    spec = spec || {
+    this.spec = {
       wireframe: false,
       p: 6,
       q: 6,
@@ -64,13 +67,17 @@ export default class EscherSketchCanvas {
                       [1, 3], [1, 2], [1, 1], [1, 0]],
       minPolygonSize: 0.05,
     };
-
-    const tesselation = new RegularHyperbolicTesselation( spec );
-
-    return tesselation.generateTiling( true );
   }
 
-  drawPolygon( polygon, color, textures, wireframe, elem ) {
+  initTiling( spec ) {
+
+    const tesselation = new RegularHyperbolicTesselation( this.spec );
+
+    return tesselation.generateTiling( false );
+  }
+
+  drawPolygon( polygon ) {
+    this.radius = 100;
     const divisions = polygon.numDivisions || 1;
     const p = 1 / divisions;
     const geometry = new THREE.Geometry();
@@ -135,49 +142,39 @@ export default class EscherSketchCanvas {
       }
       edgeStartingVertex += m;
     }
-    const mesh = this.createMesh( geometry, color, textures, polygon.materialIndex, wireframe, elem );
+    const mesh = this.createMesh( geometry, polygon.materialIndex );
     this.app.scene.add( mesh );
   }
 
-  drawPolygonArray( array, textureArray, color, wireframe ) {
-    color = color || 0xffffff;
-    wireframe = wireframe || false;
+  drawPolygonArray( array ) {
+    console.log( array );
     for ( let i = 0; i < array.length; i++ ) {
 
-      this.drawPolygon( array[i], color, textureArray, wireframe );
+      this.drawPolygon( array[i] );
 
     }
   }
 
     // NOTE: some polygons are inverted due to vertex order,
   // solved this by making material doubles sided
-  createMesh( geometry, color, textures, materialIndex, wireframe ) {
-    if ( wireframe === undefined ) wireframe = false;
-    if ( color === undefined ) color = 0xffffff;
+  createMesh( geometry, materialIndex ) {
 
-    if ( !this.pattern ) {
-      this.createPattern( color, textures, wireframe );
-    }
     return new THREE.Mesh( geometry, this.pattern.materials[materialIndex] );
   }
 
-  // initMaterials() {
-  //   this.materials = new THREE.MultiMaterial();
-  // }
-
-  createPattern( color, textures, wireframe ) {
+  initMaterials( ) {
     this.pattern = new THREE.MultiMaterial();
 
-    for ( let i = 0; i < textures.length; i++ ) {
+    for ( let i = 0; i < this.spec.textures.length; i++ ) {
       const material = new THREE.MeshBasicMaterial( {
-        color,
-        wireframe,
-        // side: THREE.DoubleSide,
+        color: 0xffffff,
+        wireframe: false,
+        side: THREE.DoubleSide,
       } );
 
-      const texture = new THREE.TextureLoader().load( textures[i],
-        () => {
-
+      const texture = new THREE.TextureLoader().load( this.spec.textures[i],
+        ( ) => {
+          console.log( i );
         } );
 
       material.map = texture;
