@@ -42526,56 +42526,141 @@ var RegularHyperbolicTesselation = function () {
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
 var EscherSketchCanvas = function () {
-    function EscherSketchCanvas(showStats) {
-        classCallCheck(this, EscherSketchCanvas);
+  function EscherSketchCanvas(showStats) {
+    classCallCheck(this, EscherSketchCanvas);
 
 
-        var self = this;
+    var self = this;
 
-        self.container = document.querySelector('.canvas-container');
+    self.container = document.querySelector('.canvas-container');
 
-        self.app = new App(document.querySelector('#escherSketch-canvas'));
+    self.app = new App(document.querySelector('#escherSketch-canvas'));
 
-        self.app.camera.position.set(0, 0, 100);
+    self.app.camera.position.set(0, 0, 100);
 
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+    // TODO: not working in Edge
+    var statisticsOverlay = void 0;
+    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-        self.app.onUpdate = function () {
+    var imagesPath = '/assets/images/work/escherSketch/tiles/';
 
-            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
-        };
+    this.drawPolygonArray(this.initTiling(), [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'], 0xffffff, true);
 
-        self.app.onWindowResize = function () {
-            mastHeadHeight = document.querySelector('.masthead').clientHeight;
-        };
+    self.app.onUpdate = function () {
 
-        self.app.play();
-    }
-
-    EscherSketchCanvas.initTiling = function initTiling(spec) {
-
-        var imagesPath = '/assets/images/work/escherSketch/';
-
-        spec = spec || {
-            wireframe: false,
-            p: 6,
-            q: 6,
-            textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
-            edgeAdjacency: [//array of length p
-            [1, //edge_0 orientation (-1 = reflection, 1 = rotation)
-            5], [1, 4], //edge_1 orientation, adjacency
-            [1, 3], [1, 2], [1, 1], [1, 0]],
-            minPolygonSize: 0.05
-        };
-
-        var tesselation = new RegularHyperbolicTesselation(spec);
-
-        return tesselation.generateTiling(true);
+      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
     };
 
-    return EscherSketchCanvas;
+    self.app.onWindowResize = function () {
+      mastHeadHeight = document.querySelector('.masthead').clientHeight;
+    };
+
+    self.app.play();
+
+    console.log(self.app.scene);
+  }
+
+  EscherSketchCanvas.prototype.initTiling = function initTiling(spec) {
+
+    var imagesPath = '/assets/images/work/escherSketch/tiles/';
+
+    spec = spec || {
+      wireframe: false,
+      p: 6,
+      q: 6,
+      textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
+      edgeAdjacency: [// array of length p
+      [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
+      5], [1, 4], // edge_1 orientation, adjacency
+      [1, 3], [1, 2], [1, 1], [1, 0]],
+      minPolygonSize: 0.05
+    };
+
+    var tesselation = new RegularHyperbolicTesselation(spec);
+
+    return tesselation.generateTiling(true);
+  };
+
+  EscherSketchCanvas.prototype.drawPolygon = function drawPolygon(polygon, color, textures, wireframe, elem) {
+    var divisions = polygon.numDivisions || 1;
+    var p = 1 / divisions;
+    var geometry = new Geometry();
+    geometry.faceVertexUvs[0] = [];
+
+    if (polygon.needsResizing) {
+      for (var i = 0; i < polygon.mesh.length; i++) {
+        geometry.vertices.push(new Vector3(polygon.mesh[i].x * this.radius, polygon.mesh[i].y * this.radius, 0));
+      }
+    } else {
+      geometry.vertices = polygon.mesh;
+    }
+
+    var edgeStartingVertex = 0;
+    // loop over each interior edge of the polygon's subdivion mesh
+    for (var _i = 0; _i < divisions; _i++) {
+      // edge divisions reduce by one for each interior edge
+      var m = divisions - _i + 1;
+      geometry.faces.push(new Face3(edgeStartingVertex, edgeStartingVertex + m, edgeStartingVertex + 1));
+      geometry.faceVertexUvs[0].push([new Vector3(_i * p, 0, 0), new Vector3((_i + 1) * p, 0, 0), new Vector3((_i + 1) * p, p, 0)]);
+
+      // range m-2 because we are ignoring the edges first vertex which was
+      // used in the previous faces.push
+      for (var j = 0; j < m - 2; j++) {
+        geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + j, edgeStartingVertex + m + 1 + j));
+        geometry.faceVertexUvs[0].push([new Vector3((_i + 1 + j) * p, (1 + j) * p, 0), new Vector3((_i + 1 + j) * p, j * p, 0), new Vector3((_i + j + 2) * p, (j + 1) * p, 0)]);
+        geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + 1 + j, edgeStartingVertex + j + 2));
+        geometry.faceVertexUvs[0].push([new Vector3((_i + 1 + j) * p, (1 + j) * p, 0), new Vector3((_i + 2 + j) * p, (j + 1) * p, 0), new Vector3((_i + j + 2) * p, (j + 2) * p, 0)]);
+      }
+      edgeStartingVertex += m;
+    }
+    var mesh = this.createMesh(geometry, color, textures, polygon.materialIndex, wireframe, elem);
+    this.app.scene.add(mesh);
+  };
+
+  EscherSketchCanvas.prototype.drawPolygonArray = function drawPolygonArray(array, textureArray, color, wireframe) {
+    color = color || 0xffffff;
+    wireframe = wireframe || false;
+    for (var i = 0; i < array.length; i++) {
+
+      this.drawPolygon(array[i], color, textureArray, wireframe);
+    }
+  };
+
+  // NOTE: some polygons are inverted due to vertex order,
+  // solved this by making material doubles sided
+
+
+  EscherSketchCanvas.prototype.createMesh = function createMesh(geometry, color, textures, materialIndex, wireframe) {
+    if (wireframe === undefined) wireframe = false;
+    if (color === undefined) color = 0xffffff;
+
+    if (!this.pattern) {
+      this.createPattern(color, textures, wireframe);
+    }
+    return new Mesh(geometry, this.pattern.materials[materialIndex]);
+  };
+
+  // initMaterials() {
+  //   this.materials = new THREE.MultiMaterial();
+  // }
+
+  EscherSketchCanvas.prototype.createPattern = function createPattern(color, textures, wireframe) {
+    this.pattern = new MultiMaterial();
+
+    for (var i = 0; i < textures.length; i++) {
+      var material = new MeshBasicMaterial({
+        color: color,
+        wireframe: wireframe
+      });
+
+      var texture = new TextureLoader().load(textures[i], function () {});
+
+      material.map = texture;
+      this.pattern.materials.push(material);
+    }
+  };
+
+  return EscherSketchCanvas;
 }();
 
 function initEscherSketch(showStats) {

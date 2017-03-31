@@ -7,7 +7,7 @@ comments: true
 excerpt: "Hyperbolic Tiling"
 tags: [work]
 header:
-  teaser: /assets/images/work/eschersketch/hyperbolic-tiling-main-256.jpg
+  teaser: /assets/images/work/escherSketch/hyperbolic-tiling-main-256.jpg
 js:
   'escherSketch'
 ---

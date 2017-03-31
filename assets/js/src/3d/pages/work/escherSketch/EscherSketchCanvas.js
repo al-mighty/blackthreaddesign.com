@@ -27,7 +27,9 @@ export default class EscherSketchCanvas {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
+    const imagesPath = '/assets/images/work/escherSketch/tiles/';
 
+    this.drawPolygonArray( this.initTiling(), [`${imagesPath}fish-black.png`, `${imagesPath}fish-white.png`], 0xffffff, true );
 
     self.app.onUpdate = function () {
 
@@ -35,28 +37,30 @@ export default class EscherSketchCanvas {
 
     };
 
-    self.app.onWindowResize = function () { 
+    self.app.onWindowResize = function () {
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
     };
 
     self.app.play();
 
+    console.log(self.app.scene)
+
   }
 
-  static initTiling( spec ) {
+  initTiling( spec ) {
 
-    const imagesPath = '/assets/images/work/escherSketch/';
+    const imagesPath = '/assets/images/work/escherSketch/tiles/';
 
     spec = spec || {
       wireframe: false,
       p: 6,
       q: 6,
       textures: [`${imagesPath}fish-black.png`, `${imagesPath}fish-white.png`],
-      edgeAdjacency: [ //array of length p
-                      [1, //edge_0 orientation (-1 = reflection, 1 = rotation)
-                        5, //edge_0 adjacency (range p - 1)
-                      ],
-                      [1, 4], //edge_1 orientation, adjacency
+      edgeAdjacency: [ // array of length p
+        [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
+          5, //edge_0 adjacency (range p - 1)
+        ],
+                      [1, 4], // edge_1 orientation, adjacency
                       [1, 3], [1, 2], [1, 1], [1, 0]],
       minPolygonSize: 0.05,
     };
@@ -64,6 +68,121 @@ export default class EscherSketchCanvas {
     const tesselation = new RegularHyperbolicTesselation( spec );
 
     return tesselation.generateTiling( true );
+  }
+
+  drawPolygon( polygon, color, textures, wireframe, elem ) {
+    const divisions = polygon.numDivisions || 1;
+    const p = 1 / divisions;
+    const geometry = new THREE.Geometry();
+    geometry.faceVertexUvs[0] = [];
+
+    if ( polygon.needsResizing ) {
+      for ( let i = 0; i < polygon.mesh.length; i++ ) {
+        geometry.vertices.push(
+          new THREE.Vector3( polygon.mesh[i].x * this.radius, polygon.mesh[i].y * this.radius, 0 ),
+        );
+      }
+    } else {
+      geometry.vertices = polygon.mesh;
+    }
+
+
+    let edgeStartingVertex = 0;
+    // loop over each interior edge of the polygon's subdivion mesh
+    for ( let i = 0; i < divisions; i++ ) {
+      // edge divisions reduce by one for each interior edge
+      const m = divisions - i + 1;
+      geometry.faces.push(
+        new THREE.Face3(
+          edgeStartingVertex,
+          edgeStartingVertex + m,
+          edgeStartingVertex + 1,
+        ) );
+      geometry.faceVertexUvs[0].push(
+        [
+          new THREE.Vector3( i * p, 0, 0 ),
+          new THREE.Vector3( ( i + 1 ) * p, 0, 0 ),
+          new THREE.Vector3( ( i + 1 ) * p, p, 0 ),
+        ] );
+
+      // range m-2 because we are ignoring the edges first vertex which was
+      // used in the previous faces.push
+      for ( let j = 0; j < m - 2; j++ ) {
+        geometry.faces.push(
+          new THREE.Face3(
+            edgeStartingVertex + j + 1,
+            edgeStartingVertex + m + j,
+            edgeStartingVertex + m + 1 + j,
+          ) );
+        geometry.faceVertexUvs[0].push(
+          [
+            new THREE.Vector3( ( i + 1 + j ) * p, ( 1 + j ) * p, 0 ),
+            new THREE.Vector3( ( i + 1 + j ) * p, j * p, 0 ),
+            new THREE.Vector3( ( i + j + 2 ) * p, ( j + 1 ) * p, 0 ),
+          ] );
+        geometry.faces.push(
+          new THREE.Face3(
+            edgeStartingVertex + j + 1,
+            edgeStartingVertex + m + 1 + j,
+            edgeStartingVertex + j + 2,
+          ) );
+        geometry.faceVertexUvs[0].push(
+          [
+            new THREE.Vector3( ( i + 1 + j ) * p, ( 1 + j ) * p, 0 ),
+            new THREE.Vector3( ( i + 2 + j ) * p, ( j + 1 ) * p, 0 ),
+            new THREE.Vector3( ( i + j + 2 ) * p, ( j + 2 ) * p, 0 ),
+          ] );
+      }
+      edgeStartingVertex += m;
+    }
+    const mesh = this.createMesh( geometry, color, textures, polygon.materialIndex, wireframe, elem );
+    this.app.scene.add( mesh );
+  }
+
+  drawPolygonArray( array, textureArray, color, wireframe ) {
+    color = color || 0xffffff;
+    wireframe = wireframe || false;
+    for ( let i = 0; i < array.length; i++ ) {
+
+      this.drawPolygon( array[i], color, textureArray, wireframe );
+
+    }
+  }
+
+    // NOTE: some polygons are inverted due to vertex order,
+  // solved this by making material doubles sided
+  createMesh( geometry, color, textures, materialIndex, wireframe ) {
+    if ( wireframe === undefined ) wireframe = false;
+    if ( color === undefined ) color = 0xffffff;
+
+    if ( !this.pattern ) {
+      this.createPattern( color, textures, wireframe );
+    }
+    return new THREE.Mesh( geometry, this.pattern.materials[materialIndex] );
+  }
+
+  // initMaterials() {
+  //   this.materials = new THREE.MultiMaterial();
+  // }
+
+  createPattern( color, textures, wireframe ) {
+    this.pattern = new THREE.MultiMaterial();
+
+    for ( let i = 0; i < textures.length; i++ ) {
+      const material = new THREE.MeshBasicMaterial( {
+        color,
+        wireframe,
+        // side: THREE.DoubleSide,
+      } );
+
+      const texture = new THREE.TextureLoader().load( textures[i],
+        () => {
+
+        } );
+
+      material.map = texture;
+      this.pattern.materials.push( material );
+    }
   }
 
 }
