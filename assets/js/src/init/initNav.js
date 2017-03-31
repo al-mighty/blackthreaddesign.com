@@ -20,7 +20,7 @@ export default function () {
   addActiveToCurrentNavLink();
 
   const menu = new Greedy( {
-    element: '.greedy-nav',
+    element: '.masthead__menu',
     counter: true,
   } );
 }

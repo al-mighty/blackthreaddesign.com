@@ -26,6 +26,20 @@
 }
 
 .masthead__menu {
+  position: relative;
+  min-width: 250px;
+  background: $background-color;
+
+  a {
+    display: block;
+    margin: 0 1rem;
+    padding: 0.5rem 0;
+    color: $masthead-link-color;
+
+    &:hover {
+      color: $masthead-link-color-hover;
+    }
+  }
 
   ul {
     margin: 0;
@@ -51,3 +65,117 @@
     border-bottom: 1px solid mix( $masthead-link-color, $masthead-link-color-hover, 50%);
   }
 }
+
+/*
+   Greedy navigation
+   ========================================================================== */
+
+.toggle-links {
+  position: absolute;
+  height: 100%;
+  right: 0;
+  // padding: 0 0.5rem;
+  margin-right: -0.5em;
+  border: 0;
+  outline: none;
+  background-color: $background-color;
+  color: $text-color;
+  cursor: pointer;
+
+      /* The circle icon */
+  &.counter::before {
+    box-sizing: border-box;
+    content: attr(data-count);
+    position: absolute;
+    z-index: 2;
+    top: 0.25em;
+    left: -0.75em;
+    display: block;
+    color: $background-color;
+    /* font-size: 1em; */
+    width: 2em;
+    height: 2em;
+    padding: 0.25em 0.25em;
+    background-color: $text-color;
+    border: 3px solid $background-color;
+    border-radius: 50%;
+    line-height: 1;
+    text-align: center;
+  }
+}
+
+.visible-links {
+  display: table;
+
+  li {
+    display: table-cell;
+    vertical-align: middle;
+
+    &:first-child {
+      font-weight: bold;
+
+      a {
+        margin-left: 0;
+      }
+    }
+
+    &:last-child {
+      a {
+        margin-right: 0;
+      }
+    }
+  }
+
+  a {
+    position: relative;
+  }
+}
+
+.hidden-links {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.25em;
+  padding: 0.25em;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: $background-color;
+
+  &.links-invisible {
+    transform: scaleY(0);
+  }
+
+  a {
+    margin: 0;
+    padding: 10px 20px;
+    font-size: $type-size-5;
+
+    &:hover {
+      color: $masthead-link-color-hover;
+    }
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 0;
+    border-style: solid;
+    border-width: 0 10px 10px;
+    border-color: #fff transparent;
+    display: block;
+    z-index: 1;
+  }
+
+  li {
+    display: block;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+

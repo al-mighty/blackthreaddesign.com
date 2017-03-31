@@ -11652,11 +11652,11 @@ var addActiveToCurrentNavLink = function () {
 };
 
 // Initialise menu
-function initGreedyNav () {
+function initNav () {
   addActiveToCurrentNavLink();
 
   var menu = new Greedy({
-    element: '.greedy-nav',
+    element: '.masthead__menu',
     counter: true
   });
 }
@@ -12402,13 +12402,17 @@ function initLoader() {
   }, 3000);
 }
 
+// TODO: refactor as functions to allow these to be run after initLoader
+// import initSplash from '../splash/splashMain.js';
+
+// Set up any globals
 window.Hammer = hammer$1;
 
 // Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
-initGreedyNav();
+initNav();
 
 // BUG: nav left not hidden on first image
 initLightBox();
