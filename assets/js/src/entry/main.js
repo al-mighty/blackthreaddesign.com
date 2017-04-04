@@ -1,6 +1,4 @@
 
-import * as Hammer from 'hammerjs';
-
 import 'babel-polyfill';
 
 import utils from '../utilities.js';
@@ -13,10 +11,6 @@ import initFooter from '../init/initFooter.js';
 import initVideos from '../init/initVideos.js';
 
 import initLoader from '../loadingOverlay.js';
-// import initSplash from '../splash/splashMain.js';
-
-// Set up any globals
-window.Hammer = Hammer.default;
 
 // Set up loading overlay
 initLoader();
@@ -30,8 +24,3 @@ initLightBox();
 initFooter();
 initSmoothScroll();
 initVideos();
-
-// // Set up app wide event listeners for touch and mouse
-// window.addEventListener( 'mousemove', utils.moveHandler );
-// new window.Hammer( document.querySelector( 'body' ) )
-//   .on( 'pan', utils.moveHandler );
