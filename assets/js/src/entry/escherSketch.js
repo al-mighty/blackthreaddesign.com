@@ -3,7 +3,7 @@ import EscherSketchCanvas from '../3d/pages/work/escherSketch/EscherSketchCanvas
 
 
 function initEscherSketch( showStats ) {
-  // escherSketchLayout();
+  escherSketchLayout();
 
   const escherSketchCanvas = new EscherSketchCanvas( showStats );
 
