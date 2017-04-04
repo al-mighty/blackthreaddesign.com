@@ -1,4 +1,7 @@
 import throttle from 'lodash.throttle';
+import * as Ham from 'hammerjs';
+
+const Hammer = Ham.default;
 
 const calculateCanvasDims = () => {
   const dim = ( window.innerWidth < window.innerHeight ) 
@@ -8,28 +11,39 @@ const calculateCanvasDims = () => {
 }
 
 function initPQSelectors(){
+
   function change( direction, elem ) {
+
+    const currentValue = parseInt( elem.innerHTML, 10 );
     if ( direction === 1 ) {
-      elem.innerHTML = '8';
+      if ( currentValue === 8 ) return;
+      elem.innerHTML = currentValue + 2;
     }
     else {
-      elem.innerHTML = '6';
+      if ( currentValue === 4 ) return;
+      elem.innerHTML = String( currentValue - 2 );
     }
+
   }
 
   const pValue = document.querySelector( '#p-value' );
   const qValue = document.querySelector( '#q-value' );
 
-  document.querySelector( '#p-up' ).addEventListener( 'click', () => {
-    change( 1, pValue );
-  } );
+  const pUp = document.querySelector( '#p-up' );
+  new Hammer( pUp )
+    .on( 'tap', () => { change( 1, pValue ); } );
 
-  document.querySelector( '#p-down' ).addEventListener( 'click', () => {
-    change( 0, pValue );
-  } );
+  const pDown = document.querySelector( '#p-down' );
+  new Hammer( pDown )
+    .on( 'tap', () => { change( 0, pValue ); } );
 
   const qUp = document.querySelector( '#q-up' );
+  new Hammer( qUp )
+    .on( 'tap', () => { change( 1, qValue ); } );
+
   const qDown = document.querySelector( '#q-down' );
+  new Hammer( qDown )
+    .on( 'tap', () => { change( 0, qValue ); } );
 
 }
 
