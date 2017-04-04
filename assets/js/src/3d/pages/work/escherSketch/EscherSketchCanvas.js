@@ -9,8 +9,6 @@ import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 
 import RegularHyperbolicTesselation from './utilities/RegularHyperbolicTesselation.js';
 
-let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
-
 export default class EscherSketchCanvas {
 
   constructor( showStats ) {
@@ -21,7 +19,7 @@ export default class EscherSketchCanvas {
 
     self.app = new App( document.querySelector( '#escherSketch-canvas' ) );
 
-    self.app.camera.position.set( 0, 0, 100 );
+    self.app.camera.position.set( 0, 0, 150 );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -42,12 +40,10 @@ export default class EscherSketchCanvas {
     };
 
     self.app.onWindowResize = function () {
-      mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
     };
 
     self.app.play();
-
-    console.log( self.app.scene.children );
 
   }
 
@@ -58,18 +54,21 @@ export default class EscherSketchCanvas {
       wireframe: false,
       p: 6,
       q: 6,
+      radius: 100,
       textures: [`${imagesPath}fish-black.png`, `${imagesPath}fish-white.png`],
       edgeAdjacency: [ // array of length p
-        [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
-          5, //edge_0 adjacency (range p - 1)
+          [
+            1, // edge_0 orientation (-1 = reflection, 1 = rotation)
+            5, //edge_0 adjacency (range p - 1)
+          ],
+          [1, 4], // edge_1 orientation, adjacency
+          [1, 3], [1, 2], [1, 1], [1, 0]
         ],
-                      [1, 4], // edge_1 orientation, adjacency
-                      [1, 3], [1, 2], [1, 1], [1, 0]],
       minPolygonSize: 0.05,
     };
   }
 
-  initTiling( spec ) {
+  initTiling() {
 
     const tesselation = new RegularHyperbolicTesselation( this.spec );
 
@@ -77,7 +76,7 @@ export default class EscherSketchCanvas {
   }
 
   drawPolygon( polygon ) {
-    this.radius = 100;
+    this.spec.radius = 100;
     const divisions = polygon.numDivisions || 1;
     const p = 1 / divisions;
     const geometry = new THREE.Geometry();
@@ -86,7 +85,7 @@ export default class EscherSketchCanvas {
     if ( polygon.needsResizing ) {
       for ( let i = 0; i < polygon.mesh.length; i++ ) {
         geometry.vertices.push(
-          new THREE.Vector3( polygon.mesh[i].x * this.radius, polygon.mesh[i].y * this.radius, 0 ),
+          new THREE.Vector3( polygon.mesh[i].x * this.spec.radius, polygon.mesh[i].y * this.spec.radius, 0 ),
         );
       }
     } else {
@@ -142,24 +141,16 @@ export default class EscherSketchCanvas {
       }
       edgeStartingVertex += m;
     }
-    const mesh = this.createMesh( geometry, polygon.materialIndex );
+    const mesh = new THREE.Mesh( geometry, this.pattern.materials[polygon.materialIndex] );
     this.app.scene.add( mesh );
   }
 
   drawPolygonArray( array ) {
-    console.log( array );
     for ( let i = 0; i < array.length; i++ ) {
 
       this.drawPolygon( array[i] );
 
     }
-  }
-
-    // NOTE: some polygons are inverted due to vertex order,
-  // solved this by making material doubles sided
-  createMesh( geometry, materialIndex ) {
-
-    return new THREE.Mesh( geometry, this.pattern.materials[materialIndex] );
   }
 
   initMaterials( ) {
@@ -168,7 +159,7 @@ export default class EscherSketchCanvas {
     for ( let i = 0; i < this.spec.textures.length; i++ ) {
       const material = new THREE.MeshBasicMaterial( {
         color: 0xffffff,
-        wireframe: false,
+        wireframe: this.spec.wireframe,
         side: THREE.DoubleSide,
       } );
 
