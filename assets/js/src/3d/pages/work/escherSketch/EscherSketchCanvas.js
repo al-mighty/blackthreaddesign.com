@@ -2,7 +2,6 @@ import * as THREE from 'three';
 
 import App from '../../../App/App.js';
 
-// import utils from '../../../../utilities.js';
 import './escherSketchCanvasSetup.js';
 
 import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
@@ -29,9 +28,13 @@ export default class EscherSketchCanvas {
 
     self.initMaterials();
 
-    self.tiling = this.initTiling();
+    console.time( 'Generate Tiling' );
+    self.tiling = new RegularHyperbolicTesselation( this.spec ).generateTiling( false );
+    console.timeEnd( 'Generate Tiling' );
 
-    self.drawPolygonArray( self.tiling );
+    console.time( 'Draw Tiling' );
+    self.generatePolygonArray( self.tiling );
+    console.timeEnd( 'Draw Tiling' );
 
     self.app.onUpdate = function () {
 
@@ -68,14 +71,7 @@ export default class EscherSketchCanvas {
     };
   }
 
-  initTiling() {
-
-    const tesselation = new RegularHyperbolicTesselation( this.spec );
-
-    return tesselation.generateTiling( false );
-  }
-
-  drawPolygon( polygon ) {
+  createPolygon( polygon ) {
     this.spec.radius = 100;
     const divisions = polygon.numDivisions || 1;
     const p = 1 / divisions;
@@ -141,15 +137,14 @@ export default class EscherSketchCanvas {
       }
       edgeStartingVertex += m;
     }
+    
     const mesh = new THREE.Mesh( geometry, this.pattern.materials[polygon.materialIndex] );
     this.app.scene.add( mesh );
   }
 
-  drawPolygonArray( array ) {
+  generatePolygonArray( array ) {
     for ( let i = 0; i < array.length; i++ ) {
-
-      this.drawPolygon( array[i] );
-
+      this.createPolygon( array[i] );
     }
   }
 
@@ -163,10 +158,7 @@ export default class EscherSketchCanvas {
         side: THREE.DoubleSide,
       } );
 
-      const texture = new THREE.TextureLoader().load( this.spec.textures[i],
-        ( ) => {
-          console.log( i );
-        } );
+      const texture = new THREE.TextureLoader().load( this.spec.textures[i] );
 
       material.map = texture;
       this.pattern.materials.push( material );
