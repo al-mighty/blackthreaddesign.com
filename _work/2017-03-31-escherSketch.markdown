@@ -10,6 +10,28 @@ header:
   teaser: /assets/images/work/escherSketch/hyperbolic-tiling-main-256.jpg
 js:
   'escherSketch'
+css:
+  'escherSketch'
 ---
 
-<div class="canvas-container"><canvas id="escherSketch-canvas" class="fullpage-canvas"></canvas></div>
+<div class="canvas-container">
+  <div id="p-selection">
+    <a href="#" id="p-down">
+      <i class="fa fa-chevron-left fa-pull-left fa-border"></i>
+    </a>
+    <span id="p-value">6</span>
+    <a href="#" id="p-up">
+      <i class="fa fa-chevron-right fa-pull-right fa-border"></i>
+    </a>
+  </div>
+  <div id="q-selection">
+    <a href="#" id="q-down">
+      <i class="fa fa-chevron-left fa-pull-left fa-border"></i>
+    </a>
+    <span id="q-value">6</span>
+    <a href="#" id="q-up">
+      <i class="fa fa-chevron-right fa-pull-right fa-border"></i>
+    </a>
+  </div>
+  <canvas id="escherSketch-canvas" class="fullpage-canvas"></canvas>
+</div>

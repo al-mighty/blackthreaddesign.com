@@ -462,6 +462,30 @@ var calculateCanvasDims = function () {
   return Math.min(1280, dim);
 };
 
+function initPQSelectors() {
+  function change(direction, elem) {
+    if (direction === 1) {
+      elem.innerHTML = '8';
+    } else {
+      elem.innerHTML = '6';
+    }
+  }
+
+  var pValue = document.querySelector('#p-value');
+  var qValue = document.querySelector('#q-value');
+
+  document.querySelector('#p-up').addEventListener('click', function () {
+    change(1, pValue);
+  });
+
+  document.querySelector('#p-down').addEventListener('click', function () {
+    change(0, pValue);
+  });
+
+  var qUp = document.querySelector('#q-up');
+  var qDown = document.querySelector('#q-down');
+}
+
 function escherSketchLayout() {
   var canvasContainer = document.querySelector('.canvas-container');
 
@@ -475,6 +499,8 @@ function escherSketchLayout() {
     canvasContainer.style.height = canvasContainerDim + 'px';
     canvasContainer.style.width = canvasContainerDim + 'px';
   }), 250);
+
+  initPQSelectors();
 }
 
 // Polyfills
@@ -42564,9 +42590,13 @@ var EscherSketchCanvas = function () {
 
     self.initMaterials();
 
-    self.tiling = this.initTiling();
+    console.time('Generate Tiling');
+    self.tiling = new RegularHyperbolicTesselation(this.spec).generateTiling(false);
+    console.timeEnd('Generate Tiling');
 
-    self.drawPolygonArray(self.tiling);
+    console.time('Draw Tiling');
+    self.generatePolygonArray(self.tiling);
+    console.timeEnd('Draw Tiling');
 
     self.app.onUpdate = function () {
 
@@ -42595,14 +42625,7 @@ var EscherSketchCanvas = function () {
     };
   };
 
-  EscherSketchCanvas.prototype.initTiling = function initTiling() {
-
-    var tesselation = new RegularHyperbolicTesselation(this.spec);
-
-    return tesselation.generateTiling(false);
-  };
-
-  EscherSketchCanvas.prototype.drawPolygon = function drawPolygon(polygon) {
+  EscherSketchCanvas.prototype.createPolygon = function createPolygon(polygon) {
     this.spec.radius = 100;
     var divisions = polygon.numDivisions || 1;
     var p = 1 / divisions;
@@ -42635,39 +42658,31 @@ var EscherSketchCanvas = function () {
       }
       edgeStartingVertex += m;
     }
+
     var mesh = new Mesh(geometry, this.pattern.materials[polygon.materialIndex]);
     this.app.scene.add(mesh);
   };
 
-  EscherSketchCanvas.prototype.drawPolygonArray = function drawPolygonArray(array) {
+  EscherSketchCanvas.prototype.generatePolygonArray = function generatePolygonArray(array) {
     for (var i = 0; i < array.length; i++) {
-
-      this.drawPolygon(array[i]);
+      this.createPolygon(array[i]);
     }
   };
 
   EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
-    var _this = this;
-
     this.pattern = new MultiMaterial();
 
-    var _loop = function (i) {
+    for (var i = 0; i < this.spec.textures.length; i++) {
       var material = new MeshBasicMaterial({
         color: 0xffffff,
-        wireframe: _this.spec.wireframe,
+        wireframe: this.spec.wireframe,
         side: DoubleSide
       });
 
-      var texture = new TextureLoader().load(_this.spec.textures[i], function () {
-        console.log(i);
-      });
+      var texture = new TextureLoader().load(this.spec.textures[i]);
 
       material.map = texture;
-      _this.pattern.materials.push(material);
-    };
-
-    for (var i = 0; i < this.spec.textures.length; i++) {
-      _loop(i);
+      this.pattern.materials.push(material);
     }
   };
 

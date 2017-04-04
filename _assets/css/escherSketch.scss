@@ -1,0 +1,41 @@
+  #p-selection, #q-selection {
+    position: absolute;
+    top: 0;
+    width: 5em;
+    height: 2em;
+    z-index: 2;
+  }
+
+  #p-selection {
+    left: 0;
+  }
+
+  #q-selection {
+    right: 0;
+  }
+
+  #p-value, #q-value{
+    position: absolute;
+    width: 40%;
+    left: 30%;
+    text-align: center;
+  }
+
+  #p-up, #q-up, #p-down, #q-down {
+    position: absolute;
+    top: 0;
+    width: 30%;
+    height: 100%;
+  }
+
+  #p-up, #q-up {
+    right: 0;
+  }
+
+  #p-down, #q-down { 
+    left: 0;
+  }
+
+  #escherSketch-canvas {
+    z-index: 1;
+  }
