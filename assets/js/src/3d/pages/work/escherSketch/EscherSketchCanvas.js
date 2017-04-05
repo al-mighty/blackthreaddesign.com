@@ -53,13 +53,9 @@ export default class EscherSketchCanvas {
     const p = document.querySelector( '#p-value' );
     const q = document.querySelector( '#q-value' );
 
-    const pValue = () => {
-      return parseInt( p.innerHTML, 10 );
-    };
+    const pValue = () => parseInt( p.innerHTML, 10 );
 
-    const qValue = () => {
-      return parseInt( q.innerHTML, 10 );
-    };
+    const qValue = () => parseInt( q.innerHTML, 10 );
 
     const observer = new MutationObserver( ( ) => {
 
