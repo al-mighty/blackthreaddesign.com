@@ -43860,7 +43860,7 @@ if (typeof define === 'function' && define.amd) {
 var hammer$1 = interopDefault(hammer);
 
 // Set up any globals
-window.Hammer = hammer$1;
+var Hammer = hammer$1;
 
 /* ****************************************
 Keep track of mouse / pointer position
@@ -43886,7 +43886,6 @@ var utils = {
 
   moveHandler: function (e) {
     if (e.pointerType === 'touch') {
-
       pointerPos.x = e.center.x;
       pointerPos.y = e.center.y;
     } else {
@@ -43896,9 +43895,9 @@ var utils = {
   }
 };
 
-// Set up app wide event listeners for touch and mouse
+// Set up event listeners for touch and mouse
 window.addEventListener('mousemove', utils.moveHandler);
-new window.Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
+new Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
 
 var fontLoader = void 0;
 var objectLoader = void 0;

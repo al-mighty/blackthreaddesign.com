@@ -11831,6 +11831,10 @@ function initSmoothScroll () {
         //check if it's a link to another location on the page
         if (~a.href.indexOf(fileName + '#')) {
             var link = '#' + a.href.split('#').pop();
+
+            // if it's an empty link ('#'), just return
+            if (link === '#') return;
+
             a.onclick = function () {
                 return singleton(link);
             };
@@ -12282,6 +12286,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -12402,6 +12407,8 @@ function initLoader() {
   }, 3000);
 }
 
+// TODO: refactor as functions to allow these to be run after initLoader
+// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
