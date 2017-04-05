@@ -6,11 +6,15 @@ const links = document.querySelectorAll( 'a' );
 const fileName = location.href.split( '/' ).pop().split( '#' )[0];
 
 export default function () {
-    links.forEach((a) => {
-    //check if it's a link to another location on the page
-    if ( ~a.href.indexOf(fileName + '#' ) ) {
-        const link = '#' + a.href.split( '#' ).pop();
-        a.onclick = () => jump( link );
+    links.forEach( ( a ) => {
+      //check if it's a link to another location on the page
+      if ( ~a.href.indexOf(fileName + '#' ) ) {
+          const link = '#' + a.href.split( '#' ).pop();
+
+          // if it's an empty link ('#'), just return
+          if( link === '#' ) return;
+          
+          a.onclick = () => jump( link );
     }
     });
 }
