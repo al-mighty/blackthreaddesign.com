@@ -8,6 +8,7 @@ import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 
 import RegularHyperbolicTesselation from './utilities/RegularHyperbolicTesselation.js';
 
+
 export default class EscherSketchCanvas {
 
   constructor( showStats ) {
@@ -24,17 +25,13 @@ export default class EscherSketchCanvas {
     let statisticsOverlay;
     if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
 
+    self.initPQControls();
+
     self.initSpec();
 
     self.initMaterials();
 
-    console.time( 'Generate Tiling' );
-    self.tiling = new RegularHyperbolicTesselation( this.spec ).generateTiling( false );
-    console.timeEnd( 'Generate Tiling' );
-
-    console.time( 'Draw Tiling' );
-    self.generatePolygonArray( self.tiling );
-    console.timeEnd( 'Draw Tiling' );
+    this.buildTiling();
 
     self.app.onUpdate = function () {
 
@@ -48,6 +45,68 @@ export default class EscherSketchCanvas {
 
     self.app.play();
 
+  }
+
+  initPQControls() {
+    const self = this;
+
+    const p = document.querySelector( '#p-value' );
+    const q = document.querySelector( '#q-value' );
+
+    const pValue = () => {
+      return parseInt( p.innerHTML, 10 );
+    };
+
+    const qValue = () => {
+      return parseInt( q.innerHTML, 10 );
+    };
+
+    const observer = new MutationObserver( ( ) => {
+
+      const newP = pValue();
+      const newQ = qValue();
+
+      if ( this.spec.p === newP && this.spec.q === newQ ) return;
+
+      this.spec.p = newP;
+      this.spec.q = newQ;
+
+      // TODO: display a warning here saying p, q can't both be 4
+      if ( pValue() === 4 && qValue() === 4 ) return; 
+
+      // Add a slight delay before rebuilding the tiling to allow the displayed
+      // value p / q to update
+      setTimeout( () => self.buildTiling(), 200 );
+
+    } );
+
+    observer.observe( p, { childList: true } );
+    observer.observe( q, { childList: true } );
+
+  }
+
+  buildTiling() {
+    this.clearTiling();
+
+    console.time( 'Generate Tiling' );
+    const tiling = new RegularHyperbolicTesselation( this.spec ).generateTiling( false );
+    console.timeEnd( 'Generate Tiling' );
+
+    console.time( 'Draw Tiling' );
+    this.generatePolygonArray( tiling );
+    console.timeEnd( 'Draw Tiling' );
+  }
+
+  clearTiling() {
+    while ( this.app.scene.children.length > 0 ) {
+      const object = this.app.scene.children[0];
+
+      if ( object.type === 'Mesh' ) {
+        object.geometry.dispose();
+        this.app.scene.remove( object );
+      }
+
+    }
   }
 
   initSpec() {
