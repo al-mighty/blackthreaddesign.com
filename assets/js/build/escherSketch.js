@@ -44124,6 +44124,37 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
+function createGeometry(polygon) {
+
+  var divisions = polygon.numDivisions || 1;
+  var p = 1 / divisions;
+  var geometry = new Geometry();
+  geometry.faceVertexUvs[0] = [];
+
+  geometry.vertices = polygon.mesh;
+
+  var edgeStartingVertex = 0;
+  // loop over each interior edge of the polygon's subdivion mesh
+  for (var i = 0; i < divisions; i++) {
+    // edge divisions reduce by one for each interior edge
+    var m = divisions - i + 1;
+    geometry.faces.push(new Face3(edgeStartingVertex, edgeStartingVertex + m, edgeStartingVertex + 1));
+    geometry.faceVertexUvs[0].push([new Vector3(i * p, 0, 0), new Vector3((i + 1) * p, 0, 0), new Vector3((i + 1) * p, p, 0)]);
+
+    // range m-2 because we are ignoring the edges first vertex which was
+    // used in the previous faces.push
+    for (var j = 0; j < m - 2; j++) {
+      geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + j, edgeStartingVertex + m + 1 + j));
+      geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 1 + j) * p, j * p, 0), new Vector3((i + j + 2) * p, (j + 1) * p, 0)]);
+      geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + 1 + j, edgeStartingVertex + j + 2));
+      geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 2 + j) * p, (j + 1) * p, 0), new Vector3((i + j + 2) * p, (j + 2) * p, 0)]);
+    }
+    edgeStartingVertex += m;
+  }
+
+  return geometry;
+}
+
 Math.sinh = Math.sinh || function sinh(x) {
   var y = Math.exp(x);
   return (y - 1 / y) / 2;
@@ -45233,175 +45264,146 @@ var RegularHyperbolicTesselation = function () {
 }();
 
 var EscherSketchCanvas = function () {
-  function EscherSketchCanvas(showStats) {
-    classCallCheck(this, EscherSketchCanvas);
+    function EscherSketchCanvas(showStats) {
+        classCallCheck(this, EscherSketchCanvas);
 
 
-    var self = this;
+        var self = this;
 
-    self.container = document.querySelector('.canvas-container');
+        self.container = document.querySelector('.canvas-container');
 
-    self.app = new App(document.querySelector('#escherSketch-canvas'));
+        self.app = new App(document.querySelector('#escherSketch-canvas'));
 
-    self.app.camera.position.set(0, 0, 1.5);
+        self.app.camera.position.set(0, 0, 1.5);
 
-    // TODO: not working in Edge
-    var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-    self.initPQControls();
+        self.initPQControls();
 
-    self.initSpec();
+        self.initSpec();
 
-    self.initMaterials();
+        self.initMaterials();
 
-    this.buildTiling();
+        this.buildTiling();
 
-    self.app.onUpdate = function () {
+        self.app.onUpdate = function () {
 
-      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
-    };
+            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+        };
 
-    self.app.onWindowResize = function () {};
+        self.app.onWindowResize = function () {};
 
-    self.app.play();
-  }
-
-  EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
-    var _this = this;
-
-    var self = this;
-
-    var p = document.querySelector('#p-value');
-    var q = document.querySelector('#q-value');
-
-    var pValue = function () {
-      return parseInt(p.innerHTML, 10);
-    };
-
-    var qValue = function () {
-      return parseInt(q.innerHTML, 10);
-    };
-
-    var observer = new MutationObserver(function () {
-
-      var newP = pValue();
-      var newQ = qValue();
-
-      if (_this.spec.p === newP && _this.spec.q === newQ) return;
-
-      _this.spec.p = newP;
-      _this.spec.q = newQ;
-
-      // TODO: display a warning here saying p, q can't both be 4
-      if (pValue() === 4 && qValue() === 4) return;
-
-      // Add a slight delay before rebuilding the tiling to allow the displayed
-      // value p / q to update
-      setTimeout(function () {
-        return self.buildTiling();
-      }, 200);
-    });
-
-    observer.observe(p, { childList: true });
-    observer.observe(q, { childList: true });
-  };
-
-  EscherSketchCanvas.prototype.buildTiling = function buildTiling() {
-    this.clearTiling();
-
-    console.time('Generate Tiling');
-    var tiling = new RegularHyperbolicTesselation(this.spec).generateTiling(false);
-    console.timeEnd('Generate Tiling');
-
-    console.time('Draw Tiling');
-    this.generateDisk(tiling);
-    console.timeEnd('Draw Tiling');
-  };
-
-  EscherSketchCanvas.prototype.clearTiling = function clearTiling() {
-    while (this.app.scene.children.length > 0) {
-      var object = this.app.scene.children[0];
-
-      if (object.type === 'Mesh') {
-        object.geometry.dispose();
-        this.app.scene.remove(object);
-      }
-    }
-  };
-
-  EscherSketchCanvas.prototype.initSpec = function initSpec() {
-    var imagesPath = '/assets/images/work/escherSketch/tiles/';
-
-    this.spec = {
-      wireframe: false,
-      p: 6,
-      q: 6,
-      radius: 100,
-      textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
-      edgeAdjacency: [// array of length p
-      [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
-      5], [1, 4], // edge_1 orientation, adjacency
-      [1, 3], [1, 2], [1, 1], [1, 0]],
-      minPolygonSize: 0.05
-    };
-  };
-
-  EscherSketchCanvas.prototype.createGeometry = function createGeometry(polygon, radius) {
-
-    var divisions = polygon.numDivisions || 1;
-    var p = 1 / divisions;
-    var geometry = new Geometry();
-    geometry.faceVertexUvs[0] = [];
-
-    geometry.vertices = polygon.mesh;
-
-    var edgeStartingVertex = 0;
-    // loop over each interior edge of the polygon's subdivion mesh
-    for (var i = 0; i < divisions; i++) {
-      // edge divisions reduce by one for each interior edge
-      var m = divisions - i + 1;
-      geometry.faces.push(new Face3(edgeStartingVertex, edgeStartingVertex + m, edgeStartingVertex + 1));
-      geometry.faceVertexUvs[0].push([new Vector3(i * p, 0, 0), new Vector3((i + 1) * p, 0, 0), new Vector3((i + 1) * p, p, 0)]);
-
-      // range m-2 because we are ignoring the edges first vertex which was
-      // used in the previous faces.push
-      for (var j = 0; j < m - 2; j++) {
-        geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + j, edgeStartingVertex + m + 1 + j));
-        geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 1 + j) * p, j * p, 0), new Vector3((i + j + 2) * p, (j + 1) * p, 0)]);
-        geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + 1 + j, edgeStartingVertex + j + 2));
-        geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 2 + j) * p, (j + 1) * p, 0), new Vector3((i + j + 2) * p, (j + 2) * p, 0)]);
-      }
-      edgeStartingVertex += m;
+        self.app.play();
     }
 
-    return new Mesh(geometry, this.pattern.materials[polygon.materialIndex]);
-  };
+    EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
+        var _this = this;
 
-  EscherSketchCanvas.prototype.generateDisk = function generateDisk(array) {
-    for (var i = 0; i < array.length; i++) {
-      this.app.scene.add(this.createGeometry(array[i], this.spec.radius));
-    }
-  };
+        var self = this;
 
-  EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
-    this.pattern = new MultiMaterial();
+        var p = document.querySelector('#p-value');
+        var q = document.querySelector('#q-value');
 
-    for (var i = 0; i < this.spec.textures.length; i++) {
-      var material = new MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: this.spec.wireframe,
-        side: DoubleSide
-      });
+        var pValue = function () {
+            return parseInt(p.innerHTML, 10);
+        };
 
-      var texture = new TextureLoader().load(this.spec.textures[i]);
+        var qValue = function () {
+            return parseInt(q.innerHTML, 10);
+        };
 
-      material.map = texture;
-      this.pattern.materials.push(material);
-    }
-  };
+        var observer = new MutationObserver(function () {
 
-  return EscherSketchCanvas;
+            var newP = pValue();
+            var newQ = qValue();
+
+            if (_this.spec.p === newP && _this.spec.q === newQ) return;
+
+            _this.spec.p = newP;
+            _this.spec.q = newQ;
+
+            // TODO: display a warning here saying p, q can't both be 4
+            if (pValue() === 4 && qValue() === 4) return;
+
+            // Add a slight delay before rebuilding the tiling to allow the displayed
+            // value p / q to update
+            setTimeout(function () {
+                return self.buildTiling();
+            }, 200);
+        });
+
+        observer.observe(p, { childList: true });
+        observer.observe(q, { childList: true });
+    };
+
+    EscherSketchCanvas.prototype.buildTiling = function buildTiling() {
+        this.clearTiling();
+
+        console.time('Generate Tiling');
+        var tiling = new RegularHyperbolicTesselation(this.spec).generateTiling(false);
+        console.timeEnd('Generate Tiling');
+
+        console.time('Draw Tiling');
+        this.generateDisk(tiling);
+        console.timeEnd('Draw Tiling');
+    };
+
+    EscherSketchCanvas.prototype.clearTiling = function clearTiling() {
+        while (this.app.scene.children.length > 0) {
+            var object = this.app.scene.children[0];
+
+            if (object.type === 'Mesh') {
+                object.geometry.dispose();
+                this.app.scene.remove(object);
+            }
+        }
+    };
+
+    EscherSketchCanvas.prototype.initSpec = function initSpec() {
+        var imagesPath = '/assets/images/work/escherSketch/tiles/';
+
+        this.spec = {
+            wireframe: false,
+            p: 6,
+            q: 6,
+            radius: 100,
+            textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
+            edgeAdjacency: [// array of length p
+            [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
+            5], [1, 4], // edge_1 orientation, adjacency
+            [1, 3], [1, 2], [1, 1], [1, 0]],
+            minPolygonSize: 0.05
+        };
+    };
+
+    EscherSketchCanvas.prototype.generateDisk = function generateDisk(tiling) {
+        for (var i = 0; i < tiling.length; i++) {
+            var geometry = createGeometry(tiling[i]);
+            var mesh = new Mesh(geometry, this.pattern.materials[tiling[i].materialIndex]);
+            this.app.scene.add(mesh);
+        }
+    };
+
+    EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
+        this.pattern = new MultiMaterial();
+
+        for (var i = 0; i < this.spec.textures.length; i++) {
+            var material = new MeshBasicMaterial({
+                color: 0xffffff,
+                wireframe: this.spec.wireframe,
+                side: DoubleSide
+            });
+
+            var texture = new TextureLoader().load(this.spec.textures[i]);
+
+            material.map = texture;
+            this.pattern.materials.push(material);
+        }
+    };
+
+    return EscherSketchCanvas;
 }();
 
 function initEscherSketch(showStats) {
