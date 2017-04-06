@@ -44674,9 +44674,8 @@ var HyperbolicPolygon = function () {
     var materialIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     classCallCheck(this, HyperbolicPolygon);
 
-    // hyperbolic elenments are calculated on the unit Pointcare so they will
+    // hyperbolic elements are calculated on the unit Pointcare so they will
     // need to be resized before drawing
-    this.needsResizing = true;
     this.materialIndex = materialIndex;
     this.vertices = vertices;
     this.addEdges();
@@ -45244,7 +45243,7 @@ var EscherSketchCanvas = function () {
 
     self.app = new App(document.querySelector('#escherSketch-canvas'));
 
-    self.app.camera.position.set(0, 0, 150);
+    self.app.camera.position.set(0, 0, 1.5);
 
     // TODO: not working in Edge
     var statisticsOverlay = void 0;
@@ -45316,7 +45315,7 @@ var EscherSketchCanvas = function () {
     console.timeEnd('Generate Tiling');
 
     console.time('Draw Tiling');
-    this.generatePolygonArray(tiling);
+    this.generateDisk(tiling);
     console.timeEnd('Draw Tiling');
   };
 
@@ -45348,47 +45347,40 @@ var EscherSketchCanvas = function () {
     };
   };
 
-  EscherSketchCanvas.prototype.createPolygon = function createPolygon(polygon) {
-    this.spec.radius = 100;
+  EscherSketchCanvas.prototype.createGeometry = function createGeometry(polygon, radius) {
+
     var divisions = polygon.numDivisions || 1;
     var p = 1 / divisions;
     var geometry = new Geometry();
     geometry.faceVertexUvs[0] = [];
 
-    if (polygon.needsResizing) {
-      for (var i = 0; i < polygon.mesh.length; i++) {
-        geometry.vertices.push(new Vector3(polygon.mesh[i].x * this.spec.radius, polygon.mesh[i].y * this.spec.radius, 0));
-      }
-    } else {
-      geometry.vertices = polygon.mesh;
-    }
+    geometry.vertices = polygon.mesh;
 
     var edgeStartingVertex = 0;
     // loop over each interior edge of the polygon's subdivion mesh
-    for (var _i = 0; _i < divisions; _i++) {
+    for (var i = 0; i < divisions; i++) {
       // edge divisions reduce by one for each interior edge
-      var m = divisions - _i + 1;
+      var m = divisions - i + 1;
       geometry.faces.push(new Face3(edgeStartingVertex, edgeStartingVertex + m, edgeStartingVertex + 1));
-      geometry.faceVertexUvs[0].push([new Vector3(_i * p, 0, 0), new Vector3((_i + 1) * p, 0, 0), new Vector3((_i + 1) * p, p, 0)]);
+      geometry.faceVertexUvs[0].push([new Vector3(i * p, 0, 0), new Vector3((i + 1) * p, 0, 0), new Vector3((i + 1) * p, p, 0)]);
 
       // range m-2 because we are ignoring the edges first vertex which was
       // used in the previous faces.push
       for (var j = 0; j < m - 2; j++) {
         geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + j, edgeStartingVertex + m + 1 + j));
-        geometry.faceVertexUvs[0].push([new Vector3((_i + 1 + j) * p, (1 + j) * p, 0), new Vector3((_i + 1 + j) * p, j * p, 0), new Vector3((_i + j + 2) * p, (j + 1) * p, 0)]);
+        geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 1 + j) * p, j * p, 0), new Vector3((i + j + 2) * p, (j + 1) * p, 0)]);
         geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + 1 + j, edgeStartingVertex + j + 2));
-        geometry.faceVertexUvs[0].push([new Vector3((_i + 1 + j) * p, (1 + j) * p, 0), new Vector3((_i + 2 + j) * p, (j + 1) * p, 0), new Vector3((_i + j + 2) * p, (j + 2) * p, 0)]);
+        geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 2 + j) * p, (j + 1) * p, 0), new Vector3((i + j + 2) * p, (j + 2) * p, 0)]);
       }
       edgeStartingVertex += m;
     }
 
-    var mesh = new Mesh(geometry, this.pattern.materials[polygon.materialIndex]);
-    this.app.scene.add(mesh);
+    return new Mesh(geometry, this.pattern.materials[polygon.materialIndex]);
   };
 
-  EscherSketchCanvas.prototype.generatePolygonArray = function generatePolygonArray(array) {
+  EscherSketchCanvas.prototype.generateDisk = function generateDisk(array) {
     for (var i = 0; i < array.length; i++) {
-      this.createPolygon(array[i]);
+      this.app.scene.add(this.createGeometry(array[i], this.spec.radius));
     }
   };
 

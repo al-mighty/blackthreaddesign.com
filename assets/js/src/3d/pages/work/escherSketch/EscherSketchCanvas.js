@@ -19,7 +19,7 @@ export default class EscherSketchCanvas {
 
     self.app = new App( document.querySelector( '#escherSketch-canvas' ) );
 
-    self.app.camera.position.set( 0, 0, 150 );
+    self.app.camera.position.set( 0, 0, 1.5 );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -89,7 +89,7 @@ export default class EscherSketchCanvas {
     console.timeEnd( 'Generate Tiling' );
 
     console.time( 'Draw Tiling' );
-    this.generatePolygonArray( tiling );
+    this.generateDisk( tiling );
     console.timeEnd( 'Draw Tiling' );
   }
 
@@ -126,23 +126,14 @@ export default class EscherSketchCanvas {
     };
   }
 
-  createPolygon( polygon ) {
-    this.spec.radius = 100;
+  createGeometry( polygon, radius ) {
+
     const divisions = polygon.numDivisions || 1;
     const p = 1 / divisions;
     const geometry = new THREE.Geometry();
     geometry.faceVertexUvs[0] = [];
 
-    if ( polygon.needsResizing ) {
-      for ( let i = 0; i < polygon.mesh.length; i++ ) {
-        geometry.vertices.push(
-          new THREE.Vector3( polygon.mesh[i].x * this.spec.radius, polygon.mesh[i].y * this.spec.radius, 0 ),
-        );
-      }
-    } else {
-      geometry.vertices = polygon.mesh;
-    }
-
+    geometry.vertices = polygon.mesh;
 
     let edgeStartingVertex = 0;
     // loop over each interior edge of the polygon's subdivion mesh
@@ -192,14 +183,13 @@ export default class EscherSketchCanvas {
       }
       edgeStartingVertex += m;
     }
-    
-    const mesh = new THREE.Mesh( geometry, this.pattern.materials[polygon.materialIndex] );
-    this.app.scene.add( mesh );
+
+    return new THREE.Mesh( geometry, this.pattern.materials[polygon.materialIndex] );
   }
 
-  generatePolygonArray( array ) {
+  generateDisk( array ) {
     for ( let i = 0; i < array.length; i++ ) {
-      this.createPolygon( array[i] );
+      this.app.scene.add( this.createGeometry( array[i], this.spec.radius ) );
     }
   }
 
