@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import App from '../../../App/App.js';
 
-import { createGeometry } from './escherSketchCanvasHelpers.js';
+import { createGeometry, bufferGeometryA, bufferGeometryB, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
 import './escherSketchCanvasSetup.js';
 
 import basicVert from './shaders/basic.vert';
@@ -137,10 +137,23 @@ export default class EscherSketchCanvas {
 
   generateDisk( tiling ) {
     for ( let i = 0; i < tiling.length; i++ ) {
-      const geometry = createGeometry( tiling[i] );
-      const mesh = new THREE.Mesh( geometry, this.pattern.materials[tiling[i].materialIndex] );
-      this.app.scene.add( mesh );
+      createGeometry( tiling[i] );
     }
+
+    const bufferGeometryA = new THREE.BufferGeometry();
+    const bufferGeometryB = new THREE.BufferGeometry();
+
+    bufferGeometryA.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsA, 3 ) );
+    bufferGeometryA.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsA, 2 ) );
+
+    bufferGeometryB.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsB, 3 ) );
+    bufferGeometryB.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsB, 2 ) );
+
+    const meshA = new THREE.Mesh( bufferGeometryA, this.pattern.materials[tiling[0].materialIndex] );
+    const meshB = new THREE.Mesh( bufferGeometryA, this.pattern.materials[tiling[1].materialIndex] );
+
+    this.app.scene.add( meshA );
+    this.app.scene.add( meshB );
   }
 
   initMaterials( ) {

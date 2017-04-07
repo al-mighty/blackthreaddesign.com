@@ -44391,8 +44391,6 @@ var hyperboloidCrossProduct = function (point3D1, point3D2) {
   };
 };
 
-// The longest edge with radius > 0 should be used to calculate how finely
-// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -44462,8 +44460,8 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   return edges;
 }
 
-// Alternative to subdivideInteriorArc using lines instead of arcs
-// ( quality seems the same and may be faster )
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
 function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   var points = [startPoint];
 
@@ -44533,6 +44531,21 @@ function subdivideHyperbolicPolygon(polygon) {
   return points;
 }
 
+var positionsA = [];
+var uvsA = [];
+
+var positionsB = [];
+var uvsB = [];
+
+var bufferGeometryA = new BufferGeometry();
+var bufferGeometryB = new BufferGeometry();
+
+var positionAIndex = 0;
+var uvAIndex = 0;
+
+var positionBIndex = 0;
+var uvBIndex = 0;
+
 // Given a hyperbolic polygon, create a bufferGeometry
 function createGeometry(polygon) {
 
@@ -44541,91 +44554,102 @@ function createGeometry(polygon) {
   var divisions = polygon.numDivisions || 1;
   var p = 1 / divisions;
 
-  var bufferGeometry = new BufferGeometry();
+  function addPositionsAndUvs(positions, positionIndex, uvs, uvIndex) {
 
-  bufferGeometry.addAttribute('position', new BufferAttribute(positions, 3));
-  bufferGeometry.addAttribute('uv', new BufferAttribute(uvs, 2));
+    // console.log( positionIndex, uvIndex )
+    var edgeStartingVertex = 0;
+    // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
+    for (var i = 0; i < divisions; i++) {
+      // edge divisions reduce by one for each interior edge
+      var m = divisions - i + 1;
 
-  var edgeStartingVertex = 0;
+      positions[positionIndex++] = vertices[edgeStartingVertex].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex].z;
 
-  var positionIndex = 0;
-  var uvIndex = 0;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m].z;
 
-  // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
-  for (var i = 0; i < divisions; i++) {
-    // edge divisions reduce by one for each interior edge
-    var m = divisions - i + 1;
+      positions[positionIndex++] = vertices[edgeStartingVertex + 1].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + 1].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + 1].z;
 
-    positions[positionIndex++] = vertices[edgeStartingVertex].x;
-    positions[positionIndex++] = vertices[edgeStartingVertex].y;
-    positions[positionIndex++] = vertices[edgeStartingVertex].z;
+      uvs[uvIndex++] = i * p;
+      uvs[uvIndex++] = 0;
+      uvs[uvIndex++] = (i + 1) * p;
+      uvs[uvIndex++] = 0;
+      uvs[uvIndex++] = (i + 1) * p;
+      uvs[uvIndex++] = p;
 
-    positions[positionIndex++] = vertices[edgeStartingVertex + m].x;
-    positions[positionIndex++] = vertices[edgeStartingVertex + m].y;
-    positions[positionIndex++] = vertices[edgeStartingVertex + m].z;
+      // range m-2 because we are ignoring the edges first vertex which was
+      // used in the previous positions.push
+      // Each loop creates 2 faces
+      for (var j = 0; j < m - 2; j++) {
 
-    positions[positionIndex++] = vertices[edgeStartingVertex + 1].x;
-    positions[positionIndex++] = vertices[edgeStartingVertex + 1].y;
-    positions[positionIndex++] = vertices[edgeStartingVertex + 1].z;
+        // Face 1
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
 
-    uvs[uvIndex++] = i * p;
-    uvs[uvIndex++] = 0;
-    uvs[uvIndex++] = (i + 1) * p;
-    uvs[uvIndex++] = 0;
-    uvs[uvIndex++] = (i + 1) * p;
-    uvs[uvIndex++] = p;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + j].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + j].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + j].z;
 
-    // range m-2 because we are ignoring the edges first vertex which was
-    // used in the previous positions.push
-    // Each loop creates 2 faces
-    for (var j = 0; j < m - 2; j++) {
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
 
-      // Face 1
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
+        // Face 2
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
 
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].z;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
 
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].z;
 
-      // Face 2
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
+        // Face 1 uvs
+        uvs[uvIndex++] = (i + 1 + j) * p;
+        uvs[uvIndex++] = (1 + j) * p;
+        uvs[uvIndex++] = (i + 1 + j) * p;
+        uvs[uvIndex++] = j * p;
+        uvs[uvIndex++] = (i + j + 2) * p;
+        uvs[uvIndex++] = (j + 1) * p;
 
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
-
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].x;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].y;
-      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].z;
-
-      // Face 1 uvs
-      uvs[uvIndex++] = (i + 1 + j) * p;
-      uvs[uvIndex++] = (1 + j) * p;
-      uvs[uvIndex++] = (i + 1 + j) * p;
-      uvs[uvIndex++] = j * p;
-      uvs[uvIndex++] = (i + j + 2) * p;
-      uvs[uvIndex++] = (j + 1) * p;
-
-      // Face 2 uvs
-      uvs[uvIndex++] = (i + 1 + j) * p;
-      uvs[uvIndex++] = (1 + j) * p;
-      uvs[uvIndex++] = (i + 2 + j) * p;
-      uvs[uvIndex++] = (j + 1) * p;
-      uvs[uvIndex++] = (i + j + 2) * p;
-      uvs[uvIndex++] = (j + 2) * p;
+        // Face 2 uvs
+        uvs[uvIndex++] = (i + 1 + j) * p;
+        uvs[uvIndex++] = (1 + j) * p;
+        uvs[uvIndex++] = (i + 2 + j) * p;
+        uvs[uvIndex++] = (j + 1) * p;
+        uvs[uvIndex++] = (i + j + 2) * p;
+        uvs[uvIndex++] = (j + 2) * p;
+      }
+      edgeStartingVertex += m;
     }
-    edgeStartingVertex += m;
   }
 
-  return bufferGeometry;
+  if (polygon.materialIndex === 0) {
+    addPositionsAndUvs(positionsA, positionAIndex, uvsA, uvAIndex);
+  } else {
+    addPositionsAndUvs(positionsB, positionBIndex, uvsB, uvBIndex);
+  }
+
+  if (divisions === 1) {
+    positionAIndex += 9;
+    positionBIndex += 9;
+    uvAIndex += 6;
+    uvBIndex += 6;
+  } else {
+    positionAIndex += 36;
+    positionBIndex += 36;
+    uvAIndex += 24;
+    uvBIndex += 24;
+  }
 }
 
 Math.sinh = Math.sinh || function sinh(x) {
@@ -45438,10 +45462,23 @@ var EscherSketchCanvas = function () {
 
     EscherSketchCanvas.prototype.generateDisk = function generateDisk(tiling) {
         for (var i = 0; i < tiling.length; i++) {
-            var geometry = createGeometry(tiling[i]);
-            var mesh = new Mesh(geometry, this.pattern.materials[tiling[i].materialIndex]);
-            this.app.scene.add(mesh);
+            createGeometry(tiling[i]);
         }
+
+        var bufferGeometryA = new BufferGeometry();
+        var bufferGeometryB = new BufferGeometry();
+
+        bufferGeometryA.addAttribute('position', new Float32BufferAttribute(positionsA, 3));
+        bufferGeometryA.addAttribute('uv', new Float32BufferAttribute(uvsA, 2));
+
+        bufferGeometryB.addAttribute('position', new Float32BufferAttribute(positionsB, 3));
+        bufferGeometryB.addAttribute('uv', new Float32BufferAttribute(uvsB, 2));
+
+        var meshA = new Mesh(bufferGeometryA, this.pattern.materials[tiling[0].materialIndex]);
+        var meshB = new Mesh(bufferGeometryA, this.pattern.materials[tiling[1].materialIndex]);
+
+        this.app.scene.add(meshA);
+        this.app.scene.add(meshB);
     };
 
     EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
