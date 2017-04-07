@@ -44124,63 +44124,6 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-function createGeometry(polygon) {
-
-  var divisions = polygon.numDivisions || 1;
-  var p = 1 / divisions;
-  var geometry = new Geometry();
-  geometry.faceVertexUvs[0] = [];
-
-  geometry.vertices = polygon.mesh;
-
-  var edgeStartingVertex = 0;
-  // loop over each interior edge of the polygon's subdivion mesh
-  for (var i = 0; i < divisions; i++) {
-    // edge divisions reduce by one for each interior edge
-    var m = divisions - i + 1;
-    geometry.faces.push(new Face3(edgeStartingVertex, edgeStartingVertex + m, edgeStartingVertex + 1));
-    geometry.faceVertexUvs[0].push([new Vector3(i * p, 0, 0), new Vector3((i + 1) * p, 0, 0), new Vector3((i + 1) * p, p, 0)]);
-
-    // range m-2 because we are ignoring the edges first vertex which was
-    // used in the previous faces.push
-    for (var j = 0; j < m - 2; j++) {
-      geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + j, edgeStartingVertex + m + 1 + j));
-      geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 1 + j) * p, j * p, 0), new Vector3((i + j + 2) * p, (j + 1) * p, 0)]);
-      geometry.faces.push(new Face3(edgeStartingVertex + j + 1, edgeStartingVertex + m + 1 + j, edgeStartingVertex + j + 2));
-      geometry.faceVertexUvs[0].push([new Vector3((i + 1 + j) * p, (1 + j) * p, 0), new Vector3((i + 2 + j) * p, (j + 1) * p, 0), new Vector3((i + j + 2) * p, (j + 2) * p, 0)]);
-    }
-    edgeStartingVertex += m;
-  }
-
-  return geometry;
-}
-
-Math.sinh = Math.sinh || function sinh(x) {
-  var y = Math.exp(x);
-  return (y - 1 / y) / 2;
-};
-
-Math.cosh = Math.cosh || function cosh(x) {
-  var y = Math.exp(x);
-  return (y + 1 / y) / 2;
-};
-
-Math.cot = Math.cot || function cot(x) {
-  return 1 / Math.tan(x);
-};
-
-// import * as THREE from 'three';
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
 var asyncGenerator = function () {
   function AwaitValue(value) {
     this.value = value;
@@ -44299,124 +44242,6 @@ var classCallCheck = function (instance, Constructor) {
     throw new TypeError("Cannot call a class as a function");
   }
 };
-
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: white;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
 
 var Point = function () {
   function Point(x, y) {
@@ -44578,7 +44403,332 @@ var identityMatrix = function (n) {
   });
 };
 
-var HyperbolicArc = function () {
+var hyperboloidCrossProduct = function (point3D1, point3D2) {
+  return {
+    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
+    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
+    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
+  };
+};
+
+function findSubdivisionEdge(polygon) {
+  // curvature === 0 means this edge goes through origin
+  // in which case subdivide based on next longest edge
+  var a = polygon.edges[0].curvature === 0 ? 0 : polygon.edges[0].arcLength;
+  var b = polygon.edges[1].curvature === 0 ? 0 : polygon.edges[1].arcLength;
+  var c = polygon.edges[2].curvature === 0 ? 0 : polygon.edges[2].arcLength;
+  if (a > b && a > c) return 0;else if (b > c) return 1;
+  return 2;
+}
+
+// Subdivide the edge into lengths calculated by calculateSpacing()
+function subdivideHyperbolicArc(arc, numDivisions) {
+  // calculate the spacing for subdividing the edge into an even number of pieces.
+  // For the first ( longest ) edge this will be calculated based on spacing
+  // then for the rest of the edges it will be calculated based on the number of
+  // subdivisions of the first edge ( so that all edges are divided into an equal
+  // number of pieces)
+
+  // calculate the number of subdivisions required to break the arc into an
+  // even number of pieces (or 1 in case of tiny polygons)
+  numDivisions = numDivisions || arc.arcLength > 0.01 ? 2 * Math.ceil(arc.arcLength / 2) : 1;
+
+  // calculate spacing based on number of points
+  var spacing = arc.arcLength / numDivisions;
+
+  var points = [arc.startPoint];
+
+  // tiny pgons near the edges of the disk don't need to be subdivided
+  if (arc.arcLength > spacing) {
+    var p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, arc.startPoint, arc.endPoint, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
+    points.push(p);
+
+    for (var i = 0; i < numDivisions - 2; i++) {
+      p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, p, arc.endPoint, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
+      points.push(p);
+    }
+  }
+  // push the final vertex
+  points.push(arc.endPoint);
+
+  return points;
+}
+
+// subdivide the subdivision edge, then subdivide the other two edges with the
+// same number of points as the subdivision
+function subdivideHyperbolicPolygonEdges(polygon) {
+  var subdivisionEdge = findSubdivisionEdge(polygon);
+
+  var edge1Points = subdivideHyperbolicArc(polygon.edges[subdivisionEdge]);
+
+  var numDivisions = edge1Points.length - 1;
+
+  polygon.numDivisions = numDivisions;
+
+  var edge2Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 1) % 3], numDivisions);
+  var edge3Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 2) % 3], numDivisions);
+
+  var edges = [];
+
+  edges[subdivisionEdge] = edge1Points;
+  edges[(subdivisionEdge + 1) % 3] = edge2Points;
+  edges[(subdivisionEdge + 2) % 3] = edge3Points;
+
+  edges[3] = numDivisions;
+
+  return edges;
+}
+
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
+function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
+  var points = [startPoint];
+
+  var divisions = numDivisions - arcIndex;
+
+  // if the line get divided add points along line to mesh
+  if (divisions > 1) {
+    var spacing = distance(startPoint, endPoint) / divisions;
+    var nextPoint = directedSpacedPointOnLine(startPoint, endPoint, spacing);
+    for (var j = 0; j < divisions - 1; j++) {
+      points.push(nextPoint);
+      nextPoint = directedSpacedPointOnLine(nextPoint, endPoint, spacing);
+    }
+  }
+
+  points.push(endPoint);
+
+  return points;
+}
+
+// Given a hyperbolic polygon, return an array representing a subdivided  triangular
+// mesh across it's surface
+function subdivideHyperbolicPolygon(polygon) {
+  var subdividedEdges = subdivideHyperbolicPolygonEdges(polygon);
+
+  var numDivisions = subdividedEdges[3];
+
+  var points = [].concat(subdividedEdges[0]);
+
+  for (var i = 1; i < numDivisions; i++) {
+    var startPoint = subdividedEdges[2][numDivisions - i];
+    var endPoint = subdividedEdges[1][i];
+    // this.subdivideInteriorArc( startPoint, endPoint, i );
+    var newPoints = subdivideLine(startPoint, endPoint, i);
+
+    points.push.apply(points, newPoints);
+  }
+
+  // push the final vertex
+  points.push(subdividedEdges[2][0]);
+
+  return points;
+}
+
+// Given a hyperbolic polygon, create a bufferGeometry
+function createGeometry(polygon) {
+
+  var vertices = subdivideHyperbolicPolygon(polygon);
+
+  var divisions = polygon.numDivisions || 1;
+  var p = 1 / divisions;
+
+  var bufferGeometry = new BufferGeometry();
+  var uvs = [];
+  var positions = [];
+
+  var edgeStartingVertex = 0;
+
+  // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
+  for (var i = 0; i < divisions; i++) {
+    // edge divisions reduce by one for each interior edge
+    var m = divisions - i + 1;
+
+    positions.push(vertices[edgeStartingVertex].x, vertices[edgeStartingVertex].y, vertices[edgeStartingVertex].z, vertices[edgeStartingVertex + m].x, vertices[edgeStartingVertex + m].y, vertices[edgeStartingVertex + m].z, vertices[edgeStartingVertex + 1].x, vertices[edgeStartingVertex + 1].y, vertices[edgeStartingVertex + 1].z);
+    uvs.push(i * p, 0, (i + 1) * p, 0, (i + 1) * p, p);
+
+    // range m-2 because we are ignoring the edges first vertex which was
+    // used in the previous positions.push
+    // Each loop creates 2 faces
+    for (var j = 0; j < m - 2; j++) {
+
+      positions.push(
+      // Face 1
+      vertices[edgeStartingVertex + j + 1].x, vertices[edgeStartingVertex + j + 1].y, vertices[edgeStartingVertex + j + 1].z, vertices[edgeStartingVertex + m + j].x, vertices[edgeStartingVertex + m + j].y, vertices[edgeStartingVertex + m + j].z, vertices[edgeStartingVertex + m + 1 + j].x, vertices[edgeStartingVertex + m + 1 + j].y, vertices[edgeStartingVertex + m + 1 + j].z,
+
+      // Face 2
+      vertices[edgeStartingVertex + j + 1].x, vertices[edgeStartingVertex + j + 1].y, vertices[edgeStartingVertex + j + 1].z, vertices[edgeStartingVertex + m + 1 + j].x, vertices[edgeStartingVertex + m + 1 + j].y, vertices[edgeStartingVertex + m + 1 + j].z, vertices[edgeStartingVertex + j + 2].x, vertices[edgeStartingVertex + j + 2].y, vertices[edgeStartingVertex + j + 2].z);
+
+      uvs.push(
+      // Face 1 uvs
+      (i + 1 + j) * p, (1 + j) * p, (i + 1 + j) * p, j * p, (i + j + 2) * p, (j + 1) * p,
+
+      // Face 2 uvs
+      (i + 1 + j) * p, (1 + j) * p, (i + 2 + j) * p, (j + 1) * p, (i + j + 2) * p, (j + 2) * p);
+    }
+    edgeStartingVertex += m;
+  }
+
+  bufferGeometry.addAttribute('position', new Float32BufferAttribute(positions, 3));
+
+  bufferGeometry.addAttribute('uv', new Float32BufferAttribute(uvs, 2));
+
+  return bufferGeometry;
+}
+
+Math.sinh = Math.sinh || function sinh(x) {
+  var y = Math.exp(x);
+  return (y - 1 / y) / 2;
+};
+
+Math.cosh = Math.cosh || function cosh(x) {
+  var y = Math.exp(x);
+  return (y + 1 / y) / 2;
+};
+
+Math.cot = Math.cot || function cot(x) {
+  return 1 / Math.tan(x);
+};
+
+// import * as THREE from 'three';
+
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
+var minFrame = 1000000;
+var maxFrame = 0;
+
+var StatisticsOverlay = function () {
+    function StatisticsOverlay(app, container) {
+        classCallCheck(this, StatisticsOverlay);
+
+        this.app = app;
+
+        this.container = container || app.renderer.domElement;
+
+        this.show = false;
+
+        this.initStatsContainer();
+
+        this.initHideOverLayCheckbox();
+    }
+
+    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
+        var _this = this;
+
+        var hide = this.container.appendChild(document.createElement('div'));
+        hide.id = 'hideStatsOverlay';
+        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
+
+        var checkbox = hide.appendChild(document.createElement('input'));
+        checkbox.type = 'checkbox';
+
+        var label = hide.appendChild(document.createElement('span'));
+        label.innerText = 'Show Stats';
+        label.style = 'color: white;';
+
+        checkbox.addEventListener('change', function () {
+
+            _this.statsElem.classList.toggle('hidden');
+            _this.show = !_this.show;
+        });
+    };
+
+    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
+
+        this.statsElem = this.container.appendChild(document.createElement('div'));
+        this.statsElem.id = 'infoContainer';
+        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
+
+        this.statsElem.classList.add('hidden');
+
+        var timeCount = this.statsElem.appendChild(document.createElement('span'));
+        timeCount.innerText = 'Total Time: ';
+        this.total = timeCount.appendChild(document.createElement('span'));
+
+        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
+        totalUnscaled.innerText = ' Total Unscaled Time: ';
+        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
+
+        var frameCount = this.statsElem.appendChild(document.createElement('span'));
+        frameCount.innerText = ' Frame Count: ';
+        this.frameCount = frameCount.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        lastFrameTime.innerText = 'Last Frame Time: ';
+        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
+
+        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        minFrameTime.innerText = ' Min Frame Time: ';
+        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
+
+        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        maxFrameTime.innerText = ' Max Frame Time: ';
+        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
+
+        this.statsElem.appendChild(document.createElement('br'));
+
+        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
+        avgFrameTime.innerText = 'Average Frame Time: ';
+        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
+
+        var fps = this.statsElem.appendChild(document.createElement('span'));
+        fps.innerText = ' FPS: ';
+        this.fps = fps.appendChild(document.createElement('span'));
+
+        this.hideCheck = document.querySelector('#hideOverlayChk');
+
+        this.stats = new Stats();
+        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
+
+        this.statsElem.appendChild(this.stats.dom);
+    };
+
+    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
+
+        if (!this.show) return;
+
+        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
+        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
+        this.frameCount.innerText = this.app.frameCount;
+
+        if (delta) {
+
+            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
+
+            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
+            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
+
+            this.lastFrameTime.innerText = unscaledDelta;
+        }
+
+        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
+        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
+
+        this.stats.update();
+    };
+
+    return StatisticsOverlay;
+}();
+
+// * ***********************************************************************
+// *
+// *  HYPERBOLIC ARC CLASS
+// *  Represents a hyperbolic arc on the Poincare disk, which is a
+// *  Euclidean straight line if it goes through the origin
+// *
+// *************************************************************************
+
+var HyperbolicArc$1 = function () {
   function HyperbolicArc(startPoint, endPoint) {
     classCallCheck(this, HyperbolicArc);
 
@@ -44601,7 +44751,7 @@ var HyperbolicArc = function () {
 
   HyperbolicArc.prototype.calculateArc = function calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    var hp = this.hyperboloidCrossProduct(this.startPoint.poincareToHyperboloid(), this.endPoint.poincareToHyperboloid());
+    var hp = hyperboloidCrossProduct(this.startPoint.poincareToHyperboloid(), this.endPoint.poincareToHyperboloid());
 
     var arcCentre = new Point(hp.x / hp.z, hp.y / hp.z);
     var arcRadius = Math.sqrt(Math.pow(this.startPoint.x - arcCentre.x, 2) + Math.pow(this.startPoint.y - arcCentre.y, 2));
@@ -44617,76 +44767,7 @@ var HyperbolicArc = function () {
     this.circle = new Circle(arcCentre.x, arcCentre.y, arcRadius);
   };
 
-  HyperbolicArc.prototype.hyperboloidCrossProduct = function hyperboloidCrossProduct(point3D1, point3D2) {
-    return {
-      x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
-      y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
-      z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
-    };
-  };
-
   return HyperbolicArc;
-}();
-
-// * ***********************************************************************
-// *
-// *   EDGE CLASS
-// *   Represents a hyperbolic polygon edge
-// *
-// *************************************************************************
-
-
-var HyperbolicEdge = function () {
-  function HyperbolicEdge(startPoint, endPoint) {
-    classCallCheck(this, HyperbolicEdge);
-
-    this.arc = new HyperbolicArc(startPoint, endPoint);
-  }
-
-  // calculate the spacing for subdividing the edge into an even number of pieces.
-  // For the first ( longest ) edge this will be calculated based on spacing
-  // then for the rest of the edges it will be calculated based on the number of
-  // subdivisions of the first edge ( so that all edges are divided into an equal
-  // number of pieces)
-
-
-  HyperbolicEdge.prototype.calculateSpacing = function calculateSpacing(numDivisions) {
-    // subdivision spacing for edges
-    this.spacing = this.arc.arcLength > 0.03 ? this.arc.arcLength / 5 // approx maximum that hides all gaps
-    : 0.02;
-
-    // calculate the number of subdivisions required to break the arc into an
-    // even number of pieces (or 1 in case of tiny polygons)
-    var subdivisions = this.arc.arcLength > 0.01 ? 2 * Math.ceil(this.arc.arcLength / this.spacing / 2) : 1;
-
-    this.numDivisions = numDivisions || subdivisions;
-
-    // recalculate spacing based on number of points
-    this.spacing = this.arc.arcLength / this.numDivisions;
-  };
-
-  // Subdivide the edge into lengths calculated by calculateSpacing()
-
-
-  HyperbolicEdge.prototype.subdivideEdge = function subdivideEdge(numDivisions) {
-    this.calculateSpacing(numDivisions);
-    this.points = [this.arc.startPoint];
-
-    // tiny pgons near the edges of the disk don't need to be subdivided
-    if (this.arc.arcLength > this.spacing) {
-      var p = !this.arc.straightLine ? directedSpacedPointOnArc(this.arc.circle, this.arc.startPoint, this.arc.endPoint, this.spacing) : directedSpacedPointOnLine(this.arc.startPoint, this.arc.endPoint, this.spacing);
-      this.points.push(p);
-
-      for (var i = 0; i < this.numDivisions - 2; i++) {
-        p = !this.arc.straightLine ? directedSpacedPointOnArc(this.arc.circle, p, this.arc.endPoint, this.spacing) : directedSpacedPointOnLine(p, this.arc.endPoint, this.spacing);
-        this.points.push(p);
-      }
-    }
-    // push the final vertex
-    this.points.push(this.arc.endPoint);
-  };
-
-  return HyperbolicEdge;
 }();
 
 // * ***********************************************************************
@@ -44696,8 +44777,7 @@ var HyperbolicEdge = function () {
 // *************************************************************************
 // NOTE: sometimes polygons will be backwards facing. Solved with DoubleSide material
 // but may cause problems
-// vertices: array of Points
-// materialIndex: which material from THREE.Multimaterial to use
+// materialIndex: which tile to use
 
 
 var HyperbolicPolygon = function () {
@@ -44705,85 +44785,12 @@ var HyperbolicPolygon = function () {
     var materialIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     classCallCheck(this, HyperbolicPolygon);
 
-    // hyperbolic elements are calculated on the unit Pointcare so they will
-    // need to be resized before drawing
+
     this.materialIndex = materialIndex;
     this.vertices = vertices;
-    this.addEdges();
-    this.findSubdivisionEdge();
-    this.subdivideMesh();
+
+    this.edges = [new HyperbolicArc$1(this.vertices[0], this.vertices[1]), new HyperbolicArc$1(this.vertices[1], this.vertices[2]), new HyperbolicArc$1(this.vertices[2], this.vertices[0])];
   }
-
-  HyperbolicPolygon.prototype.addEdges = function addEdges() {
-    this.edges = [];
-    for (var i = 0; i < this.vertices.length; i++) {
-      this.edges.push(new HyperbolicEdge(this.vertices[i], this.vertices[(i + 1) % this.vertices.length]));
-    }
-  };
-
-  // The longest edge with radius > 0 should be used to calculate how finely
-  // the polygon gets subdivided
-
-
-  HyperbolicPolygon.prototype.findSubdivisionEdge = function findSubdivisionEdge() {
-    var a = this.edges[0].arc.curvature === 0 ? 0 : this.edges[0].arc.arcLength;
-    var b = this.edges[1].arc.curvature === 0 ? 0 : this.edges[1].arc.arcLength;
-    var c = this.edges[2].arc.curvature === 0 ? 0 : this.edges[2].arc.arcLength;
-    if (a > b && a > c) this.subdivisionEdge = 0;else if (b > c) this.subdivisionEdge = 1;else this.subdivisionEdge = 2;
-  };
-
-  // subdivide the subdivision edge, then subdivide the other two edges with the
-  // same number of points as the subdivision
-
-
-  HyperbolicPolygon.prototype.subdivideEdges = function subdivideEdges() {
-    this.edges[this.subdivisionEdge].subdivideEdge();
-    this.numDivisions = this.edges[this.subdivisionEdge].points.length - 1;
-
-    this.edges[(this.subdivisionEdge + 1) % 3].subdivideEdge(this.numDivisions);
-    this.edges[(this.subdivisionEdge + 2) % 3].subdivideEdge(this.numDivisions);
-  };
-
-  // create triangular subdivision mesh to fill the interior of the polygon
-
-
-  HyperbolicPolygon.prototype.subdivideMesh = function subdivideMesh() {
-    this.subdivideEdges();
-    this.mesh = [].concat(this.edges[0].points);
-
-    for (var i = 1; i < this.numDivisions; i++) {
-      var startPoint = this.edges[2].points[this.numDivisions - i];
-      var endPoint = this.edges[1].points[i];
-      this.subdivideInteriorArc(startPoint, endPoint, i);
-    }
-
-    // push the final vertex
-    this.mesh.push(this.edges[2].points[0]);
-  };
-
-  // find the points along the arc between opposite subdivions of the second two
-  // edges of the polygon. Each subsequent arc will have one less subdivision
-
-
-  HyperbolicPolygon.prototype.subdivideInteriorArc = function subdivideInteriorArc(startPoint, endPoint, arcIndex) {
-    var circle = new HyperbolicArc(startPoint, endPoint).circle;
-    this.mesh.push(startPoint);
-
-    // for each arc, the number of divisions will be reduced by one
-    var divisions = this.numDivisions - arcIndex;
-
-    // if the line get divided add points along line to mesh
-    if (divisions > 1) {
-      var spacing = distance(startPoint, endPoint) / divisions;
-      var nextPoint = directedSpacedPointOnArc(circle, startPoint, endPoint, spacing);
-      for (var j = 0; j < divisions - 1; j++) {
-        this.mesh.push(nextPoint);
-        nextPoint = directedSpacedPointOnArc(circle, nextPoint, endPoint, spacing);
-      }
-    }
-
-    this.mesh.push(endPoint);
-  };
 
   // Apply a Transform to the polygon
 
@@ -45196,7 +45203,7 @@ var RegularHyperbolicTesselation = function () {
     this.addTransformedPattern(tiling, transform);
     // stop if the current pattern has reached the minimum size
     // TODO better method as this leaves holes at the edges
-    if (tiling[tiling.length - 1].edges[0].arc.arcLength < this.minPolygonSize) {
+    if (tiling[tiling.length - 1].edges[0].arcLength < this.minPolygonSize) {
       return;
     }
 

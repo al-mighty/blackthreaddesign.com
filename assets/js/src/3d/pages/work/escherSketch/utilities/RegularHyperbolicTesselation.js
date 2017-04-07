@@ -154,7 +154,7 @@ export default class RegularHyperbolicTesselation {
     this.addTransformedPattern( tiling, transform );
     // stop if the current pattern has reached the minimum size
     // TODO better method as this leaves holes at the edges
-    if ( tiling[tiling.length - 1].edges[0].arc.arcLength < this.minPolygonSize ) {
+    if ( tiling[tiling.length - 1].edges[0].arcLength < this.minPolygonSize ) {
       return;
     }
 
