@@ -5,6 +5,9 @@ import App from '../../../App/App.js';
 import { createGeometry } from './escherSketchCanvasHelpers.js';
 import './escherSketchCanvasSetup.js';
 
+import basicVert from './shaders/basic.vert';
+import basicFrag from './shaders/basic.frag';
+
 import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 
 import RegularHyperbolicTesselation from './utilities/RegularHyperbolicTesselation.js';
@@ -21,6 +24,7 @@ export default class EscherSketchCanvas {
     self.app = new App( document.querySelector( '#escherSketch-canvas' ) );
 
     self.app.camera.position.set( 0, 0, 1.5 );
+    self.app.camera.far = 5;
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -45,6 +49,8 @@ export default class EscherSketchCanvas {
     };
 
     self.app.play();
+
+    console.log(self.app.renderer.info)
 
   }
 
@@ -139,15 +145,18 @@ export default class EscherSketchCanvas {
     this.pattern = new THREE.MultiMaterial();
 
     for ( let i = 0; i < this.spec.textures.length; i++ ) {
-      const material = new THREE.MeshBasicMaterial( {
-        color: 0xffffff,
-        wireframe: this.spec.wireframe,
+
+      const material = new THREE.RawShaderMaterial( {
+        uniforms: {
+          tileTexture: {
+            value: new THREE.TextureLoader().load( this.spec.textures[i] ),
+          },
+        },
+        vertexShader: basicVert,
+        fragmentShader: basicFrag,
         side: THREE.DoubleSide,
       } );
 
-      const texture = new THREE.TextureLoader().load( this.spec.textures[i] );
-
-      material.map = texture;
       this.pattern.materials.push( material );
     }
   }
