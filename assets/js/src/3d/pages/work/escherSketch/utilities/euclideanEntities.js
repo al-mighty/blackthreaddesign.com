@@ -14,19 +14,6 @@ export class Point {
     this.z = z;
   }
 
-  // compare two points taking rounding errors into account
-  compare( otherPoint ) {
-    if ( typeof otherPoint === 'undefined' ) {
-      console.warn( 'Compare Points: point not defined.' );
-      return false;
-    }
-    const a = E.toFixed( this.x ) === E.toFixed( otherPoint.x );
-    const b = E.toFixed( this.y ) === E.toFixed( otherPoint.y );
-    const c = E.toFixed( this.z ) === E.toFixed( otherPoint.z );
-    if ( a && b && c ) return true;
-    return false;
-  }
-
   // move the point to hyperboloid (Weierstrass) space, apply the transform,
   // then move back
   transform( transform ) {
