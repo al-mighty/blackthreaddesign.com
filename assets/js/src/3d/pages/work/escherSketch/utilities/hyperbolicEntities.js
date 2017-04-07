@@ -35,8 +35,8 @@ class HyperbolicArc {
 
     const arcCentre = new Point( hp.x / hp.z, hp.y / hp.z );
     const arcRadius = Math.sqrt(
-      ( this.startPoint.x - arcCentre.x, 2 ) ** 2
-      + ( this.startPoint.y - arcCentre.y, 2 ) ** 2,
+      Math.pow( this.startPoint.x - arcCentre.x, 2 )
+      + Math.pow( this.startPoint.y - arcCentre.y, 2 ),
     );
 
     // translate points to origin and calculate arctan
