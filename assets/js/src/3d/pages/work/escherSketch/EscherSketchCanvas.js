@@ -73,7 +73,7 @@ export default class EscherSketchCanvas {
 
       // Add a slight delay before rebuilding the tiling to allow the displayed
       // value p / q to update
-      setTimeout( () => self.buildTiling(), 200 );
+      setTimeout( () => self.buildTiling(), 10 );
 
     } );
 
