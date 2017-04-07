@@ -44243,6 +44243,13 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
+// * ***********************************************************************
+// *
+// *   POINT CLASS
+// *   Represents a 2D or 3D point with functions to apply transforms and
+// *   convert between hyperbolid space and the Poincare disk
+// *************************************************************************
+
 var Point = function () {
   function Point(x, y) {
     var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
@@ -44252,21 +44259,6 @@ var Point = function () {
     this.y = y;
     this.z = z;
   }
-
-  // compare two points taking rounding errors into account
-
-
-  Point.prototype.compare = function compare(otherPoint) {
-    if (typeof otherPoint === 'undefined') {
-      console.warn('Compare Points: point not defined.');
-      return false;
-    }
-    var a = toFixed(this.x) === toFixed(otherPoint.x);
-    var b = toFixed(this.y) === toFixed(otherPoint.y);
-    var c = toFixed(this.z) === toFixed(otherPoint.z);
-    if (a && b && c) return true;
-    return false;
-  };
 
   // move the point to hyperboloid (Weierstrass) space, apply the transform,
   // then move back
@@ -44306,23 +44298,11 @@ var Point = function () {
   return Point;
 }();
 
-// * ***********************************************************************
-// *
-// *   CIRCLE CLASS
-// *   A circle in the Poincare disk is identical to a circle in Euclidean space
-// *
-// *************************************************************************
-
 var Circle = function Circle(centreX, centreY, radius) {
   classCallCheck(this, Circle);
 
   this.centre = new Point(centreX, centreY);
   this.radius = radius;
-};
-
-var toFixed = function (number) {
-  var places = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-  return parseFloat(number.toFixed(places));
 };
 
 var distance = function (point1, point2) {
@@ -44332,12 +44312,12 @@ var distance = function (point1, point2) {
 // does the line connecting p1, p2 go through the point (0,0)?
 var throughOrigin = function (point1, point2) {
   // vertical line through centre
-  if (toFixed(point1.x) === toFixed(0) && toFixed(point2.x) === toFixed(0)) {
+  if (Math.abs(point1.x) <= 0.00001 && Math.abs(point2.x) <= 0.00001) {
     return true;
   }
   var test = (-point1.x * point2.y + point1.x * point1.y) / (point2.x - point1.x) + point1.y;
 
-  if (toFixed(test) === toFixed(0)) return true;
+  if (Math.abs(test) <= 0.00001) return true;
   return false;
 };
 
@@ -44431,7 +44411,8 @@ function subdivideHyperbolicArc(arc, numDivisions) {
 
   // calculate the number of subdivisions required to break the arc into an
   // even number of pieces (or 1 in case of tiny polygons)
-  numDivisions = numDivisions || arc.arcLength > 0.01 ? 2 * Math.ceil(arc.arcLength / 2) : 1;
+  numDivisions = numDivisions || arc.arcLength > 0.01 ? 2 // * Math.ceil( arc.arcLength / 2 )
+  : 1;
 
   // calculate spacing based on number of points
   var spacing = arc.arcLength / numDivisions;
@@ -44510,17 +44491,42 @@ function subdivideHyperbolicPolygon(polygon) {
 
   var points = [].concat(subdividedEdges[0]);
 
+  // const flatPoints = [];
+
+  // for ( let i = 0; i < subdividedEdges[0].length; i++ ) {
+  //   flatPoints.push( 
+  //     subdividedEdges[0][i].x,
+  //     subdividedEdges[0][i].y,
+  //     subdividedEdges[0][i].z,
+  //   );
+  // }
+
+
   for (var i = 1; i < numDivisions; i++) {
     var startPoint = subdividedEdges[2][numDivisions - i];
     var endPoint = subdividedEdges[1][i];
     // this.subdivideInteriorArc( startPoint, endPoint, i );
     var newPoints = subdivideLine(startPoint, endPoint, i);
 
+    // for ( let j = 0; j < newPoints.length; j++) {
+    //   flatPoints.push( 
+    //     newPoints[j].x,
+    //     newPoints[j].y,
+    //     newPoints[j].z,
+    //   );
+    // }
+
     points.push.apply(points, newPoints);
   }
 
   // push the final vertex
   points.push(subdividedEdges[2][0]);
+
+  // flatPoints.push( 
+  //   subdividedEdges[2][0].x,
+  //   subdividedEdges[2][0].y,
+  //   subdividedEdges[2][0].z,
+  // );
 
   return points;
 }
@@ -44534,44 +44540,91 @@ function createGeometry(polygon) {
   var p = 1 / divisions;
 
   var bufferGeometry = new BufferGeometry();
-  var uvs = [];
-  var positions = [];
+  var uvs = new Float32Array(divisions * divisions * 6);
+  var positions = new Float32Array(divisions * divisions * 9);
 
   var edgeStartingVertex = 0;
+
+  var positionIndex = 0;
+  var uvIndex = 0;
 
   // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
   for (var i = 0; i < divisions; i++) {
     // edge divisions reduce by one for each interior edge
     var m = divisions - i + 1;
 
-    positions.push(vertices[edgeStartingVertex].x, vertices[edgeStartingVertex].y, vertices[edgeStartingVertex].z, vertices[edgeStartingVertex + m].x, vertices[edgeStartingVertex + m].y, vertices[edgeStartingVertex + m].z, vertices[edgeStartingVertex + 1].x, vertices[edgeStartingVertex + 1].y, vertices[edgeStartingVertex + 1].z);
-    uvs.push(i * p, 0, (i + 1) * p, 0, (i + 1) * p, p);
+    positions[positionIndex++] = vertices[edgeStartingVertex].x;
+    positions[positionIndex++] = vertices[edgeStartingVertex].y;
+    positions[positionIndex++] = vertices[edgeStartingVertex].z;
+
+    positions[positionIndex++] = vertices[edgeStartingVertex + m].x;
+    positions[positionIndex++] = vertices[edgeStartingVertex + m].y;
+    positions[positionIndex++] = vertices[edgeStartingVertex + m].z;
+
+    positions[positionIndex++] = vertices[edgeStartingVertex + 1].x;
+    positions[positionIndex++] = vertices[edgeStartingVertex + 1].y;
+    positions[positionIndex++] = vertices[edgeStartingVertex + 1].z;
+
+    uvs[uvIndex++] = i * p;
+    uvs[uvIndex++] = 0;
+    uvs[uvIndex++] = (i + 1) * p;
+    uvs[uvIndex++] = 0;
+    uvs[uvIndex++] = (i + 1) * p;
+    uvs[uvIndex++] = p;
 
     // range m-2 because we are ignoring the edges first vertex which was
     // used in the previous positions.push
     // Each loop creates 2 faces
     for (var j = 0; j < m - 2; j++) {
 
-      positions.push(
       // Face 1
-      vertices[edgeStartingVertex + j + 1].x, vertices[edgeStartingVertex + j + 1].y, vertices[edgeStartingVertex + j + 1].z, vertices[edgeStartingVertex + m + j].x, vertices[edgeStartingVertex + m + j].y, vertices[edgeStartingVertex + m + j].z, vertices[edgeStartingVertex + m + 1 + j].x, vertices[edgeStartingVertex + m + 1 + j].y, vertices[edgeStartingVertex + m + 1 + j].z,
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
+
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + j].z;
+
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
 
       // Face 2
-      vertices[edgeStartingVertex + j + 1].x, vertices[edgeStartingVertex + j + 1].y, vertices[edgeStartingVertex + j + 1].z, vertices[edgeStartingVertex + m + 1 + j].x, vertices[edgeStartingVertex + m + 1 + j].y, vertices[edgeStartingVertex + m + 1 + j].z, vertices[edgeStartingVertex + j + 2].x, vertices[edgeStartingVertex + j + 2].y, vertices[edgeStartingVertex + j + 2].z);
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
 
-      uvs.push(
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
+
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].x;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].y;
+      positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].z;
+
       // Face 1 uvs
-      (i + 1 + j) * p, (1 + j) * p, (i + 1 + j) * p, j * p, (i + j + 2) * p, (j + 1) * p,
+      uvs[uvIndex++] = (i + 1 + j) * p;
+      uvs[uvIndex++] = (1 + j) * p;
+      uvs[uvIndex++] = (i + 1 + j) * p;
+      uvs[uvIndex++] = j * p;
+      uvs[uvIndex++] = (i + j + 2) * p;
+      uvs[uvIndex++] = (j + 1) * p;
 
       // Face 2 uvs
-      (i + 1 + j) * p, (1 + j) * p, (i + 2 + j) * p, (j + 1) * p, (i + j + 2) * p, (j + 2) * p);
+      uvs[uvIndex++] = (i + 1 + j) * p;
+      uvs[uvIndex++] = (1 + j) * p;
+      uvs[uvIndex++] = (i + 2 + j) * p;
+      uvs[uvIndex++] = (j + 1) * p;
+      uvs[uvIndex++] = (i + j + 2) * p;
+      uvs[uvIndex++] = (j + 2) * p;
     }
     edgeStartingVertex += m;
   }
 
-  bufferGeometry.addAttribute('position', new Float32BufferAttribute(positions, 3));
+  bufferGeometry.addAttribute('position', new BufferAttribute(positions, 3));
 
-  bufferGeometry.addAttribute('uv', new Float32BufferAttribute(uvs, 2));
+  bufferGeometry.addAttribute('uv', new BufferAttribute(uvs, 2));
 
   return bufferGeometry;
 }
@@ -44589,8 +44642,6 @@ Math.cosh = Math.cosh || function cosh(x) {
 Math.cot = Math.cot || function cot(x) {
   return 1 / Math.tan(x);
 };
-
-// import * as THREE from 'three';
 
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
@@ -44719,14 +44770,6 @@ var StatisticsOverlay = function () {
 
     return StatisticsOverlay;
 }();
-
-// * ***********************************************************************
-// *
-// *  HYPERBOLIC ARC CLASS
-// *  Represents a hyperbolic arc on the Poincare disk, which is a
-// *  Euclidean straight line if it goes through the origin
-// *
-// *************************************************************************
 
 var HyperbolicArc$1 = function () {
   function HyperbolicArc(startPoint, endPoint) {
@@ -45338,7 +45381,7 @@ var EscherSketchCanvas = function () {
             // value p / q to update
             setTimeout(function () {
                 return self.buildTiling();
-            }, 200);
+            }, 10);
         });
 
         observer.observe(p, { childList: true });
