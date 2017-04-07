@@ -98,6 +98,8 @@ export default class EscherSketchCanvas {
     console.time( 'Draw Tiling' );
     this.generateDisk( tiling );
     console.timeEnd( 'Draw Tiling' );
+
+    console.log( 'Tiling length: ' + tiling.length );
   }
 
   clearTiling() {
@@ -129,7 +131,7 @@ export default class EscherSketchCanvas {
           [1, 4], // edge_1 orientation, adjacency
           [1, 3], [1, 2], [1, 1], [1, 0]
         ],
-      minPolygonSize: 0.05,
+      minPolygonSize: 0.04,
     };
   }
 
@@ -146,10 +148,13 @@ export default class EscherSketchCanvas {
 
     for ( let i = 0; i < this.spec.textures.length; i++ ) {
 
+      const texture = new THREE.TextureLoader().load( this.spec.textures[i] );
+      texture.anisotropy = this.app.renderer.getMaxAnisotropy();
+
       const material = new THREE.RawShaderMaterial( {
         uniforms: {
           tileTexture: {
-            value: new THREE.TextureLoader().load( this.spec.textures[i] ),
+            value: texture,
           },
         },
         vertexShader: basicVert,

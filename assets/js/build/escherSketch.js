@@ -44243,13 +44243,6 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-// * ***********************************************************************
-// *
-// *   POINT CLASS
-// *   Represents a 2D or 3D point with functions to apply transforms and
-// *   convert between hyperbolid space and the Poincare disk
-// *************************************************************************
-
 var Point = function () {
   function Point(x, y) {
     var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
@@ -44297,6 +44290,13 @@ var Point = function () {
 
   return Point;
 }();
+
+// * ***********************************************************************
+// *
+// *   CIRCLE CLASS
+// *   A circle in the Poincare disk is identical to a circle in Euclidean space
+// *
+// *************************************************************************
 
 var Circle = function Circle(centreX, centreY, radius) {
   classCallCheck(this, Circle);
@@ -44391,6 +44391,8 @@ var hyperboloidCrossProduct = function (point3D1, point3D2) {
   };
 };
 
+// The longest edge with radius > 0 should be used to calculate how finely
+// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -44460,8 +44462,8 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   return edges;
 }
 
-// find the points along the arc between opposite subdivions of the second two
-// edges of the polygon. Each subsequent arc will have one less subdivision
+// Alternative to subdivideInteriorArc using lines instead of arcs
+// ( quality seems the same and may be faster )
 function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   var points = [startPoint];
 
@@ -44540,8 +44542,9 @@ function createGeometry(polygon) {
   var p = 1 / divisions;
 
   var bufferGeometry = new BufferGeometry();
-  var uvs = new Float32Array(divisions * divisions * 6);
-  var positions = new Float32Array(divisions * divisions * 9);
+
+  bufferGeometry.addAttribute('position', new BufferAttribute(positions, 3));
+  bufferGeometry.addAttribute('uv', new BufferAttribute(uvs, 2));
 
   var edgeStartingVertex = 0;
 
@@ -44622,10 +44625,6 @@ function createGeometry(polygon) {
     edgeStartingVertex += m;
   }
 
-  bufferGeometry.addAttribute('position', new BufferAttribute(positions, 3));
-
-  bufferGeometry.addAttribute('uv', new BufferAttribute(uvs, 2));
-
   return bufferGeometry;
 }
 
@@ -44642,6 +44641,10 @@ Math.cosh = Math.cosh || function cosh(x) {
 Math.cot = Math.cot || function cot(x) {
   return 1 / Math.tan(x);
 };
+
+var basicVert = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec2 uv;\nvarying vec2 vUv;\nvoid main() {\n  vUv = uv;\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n}";
+
+var basicFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform sampler2D tileTexture;\nvarying vec2 vUv;\nvoid main() {\n\tgl_FragColor = texture2D(tileTexture, vUv);\n}";
 
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
@@ -45325,6 +45328,7 @@ var EscherSketchCanvas = function () {
         self.app = new App(document.querySelector('#escherSketch-canvas'));
 
         self.app.camera.position.set(0, 0, 1.5);
+        self.app.camera.far = 5;
 
         // TODO: not working in Edge
         var statisticsOverlay = void 0;
@@ -45346,6 +45350,8 @@ var EscherSketchCanvas = function () {
         self.app.onWindowResize = function () {};
 
         self.app.play();
+
+        console.log(self.app.renderer.info);
     }
 
     EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
@@ -45398,6 +45404,8 @@ var EscherSketchCanvas = function () {
         console.time('Draw Tiling');
         this.generateDisk(tiling);
         console.timeEnd('Draw Tiling');
+
+        console.log('Tiling length: ' + tiling.length);
     };
 
     EscherSketchCanvas.prototype.clearTiling = function clearTiling() {
@@ -45424,7 +45432,7 @@ var EscherSketchCanvas = function () {
             [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
             5], [1, 4], // edge_1 orientation, adjacency
             [1, 3], [1, 2], [1, 1], [1, 0]],
-            minPolygonSize: 0.05
+            minPolygonSize: 0.04
         };
     };
 
@@ -45440,15 +45448,21 @@ var EscherSketchCanvas = function () {
         this.pattern = new MultiMaterial();
 
         for (var i = 0; i < this.spec.textures.length; i++) {
-            var material = new MeshBasicMaterial({
-                color: 0xffffff,
-                wireframe: this.spec.wireframe,
+
+            var texture = new TextureLoader().load(this.spec.textures[i]);
+            texture.anisotropy = this.app.renderer.getMaxAnisotropy();
+
+            var material = new RawShaderMaterial({
+                uniforms: {
+                    tileTexture: {
+                        value: texture
+                    }
+                },
+                vertexShader: basicVert,
+                fragmentShader: basicFrag,
                 side: DoubleSide
             });
 
-            var texture = new TextureLoader().load(this.spec.textures[i]);
-
-            material.map = texture;
             this.pattern.materials.push(material);
         }
     };

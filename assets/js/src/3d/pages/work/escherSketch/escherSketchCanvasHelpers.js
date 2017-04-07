@@ -187,8 +187,11 @@ export function createGeometry( polygon ) {
   const p = 1 / divisions;
 
   const bufferGeometry = new THREE.BufferGeometry();
-  const uvs = new Float32Array( divisions * divisions * 6 );
-  const positions = new Float32Array( divisions * divisions * 9 );
+
+
+
+  bufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+  bufferGeometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
 
   let edgeStartingVertex = 0;
 
@@ -270,10 +273,6 @@ export function createGeometry( polygon ) {
     }
     edgeStartingVertex += m;
   }
-
-  bufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-
-  bufferGeometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
 
   return bufferGeometry;
 }
