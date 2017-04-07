@@ -112,3 +112,10 @@ export const identityMatrix = n =>
     } ),
   );
 
+export const hyperboloidCrossProduct = ( point3D1, point3D2 ) => {
+  return {
+    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
+    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
+    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x,
+  };
+}

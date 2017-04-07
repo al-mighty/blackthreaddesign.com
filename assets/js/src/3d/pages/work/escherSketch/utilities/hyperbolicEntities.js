@@ -28,7 +28,7 @@ class HyperbolicArc {
   // Calculate the arc using Dunham's method
   calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    const hp = this.hyperboloidCrossProduct(
+    const hp = E.hyperboloidCrossProduct(
       this.startPoint.poincareToHyperboloid(),
       this.endPoint.poincareToHyperboloid(),
     );
@@ -60,13 +60,6 @@ class HyperbolicArc {
     this.circle = new Circle( arcCentre.x, arcCentre.y, arcRadius );
   }
 
-  hyperboloidCrossProduct( point3D1, point3D2 ) {
-    return {
-      x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
-      y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
-      z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x,
-    };
-  }
 }
 
 // * ***********************************************************************
@@ -87,9 +80,12 @@ class HyperbolicEdge {
   // number of pieces)
   calculateSpacing( numDivisions ) {
     // subdivision spacing for edges
-    this.spacing = ( this.arc.arcLength > 0.03 )
-                  ? this.arc.arcLength / 5 // approx maximum that hides all gaps
-                  : 0.02;
+    // this.spacing = ( this.arc.arcLength > 0.03 )
+    //               ? this.arc.arcLength / 5 // approx maximum that hides all gaps
+    //               : 0.02;
+
+    // NOTE: Now using disk of size 1 to render ( no rescaling ), this doesn't matter
+    this.spacing = 1.0;
 
     // calculate the number of subdivisions required to break the arc into an
     // even number of pieces (or 1 in case of tiny polygons)
