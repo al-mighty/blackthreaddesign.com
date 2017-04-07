@@ -5,24 +5,21 @@ import { Point } from './euclideanEntities.js';
 // *
 // *************************************************************************
 
-// .toFixed returns a string for some no doubt very good reason.
-// apply to fixed with default value of 10 and return as a float
-export const toFixed = ( number, places = 10 ) => parseFloat( number.toFixed( places ) );
-
 export const distance = ( point1, point2 ) =>
   Math.sqrt( Math.pow( ( point2.x - point1.x ), 2 ) + Math.pow( ( point2.y - point1.y ), 2 ) );
 
 // does the line connecting p1, p2 go through the point (0,0)?
 export const throughOrigin = ( point1, point2 ) => {
   // vertical line through centre
-  if ( ( toFixed( point1.x ) === toFixed( 0 ) ) && ( toFixed( point2.x ) === toFixed( 0 ) ) ) {
+  if ( ( Math.abs( point1.x ) <= 0.00001 ) && ( Math.abs( point2.x ) <= 0.00001 ) ) {
     return true;
   }
   const test = ( -point1.x * point2.y + point1.x * point1.y ) / ( point2.x - point1.x ) + point1.y;
 
-  if ( toFixed( test ) === toFixed( 0 ) ) return true;
+  if ( Math.abs( test ) <= 0.00001 ) return true;
   return false;
 };
+
 
 // Find the length of the smaller arc between two angles on a given circle
 export const arcLength = ( circle, startAngle, endAngle ) => {
