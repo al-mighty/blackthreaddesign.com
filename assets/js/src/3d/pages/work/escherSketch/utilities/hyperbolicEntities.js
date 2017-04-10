@@ -29,14 +29,14 @@ class HyperbolicArc {
   calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
     const hp = E.hyperboloidCrossProduct(
-      this.startPoint.poincareToHyperboloid(),
-      this.endPoint.poincareToHyperboloid(),
+      E.poincareToHyperboloid( this.startPoint.x, this.startPoint.y ),
+      E.poincareToHyperboloid( this.endPoint.x, this.endPoint.y ),
     );
 
-    const arcCentre = new Point( hp.x / hp.z, hp.y / hp.z );
+    const arcCentre = { x: hp.x / hp.z, y: hp.y / hp.z, z: 0 };
     const arcRadius = Math.sqrt(
-      Math.pow( this.startPoint.x - arcCentre.x, 2 )
-      + Math.pow( this.startPoint.y - arcCentre.y, 2 ),
+      ( this.startPoint.x - arcCentre.x ) * ( this.startPoint.x - arcCentre.x )
+      + ( this.startPoint.y - arcCentre.y ) * ( this.startPoint.y - arcCentre.y ),
     );
 
     // translate points to origin and calculate arctan
@@ -87,8 +87,9 @@ export class HyperbolicPolygon {
   transform( transform, materialIndex = this.materialIndex ) {
     const newVertices = [];
     for ( let i = 0; i < this.vertices.length; i++ ) {
-      newVertices.push( this.vertices[i].transform( transform ) );
+      newVertices.push( E.transformPoint( transform, this.vertices[i].x, this.vertices[i].y ) );
     }
+
     return new HyperbolicPolygon( newVertices, materialIndex );
   }
 }

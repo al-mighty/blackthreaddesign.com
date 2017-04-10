@@ -52,8 +52,6 @@ export default class EscherSketchCanvas {
 
     self.app.play();
 
-    console.log(self.app.renderer.info)
-
   }
 
   initPQControls() {
@@ -136,18 +134,6 @@ export default class EscherSketchCanvas {
   }
 
   generateDisk( tiling ) {
-    // for ( let i = 0; i < tiling.length; i++ ) {
-    //   createGeometry( tiling[i] );
-    // }
-
-    // const bufferGeometryA = new THREE.BufferGeometry();
-    // const bufferGeometryB = new THREE.BufferGeometry();
-
-    // bufferGeometryA.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsA, 3 ) );
-    // bufferGeometryA.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsA, 2 ) );
-
-    // bufferGeometryB.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsB, 3 ) );
-    // bufferGeometryB.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsB, 2 ) );
     const geometries = createGeometries( tiling );
 
     const meshA = new THREE.Mesh( geometries[0], this.pattern.materials[tiling[0].materialIndex] );

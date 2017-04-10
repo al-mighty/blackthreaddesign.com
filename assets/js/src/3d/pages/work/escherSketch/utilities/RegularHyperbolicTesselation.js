@@ -1,11 +1,9 @@
-// import * as E from './mathFunctions.js';
+import { transformPoint } from './mathFunctions.js';
 
 import {
   HyperbolicPolygon as Polygon,
 }
 from './hyperbolicEntities.js';
-
-import { Point } from './euclideanEntities.js';
 
 import {
   // HyperbolicTransform as Transform,
@@ -81,10 +79,10 @@ export default class RegularHyperbolicTesselation {
     const yqpt = Math.sin( Math.PI / this.p ) * rad2;
 
     // create points and move them from the unit disk to our radius
-    const p1 = new Point( xqpt, yqpt );
-    const p2 = new Point( x2pt, 0 );
-    const p3 = p1.transform( this.transforms.edgeBisectorReflection );
-    const vertices = [new Point( 0, 0 ), p1, p2];
+    const p1 = { x: xqpt, y: yqpt, z: 0 };
+    const p2 = { x: x2pt, y: 0, z: 0 };
+    // const p3 = transformPoint( this.transforms.edgeBisectorReflection, p1.x, p1.y );
+    const vertices = [{ x: 0, y: 0, z: 0 }, p1, p2];
 
     return new Polygon( vertices, 0 );
   }

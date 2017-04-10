@@ -44124,6 +44124,434 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
+// * ***********************************************************************
+// *
+// *   MATH FUNCTIONS
+// *
+// *************************************************************************
+
+var distance = function (point1, point2) {
+  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+};
+
+// does the line connecting p1, p2 go through the point (0,0)?
+var throughOrigin = function (point1, point2) {
+  // vertical line through centre
+  if (Math.abs(point1.x) <= 0.00001 && Math.abs(point2.x) <= 0.00001) {
+    return true;
+  }
+  var test = (-point1.x * point2.y + point1.x * point1.y) / (point2.x - point1.x) + point1.y;
+
+  if (Math.abs(test) <= 0.00001) return true;
+  return false;
+};
+
+// Find the length of the smaller arc between two angles on a given circle
+var arcLength = function (circle, startAngle, endAngle) {
+  return Math.abs(startAngle - endAngle) > Math.PI ? circle.radius * (2 * Math.PI - Math.abs(startAngle - endAngle)) : circle.radius * Math.abs(startAngle - endAngle);
+};
+
+// find the two points a distance from a point on the circumference of a circle
+// in the direction of point2
+var directedSpacedPointOnArc = function (circle, point1, point2, spacing) {
+  var cosTheta = -(spacing * spacing / (2 * circle.radius * circle.radius) - 1);
+  var sinThetaPos = Math.sqrt(1 - Math.pow(cosTheta, 2));
+  var sinThetaNeg = -sinThetaPos;
+
+  var xPos = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaPos * (point1.y - circle.centre.y);
+  var xNeg = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaNeg * (point1.y - circle.centre.y);
+  var yPos = circle.centre.y + sinThetaPos * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
+  var yNeg = circle.centre.y + sinThetaNeg * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
+
+  var p1 = { x: xPos, y: yPos, z: 0 };
+  var p2 = { x: xNeg, y: yNeg, z: 0 };
+
+  var a = distance(p1, point2);
+  var b = distance(p2, point2);
+  return a < b ? p1 : p2;
+};
+
+// calculate the normal vector given 2 points
+var normalVector = function (p1, p2) {
+  var d = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  return { x: (p2.x - p1.x) / d, y: (p2.y - p1.y) / d, z: 0 };
+};
+
+// find the point at a distance from point1 along line defined by point1, point2,
+// in the direction of point2
+var directedSpacedPointOnLine = function (point1, point2, spacing) {
+  var dv = normalVector(point1, point2);
+  return { x: point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
+};
+
+var multiplyMatrices = function (m1, m2) {
+  var result = [];
+  for (var i = 0; i < m1.length; i++) {
+    result[i] = [];
+    for (var j = 0; j < m2[0].length; j++) {
+      var sum = 0;
+      for (var k = 0; k < m1[0].length; k++) {
+        sum += m1[i][k] * m2[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
+};
+
+// create nxn identityMatrix
+var identityMatrix = function (n) {
+  return Array.apply(undefined, new Array(n)).map(function (x, i, a) {
+    return a.map(function (y, k) {
+      return i === k ? 1 : 0;
+    });
+  });
+};
+
+var hyperboloidCrossProduct = function (point3D1, point3D2) {
+  return {
+    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
+    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
+    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
+  };
+};
+
+var poincareToHyperboloid = function (x, y) {
+  var factor = 1 / (1 - x * x - y * y);
+  var xH = 2 * factor * x;
+  var yH = 2 * factor * y;
+  var zH = factor * (1 + x * x + y * y);
+  var p = { x: xH, y: yH, z: zH };
+  return p;
+};
+
+var hyperboloidToPoincare = function (x, y, z) {
+  var factor = 1 / (1 + z);
+  var xH = factor * x;
+  var yH = factor * y;
+  return { x: xH, y: yH, z: 0 };
+};
+
+// move the point to hyperboloid (Weierstrass) space, apply the transform, then move back
+var transformPoint = function (transform, x, y) {
+  var mat = transform.matrix;
+  var p = poincareToHyperboloid(x, y);
+  var xT = p.x * mat[0][0] + p.y * mat[0][1] + p.z * mat[0][2];
+  var yT = p.x * mat[1][0] + p.y * mat[1][1] + p.z * mat[1][2];
+  var zT = p.x * mat[2][0] + p.y * mat[2][1] + p.z * mat[2][2];
+
+  return hyperboloidToPoincare(xT, yT, zT);
+};
+
+function findSubdivisionEdge(polygon) {
+  // curvature === 0 means this edge goes through origin
+  // in which case subdivide based on next longest edge
+  var a = polygon.edges[0].curvature === 0 ? 0 : polygon.edges[0].arcLength;
+  var b = polygon.edges[1].curvature === 0 ? 0 : polygon.edges[1].arcLength;
+  var c = polygon.edges[2].curvature === 0 ? 0 : polygon.edges[2].arcLength;
+  if (a > b && a > c) return 0;else if (b > c) return 1;
+  return 2;
+}
+
+// Subdivide the edge into lengths calculated by calculateSpacing()
+function subdivideHyperbolicArc(arc, numDivisions) {
+  // calculate the spacing for subdividing the edge into an even number of pieces.
+  // For the first ( longest ) edge this will be calculated based on spacing
+  // then for the rest of the edges it will be calculated based on the number of
+  // subdivisions of the first edge ( so that all edges are divided into an equal
+  // number of pieces)
+
+  // calculate the number of subdivisions required to break the arc into an
+  // even number of pieces (or 1 in case of tiny polygons)
+
+  numDivisions = numDivisions || arc.arcLength > 0.001 ? 2 * Math.ceil(arc.arcLength / 2) : 1;
+
+  // calculate spacing based on number of points
+  var spacing = arc.arcLength / numDivisions;
+
+  var points = [arc.startPoint];
+
+  // tiny pgons near the edges of the disk don't need to be subdivided
+  if (arc.arcLength > spacing) {
+    var p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, arc.startPoint, arc.endPoint, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
+    points.push(p);
+
+    for (var i = 0; i < numDivisions - 2; i++) {
+      p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, p, arc.endPoint, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
+      points.push(p);
+    }
+  }
+  // push the final vertex
+  points.push(arc.endPoint);
+
+  return points;
+}
+
+// subdivide the subdivision edge, then subdivide the other two edges with the
+// same number of points as the subdivision
+function subdivideHyperbolicPolygonEdges(polygon) {
+  var subdivisionEdge = findSubdivisionEdge(polygon);
+
+  var edge1Points = subdivideHyperbolicArc(polygon.edges[subdivisionEdge]);
+
+  var numDivisions = edge1Points.length - 1;
+
+  polygon.numDivisions = numDivisions;
+
+  var edge2Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 1) % 3], numDivisions);
+  var edge3Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 2) % 3], numDivisions);
+
+  var edges = [];
+
+  edges[subdivisionEdge] = edge1Points;
+  edges[(subdivisionEdge + 1) % 3] = edge2Points;
+  edges[(subdivisionEdge + 2) % 3] = edge3Points;
+
+  edges[3] = numDivisions;
+
+  return edges;
+}
+
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
+function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
+  var points = [startPoint];
+
+  var divisions = numDivisions - arcIndex;
+
+  // if the line get divided add points along line to mesh
+  if (divisions > 1) {
+    var spacing = distance(startPoint, endPoint) / divisions;
+    var nextPoint = directedSpacedPointOnLine(startPoint, endPoint, spacing);
+    for (var j = 0; j < divisions - 1; j++) {
+      points.push(nextPoint);
+      nextPoint = directedSpacedPointOnLine(nextPoint, endPoint, spacing);
+    }
+  }
+
+  points.push(endPoint);
+
+  return points;
+}
+
+// Given a hyperbolic polygon, return an array representing a subdivided  triangular
+// mesh across it's surface
+function subdivideHyperbolicPolygon(polygon) {
+  var subdividedEdges = subdivideHyperbolicPolygonEdges(polygon);
+
+  var numDivisions = subdividedEdges[3];
+
+  var points = [].concat(subdividedEdges[0]);
+
+  // const flatPoints = [];
+
+  // for ( let i = 0; i < subdividedEdges[0].length; i++ ) {
+  //   flatPoints.push( 
+  //     subdividedEdges[0][i].x,
+  //     subdividedEdges[0][i].y,
+  //     subdividedEdges[0][i].z,
+  //   );
+  // }
+
+
+  for (var i = 1; i < numDivisions; i++) {
+    var startPoint = subdividedEdges[2][numDivisions - i];
+    var endPoint = subdividedEdges[1][i];
+    // this.subdivideInteriorArc( startPoint, endPoint, i );
+    var newPoints = subdivideLine(startPoint, endPoint, i);
+
+    // for ( let j = 0; j < newPoints.length; j++) {
+    //   flatPoints.push( 
+    //     newPoints[j].x,
+    //     newPoints[j].y,
+    //     newPoints[j].z,
+    //   );
+    // }
+
+    points.push.apply(points, newPoints);
+  }
+
+  // push the final vertex
+  points.push(subdividedEdges[2][0]);
+
+  // flatPoints.push( 
+  //   subdividedEdges[2][0].x,
+  //   subdividedEdges[2][0].y,
+  //   subdividedEdges[2][0].z,
+  // );
+
+  return points;
+}
+
+// create one buffer geometry per material (tile type)
+function createGeometries(tiling) {
+  var positionAIndex = 0;
+  var uvAIndex = 0;
+
+  var positionBIndex = 0;
+  var uvBIndex = 0;
+
+  var positionsA = [];
+  var uvsA = [];
+
+  var positionsB = [];
+  var uvsB = [];
+
+  function createGeometry(polygon) {
+
+    var vertices = subdivideHyperbolicPolygon(polygon);
+
+    var divisions = polygon.numDivisions || 1;
+
+    function addPositionsAndUvs(positions, positionIndex, uvs, uvIndex) {
+
+      var p = 1 / divisions;
+
+      var edgeStartingVertex = 0;
+      // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
+      for (var i = 0; i < divisions; i++) {
+        // edge divisions reduce by one for each interior edge
+        var m = divisions - i + 1;
+
+        positions[positionIndex++] = vertices[edgeStartingVertex].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex].z;
+
+        positions[positionIndex++] = vertices[edgeStartingVertex + m].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + m].z;
+
+        positions[positionIndex++] = vertices[edgeStartingVertex + 1].x;
+        positions[positionIndex++] = vertices[edgeStartingVertex + 1].y;
+        positions[positionIndex++] = vertices[edgeStartingVertex + 1].z;
+
+        uvs[uvIndex++] = i * p;
+        uvs[uvIndex++] = 0;
+        uvs[uvIndex++] = (i + 1) * p;
+        uvs[uvIndex++] = 0;
+        uvs[uvIndex++] = (i + 1) * p;
+        uvs[uvIndex++] = p;
+
+        // range m-2 because we are ignoring the edges first vertex which was
+        // used in the previous positions.push
+        // Each loop creates 2 faces
+        for (var j = 0; j < m - 2; j++) {
+
+          // Face 1
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
+
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].z;
+
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
+
+          // Face 2
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
+
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
+
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].x;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].y;
+          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].z;
+
+          // Face 1 uvs
+          uvs[uvIndex++] = (i + 1 + j) * p;
+          uvs[uvIndex++] = (1 + j) * p;
+          uvs[uvIndex++] = (i + 1 + j) * p;
+          uvs[uvIndex++] = j * p;
+          uvs[uvIndex++] = (i + j + 2) * p;
+          uvs[uvIndex++] = (j + 1) * p;
+
+          // Face 2 uvs
+          uvs[uvIndex++] = (i + 1 + j) * p;
+          uvs[uvIndex++] = (1 + j) * p;
+          uvs[uvIndex++] = (i + 2 + j) * p;
+          uvs[uvIndex++] = (j + 1) * p;
+          uvs[uvIndex++] = (i + j + 2) * p;
+          uvs[uvIndex++] = (j + 2) * p;
+        }
+        edgeStartingVertex += m;
+      }
+    }
+
+    if (polygon.materialIndex === 0) {
+      addPositionsAndUvs(positionsA, positionAIndex, uvsA, uvAIndex);
+      if (divisions === 1) {
+        positionAIndex += 9;
+        uvAIndex += 6;
+      } else if (divisions === 2) {
+        positionAIndex += 36;
+        uvAIndex += 24;
+      } else {
+        console.error('Too many divisions!!');
+      }
+    } else {
+      addPositionsAndUvs(positionsB, positionBIndex, uvsB, uvBIndex);
+      if (divisions === 1) {
+        positionBIndex += 9;
+        uvBIndex += 6;
+      } else if (divisions === 2) {
+        positionBIndex += 36;
+        uvBIndex += 24;
+      } else {
+        console.error('Too many divisions!!');
+      }
+    }
+  }
+
+  var bufferGeometryA = new BufferGeometry();
+  var bufferGeometryB = new BufferGeometry();
+
+  for (var i = 0; i < 1; i++) {
+    createGeometry(tiling[i]);
+  }
+
+  bufferGeometryA.addAttribute('position', new Float32BufferAttribute(positionsA, 3));
+  bufferGeometryA.addAttribute('uv', new Float32BufferAttribute(uvsA, 2));
+
+  bufferGeometryB.addAttribute('position', new Float32BufferAttribute(positionsB, 3));
+  bufferGeometryB.addAttribute('uv', new Float32BufferAttribute(uvsB, 2));
+
+  return [bufferGeometryA, bufferGeometryB];
+}
+
+Math.sinh = Math.sinh || function sinh(x) {
+  var y = Math.exp(x);
+  return (y - 1 / y) / 2;
+};
+
+Math.cosh = Math.cosh || function cosh(x) {
+  var y = Math.exp(x);
+  return (y + 1 / y) / 2;
+};
+
+Math.cot = Math.cot || function cot(x) {
+  return 1 / Math.tan(x);
+};
+
+var basicVert = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec2 uv;\nvarying vec2 vUv;\nvoid main() {\n  vUv = uv;\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n}";
+
+var basicFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform sampler2D tileTexture;\nvarying vec2 vUv;\nvoid main() {\n\tgl_FragColor = texture2D(tileTexture, vUv);\n}";
+
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
 var asyncGenerator = function () {
   function AwaitValue(value) {
     this.value = value;
@@ -44243,466 +44671,6 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-var Point = function () {
-  function Point(x, y) {
-    var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    classCallCheck(this, Point);
-
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-
-  // move the point to hyperboloid (Weierstrass) space, apply the transform,
-  // then move back
-
-
-  Point.prototype.transform = function transform(_transform) {
-    var mat = _transform.matrix;
-    var p = this.poincareToHyperboloid();
-    var x = p.x * mat[0][0] + p.y * mat[0][1] + p.z * mat[0][2];
-    var y = p.x * mat[1][0] + p.y * mat[1][1] + p.z * mat[1][2];
-    var z = p.x * mat[2][0] + p.y * mat[2][1] + p.z * mat[2][2];
-    var q = new Point(x, y, z);
-    return q.hyperboloidToPoincare();
-  };
-
-  Point.prototype.poincareToHyperboloid = function poincareToHyperboloid() {
-    var factor = 1 / (1 - this.x * this.x - this.y * this.y);
-    var x = 2 * factor * this.x;
-    var y = 2 * factor * this.y;
-    var z = factor * (1 + this.x * this.x + this.y * this.y);
-    var p = new Point(x, y);
-    p.z = z;
-    return p;
-  };
-
-  Point.prototype.hyperboloidToPoincare = function hyperboloidToPoincare() {
-    var factor = 1 / (1 + this.z);
-    var x = factor * this.x;
-    var y = factor * this.y;
-    return new Point(x, y);
-  };
-
-  Point.prototype.clone = function clone() {
-    return new Point(this.x, this.y);
-  };
-
-  return Point;
-}();
-
-// * ***********************************************************************
-// *
-// *   CIRCLE CLASS
-// *   A circle in the Poincare disk is identical to a circle in Euclidean space
-// *
-// *************************************************************************
-
-var Circle = function Circle(centreX, centreY, radius) {
-  classCallCheck(this, Circle);
-
-  this.centre = new Point(centreX, centreY);
-  this.radius = radius;
-};
-
-var distance = function (point1, point2) {
-  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
-};
-
-// does the line connecting p1, p2 go through the point (0,0)?
-var throughOrigin = function (point1, point2) {
-  // vertical line through centre
-  if (Math.abs(point1.x) <= 0.00001 && Math.abs(point2.x) <= 0.00001) {
-    return true;
-  }
-  var test = (-point1.x * point2.y + point1.x * point1.y) / (point2.x - point1.x) + point1.y;
-
-  if (Math.abs(test) <= 0.00001) return true;
-  return false;
-};
-
-// Find the length of the smaller arc between two angles on a given circle
-var arcLength = function (circle, startAngle, endAngle) {
-  return Math.abs(startAngle - endAngle) > Math.PI ? circle.radius * (2 * Math.PI - Math.abs(startAngle - endAngle)) : circle.radius * Math.abs(startAngle - endAngle);
-};
-
-// find the two points a distance from a point on the circumference of a circle
-// in the direction of point2
-var directedSpacedPointOnArc = function (circle, point1, point2, spacing) {
-  var cosTheta = -(spacing * spacing / (2 * circle.radius * circle.radius) - 1);
-  var sinThetaPos = Math.sqrt(1 - Math.pow(cosTheta, 2));
-  var sinThetaNeg = -sinThetaPos;
-
-  var xPos = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaPos * (point1.y - circle.centre.y);
-  var xNeg = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaNeg * (point1.y - circle.centre.y);
-  var yPos = circle.centre.y + sinThetaPos * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
-  var yNeg = circle.centre.y + sinThetaNeg * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
-
-  var p1 = new Point(xPos, yPos);
-  var p2 = new Point(xNeg, yNeg);
-
-  var a = distance(p1, point2);
-  var b = distance(p2, point2);
-  return a < b ? p1 : p2;
-};
-
-// calculate the normal vector given 2 points
-var normalVector = function (p1, p2) {
-  var d = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-  return new Point((p2.x - p1.x) / d, (p2.y - p1.y) / d);
-};
-
-// find the point at a distance from point1 along line defined by point1, point2,
-// in the direction of point2
-var directedSpacedPointOnLine = function (point1, point2, spacing) {
-  var dv = normalVector(point1, point2);
-  return new Point(point1.x + spacing * dv.x, point1.y + spacing * dv.y);
-};
-
-var multiplyMatrices = function (m1, m2) {
-  var result = [];
-  for (var i = 0; i < m1.length; i++) {
-    result[i] = [];
-    for (var j = 0; j < m2[0].length; j++) {
-      var sum = 0;
-      for (var k = 0; k < m1[0].length; k++) {
-        sum += m1[i][k] * m2[k][j];
-      }
-      result[i][j] = sum;
-    }
-  }
-  return result;
-};
-
-// create nxn identityMatrix
-var identityMatrix = function (n) {
-  return Array.apply(undefined, new Array(n)).map(function (x, i, a) {
-    return a.map(function (y, k) {
-      return i === k ? 1 : 0;
-    });
-  });
-};
-
-var hyperboloidCrossProduct = function (point3D1, point3D2) {
-  return {
-    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
-    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
-    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
-  };
-};
-
-// The longest edge with radius > 0 should be used to calculate how finely
-// the polygon gets subdivided
-function findSubdivisionEdge(polygon) {
-  // curvature === 0 means this edge goes through origin
-  // in which case subdivide based on next longest edge
-  var a = polygon.edges[0].curvature === 0 ? 0 : polygon.edges[0].arcLength;
-  var b = polygon.edges[1].curvature === 0 ? 0 : polygon.edges[1].arcLength;
-  var c = polygon.edges[2].curvature === 0 ? 0 : polygon.edges[2].arcLength;
-  if (a > b && a > c) return 0;else if (b > c) return 1;
-  return 2;
-}
-
-// Subdivide the edge into lengths calculated by calculateSpacing()
-function subdivideHyperbolicArc(arc, numDivisions) {
-  // calculate the spacing for subdividing the edge into an even number of pieces.
-  // For the first ( longest ) edge this will be calculated based on spacing
-  // then for the rest of the edges it will be calculated based on the number of
-  // subdivisions of the first edge ( so that all edges are divided into an equal
-  // number of pieces)
-
-  // calculate the number of subdivisions required to break the arc into an
-  // even number of pieces (or 1 in case of tiny polygons)
-  // console.log(arc.arcLength * 100)
-  numDivisions = numDivisions || arc.arcLength > 0.001 ? 2 * Math.ceil(arc.arcLength / 2) : 1;
-  // console.log(numDivisions)
-  // calculate spacing based on number of points
-  var spacing = arc.arcLength / numDivisions;
-
-  var points = [arc.startPoint];
-
-  // tiny pgons near the edges of the disk don't need to be subdivided
-  if (arc.arcLength > spacing) {
-    var p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, arc.startPoint, arc.endPoint, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
-    points.push(p);
-
-    for (var i = 0; i < numDivisions - 2; i++) {
-      p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, p, arc.endPoint, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
-      points.push(p);
-    }
-  }
-  // push the final vertex
-  points.push(arc.endPoint);
-
-  return points;
-}
-
-// subdivide the subdivision edge, then subdivide the other two edges with the
-// same number of points as the subdivision
-function subdivideHyperbolicPolygonEdges(polygon) {
-  var subdivisionEdge = findSubdivisionEdge(polygon);
-
-  var edge1Points = subdivideHyperbolicArc(polygon.edges[subdivisionEdge]);
-
-  var numDivisions = edge1Points.length - 1;
-
-  polygon.numDivisions = numDivisions;
-
-  var edge2Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 1) % 3], numDivisions);
-  var edge3Points = subdivideHyperbolicArc(polygon.edges[(subdivisionEdge + 2) % 3], numDivisions);
-
-  var edges = [];
-
-  edges[subdivisionEdge] = edge1Points;
-  edges[(subdivisionEdge + 1) % 3] = edge2Points;
-  edges[(subdivisionEdge + 2) % 3] = edge3Points;
-
-  edges[3] = numDivisions;
-
-  return edges;
-}
-
-// Alternative to subdivideInteriorArc using lines instead of arcs
-// ( quality seems the same and may be faster )
-function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
-  var points = [startPoint];
-
-  var divisions = numDivisions - arcIndex;
-
-  // if the line get divided add points along line to mesh
-  if (divisions > 1) {
-    var spacing = distance(startPoint, endPoint) / divisions;
-    var nextPoint = directedSpacedPointOnLine(startPoint, endPoint, spacing);
-    for (var j = 0; j < divisions - 1; j++) {
-      points.push(nextPoint);
-      nextPoint = directedSpacedPointOnLine(nextPoint, endPoint, spacing);
-    }
-  }
-
-  points.push(endPoint);
-
-  return points;
-}
-
-// Given a hyperbolic polygon, return an array representing a subdivided  triangular
-// mesh across it's surface
-function subdivideHyperbolicPolygon(polygon) {
-  var subdividedEdges = subdivideHyperbolicPolygonEdges(polygon);
-
-  var numDivisions = subdividedEdges[3];
-
-  var points = [].concat(subdividedEdges[0]);
-
-  // const flatPoints = [];
-
-  // for ( let i = 0; i < subdividedEdges[0].length; i++ ) {
-  //   flatPoints.push( 
-  //     subdividedEdges[0][i].x,
-  //     subdividedEdges[0][i].y,
-  //     subdividedEdges[0][i].z,
-  //   );
-  // }
-
-
-  for (var i = 1; i < numDivisions; i++) {
-    var startPoint = subdividedEdges[2][numDivisions - i];
-    var endPoint = subdividedEdges[1][i];
-    // this.subdivideInteriorArc( startPoint, endPoint, i );
-    var newPoints = subdivideLine(startPoint, endPoint, i);
-
-    // for ( let j = 0; j < newPoints.length; j++) {
-    //   flatPoints.push( 
-    //     newPoints[j].x,
-    //     newPoints[j].y,
-    //     newPoints[j].z,
-    //   );
-    // }
-
-    points.push.apply(points, newPoints);
-  }
-
-  // push the final vertex
-  points.push(subdividedEdges[2][0]);
-
-  // flatPoints.push( 
-  //   subdividedEdges[2][0].x,
-  //   subdividedEdges[2][0].y,
-  //   subdividedEdges[2][0].z,
-  // );
-
-  return points;
-}
-
-// create one buffer geometry per material (tile type)
-function createGeometries(tiling) {
-  var positionAIndex = 0;
-  var uvAIndex = 0;
-
-  var positionBIndex = 0;
-  var uvBIndex = 0;
-
-  var positionsA = [];
-  var uvsA = [];
-
-  var positionsB = [];
-  var uvsB = [];
-
-  function createGeometry(polygon) {
-
-    var vertices = subdivideHyperbolicPolygon(polygon);
-
-    var divisions = polygon.numDivisions || 1;
-
-    function addPositionsAndUvs(positions, positionIndex, uvs, uvIndex) {
-
-      var p = 1 / divisions;
-
-      // console.log( positionIndex, uvIndex )
-      var edgeStartingVertex = 0;
-      // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
-      for (var i = 0; i < divisions; i++) {
-        // edge divisions reduce by one for each interior edge
-        var m = divisions - i + 1;
-
-        positions[positionIndex++] = vertices[edgeStartingVertex].x;
-        positions[positionIndex++] = vertices[edgeStartingVertex].y;
-        positions[positionIndex++] = vertices[edgeStartingVertex].z;
-
-        positions[positionIndex++] = vertices[edgeStartingVertex + m].x;
-        positions[positionIndex++] = vertices[edgeStartingVertex + m].y;
-        positions[positionIndex++] = vertices[edgeStartingVertex + m].z;
-
-        positions[positionIndex++] = vertices[edgeStartingVertex + 1].x;
-        positions[positionIndex++] = vertices[edgeStartingVertex + 1].y;
-        positions[positionIndex++] = vertices[edgeStartingVertex + 1].z;
-
-        uvs[uvIndex++] = i * p;
-        uvs[uvIndex++] = 0;
-        uvs[uvIndex++] = (i + 1) * p;
-        uvs[uvIndex++] = 0;
-        uvs[uvIndex++] = (i + 1) * p;
-        uvs[uvIndex++] = p;
-
-        // range m-2 because we are ignoring the edges first vertex which was
-        // used in the previous positions.push
-        // Each loop creates 2 faces
-        for (var j = 0; j < m - 2; j++) {
-
-          // Face 1
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
-
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + j].z;
-
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
-
-          // Face 2
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 1].z;
-
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + m + 1 + j].z;
-
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].x;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].y;
-          positions[positionIndex++] = vertices[edgeStartingVertex + j + 2].z;
-
-          // Face 1 uvs
-          uvs[uvIndex++] = (i + 1 + j) * p;
-          uvs[uvIndex++] = (1 + j) * p;
-          uvs[uvIndex++] = (i + 1 + j) * p;
-          uvs[uvIndex++] = j * p;
-          uvs[uvIndex++] = (i + j + 2) * p;
-          uvs[uvIndex++] = (j + 1) * p;
-
-          // Face 2 uvs
-          uvs[uvIndex++] = (i + 1 + j) * p;
-          uvs[uvIndex++] = (1 + j) * p;
-          uvs[uvIndex++] = (i + 2 + j) * p;
-          uvs[uvIndex++] = (j + 1) * p;
-          uvs[uvIndex++] = (i + j + 2) * p;
-          uvs[uvIndex++] = (j + 2) * p;
-        }
-        edgeStartingVertex += m;
-      }
-    }
-
-    if (polygon.materialIndex === 0) {
-      addPositionsAndUvs(positionsA, positionAIndex, uvsA, uvAIndex);
-      if (divisions === 1) {
-        positionAIndex += 9;
-        uvAIndex += 6;
-      } else if (divisions === 2) {
-        positionAIndex += 36;
-        uvAIndex += 24;
-      } else {
-        console.error('Too many divisions!!');
-      }
-    } else {
-      addPositionsAndUvs(positionsB, positionBIndex, uvsB, uvBIndex);
-      if (divisions === 1) {
-        positionBIndex += 9;
-        uvBIndex += 6;
-      } else if (divisions === 2) {
-        positionBIndex += 36;
-        uvBIndex += 24;
-      } else {
-        console.error('Too many divisions!!');
-      }
-    }
-  }
-
-  var bufferGeometryA = new BufferGeometry();
-  var bufferGeometryB = new BufferGeometry();
-
-  for (var i = 0; i < tiling.length; i++) {
-    createGeometry(tiling[i]);
-  }
-
-  bufferGeometryA.addAttribute('position', new Float32BufferAttribute(positionsA, 3));
-  bufferGeometryA.addAttribute('uv', new Float32BufferAttribute(uvsA, 2));
-
-  bufferGeometryB.addAttribute('position', new Float32BufferAttribute(positionsB, 3));
-  bufferGeometryB.addAttribute('uv', new Float32BufferAttribute(uvsB, 2));
-
-  return [bufferGeometryA, bufferGeometryB];
-}
-
-Math.sinh = Math.sinh || function sinh(x) {
-  var y = Math.exp(x);
-  return (y - 1 / y) / 2;
-};
-
-Math.cosh = Math.cosh || function cosh(x) {
-  var y = Math.exp(x);
-  return (y + 1 / y) / 2;
-};
-
-Math.cot = Math.cot || function cot(x) {
-  return 1 / Math.tan(x);
-};
-
-var basicVert = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec2 uv;\nvarying vec2 vUv;\nvoid main() {\n  vUv = uv;\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n}";
-
-var basicFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform sampler2D tileTexture;\nvarying vec2 vUv;\nvoid main() {\n\tgl_FragColor = texture2D(tileTexture, vUv);\n}";
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
 var minFrame = 1000000;
 var maxFrame = 0;
 
@@ -44821,6 +44789,13 @@ var StatisticsOverlay = function () {
     return StatisticsOverlay;
 }();
 
+var Circle = function Circle(centreX, centreY, radius) {
+  classCallCheck(this, Circle);
+
+  this.centre = { x: centreX, y: centreY, z: 0 };
+  this.radius = radius;
+};
+
 var HyperbolicArc$1 = function () {
   function HyperbolicArc(startPoint, endPoint) {
     classCallCheck(this, HyperbolicArc);
@@ -44844,10 +44819,10 @@ var HyperbolicArc$1 = function () {
 
   HyperbolicArc.prototype.calculateArc = function calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    var hp = hyperboloidCrossProduct(this.startPoint.poincareToHyperboloid(), this.endPoint.poincareToHyperboloid());
+    var hp = hyperboloidCrossProduct(poincareToHyperboloid(this.startPoint.x, this.startPoint.y), poincareToHyperboloid(this.endPoint.x, this.endPoint.y));
 
-    var arcCentre = new Point(hp.x / hp.z, hp.y / hp.z);
-    var arcRadius = Math.sqrt(Math.pow(this.startPoint.x - arcCentre.x, 2) + Math.pow(this.startPoint.y - arcCentre.y, 2));
+    var arcCentre = { x: hp.x / hp.z, y: hp.y / hp.z, z: 0 };
+    var arcRadius = Math.sqrt((this.startPoint.x - arcCentre.x) * (this.startPoint.x - arcCentre.x) + (this.startPoint.y - arcCentre.y) * (this.startPoint.y - arcCentre.y));
 
     // translate points to origin and calculate arctan
     this.startAngle = Math.atan2(this.startPoint.y - arcCentre.y, this.startPoint.x - arcCentre.x);
@@ -44893,8 +44868,9 @@ var HyperbolicPolygon = function () {
 
     var newVertices = [];
     for (var i = 0; i < this.vertices.length; i++) {
-      newVertices.push(this.vertices[i].transform(_transform));
+      newVertices.push(transformPoint(_transform, this.vertices[i].x, this.vertices[i].y));
     }
+
     return new HyperbolicPolygon(newVertices, materialIndex);
   };
 
@@ -45164,8 +45140,6 @@ var HyperbolicParameters = function () {
   return HyperbolicParameters;
 }();
 
-// import * as E from './mathFunctions.js';
-
 var RegularHyperbolicTesselation = function () {
   function RegularHyperbolicTesselation(spec) {
     classCallCheck(this, RegularHyperbolicTesselation);
@@ -45211,10 +45185,10 @@ var RegularHyperbolicTesselation = function () {
     var yqpt = Math.sin(Math.PI / this.p) * rad2;
 
     // create points and move them from the unit disk to our radius
-    var p1 = new Point(xqpt, yqpt);
-    var p2 = new Point(x2pt, 0);
-    var p3 = p1.transform(this.transforms.edgeBisectorReflection);
-    var vertices = [new Point(0, 0), p1, p2];
+    var p1 = { x: xqpt, y: yqpt, z: 0 };
+    var p2 = { x: x2pt, y: 0, z: 0 };
+    // const p3 = transformPoint( this.transforms.edgeBisectorReflection, p1.x, p1.y );
+    var vertices = [{ x: 0, y: 0, z: 0 }, p1, p2];
 
     return new HyperbolicPolygon(vertices, 0);
   };
@@ -45363,6 +45337,7 @@ var RegularHyperbolicTesselation = function () {
   return RegularHyperbolicTesselation;
 }();
 
+// import { createGeometries, createGeometry, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
 var EscherSketchCanvas = function () {
     function EscherSketchCanvas(showStats) {
         classCallCheck(this, EscherSketchCanvas);
@@ -45397,8 +45372,6 @@ var EscherSketchCanvas = function () {
         self.app.onWindowResize = function () {};
 
         self.app.play();
-
-        console.log(self.app.renderer.info);
     }
 
     EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
@@ -45483,18 +45456,6 @@ var EscherSketchCanvas = function () {
     };
 
     EscherSketchCanvas.prototype.generateDisk = function generateDisk(tiling) {
-        // for ( let i = 0; i < tiling.length; i++ ) {
-        //   createGeometry( tiling[i] );
-        // }
-
-        // const bufferGeometryA = new THREE.BufferGeometry();
-        // const bufferGeometryB = new THREE.BufferGeometry();
-
-        // bufferGeometryA.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsA, 3 ) );
-        // bufferGeometryA.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsA, 2 ) );
-
-        // bufferGeometryB.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsB, 3 ) );
-        // bufferGeometryB.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsB, 2 ) );
         var geometries = createGeometries(tiling);
 
         var meshA = new Mesh(geometries[0], this.pattern.materials[tiling[0].materialIndex]);

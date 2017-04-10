@@ -1,4 +1,3 @@
-import { Point } from './euclideanEntities.js';
 // * ***********************************************************************
 // *
 // *   MATH FUNCTIONS
@@ -48,8 +47,8 @@ export const directedSpacedPointOnArc = ( circle, point1, point2, spacing ) => {
     * ( point1.x - circle.centre.x ) + cosTheta
     * ( point1.y - circle.centre.y );
 
-  const p1 = new Point( xPos, yPos );
-  const p2 = new Point( xNeg, yNeg );
+  const p1 = { x: xPos, y: yPos, z: 0 };
+  const p2 = { x: xNeg, y: yNeg, z: 0 };
 
   const a = distance( p1, point2 );
   const b = distance( p2, point2 );
@@ -59,14 +58,14 @@ export const directedSpacedPointOnArc = ( circle, point1, point2, spacing ) => {
 // calculate the normal vector given 2 points
 export const normalVector = ( p1, p2 ) => {
   const d = Math.sqrt( Math.pow( p2.x - p1.x, 2 ) + Math.pow( p2.y - p1.y, 2 ) );
-  return new Point( ( p2.x - p1.x ) / d, ( p2.y - p1.y ) / d );
+  return { x:  ( p2.x - p1.x ) / d, y: ( p2.y - p1.y ) / d, z: 0 };
 };
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
 export const directedSpacedPointOnLine = ( point1, point2, spacing ) => {
   const dv = normalVector( point1, point2 );
-  return new Point( point1.x + spacing * dv.x, point1.y + spacing * dv.y );
+  return { x:  point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
 };
 
 export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;
@@ -115,4 +114,31 @@ export const hyperboloidCrossProduct = ( point3D1, point3D2 ) => {
     y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
     z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x,
   };
+}
+
+export const poincareToHyperboloid = ( x, y ) => {
+  const factor = 1 / ( 1 - x * x - y * y );
+  const xH = 2 * factor * x;
+  const yH = 2 * factor * y;
+  const zH = factor * ( 1 + x * x + y * y );
+  const p = { x: xH, y: yH, z: zH };
+  return p;
+};
+
+export const hyperboloidToPoincare = ( x, y, z ) => {
+  const factor = 1 / ( 1 + z );
+  const xH = factor * x;
+  const yH = factor * y;
+  return { x: xH, y: yH, z: 0 };
+};
+
+// move the point to hyperboloid (Weierstrass) space, apply the transform, then move back
+export const transformPoint = ( transform, x, y ) => {
+  const mat = transform.matrix;
+  const p = poincareToHyperboloid( x, y );
+  const xT = p.x * mat[0][0] + p.y * mat[0][1] + p.z * mat[0][2];
+  const yT = p.x * mat[1][0] + p.y * mat[1][1] + p.z * mat[1][2];
+  const zT = p.x * mat[2][0] + p.y * mat[2][1] + p.z * mat[2][2];
+
+  return hyperboloidToPoincare( xT, yT, zT );
 }

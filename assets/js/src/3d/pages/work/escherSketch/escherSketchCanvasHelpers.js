@@ -30,11 +30,11 @@ function subdivideHyperbolicArc( arc, numDivisions ) {
 
   // calculate the number of subdivisions required to break the arc into an
   // even number of pieces (or 1 in case of tiny polygons)
-  // console.log(arc.arcLength * 100)
+
   numDivisions = numDivisions || ( arc.arcLength > 0.001 )
                   ? 2 * Math.ceil( arc.arcLength / 2 )
                   : 1;
-  // console.log(numDivisions)
+
   // calculate spacing based on number of points
   const spacing = arc.arcLength / numDivisions;
 
@@ -203,7 +203,6 @@ export function createGeometries( tiling ) {
 
       const p = 1 / divisions;
 
-      // console.log( positionIndex, uvIndex )
       let edgeStartingVertex = 0;
       // loop over each interior edge of the polygon's subdivion mesh and create faces and uvs
       for ( let i = 0; i < divisions; i++ ) {
@@ -312,7 +311,7 @@ export function createGeometries( tiling ) {
   const bufferGeometryA = new THREE.BufferGeometry();
   const bufferGeometryB = new THREE.BufferGeometry();
 
-  for ( let i = 0; i < tiling.length; i++ ) {
+  for ( let i = 0; i < 1; i++ ) {
     createGeometry( tiling[i] );
   }
 
