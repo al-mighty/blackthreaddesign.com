@@ -21,37 +21,37 @@ export const throughOrigin = ( point1, point2 ) => {
 
 
 // Find the length of the smaller arc between two angles on a given circle
-export const arcLength = ( circle, startAngle, endAngle ) => {
+export const arcLength = ( radius, startAngle, endAngle ) => {
   return ( Math.abs( startAngle - endAngle ) > Math.PI )
-    ? circle.radius * ( 2 * Math.PI - Math.abs( startAngle - endAngle ) )
-    : circle.radius * ( Math.abs( startAngle - endAngle ) );
+    ? radius * ( 2 * Math.PI - Math.abs( startAngle - endAngle ) )
+    : radius * ( Math.abs( startAngle - endAngle ) );
 };
 
 // find the two points a distance from a point on the circumference of a circle
 // in the direction of point2
-export const directedSpacedPointOnArc = ( circle, point1, point2, spacing ) => {
-  const cosTheta = -( ( spacing * spacing ) / ( 2 * circle.radius * circle.radius ) - 1 );
-  const sinThetaPos = Math.sqrt( 1 - Math.pow( cosTheta, 2 ) );
+export const directedSpacedPointOnArc = ( arc, spacing ) => {
+  const cosTheta = -( ( spacing * spacing ) / ( 2 * arc.radius * arc.radius ) - 1 );
+  const sinThetaPos = Math.sqrt( 1 - ( cosTheta * cosTheta ) );
   const sinThetaNeg = -sinThetaPos;
 
-  const xPos = circle.centre.x + cosTheta
-    * ( point1.x - circle.centre.x ) - sinThetaPos
-    * ( point1.y - circle.centre.y );
-  const xNeg = circle.centre.x + cosTheta
-    * ( point1.x - circle.centre.x ) - sinThetaNeg
-    * ( point1.y - circle.centre.y );
-  const yPos = circle.centre.y + sinThetaPos
-    * ( point1.x - circle.centre.x ) + cosTheta
-    * ( point1.y - circle.centre.y );
-  const yNeg = circle.centre.y + sinThetaNeg
-    * ( point1.x - circle.centre.x ) + cosTheta
-    * ( point1.y - circle.centre.y );
+  const xPos = arc.centre.x + cosTheta
+    * ( arc.startPoint.x - arc.centre.x ) - sinThetaPos
+    * ( arc.startPoint.y - arc.centre.y );
+  const xNeg = arc.centre.x + cosTheta
+    * ( arc.startPoint.x - arc.centre.x ) - sinThetaNeg
+    * ( arc.startPoint.y - arc.centre.y );
+  const yPos = arc.centre.y + sinThetaPos
+    * ( arc.startPoint.x - arc.centre.x ) + cosTheta
+    * ( arc.startPoint.y - arc.centre.y );
+  const yNeg = arc.centre.y + sinThetaNeg
+    * ( arc.startPoint.x - arc.centre.x ) + cosTheta
+    * ( arc.startPoint.y - arc.centre.y );
 
   const p1 = { x: xPos, y: yPos, z: 0 };
   const p2 = { x: xNeg, y: yNeg, z: 0 };
 
-  const a = distance( p1, point2 );
-  const b = distance( p2, point2 );
+  const a = distance( p1, arc.endPoint );
+  const b = distance( p2, arc.endPoint );
   return ( a < b ) ? p1 : p2;
 };
 

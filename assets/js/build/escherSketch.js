@@ -44147,27 +44147,27 @@ var throughOrigin = function (point1, point2) {
 };
 
 // Find the length of the smaller arc between two angles on a given circle
-var arcLength = function (circle, startAngle, endAngle) {
-  return Math.abs(startAngle - endAngle) > Math.PI ? circle.radius * (2 * Math.PI - Math.abs(startAngle - endAngle)) : circle.radius * Math.abs(startAngle - endAngle);
+var arcLength = function (radius, startAngle, endAngle) {
+  return Math.abs(startAngle - endAngle) > Math.PI ? radius * (2 * Math.PI - Math.abs(startAngle - endAngle)) : radius * Math.abs(startAngle - endAngle);
 };
 
 // find the two points a distance from a point on the circumference of a circle
 // in the direction of point2
-var directedSpacedPointOnArc = function (circle, point1, point2, spacing) {
-  var cosTheta = -(spacing * spacing / (2 * circle.radius * circle.radius) - 1);
-  var sinThetaPos = Math.sqrt(1 - Math.pow(cosTheta, 2));
+var directedSpacedPointOnArc = function (arc, spacing) {
+  var cosTheta = -(spacing * spacing / (2 * arc.radius * arc.radius) - 1);
+  var sinThetaPos = Math.sqrt(1 - cosTheta * cosTheta);
   var sinThetaNeg = -sinThetaPos;
 
-  var xPos = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaPos * (point1.y - circle.centre.y);
-  var xNeg = circle.centre.x + cosTheta * (point1.x - circle.centre.x) - sinThetaNeg * (point1.y - circle.centre.y);
-  var yPos = circle.centre.y + sinThetaPos * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
-  var yNeg = circle.centre.y + sinThetaNeg * (point1.x - circle.centre.x) + cosTheta * (point1.y - circle.centre.y);
+  var xPos = arc.centre.x + cosTheta * (arc.startPoint.x - arc.centre.x) - sinThetaPos * (arc.startPoint.y - arc.centre.y);
+  var xNeg = arc.centre.x + cosTheta * (arc.startPoint.x - arc.centre.x) - sinThetaNeg * (arc.startPoint.y - arc.centre.y);
+  var yPos = arc.centre.y + sinThetaPos * (arc.startPoint.x - arc.centre.x) + cosTheta * (arc.startPoint.y - arc.centre.y);
+  var yNeg = arc.centre.y + sinThetaNeg * (arc.startPoint.x - arc.centre.x) + cosTheta * (arc.startPoint.y - arc.centre.y);
 
   var p1 = { x: xPos, y: yPos, z: 0 };
   var p2 = { x: xNeg, y: yNeg, z: 0 };
 
-  var a = distance(p1, point2);
-  var b = distance(p2, point2);
+  var a = distance(p1, arc.endPoint);
+  var b = distance(p2, arc.endPoint);
   return a < b ? p1 : p2;
 };
 
@@ -44273,11 +44273,11 @@ function subdivideHyperbolicArc(arc, numDivisions) {
 
   // tiny pgons near the edges of the disk don't need to be subdivided
   if (arc.arcLength > spacing) {
-    var p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, arc.startPoint, arc.endPoint, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
+    var p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
     points.push(p);
 
     for (var i = 0; i < numDivisions - 2; i++) {
-      p = !arc.straightLine ? directedSpacedPointOnArc(arc.circle, p, arc.endPoint, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
+      p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
       points.push(p);
     }
   }
@@ -44511,7 +44511,7 @@ function createGeometries(tiling) {
   var bufferGeometryA = new BufferGeometry();
   var bufferGeometryB = new BufferGeometry();
 
-  for (var i = 0; i < 1; i++) {
+  for (var i = 0; i < tiling.length; i++) {
     createGeometry(tiling[i]);
   }
 
@@ -44789,13 +44789,6 @@ var StatisticsOverlay = function () {
     return StatisticsOverlay;
 }();
 
-var Circle = function Circle(centreX, centreY, radius) {
-  classCallCheck(this, Circle);
-
-  this.centre = { x: centreX, y: centreY, z: 0 };
-  this.radius = radius;
-};
-
 var HyperbolicArc$1 = function () {
   function HyperbolicArc(startPoint, endPoint) {
     classCallCheck(this, HyperbolicArc);
@@ -44809,8 +44802,8 @@ var HyperbolicArc$1 = function () {
       this.curvature = 0;
     } else {
       this.calculateArc();
-      this.arcLength = arcLength(this.circle, this.startAngle, this.endAngle);
-      this.curvature = this.arcLength / this.circle.radius;
+      this.arcLength = arcLength(this.radius, this.startAngle, this.endAngle);
+      this.curvature = this.arcLength / this.radius;
     }
   }
 
@@ -44832,7 +44825,8 @@ var HyperbolicArc$1 = function () {
     this.startAngle = this.startAngle < 0 ? 2 * Math.PI + this.startAngle : this.startAngle;
     this.endAngle = this.endAngle < 0 ? 2 * Math.PI + this.endAngle : this.endAngle;
 
-    this.circle = new Circle(arcCentre.x, arcCentre.y, arcRadius);
+    this.centre = arcCentre;
+    this.radius = arcRadius;
   };
 
   return HyperbolicArc;
@@ -45337,7 +45331,6 @@ var RegularHyperbolicTesselation = function () {
   return RegularHyperbolicTesselation;
 }();
 
-// import { createGeometries, createGeometry, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
 var EscherSketchCanvas = function () {
     function EscherSketchCanvas(showStats) {
         classCallCheck(this, EscherSketchCanvas);

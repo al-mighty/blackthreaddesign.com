@@ -1,5 +1,4 @@
 import * as E from './mathFunctions.js';
-import { Point, Circle } from './euclideanEntities.js';
 
 // * ***********************************************************************
 // *
@@ -20,8 +19,8 @@ class HyperbolicArc {
       this.curvature = 0;
     } else {
       this.calculateArc();
-      this.arcLength = E.arcLength( this.circle, this.startAngle, this.endAngle );
-      this.curvature = ( this.arcLength ) / ( this.circle.radius );
+      this.arcLength = E.arcLength( this.radius, this.startAngle, this.endAngle );
+      this.curvature = ( this.arcLength ) / ( this.radius );
     }
   }
 
@@ -57,7 +56,8 @@ class HyperbolicArc {
                       ? 2 * Math.PI + this.endAngle
                       : this.endAngle;
 
-    this.circle = new Circle( arcCentre.x, arcCentre.y, arcRadius );
+    this.centre = arcCentre;
+    this.radius = arcRadius;
   }
 
 }

@@ -43,13 +43,13 @@ function subdivideHyperbolicArc( arc, numDivisions ) {
   // tiny pgons near the edges of the disk don't need to be subdivided
   if ( arc.arcLength > spacing ) {
     let p = ( !arc.straightLine )
-      ? E.directedSpacedPointOnArc( arc.circle, arc.startPoint, arc.endPoint, spacing )
+      ? E.directedSpacedPointOnArc( arc, spacing )
       : E.directedSpacedPointOnLine( arc.startPoint, arc.endPoint, spacing );
     points.push( p );
 
     for ( let i = 0; i < numDivisions - 2; i++ ) {
       p = ( !arc.straightLine )
-        ? E.directedSpacedPointOnArc( arc.circle, p, arc.endPoint, spacing )
+        ? E.directedSpacedPointOnArc( arc, spacing )
         : E.directedSpacedPointOnLine( p, arc.endPoint, spacing );
       points.push( p );
     }
@@ -88,7 +88,7 @@ function subdivideHyperbolicPolygonEdges( polygon ) {
 // find the points along the arc between opposite subdivions of the second two
 // edges of the polygon. Each subsequent arc will have one less subdivision
 function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
-  const circle = new HyperbolicArc( startPoint, endPoint ).circle;
+  const arc = new HyperbolicArc( startPoint, endPoint );
   this.mesh.push( startPoint );
 
   // for each arc, the number of divisions will be reduced by one
@@ -97,10 +97,10 @@ function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
   // if the line get divided add points along line to mesh
   if ( divisions > 1 ) {
     const spacing = E.distance( startPoint, endPoint ) / ( divisions );
-    let nextPoint = E.directedSpacedPointOnArc( circle, startPoint, endPoint, spacing );
+    let nextPoint = E.directedSpacedPointOnArc( arc, spacing );
     for ( let j = 0; j < divisions - 1; j++ ) {
       this.mesh.push( nextPoint );
-      nextPoint = E.directedSpacedPointOnArc( circle, nextPoint, endPoint, spacing );
+      nextPoint = E.directedSpacedPointOnArc( arc, spacing );
     }
   }
 
@@ -311,7 +311,7 @@ export function createGeometries( tiling ) {
   const bufferGeometryA = new THREE.BufferGeometry();
   const bufferGeometryB = new THREE.BufferGeometry();
 
-  for ( let i = 0; i < 1; i++ ) {
+  for ( let i = 0; i < tiling.length; i++ ) {
     createGeometry( tiling[i] );
   }
 
