@@ -2,7 +2,9 @@ import * as THREE from 'three';
 
 import App from '../../../App/App.js';
 
-import { createGeometry, bufferGeometryA, bufferGeometryB, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
+// import { createGeometries, createGeometry, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
+import { createGeometries } from './escherSketchCanvasHelpers.js';
+
 import './escherSketchCanvasSetup.js';
 
 import basicVert from './shaders/basic.vert';
@@ -105,12 +107,10 @@ export default class EscherSketchCanvas {
   clearTiling() {
     while ( this.app.scene.children.length > 0 ) {
       const object = this.app.scene.children[0];
-
       if ( object.type === 'Mesh' ) {
         object.geometry.dispose();
         this.app.scene.remove( object );
       }
-
     }
   }
 
@@ -131,29 +131,30 @@ export default class EscherSketchCanvas {
           [1, 4], // edge_1 orientation, adjacency
           [1, 3], [1, 2], [1, 1], [1, 0]
         ],
-      minPolygonSize: 0.04,
+      minPolygonSize: 0.01,
     };
   }
 
   generateDisk( tiling ) {
-    for ( let i = 0; i < tiling.length; i++ ) {
-      createGeometry( tiling[i] );
-    }
+    // for ( let i = 0; i < tiling.length; i++ ) {
+    //   createGeometry( tiling[i] );
+    // }
 
-    const bufferGeometryA = new THREE.BufferGeometry();
-    const bufferGeometryB = new THREE.BufferGeometry();
+    // const bufferGeometryA = new THREE.BufferGeometry();
+    // const bufferGeometryB = new THREE.BufferGeometry();
 
-    bufferGeometryA.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsA, 3 ) );
-    bufferGeometryA.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsA, 2 ) );
+    // bufferGeometryA.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsA, 3 ) );
+    // bufferGeometryA.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsA, 2 ) );
 
-    bufferGeometryB.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsB, 3 ) );
-    bufferGeometryB.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsB, 2 ) );
+    // bufferGeometryB.addAttribute( 'position', new THREE.Float32BufferAttribute( positionsB, 3 ) );
+    // bufferGeometryB.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvsB, 2 ) );
+    const geometries = createGeometries( tiling );
 
-    const meshA = new THREE.Mesh( bufferGeometryA, this.pattern.materials[tiling[0].materialIndex] );
-    const meshB = new THREE.Mesh( bufferGeometryA, this.pattern.materials[tiling[1].materialIndex] );
+    const meshA = new THREE.Mesh( geometries[0], this.pattern.materials[tiling[0].materialIndex] );
+    const meshB = new THREE.Mesh( geometries[1], this.pattern.materials[tiling[1].materialIndex] );
 
-    this.app.scene.add( meshA );
-    this.app.scene.add( meshB );
+    this.app.scene.add( meshA );  // black fish
+    this.app.scene.add( meshB ); // white fish
   }
 
   initMaterials( ) {
