@@ -1,4 +1,4 @@
-import * as E from './mathFunctions.js';
+import { distance, arcLength, throughOrigin, poincareToHyperboloid, hyperboloidCrossProduct, transformPoint } from './mathFunctions.js';
 
 // * ***********************************************************************
 // *
@@ -13,13 +13,13 @@ class HyperbolicArc {
     this.startPoint = startPoint;
     this.endPoint = endPoint;
 
-    if ( E.throughOrigin( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) ) {
+    if ( throughOrigin( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) ) {
       this.straightLine = true;
-      this.arcLength = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y );
+      this.arcLength = distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y );
       this.curvature = 0;
     } else {
       this.calculateArc();
-      this.arcLength = E.arcLength( this.radius, this.startAngle, this.endAngle );
+      this.arcLength = arcLength( this.radius, this.startAngle, this.endAngle );
       this.curvature = ( this.arcLength ) / ( this.radius );
     }
   }
@@ -27,9 +27,9 @@ class HyperbolicArc {
   // Calculate the arc using Dunham's method
   calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    const a = E.poincareToHyperboloid( this.startPoint.x, this.startPoint.y );
-    const b = E.poincareToHyperboloid( this.endPoint.x, this.endPoint.y );
-    const hp = E.hyperboloidCrossProduct( a.x, a.y, a.z, b.x, b.y, b.z );
+    const a = poincareToHyperboloid( this.startPoint.x, this.startPoint.y );
+    const b = poincareToHyperboloid( this.endPoint.x, this.endPoint.y );
+    const hp = hyperboloidCrossProduct( a.x, a.y, a.z, b.x, b.y, b.z );
 
     const arcCentre = { x: hp.x / hp.z, y: hp.y / hp.z, z: 0 };
     const arcRadius = Math.sqrt(
@@ -86,7 +86,7 @@ export class HyperbolicPolygon {
   transform( transform, materialIndex = this.materialIndex ) {
     const newVertices = [];
     for ( let i = 0; i < this.vertices.length; i++ ) {
-      newVertices.push( E.transformPoint( transform, this.vertices[i].x, this.vertices[i].y ) );
+      newVertices.push( transformPoint( transform, this.vertices[i].x, this.vertices[i].y ) );
     }
 
     return new HyperbolicPolygon( newVertices, materialIndex );

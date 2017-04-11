@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as E from './utilities/mathFunctions.js';
+import { directedSpacedPointOnArc, directedSpacedPointOnLine, distance } from './utilities/mathFunctions.js';
 
 // The longest edge with radius > 0 should be used to calculate how finely
 // the polygon gets subdivided
@@ -32,7 +32,7 @@ function subdivideHyperbolicArc( arc, numDivisions ) {
   // even number of pieces (or 1 in case of tiny polygons)
 
   numDivisions = numDivisions || ( arc.arcLength > 0.001 )
-                  ? 2 * Math.ceil( arc.arcLength / 2 )
+                  ? 2 * Math.ceil( arc.arcLength ) // currently always = 2
                   : 1;
 
   // calculate spacing based on number of points
@@ -43,14 +43,14 @@ function subdivideHyperbolicArc( arc, numDivisions ) {
   // tiny pgons near the edges of the disk don't need to be subdivided
   if ( arc.arcLength > spacing ) {
     let p = ( !arc.straightLine )
-      ? E.directedSpacedPointOnArc( arc, spacing )
-      : E.directedSpacedPointOnLine( arc.startPoint.x, arc.startPoint.y, arc.endPoint.x, arc.endPoint.y, spacing );
+      ? directedSpacedPointOnArc( arc, spacing )
+      : directedSpacedPointOnLine( arc.startPoint.x, arc.startPoint.y, arc.endPoint.x, arc.endPoint.y, spacing );
     points.push( p );
 
     for ( let i = 0; i < numDivisions - 2; i++ ) {
       p = ( !arc.straightLine )
-        ? E.directedSpacedPointOnArc( arc, spacing )
-        : E.directedSpacedPointOnLine( p.x, p.y, arc.endPoint.x, arc.endPoint.y, spacing );
+        ? directedSpacedPointOnArc( arc, spacing )
+        : directedSpacedPointOnLine( p.x, p.y, arc.endPoint.x, arc.endPoint.y, spacing );
       points.push( p );
     }
   }
@@ -85,28 +85,6 @@ function subdivideHyperbolicPolygonEdges( polygon ) {
   return edges;
 }
 
-// find the points along the arc between opposite subdivions of the second two
-// edges of the polygon. Each subsequent arc will have one less subdivision
-function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
-  const arc = new HyperbolicArc( startPoint, endPoint );
-  this.mesh.push( startPoint );
-
-  // for each arc, the number of divisions will be reduced by one
-  const divisions = this.numDivisions - arcIndex;
-
-  // if the line get divided add points along line to mesh
-  if ( divisions > 1 ) {
-    const spacing = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
-    let nextPoint = E.directedSpacedPointOnArc( arc, spacing );
-    for ( let j = 0; j < divisions - 1; j++ ) {
-      this.mesh.push( nextPoint );
-      nextPoint = E.directedSpacedPointOnArc( arc, spacing );
-    }
-  }
-
-  this.mesh.push( endPoint );
-}
-
 // Alternative to subdivideInteriorArc using lines instead of arcs
 // ( quality seems the same and may be faster )
 function subdivideLine( startPoint, endPoint, numDivisions, arcIndex ) {
@@ -116,11 +94,11 @@ function subdivideLine( startPoint, endPoint, numDivisions, arcIndex ) {
 
   // if the line get divided add points along line to mesh
   if ( divisions > 1 ) {
-    const spacing = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
-    let nextPoint = E.directedSpacedPointOnLine( startPoint.x, startPoint.y, endPoint.x, endPoint.y, spacing );
+    const spacing = distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
+    let nextPoint = directedSpacedPointOnLine( startPoint.x, startPoint.y, endPoint.x, endPoint.y, spacing );
     for ( let j = 0; j < divisions - 1; j++ ) {
       points.push( nextPoint );
-      nextPoint = E.directedSpacedPointOnLine( nextPoint.x, nextPoint.y, endPoint.x, endPoint.y, spacing );
+      nextPoint = directedSpacedPointOnLine( nextPoint.x, nextPoint.y, endPoint.x, endPoint.y, spacing );
     }
   }
 
@@ -175,7 +153,6 @@ function subdivideHyperbolicPolygon( polygon ) {
   //   subdividedEdges[2][0].y,
   //   subdividedEdges[2][0].z,
   // );
-
   return points;
 }
 
@@ -323,3 +300,25 @@ export function createGeometries( tiling ) {
 
   return [bufferGeometryA, bufferGeometryB];
 }
+
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
+// function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
+//   const arc = new HyperbolicArc( startPoint, endPoint );
+//   this.mesh.push( startPoint );
+
+//   // for each arc, the number of divisions will be reduced by one
+//   const divisions = this.numDivisions - arcIndex;
+
+//   // if the line get divided add points along line to mesh
+//   if ( divisions > 1 ) {
+//     const spacing = distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
+//     let nextPoint = directedSpacedPointOnArc( arc, spacing );
+//     for ( let j = 0; j < divisions - 1; j++ ) {
+//       this.mesh.push( nextPoint );
+//       nextPoint = directedSpacedPointOnArc( arc, spacing );
+//     }
+//   }
+
+//   this.mesh.push( endPoint );
+// }

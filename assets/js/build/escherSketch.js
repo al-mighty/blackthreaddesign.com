@@ -44124,12 +44124,6 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-// * ***********************************************************************
-// *
-// *   MATH FUNCTIONS
-// *
-// *************************************************************************
-
 var distance = function (x1, y1, x2, y2) {
   return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 };
@@ -44163,25 +44157,30 @@ var directedSpacedPointOnArc = function (arc, spacing) {
   var yPos = arc.centre.y + sinThetaPos * (arc.startPoint.x - arc.centre.x) + cosTheta * (arc.startPoint.y - arc.centre.y);
   var yNeg = arc.centre.y + sinThetaNeg * (arc.startPoint.x - arc.centre.x) + cosTheta * (arc.startPoint.y - arc.centre.y);
 
-  var p1 = { x: xPos, y: yPos, z: 0 };
-  var p2 = { x: xNeg, y: yNeg, z: 0 };
+  var a = distance(xPos, yPos, arc.endPoint.x, arc.endPoint.y);
+  var b = distance(xNeg, yNeg, arc.endPoint.x, arc.endPoint.y);
 
-  var a = distance(p1.x, p1.y, arc.endPoint.x, arc.endPoint.y);
-  var b = distance(p2.x, p2.y, arc.endPoint.x, arc.endPoint.y);
-  return a < b ? p1 : p2;
+  return a < b ? { x: xPos, y: yPos, z: 0 } : { x: xNeg, y: yNeg, z: 0 };
 };
 
 // calculate the normal vector given 2 points
-var normalVector = function (x1, y1, x2, y2) {
-  var d = distance(x1, y1, x2, y2);
-  return { x: (x2 - x1) / d, y: (y2 - y1) / d, z: 0 };
-};
+// export const normalVector = ( x1, y1, x2, y2 ) => {
+//   const d = distance( x1, y1, x2, y2 );
+//   v1.set( ( x2 - x1 ) / d, ( y2 - y1 ) / d, 0 );
+//   return v1;
+//   // { x: ( x2 - x1 ) / d, y: ( y2 - y1 ) / d, z: 0 };
+// };
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
 var directedSpacedPointOnLine = function (x1, y1, x2, y2, spacing) {
-  var dv = normalVector(x1, y1, x2, y2);
-  return { x: x1 + spacing * dv.x, y: y1 + spacing * dv.y, z: 0 };
+  var d = distance(x1, y1, x2, y2);
+  // const dv = normalVector( x1, y1, x2, y2 );
+  return {
+    x: x1 + spacing * (x2 - x1) / d,
+    y: y1 + spacing * (y2 - y1) / d,
+    z: 0
+  };
 };
 
 var multiplyMatrices = function (m1, m2) {
@@ -44218,18 +44217,20 @@ var hyperboloidCrossProduct = function (x1, y1, z1, x2, y2, z2) {
 
 var poincareToHyperboloid = function (x, y) {
   var factor = 1 / (1 - x * x - y * y);
-  var xH = 2 * factor * x;
-  var yH = 2 * factor * y;
-  var zH = factor * (1 + x * x + y * y);
-  var p = { x: xH, y: yH, z: zH };
-  return p;
+  return {
+    x: 2 * factor * x,
+    y: 2 * factor * y,
+    z: factor * (1 + x * x + y * y)
+  };
 };
 
 var hyperboloidToPoincare = function (x, y, z) {
   var factor = 1 / (1 + z);
-  var xH = factor * x;
-  var yH = factor * y;
-  return { x: xH, y: yH, z: 0 };
+  return {
+    x: factor * x,
+    y: factor * y,
+    z: 0
+  };
 };
 
 // move the point to hyperboloid (Weierstrass) space, apply the transform, then move back
@@ -44281,7 +44282,8 @@ function subdivideHyperbolicArc(arc, numDivisions) {
   // calculate the number of subdivisions required to break the arc into an
   // even number of pieces (or 1 in case of tiny polygons)
 
-  numDivisions = numDivisions || arc.arcLength > 0.001 ? 2 * Math.ceil(arc.arcLength / 2) : 1;
+  numDivisions = numDivisions || arc.arcLength > 0.001 ? 2 * Math.ceil(arc.arcLength) // currently always = 2
+  : 1;
 
   // calculate spacing based on number of points
   var spacing = arc.arcLength / numDivisions;
@@ -44329,8 +44331,8 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   return edges;
 }
 
-// find the points along the arc between opposite subdivions of the second two
-// edges of the polygon. Each subsequent arc will have one less subdivision
+// Alternative to subdivideInteriorArc using lines instead of arcs
+// ( quality seems the same and may be faster )
 function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   var points = [startPoint];
 
@@ -44396,7 +44398,6 @@ function subdivideHyperbolicPolygon(polygon) {
   //   subdividedEdges[2][0].y,
   //   subdividedEdges[2][0].z,
   // );
-
   return points;
 }
 
@@ -44540,6 +44541,28 @@ function createGeometries(tiling) {
 
   return [bufferGeometryA, bufferGeometryB];
 }
+
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
+// function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
+//   const arc = new HyperbolicArc( startPoint, endPoint );
+//   this.mesh.push( startPoint );
+
+//   // for each arc, the number of divisions will be reduced by one
+//   const divisions = this.numDivisions - arcIndex;
+
+//   // if the line get divided add points along line to mesh
+//   if ( divisions > 1 ) {
+//     const spacing = distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
+//     let nextPoint = directedSpacedPointOnArc( arc, spacing );
+//     for ( let j = 0; j < divisions - 1; j++ ) {
+//       this.mesh.push( nextPoint );
+//       nextPoint = directedSpacedPointOnArc( arc, spacing );
+//     }
+//   }
+
+//   this.mesh.push( endPoint );
+// }
 
 Math.sinh = Math.sinh || function sinh(x) {
   var y = Math.exp(x);
@@ -44806,7 +44829,7 @@ var StatisticsOverlay = function () {
     return StatisticsOverlay;
 }();
 
-var HyperbolicArc$1 = function () {
+var HyperbolicArc = function () {
   function HyperbolicArc(startPoint, endPoint) {
     classCallCheck(this, HyperbolicArc);
 
@@ -44870,7 +44893,7 @@ var HyperbolicPolygon = function () {
     this.materialIndex = materialIndex;
     this.vertices = vertices;
 
-    this.edges = [new HyperbolicArc$1(this.vertices[0], this.vertices[1]), new HyperbolicArc$1(this.vertices[1], this.vertices[2]), new HyperbolicArc$1(this.vertices[2], this.vertices[0])];
+    this.edges = [new HyperbolicArc(this.vertices[0], this.vertices[1]), new HyperbolicArc(this.vertices[1], this.vertices[2]), new HyperbolicArc(this.vertices[2], this.vertices[0])];
   }
 
   // Apply a Transform to the polygon
@@ -44890,6 +44913,13 @@ var HyperbolicPolygon = function () {
   return HyperbolicPolygon;
 }();
 
+// TODO Document these classes
+// * ***********************************************************************
+// *
+// *  TRANSFORM CLASS
+// *  Represents a transformation of a point in hyperbolic space
+// *
+// *************************************************************************
 var HyperbolicTransform = function () {
   function HyperbolicTransform(matrix, orientation, position) {
     classCallCheck(this, HyperbolicTransform);

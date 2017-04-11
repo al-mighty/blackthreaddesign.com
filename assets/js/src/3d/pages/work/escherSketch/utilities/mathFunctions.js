@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 // * ***********************************************************************
 // *
 // *   MATH FUNCTIONS
@@ -47,25 +48,30 @@ export const directedSpacedPointOnArc = ( arc, spacing ) => {
     * ( arc.startPoint.x - arc.centre.x ) + cosTheta
     * ( arc.startPoint.y - arc.centre.y );
 
-  const p1 = { x: xPos, y: yPos, z: 0 };
-  const p2 = { x: xNeg, y: yNeg, z: 0 };
+  const a = distance( xPos, yPos, arc.endPoint.x, arc.endPoint.y );
+  const b = distance( xNeg, yNeg, arc.endPoint.x, arc.endPoint.y );
 
-  const a = distance( p1.x, p1.y, arc.endPoint.x, arc.endPoint.y );
-  const b = distance( p2.x, p2.y, arc.endPoint.x, arc.endPoint.y );
-  return ( a < b ) ? p1 : p2;
+  return ( a < b ) ? { x: xPos, y: yPos, z: 0 } : { x: xNeg, y: yNeg, z: 0 };
 };
 
 // calculate the normal vector given 2 points
-export const normalVector = ( x1, y1, x2, y2 ) => {
-  const d = distance( x1, y1, x2, y2 );
-  return { x: ( x2 - x1 ) / d, y: ( y2 - y1 ) / d, z: 0 };
-};
+// export const normalVector = ( x1, y1, x2, y2 ) => {
+//   const d = distance( x1, y1, x2, y2 );
+//   v1.set( ( x2 - x1 ) / d, ( y2 - y1 ) / d, 0 );
+//   return v1;
+//   // { x: ( x2 - x1 ) / d, y: ( y2 - y1 ) / d, z: 0 };
+// };
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
 export const directedSpacedPointOnLine = ( x1, y1, x2, y2, spacing ) => {
-  const dv = normalVector( x1, y1, x2, y2 );
-  return { x: x1 + spacing * dv.x, y: y1 + spacing * dv.y, z: 0 };
+  const d = distance( x1, y1, x2, y2 );
+  // const dv = normalVector( x1, y1, x2, y2 );
+  return {
+    x: x1 + spacing * ( x2 - x1 ) / d,
+    y: y1 + spacing * ( y2 - y1 ) / d,
+    z: 0,
+  };
 };
 
 export const multiplyMatrices = ( m1, m2 ) => {
@@ -101,18 +107,20 @@ export const hyperboloidCrossProduct = ( x1, y1, z1, x2, y2, z2 ) => {
 
 export const poincareToHyperboloid = ( x, y ) => {
   const factor = 1 / ( 1 - x * x - y * y );
-  const xH = 2 * factor * x;
-  const yH = 2 * factor * y;
-  const zH = factor * ( 1 + x * x + y * y );
-  const p = { x: xH, y: yH, z: zH };
-  return p;
+  return { 
+    x: 2 * factor * x,
+    y: 2 * factor * y,
+    z: factor * ( 1 + x * x + y * y ),
+  };
 };
 
 export const hyperboloidToPoincare = ( x, y, z ) => {
   const factor = 1 / ( 1 + z );
-  const xH = factor * x;
-  const yH = factor * y;
-  return { x: xH, y: yH, z: 0 };
+  return { 
+    x: factor * x,
+    y: factor * y,
+    z: 0,
+  };
 };
 
 // move the point to hyperboloid (Weierstrass) space, apply the transform, then move back
@@ -124,7 +132,7 @@ export const transformPoint = ( transform, x, y ) => {
   const zT = p.x * mat[2][0] + p.y * mat[2][1] + p.z * mat[2][2];
 
   return hyperboloidToPoincare( xT, yT, zT );
-}
+};
 
 // are the angles alpha, beta in clockwise order on unit disk?
 // export const clockwise = ( alpha, beta ) => {
