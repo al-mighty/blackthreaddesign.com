@@ -80,8 +80,6 @@ function subdivideHyperbolicPolygonEdges( polygon ) {
   edges[( subdivisionEdge + 1 ) % 3] = edge2Points;
   edges[( subdivisionEdge + 2 ) % 3] = edge3Points;
 
-  edges[3] = numDivisions;
-
   return edges;
 }
 
@@ -112,20 +110,20 @@ function subdivideLine( startPoint, endPoint, numDivisions, arcIndex ) {
 function subdivideHyperbolicPolygon( polygon ) {
   const subdividedEdges = subdivideHyperbolicPolygonEdges( polygon );
 
-  const numDivisions = subdividedEdges[3];
+  const numDivisions = polygon.numDivisions;
 
   const points = [].concat( subdividedEdges[0] );
 
+  // TODO: Switch to using flat array and eventually just immediately populate the Float32Array 
   // const flatPoints = [];
 
   // for ( let i = 0; i < subdividedEdges[0].length; i++ ) {
-  //   flatPoints.push( 
+  //   flatPoints.push(
   //     subdividedEdges[0][i].x,
   //     subdividedEdges[0][i].y,
   //     subdividedEdges[0][i].z,
   //   );
   // }
-
 
   for ( let i = 1; i < numDivisions; i++ ) {
     const startPoint = subdividedEdges[2][( numDivisions - i )];
@@ -134,7 +132,7 @@ function subdivideHyperbolicPolygon( polygon ) {
     const newPoints = subdivideLine( startPoint, endPoint, i );
 
     // for ( let j = 0; j < newPoints.length; j++) {
-    //   flatPoints.push( 
+    //   flatPoints.push(
     //     newPoints[j].x,
     //     newPoints[j].y,
     //     newPoints[j].z,
@@ -148,11 +146,12 @@ function subdivideHyperbolicPolygon( polygon ) {
   // push the final vertex
   points.push( subdividedEdges[2][0] );
 
-  // flatPoints.push( 
+  // flatPoints.push(
   //   subdividedEdges[2][0].x,
   //   subdividedEdges[2][0].y,
   //   subdividedEdges[2][0].z,
   // );
+
   return points;
 }
 
@@ -288,7 +287,7 @@ export function createGeometries( tiling ) {
   const bufferGeometryA = new THREE.BufferGeometry();
   const bufferGeometryB = new THREE.BufferGeometry();
 
-  for ( let i = 0; i < tiling.length; i++ ) {
+  for ( let i = 0; i < 1; i++ ) {
     createGeometry( tiling[i] );
   }
 

@@ -44124,6 +44124,12 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
+// * ***********************************************************************
+// *
+// *   MATH FUNCTIONS
+// *
+// *************************************************************************
+
 var distance = function (x1, y1, x2, y2) {
   return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 };
@@ -44261,6 +44267,8 @@ var transformPoint = function (transform, x, y) {
 
 // export const randomInt = ( min, max ) => Math.floor( Math.random() * ( max - min + 1 ) + min );
 
+// The longest edge with radius > 0 should be used to calculate how finely
+// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -44326,8 +44334,6 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   edges[(subdivisionEdge + 1) % 3] = edge2Points;
   edges[(subdivisionEdge + 2) % 3] = edge3Points;
 
-  edges[3] = numDivisions;
-
   return edges;
 }
 
@@ -44358,34 +44364,25 @@ function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
 function subdivideHyperbolicPolygon(polygon) {
   var subdividedEdges = subdivideHyperbolicPolygonEdges(polygon);
 
-  var numDivisions = subdividedEdges[3];
+  var numDivisions = polygon.numDivisions;
 
   var points = [].concat(subdividedEdges[0]);
 
-  // const flatPoints = [];
+  var flatPoints = [];
 
-  // for ( let i = 0; i < subdividedEdges[0].length; i++ ) {
-  //   flatPoints.push( 
-  //     subdividedEdges[0][i].x,
-  //     subdividedEdges[0][i].y,
-  //     subdividedEdges[0][i].z,
-  //   );
-  // }
+  for (var i = 0; i < subdividedEdges[0].length; i++) {
+    flatPoints.push(subdividedEdges[0][i].x, subdividedEdges[0][i].y, subdividedEdges[0][i].z);
+  }
 
-
-  for (var i = 1; i < numDivisions; i++) {
-    var startPoint = subdividedEdges[2][numDivisions - i];
-    var endPoint = subdividedEdges[1][i];
+  for (var _i = 1; _i < numDivisions; _i++) {
+    var startPoint = subdividedEdges[2][numDivisions - _i];
+    var endPoint = subdividedEdges[1][_i];
     // this.subdivideInteriorArc( startPoint, endPoint, i );
-    var newPoints = subdivideLine(startPoint, endPoint, i);
+    var newPoints = subdivideLine(startPoint, endPoint, _i);
 
-    // for ( let j = 0; j < newPoints.length; j++) {
-    //   flatPoints.push( 
-    //     newPoints[j].x,
-    //     newPoints[j].y,
-    //     newPoints[j].z,
-    //   );
-    // }
+    for (var j = 0; j < newPoints.length; j++) {
+      flatPoints.push(newPoints[j].x, newPoints[j].y, newPoints[j].z);
+    }
 
     points.push.apply(points, newPoints);
   }
@@ -44393,12 +44390,11 @@ function subdivideHyperbolicPolygon(polygon) {
   // push the final vertex
   points.push(subdividedEdges[2][0]);
 
-  // flatPoints.push( 
-  //   subdividedEdges[2][0].x,
-  //   subdividedEdges[2][0].y,
-  //   subdividedEdges[2][0].z,
-  // );
-  return points;
+  flatPoints.push(subdividedEdges[2][0].x, subdividedEdges[2][0].y, subdividedEdges[2][0].z);
+
+  // console.table( points )
+  // console.log( flatPoints )
+  return [points, flatPoints];
 }
 
 // create one buffer geometry per material (tile type)
@@ -44417,7 +44413,7 @@ function createGeometries(tiling) {
 
   function createGeometry(polygon) {
 
-    var vertices = subdivideHyperbolicPolygon(polygon);
+    var vertices = subdivideHyperbolicPolygon(polygon)[0];
 
     var divisions = polygon.numDivisions || 1;
 
@@ -44529,7 +44525,7 @@ function createGeometries(tiling) {
   var bufferGeometryA = new BufferGeometry();
   var bufferGeometryB = new BufferGeometry();
 
-  for (var i = 0; i < tiling.length; i++) {
+  for (var i = 0; i < 1; i++) {
     createGeometry(tiling[i]);
   }
 
@@ -44913,13 +44909,6 @@ var HyperbolicPolygon = function () {
   return HyperbolicPolygon;
 }();
 
-// TODO Document these classes
-// * ***********************************************************************
-// *
-// *  TRANSFORM CLASS
-// *  Represents a transformation of a point in hyperbolic space
-// *
-// *************************************************************************
 var HyperbolicTransform = function () {
   function HyperbolicTransform(matrix, orientation, position) {
     classCallCheck(this, HyperbolicTransform);
