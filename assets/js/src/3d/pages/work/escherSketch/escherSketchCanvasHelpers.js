@@ -287,7 +287,7 @@ export function createGeometries( tiling ) {
   const bufferGeometryA = new THREE.BufferGeometry();
   const bufferGeometryB = new THREE.BufferGeometry();
 
-  for ( let i = 0; i < 1; i++ ) {
+  for ( let i = 0; i < tiling.length; i++ ) {
     createGeometry( tiling[i] );
   }
 
