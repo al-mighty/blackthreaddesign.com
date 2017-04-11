@@ -44208,11 +44208,11 @@ var identityMatrix = function (n) {
   });
 };
 
-var hyperboloidCrossProduct = function (point3D1, point3D2) {
+var hyperboloidCrossProduct = function (x1, y1, z1, x2, y2, z2) {
   return {
-    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
-    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
-    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x
+    x: y1 * z2 - z1 * y2,
+    y: z1 * x2 - x1 * z2,
+    z: -x1 * y2 + y1 * x2
   };
 };
 
@@ -44242,6 +44242,23 @@ var transformPoint = function (transform, x, y) {
 
   return hyperboloidToPoincare(xT, yT, zT);
 };
+
+// are the angles alpha, beta in clockwise order on unit disk?
+// export const clockwise = ( alpha, beta ) => {
+//   // let cw = true;
+//   const a = ( beta > 3 * Math.PI / 2 && alpha < Math.PI / 2 );
+//   const b = ( beta - alpha > Math.PI );
+//   const c = ( ( alpha > beta ) && !( alpha - beta > Math.PI ) );
+//   // if (a || b || c) {
+//     // cw = false;
+//   // }
+//   // return (a || b || c) ? false : true;
+//   return !( a || b || c );
+// };
+
+// export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;
+
+// export const randomInt = ( min, max ) => Math.floor( Math.random() * ( max - min + 1 ) + min );
 
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
@@ -44812,7 +44829,9 @@ var HyperbolicArc$1 = function () {
 
   HyperbolicArc.prototype.calculateArc = function calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    var hp = hyperboloidCrossProduct(poincareToHyperboloid(this.startPoint.x, this.startPoint.y), poincareToHyperboloid(this.endPoint.x, this.endPoint.y));
+    var a = poincareToHyperboloid(this.startPoint.x, this.startPoint.y);
+    var b = poincareToHyperboloid(this.endPoint.x, this.endPoint.y);
+    var hp = hyperboloidCrossProduct(a.x, a.y, a.z, b.x, b.y, b.z);
 
     var arcCentre = { x: hp.x / hp.z, y: hp.y / hp.z, z: 0 };
     var arcRadius = Math.sqrt((this.startPoint.x - arcCentre.x) * (this.startPoint.x - arcCentre.x) + (this.startPoint.y - arcCentre.y) * (this.startPoint.y - arcCentre.y));

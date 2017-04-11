@@ -68,23 +68,6 @@ export const directedSpacedPointOnLine = ( x1, y1, x2, y2, spacing ) => {
   return { x: x1 + spacing * dv.x, y: y1 + spacing * dv.y, z: 0 };
 };
 
-export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;
-
-export const randomInt = ( min, max ) => Math.floor( Math.random() * ( max - min + 1 ) + min );
-
-// are the angles alpha, beta in clockwise order on unit disk?
-export const clockwise = ( alpha, beta ) => {
-  // let cw = true;
-  const a = ( beta > 3 * Math.PI / 2 && alpha < Math.PI / 2 );
-  const b = ( beta - alpha > Math.PI );
-  const c = ( ( alpha > beta ) && !( alpha - beta > Math.PI ) );
-  // if (a || b || c) {
-    // cw = false;
-  // }
-  // return (a || b || c) ? false : true;
-  return !( a || b || c );
-};
-
 export const multiplyMatrices = ( m1, m2 ) => {
   const result = [];
   for ( let i = 0; i < m1.length; i++ ) {
@@ -108,11 +91,11 @@ export const identityMatrix = n =>
     } ),
   );
 
-export const hyperboloidCrossProduct = ( point3D1, point3D2 ) => {
+export const hyperboloidCrossProduct = ( x1, y1, z1, x2, y2, z2 ) => {
   return {
-    x: point3D1.y * point3D2.z - point3D1.z * point3D2.y,
-    y: point3D1.z * point3D2.x - point3D1.x * point3D2.z,
-    z: -point3D1.x * point3D2.y + point3D1.y * point3D2.x,
+    x: y1 * z2 - z1 * y2,
+    y: z1 * x2 - x1 * z2,
+    z: -x1 * y2 + y1 * x2,
   };
 }
 
@@ -142,3 +125,20 @@ export const transformPoint = ( transform, x, y ) => {
 
   return hyperboloidToPoincare( xT, yT, zT );
 }
+
+// are the angles alpha, beta in clockwise order on unit disk?
+// export const clockwise = ( alpha, beta ) => {
+//   // let cw = true;
+//   const a = ( beta > 3 * Math.PI / 2 && alpha < Math.PI / 2 );
+//   const b = ( beta - alpha > Math.PI );
+//   const c = ( ( alpha > beta ) && !( alpha - beta > Math.PI ) );
+//   // if (a || b || c) {
+//     // cw = false;
+//   // }
+//   // return (a || b || c) ? false : true;
+//   return !( a || b || c );
+// };
+
+// export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;
+
+// export const randomInt = ( min, max ) => Math.floor( Math.random() * ( max - min + 1 ) + min );

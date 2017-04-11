@@ -27,10 +27,9 @@ class HyperbolicArc {
   // Calculate the arc using Dunham's method
   calculateArc() {
     // calculate centre of the circle the arc lies on relative to unit disk
-    const hp = E.hyperboloidCrossProduct(
-      E.poincareToHyperboloid( this.startPoint.x, this.startPoint.y ),
-      E.poincareToHyperboloid( this.endPoint.x, this.endPoint.y ),
-    );
+    const a = E.poincareToHyperboloid( this.startPoint.x, this.startPoint.y );
+    const b = E.poincareToHyperboloid( this.endPoint.x, this.endPoint.y );
+    const hp = E.hyperboloidCrossProduct( a.x, a.y, a.z, b.x, b.y, b.z );
 
     const arcCentre = { x: hp.x / hp.z, y: hp.y / hp.z, z: 0 };
     const arcRadius = Math.sqrt(
