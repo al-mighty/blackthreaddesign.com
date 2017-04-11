@@ -11126,7 +11126,6 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
-// Set up any globals
 var Hammer$1 = hammer$1;
 
 /* ****************************************
@@ -11527,15 +11526,23 @@ var avalonbox = createCommonjsModule(function (module) {
 var avalonbox$1 = interopDefault(avalonbox);
 
 function initLightBox () {
-  document.querySelectorAll('.gallery').forEach(function (gallery) {
+  var galleries = document.querySelectorAll('.gallery');
+
+  for (var i = 0; i < galleries.length; i++) {
+    var gallery = galleries[i];
+
     if (!gallery.id) gallery.id = utils.uuid();
     avalonbox$1.run(gallery.id);
-  });
+  }
 
-  document.querySelectorAll('.lightbox').forEach(function (image) {
+  var lightboxes = document.querySelectorAll('.lightbox');
+
+  for (var _i = 0; _i < lightboxes.length; _i++) {
+    var image = lightboxes[_i];
+
     if (!image.id) image.id = utils.uuid();
     avalonbox$1.run(image.id);
-  });
+  }
 }
 
 var Greedy = function Greedy(options) {
@@ -11827,19 +11834,27 @@ var links = document.querySelectorAll('a');
 var fileName = location.href.split('/').pop().split('#')[0];
 
 function initSmoothScroll () {
-    links.forEach(function (a) {
-        //check if it's a link to another location on the page
-        if (~a.href.indexOf(fileName + '#')) {
-            var link = '#' + a.href.split('#').pop();
 
-            // if it's an empty link ('#'), just return
-            if (link === '#') return;
+  for (var i = 0; i < links.length; i++) {
+    var a = links[i];
+    //check if it's a link to another location on the page
+    if (~a.href.indexOf(fileName + '#')) {
+      var _ret = function () {
+        var link = '#' + a.href.split('#').pop();
 
-            a.onclick = function () {
-                return singleton(link);
-            };
-        }
-    });
+        // if it's an empty link ('#'), just return
+        if (link === '#') return {
+            v: void 0
+          };
+
+        a.onclick = function () {
+          return singleton(link);
+        };
+      }();
+
+      if (typeof _ret === "object") return _ret.v;
+    }
+  }
 }
 
 var index$2 = createCommonjsModule(function (module) {
@@ -12286,7 +12301,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -12407,8 +12421,6 @@ function initLoader() {
   }, 3000);
 }
 
-// TODO: refactor as functions to allow these to be run after initLoader
-// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
