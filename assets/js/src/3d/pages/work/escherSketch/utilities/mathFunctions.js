@@ -8,12 +8,12 @@ export const distance = ( x1, y1, x2, y2 ) =>
   Math.sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 
 // does the line connecting p1, p2 go through the point (0,0)?
-export const throughOrigin = ( point1, point2 ) => {
+export const throughOrigin = ( x1, y1, x2, y2 ) => {
   // vertical line through centre
-  if ( ( Math.abs( point1.x ) <= 0.00001 ) && ( Math.abs( point2.x ) <= 0.00001 ) ) {
+  if ( ( Math.abs( x1 ) <= 0.00001 ) && ( Math.abs( x2 ) <= 0.00001 ) ) {
     return true;
   }
-  const test = ( -point1.x * point2.y + point1.x * point1.y ) / ( point2.x - point1.x ) + point1.y;
+  const test = ( -x1 * y2 + x1 * y1 ) / ( x2 - x1 ) + y1;
 
   if ( Math.abs( test ) <= 0.00001 ) return true;
   return false;
@@ -56,16 +56,16 @@ export const directedSpacedPointOnArc = ( arc, spacing ) => {
 };
 
 // calculate the normal vector given 2 points
-export const normalVector = ( p1, p2 ) => {
-  const d = distance( p1.x, p1.y, p2.x, p2.y );
-  return { x: ( p2.x - p1.x ) / d, y: ( p2.y - p1.y ) / d, z: 0 };
+export const normalVector = ( x1, y1, x2, y2 ) => {
+  const d = distance( x1, y1, x2, y2 );
+  return { x: ( x2 - x1 ) / d, y: ( y2 - y1 ) / d, z: 0 };
 };
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
 export const directedSpacedPointOnLine = ( point1, point2, spacing ) => {
-  const dv = normalVector( point1, point2 );
-  return { x:  point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
+  const dv = normalVector( point1.x, point1.y, point2.x, point2.y );
+  return { x: point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
 };
 
 export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;

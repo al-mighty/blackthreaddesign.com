@@ -44135,12 +44135,12 @@ var distance = function (x1, y1, x2, y2) {
 };
 
 // does the line connecting p1, p2 go through the point (0,0)?
-var throughOrigin = function (point1, point2) {
+var throughOrigin = function (x1, y1, x2, y2) {
   // vertical line through centre
-  if (Math.abs(point1.x) <= 0.00001 && Math.abs(point2.x) <= 0.00001) {
+  if (Math.abs(x1) <= 0.00001 && Math.abs(x2) <= 0.00001) {
     return true;
   }
-  var test = (-point1.x * point2.y + point1.x * point1.y) / (point2.x - point1.x) + point1.y;
+  var test = (-x1 * y2 + x1 * y1) / (x2 - x1) + y1;
 
   if (Math.abs(test) <= 0.00001) return true;
   return false;
@@ -44172,15 +44172,15 @@ var directedSpacedPointOnArc = function (arc, spacing) {
 };
 
 // calculate the normal vector given 2 points
-var normalVector = function (p1, p2) {
-  var d = distance(p1.x, p1.y, p2.x, p2.y);
-  return { x: (p2.x - p1.x) / d, y: (p2.y - p1.y) / d, z: 0 };
+var normalVector = function (x1, y1, x2, y2) {
+  var d = distance(x1, y1, x2, y2);
+  return { x: (x2 - x1) / d, y: (y2 - y1) / d, z: 0 };
 };
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
 var directedSpacedPointOnLine = function (point1, point2, spacing) {
-  var dv = normalVector(point1, point2);
+  var dv = normalVector(point1.x, point1.y, point2.x, point2.y);
   return { x: point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
 };
 
@@ -44243,8 +44243,6 @@ var transformPoint = function (transform, x, y) {
   return hyperboloidToPoincare(xT, yT, zT);
 };
 
-// The longest edge with radius > 0 should be used to calculate how finely
-// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -44314,8 +44312,8 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   return edges;
 }
 
-// Alternative to subdivideInteriorArc using lines instead of arcs
-// ( quality seems the same and may be faster )
+// find the points along the arc between opposite subdivions of the second two
+// edges of the polygon. Each subsequent arc will have one less subdivision
 function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   var points = [startPoint];
 
@@ -44798,7 +44796,7 @@ var HyperbolicArc$1 = function () {
     this.startPoint = startPoint;
     this.endPoint = endPoint;
 
-    if (throughOrigin(startPoint, endPoint)) {
+    if (throughOrigin(startPoint.x, startPoint.y, endPoint.x, endPoint.y)) {
       this.straightLine = true;
       this.arcLength = distance(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
       this.curvature = 0;

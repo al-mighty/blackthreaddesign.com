@@ -13,7 +13,7 @@ class HyperbolicArc {
     this.startPoint = startPoint;
     this.endPoint = endPoint;
 
-    if ( E.throughOrigin( startPoint, endPoint ) ) {
+    if ( E.throughOrigin( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) ) {
       this.straightLine = true;
       this.arcLength = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y );
       this.curvature = 0;
