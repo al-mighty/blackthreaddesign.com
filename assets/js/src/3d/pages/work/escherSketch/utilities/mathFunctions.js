@@ -63,9 +63,9 @@ export const normalVector = ( x1, y1, x2, y2 ) => {
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
-export const directedSpacedPointOnLine = ( point1, point2, spacing ) => {
-  const dv = normalVector( point1.x, point1.y, point2.x, point2.y );
-  return { x: point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
+export const directedSpacedPointOnLine = ( x1, y1, x2, y2, spacing ) => {
+  const dv = normalVector( x1, y1, x2, y2 );
+  return { x: x1 + spacing * dv.x, y: y1 + spacing * dv.y, z: 0 };
 };
 
 export const randomFloat = ( min, max ) => Math.random() * ( max - min ) + min;

@@ -44,13 +44,13 @@ function subdivideHyperbolicArc( arc, numDivisions ) {
   if ( arc.arcLength > spacing ) {
     let p = ( !arc.straightLine )
       ? E.directedSpacedPointOnArc( arc, spacing )
-      : E.directedSpacedPointOnLine( arc.startPoint, arc.endPoint, spacing );
+      : E.directedSpacedPointOnLine( arc.startPoint.x, arc.startPoint.y, arc.endPoint.x, arc.endPoint.y, spacing );
     points.push( p );
 
     for ( let i = 0; i < numDivisions - 2; i++ ) {
       p = ( !arc.straightLine )
         ? E.directedSpacedPointOnArc( arc, spacing )
-        : E.directedSpacedPointOnLine( p, arc.endPoint, spacing );
+        : E.directedSpacedPointOnLine( p.x, p.y, arc.endPoint.x, arc.endPoint.y, spacing );
       points.push( p );
     }
   }
@@ -117,10 +117,10 @@ function subdivideLine( startPoint, endPoint, numDivisions, arcIndex ) {
   // if the line get divided add points along line to mesh
   if ( divisions > 1 ) {
     const spacing = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
-    let nextPoint = E.directedSpacedPointOnLine( startPoint, endPoint, spacing );
+    let nextPoint = E.directedSpacedPointOnLine( startPoint.x, startPoint.y, endPoint.x, endPoint.y, spacing );
     for ( let j = 0; j < divisions - 1; j++ ) {
       points.push( nextPoint );
-      nextPoint = E.directedSpacedPointOnLine( nextPoint, endPoint, spacing );
+      nextPoint = E.directedSpacedPointOnLine( nextPoint.x, nextPoint.y, endPoint.x, endPoint.y, spacing );
     }
   }
 

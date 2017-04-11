@@ -44179,9 +44179,9 @@ var normalVector = function (x1, y1, x2, y2) {
 
 // find the point at a distance from point1 along line defined by point1, point2,
 // in the direction of point2
-var directedSpacedPointOnLine = function (point1, point2, spacing) {
-  var dv = normalVector(point1.x, point1.y, point2.x, point2.y);
-  return { x: point1.x + spacing * dv.x, y: point1.y + spacing * dv.y, z: 0 };
+var directedSpacedPointOnLine = function (x1, y1, x2, y2, spacing) {
+  var dv = normalVector(x1, y1, x2, y2);
+  return { x: x1 + spacing * dv.x, y: y1 + spacing * dv.y, z: 0 };
 };
 
 var multiplyMatrices = function (m1, m2) {
@@ -44273,11 +44273,11 @@ function subdivideHyperbolicArc(arc, numDivisions) {
 
   // tiny pgons near the edges of the disk don't need to be subdivided
   if (arc.arcLength > spacing) {
-    var p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(arc.startPoint, arc.endPoint, spacing);
+    var p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(arc.startPoint.x, arc.startPoint.y, arc.endPoint.x, arc.endPoint.y, spacing);
     points.push(p);
 
     for (var i = 0; i < numDivisions - 2; i++) {
-      p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(p, arc.endPoint, spacing);
+      p = !arc.straightLine ? directedSpacedPointOnArc(arc, spacing) : directedSpacedPointOnLine(p.x, p.y, arc.endPoint.x, arc.endPoint.y, spacing);
       points.push(p);
     }
   }
@@ -44322,10 +44322,10 @@ function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   // if the line get divided add points along line to mesh
   if (divisions > 1) {
     var spacing = distance(startPoint.x, startPoint.y, endPoint.x, endPoint.y) / divisions;
-    var nextPoint = directedSpacedPointOnLine(startPoint, endPoint, spacing);
+    var nextPoint = directedSpacedPointOnLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, spacing);
     for (var j = 0; j < divisions - 1; j++) {
       points.push(nextPoint);
-      nextPoint = directedSpacedPointOnLine(nextPoint, endPoint, spacing);
+      nextPoint = directedSpacedPointOnLine(nextPoint.x, nextPoint.y, endPoint.x, endPoint.y, spacing);
     }
   }
 
