@@ -232,16 +232,16 @@ assets:
 collections:
   tutorials:
     output: true
-    permalink: /:collection/:title.html
+    permalink: /:collection/:title
   work:
     output: true
-    permalink: /:collection/:title.html
+    permalink: /:collection/:title
   experiments:
     output: true
-    permalink: /:collection/:title.html
+    permalink: /:collection/:title
   blog:
     output: true
-    permalink: /:collection/:title.html
+    permalink: /:collection/:title
 
 
 # Defaults
