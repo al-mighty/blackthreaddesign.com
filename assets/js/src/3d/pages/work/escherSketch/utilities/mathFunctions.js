@@ -4,8 +4,8 @@
 // *
 // *************************************************************************
 
-export const distance = ( point1, point2 ) =>
-  Math.sqrt( Math.pow( ( point2.x - point1.x ), 2 ) + Math.pow( ( point2.y - point1.y ), 2 ) );
+export const distance = ( x1, y1, x2, y2 ) =>
+  Math.sqrt( ( x2 - x1 ) * ( x2 - x1 ) + ( y2 - y1 ) * ( y2 - y1 ) );
 
 // does the line connecting p1, p2 go through the point (0,0)?
 export const throughOrigin = ( point1, point2 ) => {
@@ -50,15 +50,15 @@ export const directedSpacedPointOnArc = ( arc, spacing ) => {
   const p1 = { x: xPos, y: yPos, z: 0 };
   const p2 = { x: xNeg, y: yNeg, z: 0 };
 
-  const a = distance( p1, arc.endPoint );
-  const b = distance( p2, arc.endPoint );
+  const a = distance( p1.x, p1.y, arc.endPoint.x, arc.endPoint.y );
+  const b = distance( p2.x, p2.y, arc.endPoint.x, arc.endPoint.y );
   return ( a < b ) ? p1 : p2;
 };
 
 // calculate the normal vector given 2 points
 export const normalVector = ( p1, p2 ) => {
-  const d = Math.sqrt( Math.pow( p2.x - p1.x, 2 ) + Math.pow( p2.y - p1.y, 2 ) );
-  return { x:  ( p2.x - p1.x ) / d, y: ( p2.y - p1.y ) / d, z: 0 };
+  const d = distance( p1.x, p1.y, p2.x, p2.y );
+  return { x: ( p2.x - p1.x ) / d, y: ( p2.y - p1.y ) / d, z: 0 };
 };
 
 // find the point at a distance from point1 along line defined by point1, point2,

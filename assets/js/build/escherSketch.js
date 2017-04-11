@@ -44130,8 +44130,8 @@ function App(canvas) {
 // *
 // *************************************************************************
 
-var distance = function (point1, point2) {
-  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+var distance = function (x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 };
 
 // does the line connecting p1, p2 go through the point (0,0)?
@@ -44166,14 +44166,14 @@ var directedSpacedPointOnArc = function (arc, spacing) {
   var p1 = { x: xPos, y: yPos, z: 0 };
   var p2 = { x: xNeg, y: yNeg, z: 0 };
 
-  var a = distance(p1, arc.endPoint);
-  var b = distance(p2, arc.endPoint);
+  var a = distance(p1.x, p1.y, arc.endPoint.x, arc.endPoint.y);
+  var b = distance(p2.x, p2.y, arc.endPoint.x, arc.endPoint.y);
   return a < b ? p1 : p2;
 };
 
 // calculate the normal vector given 2 points
 var normalVector = function (p1, p2) {
-  var d = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  var d = distance(p1.x, p1.y, p2.x, p2.y);
   return { x: (p2.x - p1.x) / d, y: (p2.y - p1.y) / d, z: 0 };
 };
 
@@ -44243,6 +44243,8 @@ var transformPoint = function (transform, x, y) {
   return hyperboloidToPoincare(xT, yT, zT);
 };
 
+// The longest edge with radius > 0 should be used to calculate how finely
+// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -44312,8 +44314,8 @@ function subdivideHyperbolicPolygonEdges(polygon) {
   return edges;
 }
 
-// find the points along the arc between opposite subdivions of the second two
-// edges of the polygon. Each subsequent arc will have one less subdivision
+// Alternative to subdivideInteriorArc using lines instead of arcs
+// ( quality seems the same and may be faster )
 function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
   var points = [startPoint];
 
@@ -44321,7 +44323,7 @@ function subdivideLine(startPoint, endPoint, numDivisions, arcIndex) {
 
   // if the line get divided add points along line to mesh
   if (divisions > 1) {
-    var spacing = distance(startPoint, endPoint) / divisions;
+    var spacing = distance(startPoint.x, startPoint.y, endPoint.x, endPoint.y) / divisions;
     var nextPoint = directedSpacedPointOnLine(startPoint, endPoint, spacing);
     for (var j = 0; j < divisions - 1; j++) {
       points.push(nextPoint);
@@ -44798,7 +44800,7 @@ var HyperbolicArc$1 = function () {
 
     if (throughOrigin(startPoint, endPoint)) {
       this.straightLine = true;
-      this.arcLength = distance(startPoint, endPoint);
+      this.arcLength = distance(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
       this.curvature = 0;
     } else {
       this.calculateArc();
@@ -45332,156 +45334,156 @@ var RegularHyperbolicTesselation = function () {
 }();
 
 var EscherSketchCanvas = function () {
-    function EscherSketchCanvas(showStats) {
-        classCallCheck(this, EscherSketchCanvas);
+  function EscherSketchCanvas(showStats) {
+    classCallCheck(this, EscherSketchCanvas);
 
 
-        var self = this;
+    var self = this;
 
-        self.container = document.querySelector('.canvas-container');
+    self.container = document.querySelector('.canvas-container');
 
-        self.app = new App(document.querySelector('#escherSketch-canvas'));
+    self.app = new App(document.querySelector('#escherSketch-canvas'));
 
-        self.app.camera.position.set(0, 0, 1.5);
-        self.app.camera.far = 5;
+    self.app.camera.position.set(0, 0, 1.5);
+    self.app.camera.far = 5;
 
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+    // TODO: not working in Edge
+    var statisticsOverlay = void 0;
+    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-        self.initPQControls();
+    self.initPQControls();
 
-        self.initSpec();
+    self.initSpec();
 
-        self.initMaterials();
+    self.initMaterials();
 
-        this.buildTiling();
+    this.buildTiling();
 
-        self.app.onUpdate = function () {
+    self.app.onUpdate = function () {
 
-            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
-        };
+      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+    };
 
-        self.app.onWindowResize = function () {};
+    self.app.onWindowResize = function () {};
 
-        self.app.play();
+    self.app.play();
+  }
+
+  EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
+    var _this = this;
+
+    var self = this;
+
+    var p = document.querySelector('#p-value');
+    var q = document.querySelector('#q-value');
+
+    var pValue = function () {
+      return parseInt(p.innerHTML, 10);
+    };
+
+    var qValue = function () {
+      return parseInt(q.innerHTML, 10);
+    };
+
+    var observer = new MutationObserver(function () {
+
+      var newP = pValue();
+      var newQ = qValue();
+
+      if (_this.spec.p === newP && _this.spec.q === newQ) return;
+
+      _this.spec.p = newP;
+      _this.spec.q = newQ;
+
+      // TODO: display a warning here saying p, q can't both be 4
+      if (pValue() === 4 && qValue() === 4) return;
+
+      // Add a slight delay before rebuilding the tiling to allow the displayed
+      // value p / q to update
+      setTimeout(function () {
+        return self.buildTiling();
+      }, 10);
+    });
+
+    observer.observe(p, { childList: true });
+    observer.observe(q, { childList: true });
+  };
+
+  EscherSketchCanvas.prototype.buildTiling = function buildTiling() {
+    this.clearTiling();
+
+    console.time('Generate Tiling');
+    var tiling = new RegularHyperbolicTesselation(this.spec).generateTiling(false);
+    console.timeEnd('Generate Tiling');
+
+    console.time('Draw Tiling');
+    this.generateDisk(tiling);
+    console.timeEnd('Draw Tiling');
+
+    console.log('Tiling length: ' + tiling.length);
+  };
+
+  EscherSketchCanvas.prototype.clearTiling = function clearTiling() {
+    while (this.app.scene.children.length > 0) {
+      var object = this.app.scene.children[0];
+      if (object.type === 'Mesh') {
+        object.geometry.dispose();
+        this.app.scene.remove(object);
+      }
     }
+  };
 
-    EscherSketchCanvas.prototype.initPQControls = function initPQControls() {
-        var _this = this;
+  EscherSketchCanvas.prototype.initSpec = function initSpec() {
+    var imagesPath = '/assets/images/work/escherSketch/tiles/';
 
-        var self = this;
-
-        var p = document.querySelector('#p-value');
-        var q = document.querySelector('#q-value');
-
-        var pValue = function () {
-            return parseInt(p.innerHTML, 10);
-        };
-
-        var qValue = function () {
-            return parseInt(q.innerHTML, 10);
-        };
-
-        var observer = new MutationObserver(function () {
-
-            var newP = pValue();
-            var newQ = qValue();
-
-            if (_this.spec.p === newP && _this.spec.q === newQ) return;
-
-            _this.spec.p = newP;
-            _this.spec.q = newQ;
-
-            // TODO: display a warning here saying p, q can't both be 4
-            if (pValue() === 4 && qValue() === 4) return;
-
-            // Add a slight delay before rebuilding the tiling to allow the displayed
-            // value p / q to update
-            setTimeout(function () {
-                return self.buildTiling();
-            }, 10);
-        });
-
-        observer.observe(p, { childList: true });
-        observer.observe(q, { childList: true });
+    this.spec = {
+      wireframe: false,
+      p: 6,
+      q: 6,
+      radius: 100,
+      textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
+      edgeAdjacency: [// array of length p
+      [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
+      5], [1, 4], // edge_1 orientation, adjacency
+      [1, 3], [1, 2], [1, 1], [1, 0]],
+      minPolygonSize: 0.01
     };
+  };
 
-    EscherSketchCanvas.prototype.buildTiling = function buildTiling() {
-        this.clearTiling();
+  EscherSketchCanvas.prototype.generateDisk = function generateDisk(tiling) {
+    var geometries = createGeometries(tiling);
 
-        console.time('Generate Tiling');
-        var tiling = new RegularHyperbolicTesselation(this.spec).generateTiling(false);
-        console.timeEnd('Generate Tiling');
+    var meshA = new Mesh(geometries[0], this.pattern.materials[tiling[0].materialIndex]);
+    var meshB = new Mesh(geometries[1], this.pattern.materials[tiling[1].materialIndex]);
 
-        console.time('Draw Tiling');
-        this.generateDisk(tiling);
-        console.timeEnd('Draw Tiling');
+    this.app.scene.add(meshA); // black fish
+    this.app.scene.add(meshB); // white fish
+  };
 
-        console.log('Tiling length: ' + tiling.length);
-    };
+  EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
+    this.pattern = new MultiMaterial();
 
-    EscherSketchCanvas.prototype.clearTiling = function clearTiling() {
-        while (this.app.scene.children.length > 0) {
-            var object = this.app.scene.children[0];
-            if (object.type === 'Mesh') {
-                object.geometry.dispose();
-                this.app.scene.remove(object);
-            }
-        }
-    };
+    for (var i = 0; i < this.spec.textures.length; i++) {
 
-    EscherSketchCanvas.prototype.initSpec = function initSpec() {
-        var imagesPath = '/assets/images/work/escherSketch/tiles/';
+      var texture = new TextureLoader().load(this.spec.textures[i]);
+      texture.anisotropy = this.app.renderer.getMaxAnisotropy();
 
-        this.spec = {
-            wireframe: false,
-            p: 6,
-            q: 6,
-            radius: 100,
-            textures: [imagesPath + 'fish-black.png', imagesPath + 'fish-white.png'],
-            edgeAdjacency: [// array of length p
-            [1, // edge_0 orientation (-1 = reflection, 1 = rotation)
-            5], [1, 4], // edge_1 orientation, adjacency
-            [1, 3], [1, 2], [1, 1], [1, 0]],
-            minPolygonSize: 0.01
-        };
-    };
+      var material = new RawShaderMaterial({
+        uniforms: {
+          tileTexture: {
+            value: texture
+          }
+        },
+        vertexShader: basicVert,
+        fragmentShader: basicFrag,
+        side: DoubleSide
+      });
 
-    EscherSketchCanvas.prototype.generateDisk = function generateDisk(tiling) {
-        var geometries = createGeometries(tiling);
+      this.pattern.materials.push(material);
+    }
+  };
 
-        var meshA = new Mesh(geometries[0], this.pattern.materials[tiling[0].materialIndex]);
-        var meshB = new Mesh(geometries[1], this.pattern.materials[tiling[1].materialIndex]);
-
-        this.app.scene.add(meshA); // black fish
-        this.app.scene.add(meshB); // white fish
-    };
-
-    EscherSketchCanvas.prototype.initMaterials = function initMaterials() {
-        this.pattern = new MultiMaterial();
-
-        for (var i = 0; i < this.spec.textures.length; i++) {
-
-            var texture = new TextureLoader().load(this.spec.textures[i]);
-            texture.anisotropy = this.app.renderer.getMaxAnisotropy();
-
-            var material = new RawShaderMaterial({
-                uniforms: {
-                    tileTexture: {
-                        value: texture
-                    }
-                },
-                vertexShader: basicVert,
-                fragmentShader: basicFrag,
-                side: DoubleSide
-            });
-
-            this.pattern.materials.push(material);
-        }
-    };
-
-    return EscherSketchCanvas;
+  return EscherSketchCanvas;
 }();
 
 function initEscherSketch(showStats) {

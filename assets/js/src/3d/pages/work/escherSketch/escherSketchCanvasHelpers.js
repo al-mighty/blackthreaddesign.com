@@ -96,7 +96,7 @@ function subdivideInteriorArc( startPoint, endPoint, arcIndex ) {
 
   // if the line get divided add points along line to mesh
   if ( divisions > 1 ) {
-    const spacing = E.distance( startPoint, endPoint ) / ( divisions );
+    const spacing = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
     let nextPoint = E.directedSpacedPointOnArc( arc, spacing );
     for ( let j = 0; j < divisions - 1; j++ ) {
       this.mesh.push( nextPoint );
@@ -116,7 +116,7 @@ function subdivideLine( startPoint, endPoint, numDivisions, arcIndex ) {
 
   // if the line get divided add points along line to mesh
   if ( divisions > 1 ) {
-    const spacing = E.distance( startPoint, endPoint ) / ( divisions );
+    const spacing = E.distance( startPoint.x, startPoint.y, endPoint.x, endPoint.y ) / ( divisions );
     let nextPoint = E.directedSpacedPointOnLine( startPoint, endPoint, spacing );
     for ( let j = 0; j < divisions - 1; j++ ) {
       points.push( nextPoint );
