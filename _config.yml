@@ -216,6 +216,7 @@ compress_html:
 
 
 assets:
+  digest: false
   autoprefixer:
     browsers:
       - "last 3 versions"
