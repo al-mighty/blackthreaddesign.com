@@ -12,7 +12,7 @@
 
 {% if page.css %}
   {% for file in page.css %}
-    <link type="text/css" rel="stylesheet" href="/assets/{{ file }}.css">
+    {% css {{file}} %}
   {% endfor %}
 {% endif %}
 

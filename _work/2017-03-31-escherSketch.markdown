@@ -11,7 +11,7 @@ header:
 js:
   'escherSketch'
 css:
-  'escherSketch'
+  escherSketch
 ---
 
 <div class="canvas-container">
