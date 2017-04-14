@@ -222,7 +222,7 @@ assets:
       - "last 3 versions"
       - "IE > 9"
   sources:
-  # - _assets/css
+  - assets/css
   - _assets/images
   # - _assets/javascripts
   # - _assets/stylesheets
