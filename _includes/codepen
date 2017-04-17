@@ -1,0 +1,5 @@
+{% if include.id %}
+  <p data-height="400" data-theme-id="0" data-slug-hash="{{include.id}}" data-default-tab="result" class='codepen'></p>
+  <script async="async" src="//codepen.io/assets/embed/ei.js"></script>
+{% endif %}
+

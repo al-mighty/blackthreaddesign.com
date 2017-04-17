@@ -122,38 +122,30 @@ body:hover .visually-hidden button {
    Images
    ========================================================================== */
 
-/* image align left */
+/* image align */
 
-.align-left {
+.align-left, .align-right, .align-center{
   display: block;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 0 !important;
+  padding: 1em;
+}
 
+.align-left {
   @include breakpoint($small) {
     float: left;
     margin-right: 1em;
   }
 }
 
-/* image align right */
+/* image align */
 
 .align-right {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-
   @include breakpoint($small) {
     float: right;
     margin-left: 1em;
   }
-}
-
-/* image align center */
-
-.align-center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* file page content container */
