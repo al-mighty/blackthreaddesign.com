@@ -56,5 +56,17 @@ tutorials:
       url: /tutorials/1.0-getting-started
     - title: "Setting up a development server"
       url: /tutorials/1.1-development-server/
-    - title: "Setting up an ES6 build environment"
-      url: /tutorials/1.2-build-setup/
+    - title: "Introduction to texture mapping"
+      url: /tutorials/1.2-texture-maps/
+    - title: "Lights"
+      url: /tutorials/1.3-lights/
+    - title: "Shadows"
+      url: /tutorials/1.4-shadows/
+  - title: "Build Tools"
+    children:
+      - title: "Setting up an ES6 build environment"
+        url: /tutorials/2.0-build-setup/
+      - title: "Plugins in the three.js /examples folder"
+        url: /tutorials/2.1-three.js-plugins/
+      - title: "Converting plugins to modules"
+        url: /tutorials/2.2-plugin-modules/

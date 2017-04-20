@@ -3,6 +3,7 @@ layout: single
 permalink: /tutorials/
 title: "Tutorials"
 excerpt: "A collection of tutorials related to three.js."
+teaser: "assets/images/teaser-800x450.jpg"
 sidebar:
   nav: "tutorials"
 ---

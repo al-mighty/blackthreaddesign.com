@@ -11,3 +11,6 @@ tutorials:
 
 - three.js plugins (the /examples/ folder)
 
+event dispatcher 
+clearing a scene 
+
