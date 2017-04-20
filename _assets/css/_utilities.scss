@@ -292,7 +292,7 @@ body:hover .visually-hidden button {
   width: $navicon-width;
   height: $navicon-height;
   background: $text-color;
-  margin: auto;
+  margin: 1em;
   transition: 0.3s;
 
   &:before,
