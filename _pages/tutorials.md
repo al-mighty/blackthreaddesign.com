@@ -3,8 +3,8 @@ layout: single
 permalink: /tutorials/
 title: "Tutorials"
 excerpt: "A collection of tutorials related to three.js."
-#sidebar:
-#  nav: "tutorials"
+sidebar:
+  nav: "tutorials"
 ---
 
 TODO: Tutorials canvas / image
@@ -20,6 +20,3 @@ In Section 4 (Details) we'll go over things in more detail. We'll cover the vari
 You can find any of the codepens used in the tutorials [here]((http://codepen.io/collection/DKNVdO/)), and all the gists [here](https://gist.github.com/looeee/). 
 
 Happy coding! 
-
-
-{% include nav_list nav="tutorials" %}
