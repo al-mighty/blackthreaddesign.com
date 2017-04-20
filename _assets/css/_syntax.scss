@@ -2,11 +2,14 @@
    Syntax highlighting
    ========================================================================== */
 
+code.highlighter-rouge {
+  white-space: nowrap;
+}
+
 div.highlighter-rouge,
 figure.highlight {
   position: relative;
   margin-bottom: 1em;
-  white-space: nowrap;
   font-family: $monospace;
   font-size: $type-size-7;
   line-height: 1.8;
@@ -68,18 +71,13 @@ figure.highlight {
    --------- -------- ------------------------------------------
    base2    #586e75  body text / default code / primary content
    base1     #93a1a1  comments / secondary content
-   base3     #fdf6e3  background
    orange    #cb4b16  constants
    red       #dc322f  regex, special keywords
-   blue      #22b3eb  reserved keywords
+   lightcoral      #22b3eb  reserved keywords
    cyan      #2aa198  strings, numbers
    green     #859900  operators, other keywords
    ========================================================================== */
 
-$base03:    #002b36;
-$base02:    #073642;
-$base00:    #657b83;
-$base0:     #839496;
 $base1:     #93a1a1;
 $base2:     #eee8d5;
 $base3:     #fdf6e3;
@@ -88,7 +86,6 @@ $orange:    #cb4b16;
 $red:       #dc322f;
 $magenta:   #d33682;
 $violet:    #6c71c4;
-$blue:      #268bd2;
 $cyan:      #2aa198;
 $green:     #859900;
 
@@ -116,28 +113,28 @@ $green:     #859900;
 .highlight .gu { color: $orange } /* Generic.Subheading */
 .highlight .gt { color: $base2 } /* Generic.Traceback */
 .highlight .kc { color: $orange } /* Keyword.Constant */
-.highlight .kd { color: $blue } /* Keyword.Declaration */
+.highlight .kd { color: lightcoral } /* Keyword.Declaration */
 .highlight .kn { color: $green } /* Keyword.Namespace */
 .highlight .kp { color: $green } /* Keyword.Pseudo */
-.highlight .kr { color: $blue } /* Keyword.Reserved */
+.highlight .kr { color: lightcoral } /* Keyword.Reserved */
 .highlight .kt { color: $red } /* Keyword.Type */
 .highlight .ld { color: $base2 } /* Literal.Date */
 .highlight .m { color: $cyan } /* Literal.Number */
 .highlight .s { color: $cyan } /* Literal.String */
 .highlight .na { color: $base2 } /* Name.Attribute */
-.highlight .nb { color: #B58900 } /* Name.Builtin */
-.highlight .nc { color: $blue } /* Name.Class */
+.highlight .nb { color: $base2 } /* Name.Builtin */
+.highlight .nc { color: lightcoral } /* Name.Class */
 .highlight .no { color: $orange } /* Name.Constant */
-.highlight .nd { color: $blue } /* Name.Decorator */
+.highlight .nd { color: lightcoral } /* Name.Decorator */
 .highlight .ni { color: $orange } /* Name.Entity */
 .highlight .ne { color: $orange } /* Name.Exception */
-.highlight .nf { color: $blue } /* Name.Function */
+.highlight .nf { color: lightcoral } /* Name.Function */
 .highlight .nl { color: $base2 } /* Name.Label */
 .highlight .nn { color: $base2 } /* Name.Namespace */
 .highlight .nx { color: $base2 } /* Name.Other */
 .highlight .py { color: $base2 } /* Name.Property */
-.highlight .nt { color: $blue } /* Name.Tag */
-.highlight .nv { color: $blue } /* Name.Variable */
+.highlight .nt { color: lightcoral } /* Name.Tag */
+.highlight .nv { color: lightcoral } /* Name.Variable */
 .highlight .ow { color: $green } /* Operator.Word */
 .highlight .w { color: $base2 } /* Text.Whitespace */
 .highlight .mf { color: $cyan } /* Literal.Number.Float */
@@ -155,8 +152,8 @@ $green:     #859900;
 .highlight .sr { color: $red } /* Literal.String.Regex */
 .highlight .s1 { color: $cyan } /* Literal.String.Single */
 .highlight .ss { color: $cyan } /* Literal.String.Symbol */
-.highlight .bp { color: $blue } /* Name.Builtin.Pseudo */
-.highlight .vc { color: $blue } /* Name.Variable.Class */
-.highlight .vg { color: $blue } /* Name.Variable.Global */
-.highlight .vi { color: $blue } /* Name.Variable.Instance */
+.highlight .bp { color: lightcoral } /* Name.Builtin.Pseudo */
+.highlight .vc { color: lightcoral } /* Name.Variable.Class */
+.highlight .vg { color: lightcoral } /* Name.Variable.Global */
+.highlight .vi { color: lightcoral } /* Name.Variable.Instance */
 .highlight .il { color: $cyan } /* Literal.Number.Integer.Long */

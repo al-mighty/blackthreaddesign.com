@@ -59,7 +59,37 @@
 
   h1, h2 {
     padding-bottom: 0.5em;
+  }
+
+  h2 {
     border-bottom: 1px solid $border-color;
+  }
+
+  h3 {
+    font-size: 1.1em;
+  }
+
+  h4 {
+    font-size: 1em;
+  }
+
+  h1{
+    padding-left: 1em;
+    padding-top: 2em;
+    border-bottom: 2px solid $border-color;
+
+    &:before{
+      content: "\f054";
+      font-family: FontAwesome !important;
+      font-style: normal;
+      font-weight: normal;
+      text-decoration: inherit;
+      font-size: 0.75em;
+      padding-right: 0.5em;
+      position: absolute;
+      padding-top: 0.25em;
+      left: 1em;
+    }
   }
 
   p, li, dl {
@@ -81,6 +111,7 @@
 
   a {
     text-decoration: none;
+    font-weight: bold;
 
     &:hover {
       text-decoration: underline;
