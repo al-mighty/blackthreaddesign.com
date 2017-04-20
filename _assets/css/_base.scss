@@ -9,6 +9,7 @@ html {
 }
 
 body {
+  user-select: auto !important;
   margin: 0;
   padding: 0;
   color: $text-color;
@@ -309,4 +310,30 @@ nav {
 
 b, i, strong, em, blockquote, p, q, span, figure, img, h1, h2, header, input, a, tr, td, form button, input[type="submit"], .btn, .highlight, .archive__item-teaser {
   transition: $global-transition;
+}
+
+/*
+   Scrollbars (in webkit browsers only
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: #fff;
+  -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 6px;
+  background-color: #666;
+  -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  width: 6px;
+  background-color: #666;
+  -webkit-border-radius: 6px;
 }
