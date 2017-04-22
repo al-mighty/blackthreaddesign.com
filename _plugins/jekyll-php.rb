@@ -1,3 +1,4 @@
+# Enable php files
 module Jekyll
   class Page
     def destination(dest)

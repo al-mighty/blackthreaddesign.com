@@ -115,9 +115,6 @@ tutorials:
       - title: "Point and Sprite materials"
         url: /tutorials/4.5-point-and-sprite-materials/
         unavailable: true
-      - title: "Shader and RawShader materials"
-        url: /tutorials/4.6-shader-rawshader/
-        unavailable: true
   - title: "5. Textures"
     children:
       - title: "Working with textures"
@@ -247,11 +244,16 @@ tutorials:
       - title: "Setting up postprocessing"
         url: /tutorials/13.0-postprocessing-setup/
         unavailable: true
-  - title: "14. Tips & tricks"
+  - title: "14. Creating custom shaders"
+    children:
+      - title: "ShaderMaterial and RawShaderMaterial"
+        url: /tutorials/14.0-shader-rawshader-materials/
+        unavailable: true
+  - title: "15. Tips & tricks"
     children:
       - title: "Removing objects from a scene"
-        url: /tutorials/14.0-destroying-objects/
+        url: /tutorials/15.0-destroying-objects/
         unavailable: true
       - title: "Reducing draw calls"
-        url: /tutorials/14.1-draw-calls/
+        url: /tutorials/15.1-draw-calls/
         unavailable: true
