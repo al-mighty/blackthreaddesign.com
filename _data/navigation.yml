@@ -54,6 +54,7 @@ tutorials:
     children:
     - title: "Getting started"
       url: /tutorials/1.0-getting-started
+      available: true
     - title: "Setting up a development server"
       url: /tutorials/1.1-development-server/
     - title: "Introduction to textures"
@@ -68,6 +69,8 @@ tutorials:
       url: /tutorials/1.6-Object3D/
     - title: "Working with the Scene graph"
       url: /tutorials/1.7-scene-graph/
+    - title: "Getting help and reporting bugs"
+      url: /tutorials/1.7-getting-help/
   - title: "2. Build Tools"
     children:
       - title: "Setting up an ES6 build environment"
@@ -100,16 +103,38 @@ tutorials:
         url: /tutorials/4.6-shader-rawshader/
   - title: "5. Textures"
     children:
-      - title: "Textures overview"
-        url: /tutorials/5.0-textures-overview/
+      - title: "Working with textures"
+        url: /tutorials/5.0-texture-base-class/
+      - title: "Understanding Gamma and Linear spaces"
+        url: /tutorials/5.1-gamma-linear-space/
+      - title: "Environment mapping with cube textures"
+        url: /tutorials/5.2-cube-textures/
+      - title: "Working with canvas textures"
+        url: /tutorials/5.3-canvas-texture/
+      - title: "Compressed, data and depth texture formats"
+        url: /tutorials/5.4-compressed-data-depth-textures/
+      - title: "Video textures"
+        url: /tutorials/5.5-video-textures/
   - title: "6. Lights and shadows"
     children:
-      - title: "Lights and shadows"
-        url: /tutorials/6.0-lights-shadows/
+      - title: "The base light class, the ambient light and the hemisphere light"
+        url: /tutorials/6.0-lights-ambient-hemi/
+      - title: "The point light and light shadow"
+        url: /tutorials/6.1-point-light/
+      - title: "The directional light and shadow"
+        url: /tutorials/6.2-directional-light/
+      - title: "The spot light and shadow"
+        url: /tutorials/6.3-spot-light/
+      - title: "The new rectangular area light and shadow"
+        url: /tutorials/6.4-rectArea-light/
   - title: "7. Helpers"
     children:
-      - title: "Helpers overview"
-        url: /tutorials/7.0-helpers-overview/
+      - title: "Light and camera helpers"
+        url: /tutorials/7.0-light-camera-helpers/
+      - title: "Light and camera helpers"
+        url: /tutorials/7.1-directional-helpers/
+      - title: "Mesh and geometry helpers"
+        url: /tutorials/7.2-mesh-geometry-helpers/
   - title: "8. The /examples folder"
     children:
       - title: "The three.js /examples folder"
@@ -126,16 +151,36 @@ tutorials:
         url: /tutorials/8.5-included-libraries/
   - title: "9. Working with assets"
     children:
-      - title: "Assets overview"
-        url: /tutorials/9.0-assets-overview/
+      - title: "Coordinate systems"
+        url: /tutorials/9.0-coordinate-systems/
+      - title: "The three.js native JSON format"
+        url: /tutorials/9.1-three-JSON-format/
+      - title: "The OBJ format"
+        url: /tutorials/9.2-OBJ-format/
+      - title: "The FBX format"
+        url: /tutorials/9.3-FBX-format/
+      - title: "The GLTF format"
+        url: /tutorials/9.4-GLT-format/
+      - title: "Working with Blender"
+        url: /tutorials/9.5-blender/
+      - title: "Working with 3D Studio Max"
+        url: /tutorials/9.6-3DS-max/
   - title: "10. The WebGLRenderer"
     children:
-      - title: ""
-        url: /tutorials/
+      - title: "The WebGLRenderer in detail"
+        url: /tutorials/10.0-WebGLRenderer/
+      - title: "The WebGLRendererTarget"
+        url: /tutorials/10.1-WebGLRendererTarget/
+      - title: "The WebGLRendererTargetCube"
+        url: /tutorials/10.2-WebGLRendererTargetCube/
   - title: "11. Geometries and BufferGeometries"
     children:
-      - title: "Geometries overview"
-        url: /tutorials/11.0-geometries-overview
+      - title: "Understanding geometries - vertices, faces and UV mapping"
+        url: /tutorials/11.0-understanding-geometries/
+      - title: "Moving on to BufferGeometries"
+        url: /tutorials/11.1-buffer-geometries/
+      - title: "Instanced geometries"
+        url: /tutorials/11.2-instanced-geometries/
   - title: "12. Animation"
     children:
       - title: "Animation overview"
@@ -146,5 +191,11 @@ tutorials:
         url: /tutorials/12.2-three-animation-system/
   - title: "13. Postprocessing and effects"
     children:
-      - title: "Postprocessing"
-        url: /tutorials/13.0-postprocessing
+      - title: "Setting up postprocessing"
+        url: /tutorials/13.0-postprocessing-setup/
+  - title: "14. Tips & tricks"
+    children:
+      - title: "Removing objects from a scene"
+        url: /tutorials/14.0-destroying-objects/
+      - title: "Reducing draw calls"
+        url: /tutorials/14.1-draw-calls/
