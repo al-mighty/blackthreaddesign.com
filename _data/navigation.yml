@@ -75,8 +75,7 @@ tutorials:
       url: /tutorials/1.7-scene-graph/
       unavailable: true
     - title: "Getting help and reporting bugs"
-      url: /tutorials/1.7-getting-help/
-      unavailable: true
+      url: /tutorials/1.8-getting-help/
   - title: "2. Build Tools"
     children:
       - title: "Setting up an ES6 build environment"
