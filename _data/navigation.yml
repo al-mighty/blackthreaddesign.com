@@ -50,7 +50,18 @@ colophon-social:
     icon: icon-github
 
 tutorials:
-  - title: "1.First Steps"
+  - title: "0. Introduction"
+    children:
+    - title: "WebGL requirements"
+      url: /tutorials/0.0-webgl-requirements/
+      unavailable: true
+    - title: "The three.js repository"
+      url: /tutorials/0.1-three-repo/
+      unavailable: true
+    - title: "Getting help and reporting bugs"
+      url: /tutorials/0.2-getting-help/
+      unavailable: true
+  - title: "1. First Steps"
     children:
     - title: "Getting started"
       url: /tutorials/1.0-getting-started
@@ -74,12 +85,19 @@ tutorials:
     - title: "Working with the Scene graph"
       url: /tutorials/1.7-scene-graph/
       unavailable: true
-    - title: "Getting help and reporting bugs"
-      url: /tutorials/1.8-getting-help/
-  - title: "2. Build Tools"
+    - title: "Grouping objects"
+      url: /tutorials/1.8-grouping-objects/
+      unavailable: true
+    - title: "Resizing the canvas"
+      url: /tutorials/1.9-resizing/
+      unavailable: true
+  - title: "2. Build Tools and Debugging"
     children:
       - title: "Setting up an ES6 build environment"
         url: /tutorials/2.0-build-setup/
+        unavailable: true
+      - title: "Debugging your code"
+        url: /tutorials/2.1-debugging/
         unavailable: true
   - title: "3. Abstraction"
     children:
@@ -109,11 +127,11 @@ tutorials:
       - title: "Other mesh materials"
         url: /tutorials/4.3-other-mesh-materials/
         unavailable: true
-      - title: "Materials for lines and curves"
-        url: /tutorials/4.4-line-materials/
+      - title: "Multiple materials on a single mesh"
+        url: /tutorials/4.4-multiple-materials/
         unavailable: true
-      - title: "Point and Sprite materials"
-        url: /tutorials/4.5-point-and-sprite-materials/
+      - title: "Materials for lines and curves"
+        url: /tutorials/4.5-line-materials/
         unavailable: true
   - title: "5. Textures"
     children:
@@ -134,6 +152,12 @@ tutorials:
         unavailable: true
       - title: "Video textures"
         url: /tutorials/5.5-video-textures/
+        unavailable: true
+      - title: "Texture formats"
+        url: /tutorials/5.6-texture-formats/
+        unavailable: true
+      - title: "Texture encoding"
+        url: /tutorials/5.7-texture-encoding/
         unavailable: true
   - title: "6. Lights and shadows"
     children:
@@ -177,11 +201,14 @@ tutorials:
       - title: "Loaders"
         url: /tutorials/8.3-plugins-loaders/
         unavailable: true
+      - title: "Promisifying-loaders"
+        url: /tutorials/8.4-promisifying-loaders/
+        unavailable: true
       - title: "Other renderers"
-        url: /tutorials/8.4-plugins-renderers/
+        url: /tutorials/8.5-plugins-renderers/
         unavailable: true
       - title: "Included libraries"
-        url: /tutorials/8.5-included-libraries/
+        url: /tutorials/8.6-included-libraries/
         unavailable: true
   - title: "9. Working with assets"
     children:
@@ -217,6 +244,12 @@ tutorials:
       - title: "The WebGLRendererTargetCube"
         url: /tutorials/10.2-WebGLRendererTargetCube/
         unavailable: true
+      - title: "The Sprite WebGLRenderer plugin"
+        url: /tutorials/10.3-Sprites/
+        unavailable: true
+      - title: "The LensFlare WebGLRenderer plugin"
+        url: /tutorials/10.4-LensFlare/
+        unavailable: true
   - title: "11. Geometries and BufferGeometries"
     children:
       - title: "Understanding geometries - vertices, faces and UV mapping"
@@ -239,6 +272,9 @@ tutorials:
       - title: "The three.js animation system"
         url: /tutorials/12.2-three-animation-system/
         unavailable: true
+      - title: "Using animations from other applications"
+        url: /tutorials/12.3-other-application-animation/
+        unavailable: true
   - title: "13. Postprocessing and effects"
     children:
       - title: "Setting up postprocessing"
@@ -256,4 +292,7 @@ tutorials:
         unavailable: true
       - title: "Reducing draw calls"
         url: /tutorials/15.1-draw-calls/
+        unavailable: true
+      - title: "Texture anisotropy"
+        url: /tutorials/15.2-anisotropy/
         unavailable: true
