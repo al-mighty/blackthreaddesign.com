@@ -2,7 +2,6 @@
 layout: single
 permalink: /tutorials/
 title: "Three.js Tutorials"
-#excerpt: "A collection of tutorials related to three.js."
 header:
   overlay_image: "assets/images/tutorials/tutorial-hero.jpg"
 sidebar:

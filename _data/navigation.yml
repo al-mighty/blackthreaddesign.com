@@ -49,30 +49,30 @@ colophon-social:
     url: https://github.com/looeee
     icon: icon-github
 
+# Tutorials navigation links
+
 tutorials:
   - title: "0. Introduction"
     children:
-    - title: "WebGL requirements"
-      url: /tutorials/0.0-webgl-requirements/
-      unavailable: true
-    - title: "The three.js repository"
-      url: /tutorials/0.1-three-repo/
-      unavailable: true
+    - title: "Requirements for running a three.js scene"
+      url: /tutorials/0.0-requirements/
+      #unavailable: true
+    - title: "Three.js on Github"
+      url: /tutorials/0.1-github-repo/
+      #unavailable: true
     - title: "Getting help and reporting bugs"
       url: /tutorials/0.2-getting-help/
-      unavailable: true
+    - title: "Setting up a development server"
+      url: /tutorials/0.3-development-server/
+      #unavailable: true
   - title: "1. First Steps"
     children:
     - title: "Getting started"
       url: /tutorials/1.0-getting-started
-    - title: "Setting up a development server"
-      url: /tutorials/1.1-development-server/
     - title: "Introduction to textures"
       url: /tutorials/1.2-textures-intro/
-      unavailable: true
     - title: "Adding Orbit Controls"
       url: /tutorials/1.3-orbit-controls/
-      unavailable: true
     - title: "Curves, paths, lines, shapes"
       url: /tutorials/1.4-curves-paths-lines-shapes/
       unavailable: true
