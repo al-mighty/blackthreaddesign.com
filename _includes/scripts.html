@@ -2,7 +2,17 @@
   @import "//fonts.googleapis.com/css?family=Raleway";
 </style>
 
+{% if page.latex %}
+  <script async src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endif %}
+
 <script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
+
+{% if page.js %}
+  {% for file in page.js %}
+  <script async src='/assets/js/build/{{ file }}.js'></script>
+  {% endfor %}
+{% endif %}
 
 {% if page.js %}
   {% for file in page.js %}
