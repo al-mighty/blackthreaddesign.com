@@ -80,16 +80,19 @@ tutorials:
       url: /tutorials/1.5-working-with-text/
       unavailable: true
     - title: "The Object3D base class"
-      url: /tutorials/1.6-Object3D/
+      url: /tutorials/1.6-object3d/
+      #unavailable: true
+    - title: "Built in geometries"
+      url: /tutorials/1.7-built-in-geometries/
       unavailable: true
     - title: "Working with the Scene graph"
-      url: /tutorials/1.7-scene-graph/
+      url: /tutorials/1.8-scene-graph/
       unavailable: true
     - title: "Grouping objects"
-      url: /tutorials/1.8-grouping-objects/
+      url: /tutorials/1.9-grouping-objects/
       unavailable: true
     - title: "Resizing the canvas"
-      url: /tutorials/1.9-resizing/
+      url: /tutorials/1.10-resizing/
       unavailable: true
   - title: "2. Build Tools and Debugging"
     children:
