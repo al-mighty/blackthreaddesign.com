@@ -41030,11 +41030,6 @@ function Time() {
     };
 }
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -41252,23 +41247,21 @@ var Waveline = function () {
     // this.spec.xFinal = this.spec.xFinal.map(x => xCoord(x));
     // this.spec.yInitial = this.spec.yInitial.map(y => yCoord(y));
     // this.spec.yFinal = this.spec.yFinal.map(y => yCoord(y));
-    // this.spec.yDiffsInitial = this.spec.yDiffsInitial.map((y, i) => this.spec.yInitial[i] - y);
-    // this.spec.yDiffsFinal = this.spec.yDiffsFinal.map((y, i) => this.spec.yFinal[i] - y);
     this.meshFineness = 24;
   };
 
   //create a line geometry to be used either for a mesh or as a morph target
 
 
-  Waveline.prototype.createLine = function createLine(xArray, yArray, yDiffsArray) {
+  Waveline.prototype.createLine = function createLine(xArray, yArray) {
     //create an upper curve
     var upperPoints = xArray.map(function (l, i) {
       return new Vector2(l, yArray[i]);
     });
-    //create a lower curve seperated by the values in the yDiffsArray from the first
+    //create a lower curve seperated by 1 from the first
     //and going in the opposite direction
     var lowerPoints = xArray.map(function (l, i) {
-      return new Vector2(l, yDiffsArray[i]);
+      return new Vector2(l, yArray[i] - 1);
     }).reverse();
 
     var line = new Shape();
@@ -41281,17 +41274,19 @@ var Waveline = function () {
 
     // return line.extractAllPoints(this.meshFineness)
     //  .shape;
-    return new ShapeGeometry(line, 32);
+    return new ShapeGeometry(line, 12);
   };
 
   //create the line geometry and add morphtargets
 
 
   Waveline.prototype.lineGeometry = function lineGeometry() {
-    var geometry = this.createLine(this.spec.xInitial, this.spec.yInitial, this.spec.yDiffsInitial);
+    var geometry = this.createLine(this.spec.xInitial, this.spec.yInitial);
+
+    var morphGeometry = this.createLine(this.spec.xFinal, this.spec.yFinal);
     geometry.morphTargets.push({
       name: 'movement',
-      vertices: this.createLine(this.spec.xFinal, this.spec.yFinal, this.spec.yDiffsFinal).vertices
+      vertices: morphGeometry.vertices
     });
 
     var l = geometry.vertices.length;
@@ -41300,6 +41295,7 @@ var Waveline = function () {
       geometry.faces.push(new Face3(i, l - 1 - i, l - 2 - i));
       geometry.faces.push(new Face3(i, l - 2 - i, i + 1));
     }
+
     return geometry;
   };
 
@@ -41309,122 +41305,138 @@ var Waveline = function () {
     var mesh = new Mesh(line, this.spec.material);
     // mesh.frustumCulled = false; //the mesh should always be drawn
     mesh.position.z = -100;
-    console.log(mesh);
+    // console.log(mesh);
     return mesh;
   };
 
   return Waveline;
 }();
 
+// import * as THREE from 'three';
+// import threeUtils from '../../App/threeUtils.js';
+
+var visibleHeightAtZDepth = function (depth, camera) {
+  var vFOV = camera.fov * Math.PI / 180;
+  return 2 * Math.tan(vFOV / 2) * depth; // visible height
+};
+
+var visibleWidthAtZDepth = function (depth, camera) {
+  var height = visibleHeightAtZDepth(depth, camera);
+  return height * camera.aspect;
+};
+
+// import threeUtils from '../../App/threeUtils.js';
+// import utils from '../../../utilities.js';
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
 var WavelinesCanvas = function () {
-  function WavelinesCanvas(showStats) {
-    classCallCheck(this, WavelinesCanvas);
+    function WavelinesCanvas(showStats) {
+        classCallCheck(this, WavelinesCanvas);
 
 
-    var self = this;
+        var self = this;
 
-    self.container = document.querySelector('.canvas-container');
+        self.container = document.querySelector('.canvas-container');
 
-    self.app = new App(document.querySelector('#wavelines-canvas'));
+        self.app = new App(document.querySelector('#wavelines-canvas'));
 
-    self.app.camera.position.set(0, 0, 10);
+        self.app.camera.position.set(0, 0, 10);
 
-    // TODO: not working in Edge
-    var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+        // TODO: not working in Edge
+        var statisticsOverlay = void 0;
+        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
-    self.app.onUpdate = function () {
+        self.app.onUpdate = function () {
 
-      self.mixer.update(self.app.delta * 0.001);
+            self.mixer.update(self.app.delta * 0.001);
 
-      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+        };
+
+        self.app.onWindowResize = function () {
+            mastHeadHeight = document.querySelector('.masthead').clientHeight;
+            self.halfScreenHeight = -visibleHeightAtZDepth(self.lineDepth, self.app.camera);
+            self.halfScreenWidth = -visibleWidthAtZDepth(self.lineDepth, self.app.camera);
+        };
+
+        self.lineDepth = -100;
+        self.halfScreenHeight = -visibleHeightAtZDepth(self.lineDepth, self.app.camera);
+        self.halfScreenWidth = -visibleWidthAtZDepth(self.lineDepth, self.app.camera);
+
+        self.initMaterials();
+        self.initLines();
+
+        this.initAnimation();
+
+        self.app.play();
+    }
+
+    WavelinesCanvas.prototype.initAnimation = function initAnimation() {
+        // Create keyframes for start and end of morph target, setting the final time equal to the total length of the animation
+        // Note: 'name' must reference the propery being animated
+        var keyFrame = new NumberKeyframeTrack('geometry.morphTargetInfluences', [0.0, 5.0], [0.0, 1.0], InterpolateSmooth);
+
+        // Create an animation clip with the keyframes
+        var clip = new AnimationClip('wavelineMorphTargetsClip', 5.0, [keyFrame]);
+
+        // Create a mixer of the clip referencing the object to be animated
+        this.mixer = new AnimationMixer(this.waveline);
+
+        // create an animationAction using the mixer's clipAction function
+        var animationAction = this.mixer.clipAction(clip);
+
+        // Set the loop mode to play / reverse infinitely
+        animationAction.loop = LoopPingPong;
+
+        // Start the animation
+        animationAction.play();
     };
 
-    self.app.onWindowResize = function () {
-      mastHeadHeight = document.querySelector('.masthead').clientHeight;
+    WavelinesCanvas.prototype.initLines = function initLines() {
+
+        //for (let i = 0; i < 1; i++) {
+        var spec = {
+            material: this.lineMat,
+            zDepth: 0,
+            //the following arrays must all be of the same size, >=2
+            xInitial: [//x positions at start of animation
+            -this.halfScreenWidth, -this.halfScreenWidth * 0.5, 0, this.halfScreenWidth * 0.5, this.halfScreenWidth],
+            xFinal: [//x positions at end of animation
+            -this.halfScreenWidth, -this.halfScreenWidth * 0.5, 0, this.halfScreenWidth * 0.5, this.halfScreenWidth],
+            yInitial: [//y positions at start of animation
+            50, 20, 50, 80, 50],
+            yFinal: [//y positions at end of animation
+            20, 50, 60, 50, 80]
+        };
+
+        console.log(spec);
+        this.waveline = new Waveline(spec);
+
+        this.app.scene.add(this.waveline);
     };
 
-    self.initMaterials();
-    self.initLines();
+    WavelinesCanvas.prototype.initMaterials = function initMaterials() {
+        this.lineMat = new MeshBasicMaterial({
+            color: 0x4CCEEF,
+            morphTargets: true
+        });
+        // const uniforms = {
+        //   noiseTexture: { value: noiseTexture },
+        //   offset: { value: this.offset },
+        //   smooth: { value: this.smooth },
+        // };
 
-    this.initAnimation();
+        // this.backgroundMat = new THREE.ShaderMaterial( {
+        //   uniforms: Object.assign( {
+        //     color1: { value: colB },
+        //     color2: { value: colA },
+        //   }, uniforms ),
+        //   vertexShader: backgroundVert,
+        //   fragmentShader: backgroundFrag,
+        // } );
+    };
 
-    self.app.play();
-  }
-
-  WavelinesCanvas.prototype.initAnimation = function initAnimation() {
-    var keyFrame = new NumberKeyframeTrack('geometry.morphTargetInfluences', [0.0, 2.0], [0.0, 1.0], InterpolateSmooth);
-
-    var clip = new AnimationClip('wavelineMorphTargetsClip', 2.0, [keyFrame]);
-
-    this.mixer = new AnimationMixer(this.waveline);
-
-    this.mixer.clipAction(clip).play();
-  };
-
-  WavelinesCanvas.prototype.initLines = function initLines() {
-    //for (let i = 0; i < 1; i++) {
-    var spec = {
-      material: this.lineMat,
-      zDepth: 0,
-      //the following arrays must all be of the same size, >=2
-      xInitial: [//x positions at start of animation
-      0, _Math.randInt(20, 30), 50, _Math.randInt(60, 80), 100], //first should be 0, last 100 to cover screen
-      xFinal: [//x positions at end of animation
-      0, _Math.randInt(20, 30), 50, _Math.randInt(60, 80), 100], //first should be 0, last 100 to cover screen
-      yInitial: [//y positions at start of animation
-      _Math.randInt(0, 100), _Math.randInt(0, 100), 50, _Math.randInt(0, 100), _Math.randInt(0, 100)],
-      yFinal: [//y positions at end of animation
-      _Math.randInt(0, 100), _Math.randInt(0, 100), 50, _Math.randInt(0, 100), _Math.randInt(0, 100)],
-      yDiffsInitial: [_Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3)], //controls width of initial waveline, in pixels
-      yDiffsFinal: [_Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3), _Math.randInt(1, 3)] };
-    this.waveline = new Waveline(spec);
-    //dummy objects to allow TweenLite to tween the morphTargetInfluences
-    //which is an array
-    // const dummy = {
-    //   x: 0,
-    // };
-    // const tween = TweenMax.fromTo(dummy, 25, {
-    //   x: 0,
-    // }, {
-    //   x: 1,
-    //   ease: Sine.easeInOut,
-    //   yoyo: true,
-    //   repeat: -1,
-    //   onUpdate: () => {
-    //     waveline.morphTargetInfluences[0] = dummy.x;
-    //   },
-    // });
-    // tween.progress(randomFloat(0, 1), true);
-    // //this.timeline.add(tween, 0);
-    this.app.scene.add(this.waveline);
-    //}
-  };
-
-  WavelinesCanvas.prototype.initMaterials = function initMaterials() {
-    this.lineMat = new MeshBasicMaterial({
-      color: 0x4CCEEF,
-      morphTargets: true
-    });
-    // const uniforms = {
-    //   noiseTexture: { value: noiseTexture },
-    //   offset: { value: this.offset },
-    //   smooth: { value: this.smooth },
-    // };
-
-    // this.backgroundMat = new THREE.ShaderMaterial( {
-    //   uniforms: Object.assign( {
-    //     color1: { value: colB },
-    //     color2: { value: colA },
-    //   }, uniforms ),
-    //   vertexShader: backgroundVert,
-    //   fragmentShader: backgroundFrag,
-    // } );
-  };
-
-  return WavelinesCanvas;
+    return WavelinesCanvas;
 }();
 
 //import wavelinesLayout from '../pages/wavelines/wavelinesLayout.js';
@@ -41436,7 +41448,7 @@ function initWavelines(showStats) {
 }
 
 // Set up Splash scene
-var showStats = false;
+var showStats = true;
 initWavelines(showStats);
 
 }());

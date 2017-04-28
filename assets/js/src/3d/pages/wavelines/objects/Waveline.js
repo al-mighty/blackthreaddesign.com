@@ -14,8 +14,6 @@ import * as THREE from 'three';
 //    xFinal: [], ////first should be 0, last 100 to cover screen
 //    yInitial: [],
 //    yFinal: [],
-//    yDiffsInitial: [], //controls width of initial waveline, in pixels
-//    yDiffsFinal: [], //controls width of final waveline
 // }
 export default class Waveline {
   constructor( spec ) {
@@ -45,18 +43,16 @@ export default class Waveline {
     // this.spec.xFinal = this.spec.xFinal.map(x => xCoord(x));
     // this.spec.yInitial = this.spec.yInitial.map(y => yCoord(y));
     // this.spec.yFinal = this.spec.yFinal.map(y => yCoord(y));
-    // this.spec.yDiffsInitial = this.spec.yDiffsInitial.map((y, i) => this.spec.yInitial[i] - y);
-    // this.spec.yDiffsFinal = this.spec.yDiffsFinal.map((y, i) => this.spec.yFinal[i] - y);
     this.meshFineness = 24;
   }
 
   //create a line geometry to be used either for a mesh or as a morph target
-  createLine(xArray, yArray, yDiffsArray) {
+  createLine(xArray, yArray) {
     //create an upper curve
     const upperPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i]));
-    //create a lower curve seperated by the values in the yDiffsArray from the first
+    //create a lower curve seperated by 1 from the first
     //and going in the opposite direction
-    const lowerPoints = xArray.map((l, i) => new THREE.Vector2(l, yDiffsArray[i]))
+    const lowerPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i] - 1))
       .reverse();
 
     const line = new THREE.Shape();
@@ -69,7 +65,7 @@ export default class Waveline {
 
     // return line.extractAllPoints(this.meshFineness)
     //  .shape;
-    return new THREE.ShapeGeometry(line, 32);
+    return new THREE.ShapeGeometry(line, 12);
   }
 
   //create the line geometry and add morphtargets
@@ -77,11 +73,12 @@ export default class Waveline {
     const geometry = this.createLine(
       this.spec.xInitial,
       this.spec.yInitial,
-      this.spec.yDiffsInitial
     );
+
+    const morphGeometry = this.createLine(this.spec.xFinal, this.spec.yFinal);
     geometry.morphTargets.push({
       name: 'movement',
-      vertices: this.createLine(this.spec.xFinal, this.spec.yFinal, this.spec.yDiffsFinal).vertices,
+      vertices: morphGeometry.vertices,
     });
 
     const l = geometry.vertices.length;
@@ -90,6 +87,7 @@ export default class Waveline {
       geometry.faces.push(new THREE.Face3(i, l - 1 - i, l - 2 - i));
       geometry.faces.push(new THREE.Face3(i, l - 2 - i, i + 1));
     }
+
     return geometry;
   }
 
@@ -99,7 +97,7 @@ export default class Waveline {
     const mesh = new THREE.Mesh(line, this.spec.material);
     // mesh.frustumCulled = false; //the mesh should always be drawn
     mesh.position.z = - 100;
-    console.log(mesh);
+    // console.log(mesh);
     return mesh;
   }
 }

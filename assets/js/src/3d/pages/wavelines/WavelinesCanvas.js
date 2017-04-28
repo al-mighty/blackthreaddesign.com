@@ -14,7 +14,7 @@ import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';
 
 
-// import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './wavelinesCanvasHelpers.js';
+import { visibleHeightAtZDepth, visibleWidthAtZDepth } from './wavelinesCanvasHelpers.js';
 
 let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
@@ -45,8 +45,14 @@ export default class WavelinesCanvas {
 
     self.app.onWindowResize = function () { 
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+      self.halfScreenHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera );
+      self.halfScreenWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera );
     };
 
+    self.lineDepth = -100;
+    self.halfScreenHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera );
+    self.halfScreenWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera );
+    
     self.initMaterials();
     self.initLines();
 
@@ -54,88 +60,72 @@ export default class WavelinesCanvas {
 
     self.app.play();
 
+
   }
 
     initAnimation() {
-      const keyFrame = new THREE.NumberKeyframeTrack( 'geometry.morphTargetInfluences', [0.0, 2.0], [0.0, 1.0], THREE.InterpolateSmooth );
+      // Create keyframes for start and end of morph target, setting the final time equal to the total length of the animation
+      // Note: 'name' must reference the propery being animated
+      const keyFrame = new THREE.NumberKeyframeTrack( 'geometry.morphTargetInfluences', [0.0, 5.0], [0.0, 1.0], THREE.InterpolateSmooth );
 
-      const clip = new THREE.AnimationClip( 'wavelineMorphTargetsClip', 2.0, [keyFrame] );
+      // Create an animation clip with the keyframes
+      const clip = new THREE.AnimationClip( 'wavelineMorphTargetsClip', 5.0, [keyFrame] );
 
+      // Create a mixer of the clip referencing the object to be animated
       this.mixer = new THREE.AnimationMixer( this.waveline );
-      
-      this.mixer.clipAction( clip ).play();
 
+      // create an animationAction using the mixer's clipAction function
+      const animationAction = this.mixer.clipAction( clip );
 
+      // Set the loop mode to play / reverse infinitely
+      animationAction.loop = THREE.LoopPingPong;
+
+      // Start the animation
+      animationAction.play();
   }
 
   initLines() {
+
     //for (let i = 0; i < 1; i++) {
     const spec = {
       material: this.lineMat,
       zDepth: 0,
       //the following arrays must all be of the same size, >=2
       xInitial: [ //x positions at start of animation
+        -this.halfScreenWidth,
+        -this.halfScreenWidth * 0.5,
         0,
-        THREE.Math.randInt(20, 30),
-        50,
-        THREE.Math.randInt(60, 80),
-        100], //first should be 0, last 100 to cover screen
+        this.halfScreenWidth * 0.5,
+        this.halfScreenWidth,
+      ], 
       xFinal: [ //x positions at end of animation
+        -this.halfScreenWidth,
+        -this.halfScreenWidth * 0.5,
         0,
-        THREE.Math.randInt(20, 30),
-        50,
-        THREE.Math.randInt(60, 80),
-        100], //first should be 0, last 100 to cover screen
+        this.halfScreenWidth * 0.5,
+        this.halfScreenWidth,
+      ], 
       yInitial: [ //y positions at start of animation
-        THREE.Math.randInt(0, 100),
-        THREE.Math.randInt(0, 100),
         50,
-        THREE.Math.randInt(0, 100),
-        THREE.Math.randInt(0, 100),
+        20,
+        50,
+        80,
+        50,
       ],
       yFinal: [ //y positions at end of animation
-        THREE.Math.randInt(0, 100),
-        THREE.Math.randInt(0, 100),
+        20,
         50,
-        THREE.Math.randInt(0, 100),
-        THREE.Math.randInt(0, 100),
-      ],
-      yDiffsInitial: [
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-      ], //controls width of initial waveline, in pixels
-      yDiffsFinal: [
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-        THREE.Math.randInt(1, 3),
-      ], //controls width of final waveline
+        60,
+        50,
+        80,
+      ]
     };
+
+    console.log(spec)
     this.waveline = new Waveline(spec);
-    //dummy objects to allow TweenLite to tween the morphTargetInfluences
-    //which is an array
-    // const dummy = {
-    //   x: 0,
-    // };
-    // const tween = TweenMax.fromTo(dummy, 25, {
-    //   x: 0,
-    // }, {
-    //   x: 1,
-    //   ease: Sine.easeInOut,
-    //   yoyo: true,
-    //   repeat: -1,
-    //   onUpdate: () => {
-    //     waveline.morphTargetInfluences[0] = dummy.x;
-    //   },
-    // });
-    // tween.progress(randomFloat(0, 1), true);
-    // //this.timeline.add(tween, 0);
+
     this.app.scene.add( this.waveline );
-    //}
+  
   }
 
   initMaterials() {
