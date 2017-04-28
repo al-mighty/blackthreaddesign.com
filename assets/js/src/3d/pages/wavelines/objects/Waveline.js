@@ -95,8 +95,8 @@ export default class Waveline {
     const line = this.lineGeometry();
 
     const mesh = new THREE.Mesh(line, this.spec.material);
-    // mesh.frustumCulled = false; //the mesh should always be drawn
-    mesh.position.z = - 100;
+  
+    mesh.position.z = this.spec.zDepth;
     // console.log(mesh);
     return mesh;
   }

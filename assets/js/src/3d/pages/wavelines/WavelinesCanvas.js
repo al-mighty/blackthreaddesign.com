@@ -52,7 +52,9 @@ export default class WavelinesCanvas {
     self.lineDepth = -100;
     self.halfScreenHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera );
     self.halfScreenWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera );
-    
+
+    self.wavelinesAnimationObjectGroup = new THREE.AnimationObjectGroup();
+
     self.initMaterials();
     self.initLines();
 
@@ -72,7 +74,7 @@ export default class WavelinesCanvas {
       const clip = new THREE.AnimationClip( 'wavelineMorphTargetsClip', 5.0, [keyFrame] );
 
       // Create a mixer of the clip referencing the object to be animated
-      this.mixer = new THREE.AnimationMixer( this.waveline );
+      this.mixer = new THREE.AnimationMixer( this.wavelinesAnimationObjectGroup );
 
       // create an animationAction using the mixer's clipAction function
       const animationAction = this.mixer.clipAction( clip );
@@ -86,46 +88,47 @@ export default class WavelinesCanvas {
 
   initLines() {
 
-    //for (let i = 0; i < 1; i++) {
-    const spec = {
-      material: this.lineMat,
-      zDepth: 0,
-      //the following arrays must all be of the same size, >=2
-      xInitial: [ //x positions at start of animation
-        -this.halfScreenWidth,
-        -this.halfScreenWidth * 0.5,
-        0,
-        this.halfScreenWidth * 0.5,
-        this.halfScreenWidth,
-      ], 
-      xFinal: [ //x positions at end of animation
-        -this.halfScreenWidth,
-        -this.halfScreenWidth * 0.5,
-        0,
-        this.halfScreenWidth * 0.5,
-        this.halfScreenWidth,
-      ], 
-      yInitial: [ //y positions at start of animation
-        50,
-        20,
-        50,
-        80,
-        50,
-      ],
-      yFinal: [ //y positions at end of animation
-        20,
-        50,
-        60,
-        50,
-        80,
-      ]
-    };
+    for (let i = 0; i < 100; i++) {
+      const spec = {
+        material: this.lineMat,
+        zDepth: this.lineDepth,
+        //the following arrays must all be of the same size, >=2
+        xInitial: [ //x positions at start of animation
+          -this.halfScreenWidth,
+          -this.halfScreenWidth * 0.5,
+          0,
+          this.halfScreenWidth * 0.5,
+          this.halfScreenWidth,
+        ], 
+        xFinal: [ //x positions at end of animation
+          -this.halfScreenWidth,
+          -this.halfScreenWidth * 0.5,
+          0,
+          this.halfScreenWidth * 0.5,
+          this.halfScreenWidth,
+        ], 
+        yInitial: [ //y positions at start of animation
+          50 - i * 3,
+          20 - i * 3,
+          50 - i * 3,
+          80 - i * 3,
+          50 - i * 3,
+        ],
+        yFinal: [ //y positions at end of animation
+          20 - i * 3,
+          50 - i * 3,
+          60 - i * 3,
+          50 - i * 3,
+          80 - i * 3,
+        ]
+      };
 
-    console.log(spec)
-    this.waveline = new Waveline(spec);
+      const waveline = new Waveline( spec );
 
-    this.app.scene.add( this.waveline );
-  
+      this.wavelinesAnimationObjectGroup.add( waveline );
+
+      this.app.scene.add( waveline );
+    }
   }
 
   initMaterials() {
