@@ -52,7 +52,7 @@ export default class Waveline {
     const upperPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i]));
     //create a lower curve seperated by 1 from the first
     //and going in the opposite direction
-    const lowerPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i] - 1))
+    const lowerPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i] - 0.25))
       .reverse();
 
     const line = new THREE.Shape();

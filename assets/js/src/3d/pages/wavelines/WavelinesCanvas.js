@@ -28,6 +28,7 @@ export default class WavelinesCanvas {
 
     self.app = new App( document.querySelector( '#wavelines-canvas' ) );
 
+    self.app.renderer.setClearColor( 0xffffff );
     self.app.camera.position.set( 0, 0, 10 );
 
     // TODO: not working in Edge
@@ -45,13 +46,13 @@ export default class WavelinesCanvas {
 
     self.app.onWindowResize = function () { 
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
-      self.halfScreenHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera );
-      self.halfScreenWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera );
+      self.halfCanvasHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera ) / 2;
+      self.halfCanvasWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera ) / 2;
     };
 
     self.lineDepth = -100;
-    self.halfScreenHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera );
-    self.halfScreenWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera );
+    self.halfCanvasHeight = -visibleHeightAtZDepth( self.lineDepth, self.app.camera ) / 2;
+    self.halfCanvasWidth = -visibleWidthAtZDepth( self.lineDepth, self.app.camera ) / 2;
 
     self.wavelinesAnimationObjectGroup = new THREE.AnimationObjectGroup();
 
@@ -88,38 +89,39 @@ export default class WavelinesCanvas {
 
   initLines() {
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 1000; i++) {
+      const diff = i % 100;
       const spec = {
         material: this.lineMat,
         zDepth: this.lineDepth,
         //the following arrays must all be of the same size, >=2
         xInitial: [ //x positions at start of animation
-          -this.halfScreenWidth,
-          -this.halfScreenWidth * 0.5,
+          -this.halfCanvasWidth,
+          -this.halfCanvasWidth * 0.5,
           0,
-          this.halfScreenWidth * 0.5,
-          this.halfScreenWidth,
+          this.halfCanvasWidth * 0.5,
+          this.halfCanvasWidth,
         ], 
         xFinal: [ //x positions at end of animation
-          -this.halfScreenWidth,
-          -this.halfScreenWidth * 0.5,
+          -this.halfCanvasWidth,
+          -this.halfCanvasWidth * 0.5,
           0,
-          this.halfScreenWidth * 0.5,
-          this.halfScreenWidth,
+          this.halfCanvasWidth * 0.5,
+          this.halfCanvasWidth,
         ], 
         yInitial: [ //y positions at start of animation
-          50 - i * 3,
-          20 - i * 3,
-          50 - i * 3,
-          80 - i * 3,
-          50 - i * 3,
+          this.halfCanvasHeight - diff,
+          this.halfCanvasHeight - 10 - diff,
+          this.halfCanvasHeight - 20 - diff,
+          this.halfCanvasHeight - 50 - diff,
+          this.halfCanvasHeight - 20 - diff,
         ],
         yFinal: [ //y positions at end of animation
-          20 - i * 3,
-          50 - i * 3,
-          60 - i * 3,
-          50 - i * 3,
-          80 - i * 3,
+          this.halfCanvasHeight - 10 - diff,
+          this.halfCanvasHeight - 20 - diff,
+          this.halfCanvasHeight - 30 - diff,
+          this.halfCanvasHeight - 20 - diff,
+          this.halfCanvasHeight - 50 - diff,
         ]
       };
 
