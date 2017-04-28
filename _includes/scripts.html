@@ -14,12 +14,6 @@
   {% endfor %}
 {% endif %}
 
-{% if page.js %}
-  {% for file in page.js %}
-  <script async src='/assets/js/build/{{ file }}.js'></script>
-  {% endfor %}
-{% endif %}
-
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
