@@ -13,7 +13,17 @@ const createBufferAttribute = ( bufferGeometry, name, itemSize, count ) => {
   return attribute;
 };
 
+// const visibleHeightAtZDepth = ( depth, camera ) => {
+//   const vFOV = camera.fov * Math.PI / 180;
+//   return 2 * Math.tan( vFOV / 2 ) * depth; // visible height
+// };
+
 export default {
+  // visibleHeightAtZDepth,
+  // visibleWidthAtZDepth: ( depth, camera ) => {
+  //   const height = visibleHeightAtZDepth( depth, camera );
+  //   return height * camera.aspect;
+  // },
   pointerPosToCanvasCentre: ( canvas, offsetY = 0, offsetX = 0 ) => {
     const halfWidth = canvas.clientWidth / 2 + offsetX;
     const halfHeight = ( canvas.clientHeight / 2 ) + offsetY;
