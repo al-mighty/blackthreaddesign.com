@@ -42037,6 +42037,22 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
+// * ***********************************************************************
+// *
+// *  WAVELINE CLASS
+// *
+// *************************************************************************
+// const spec = {
+//    material: new THREE.someKindOfMaterial,
+//    zDepth: -1, //how far from the camera to create the line
+//    color: 0xffffff,
+//    //the following array must all be of the same size, >=2
+//    xInitial: [], //first should be 0, last 100 to cover screen
+//    xFinal: [], ////first should be 0, last 100 to cover screen
+//    yInitial: [],
+//    yFinal: [],
+// }
+
 var Waveline = function () {
   function Waveline(spec) {
     classCallCheck(this, Waveline);
@@ -42048,13 +42064,13 @@ var Waveline = function () {
     return this.createMesh();
   }
 
-  //check the spec is correct and map points to screen space
+  // check the spec is correct and map points to screen space
 
 
   Waveline.prototype.calculateParams = function calculateParams() {
     var _this = this;
 
-    //warn if all initialisation arrays are not the same length
+    // warn if all initialisation arrays are not the same length
     var checkArrays = function () {
       var len = _this.spec.xInitial.length;
       Object.keys(_this.spec).forEach(function (key) {
@@ -42068,47 +42084,43 @@ var Waveline = function () {
     }();
   };
 
-  //create a line geometry to be used either for a mesh or as a morph target
+  // create a line geometry to be used either for a mesh or as a morph target
 
 
   Waveline.prototype.createLine = function createLine(xArray, yArray) {
     var _this2 = this;
 
-    //create an upper curve
+    // create an upper curve
     var upperPoints = xArray.map(function (l, i) {
       return new Vector2(l, yArray[i]);
     });
-    //create a lower curve seperated by 1 from the first
-    //and going in the opposite direction
+    // create a lower curve seperated by 1 from the first
+    // and going in the opposite direction
     var lowerPoints = xArray.map(function (l, i) {
       return new Vector2(l, yArray[i] - _this2.spec.thickness);
     }).reverse();
 
     var line = new Shape();
-    line.moveTo(upperPoints[0].x, upperPoints[0].y); //starting point
-    //upper curve through the rest of the upperPoints array
+    line.moveTo(upperPoints[0].x, upperPoints[0].y); // starting point
+    // upper curve through the rest of the upperPoints array
     line.splineThru(upperPoints.slice(1, upperPoints.length));
     line.lineTo(lowerPoints[0].x, lowerPoints[0].y);
-    //lower curve
+    // lower curve
     line.splineThru(lowerPoints.slice(1, lowerPoints.length));
 
-    // return line.extractAllPoints(this.meshFineness).shape;
-
     return new ShapeGeometry(line, this.spec.meshFineness);
+
+    // If using lineBufferGeometry method
     // return new THREE.ShapeBufferGeometry(line, this.spec.meshFineness);
   };
 
-  //create the line geometry and add morphtargets
+  // create the line geometry and add morphtargets
 
 
   Waveline.prototype.lineGeometry = function lineGeometry() {
     var geometry = this.createLine(this.spec.xInitial, this.spec.yInitial);
 
     var morphGeometry = this.createLine(this.spec.xFinal, this.spec.yFinal);
-
-    // If using buffer geometry - seem to hit bug in three though
-    // geometry.morphAttributes.position = morphGeometry.attributes.position.array;
-
 
     geometry.morphTargets.push({
       name: 'movement',
@@ -42122,18 +42134,29 @@ var Waveline = function () {
       geometry.faces.push(new Face3(i, l - 2 - i, i + 1));
     }
 
-    // Convert to buffer geometry
-    // const bufferGeometry = new THREE.BufferGeometry();
-    // bufferGeometry.fromGeometry( geometry );
-
-    // console.log( geometry, bufferGeometry );
-    // bufferGeometry.morphTargets = [];
-    // bufferGeometry.morphTargets.push( 0 );
-
-    // return bufferGeometry;
-
     return geometry;
   };
+
+  // create the line geometry and add morphtargets - return BufferGeometry from createLine to use this
+  // lineBufferGeometry() {
+  //   const geometry = this.createLine(
+  //     this.spec.xInitial,
+  //     this.spec.yInitial,
+  //   );
+
+  //   const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
+
+  //   // If using buffer geometry - seem to hit bug in three though
+  //   geometry.morphAttributes.position = [];
+  //   geometry.morphAttributes.position[0] = morphGeometry.attributes.position;
+
+  //   // Hack required to get Mesh to have morphTargetInfluences attribute
+  //   geometry.morphTargets = [];
+  //   geometry.morphTargets.push( 0 );
+
+  //   return geometry;
+  // }
+
 
   Waveline.prototype.createMesh = function createMesh() {
     var line = this.lineGeometry();
@@ -42178,8 +42201,6 @@ var yCoord = function (y, visibleHeight) {
 
 // parametrically generated surfaces
 
-// import threeUtils from '../../App/threeUtils.js';
-// import utils from '../../../utilities.js';
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
 var WavelinesCanvas = function () {
@@ -42256,7 +42277,7 @@ var WavelinesCanvas = function () {
             thickness: 0.0035,
             material: this.lineMat,
             zDepth: this.lineDepth,
-            meshFineness: 16
+            meshFineness: 32
         };
 
         // x positions at start of animation

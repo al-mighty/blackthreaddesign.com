@@ -19,53 +19,53 @@ export default class Waveline {
   constructor( spec ) {
 
     this.spec = spec || {};
-    
+
     this.calculateParams();
     return this.createMesh();
   }
 
-  //check the spec is correct and map points to screen space
+  // check the spec is correct and map points to screen space
   calculateParams() {
-    //warn if all initialisation arrays are not the same length
-    const checkArrays = (() => {
+    // warn if all initialisation arrays are not the same length
+    const checkArrays = ( () => {
       const len = this.spec.xInitial.length;
-      Object.keys(this.spec)
-        .forEach(key => {
-          if (this.spec[key] instanceof Array) {
-            if (this.spec[key].length !== len) {
-              console.warn('Waveline: Warning: all initialisation arrays must be the same length');
+      Object.keys( this.spec )
+        .forEach( ( key ) => {
+          if ( this.spec[key] instanceof Array ) {
+            if ( this.spec[key].length !== len ) {
+              console.warn( 'Waveline: Warning: all initialisation arrays must be the same length' );
             }
           }
-        });
-      if (len < 2) console.error('Waveline: all initialisation arrays must have length >= 2!');
-    })();
+        } );
+      if ( len < 2 ) console.error( 'Waveline: all initialisation arrays must have length >= 2!' );
+    } )();
 
   }
 
-  //create a line geometry to be used either for a mesh or as a morph target
-  createLine(xArray, yArray) {
-    //create an upper curve
-    const upperPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i]));
-    //create a lower curve seperated by 1 from the first
-    //and going in the opposite direction
-    const lowerPoints = xArray.map((l, i) => new THREE.Vector2( l, yArray[i] - this.spec.thickness ))
+  // create a line geometry to be used either for a mesh or as a morph target
+  createLine( xArray, yArray ) {
+    // create an upper curve
+    const upperPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] ) );
+    // create a lower curve seperated by 1 from the first
+    // and going in the opposite direction
+    const lowerPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] - this.spec.thickness ) )
       .reverse();
 
     const line = new THREE.Shape();
-    line.moveTo(upperPoints[0].x, upperPoints[0].y); //starting point
-    //upper curve through the rest of the upperPoints array
-    line.splineThru(upperPoints.slice(1, upperPoints.length));
-    line.lineTo(lowerPoints[0].x, lowerPoints[0].y);
-    //lower curve
-    line.splineThru(lowerPoints.slice(1, lowerPoints.length));
+    line.moveTo( upperPoints[0].x, upperPoints[0].y ); // starting point
+    // upper curve through the rest of the upperPoints array
+    line.splineThru( upperPoints.slice( 1, upperPoints.length ) );
+    line.lineTo( lowerPoints[0].x, lowerPoints[0].y );
+    // lower curve
+    line.splineThru( lowerPoints.slice( 1, lowerPoints.length ) );
 
-    // return line.extractAllPoints(this.meshFineness).shape;
+    return new THREE.ShapeGeometry( line, this.spec.meshFineness );
 
-    return new THREE.ShapeGeometry(line, this.spec.meshFineness);
+    // If using lineBufferGeometry method
     // return new THREE.ShapeBufferGeometry(line, this.spec.meshFineness);
   }
 
-  //create the line geometry and add morphtargets
+  // create the line geometry and add morphtargets
   lineGeometry() {
     const geometry = this.createLine(
       this.spec.xInitial,
@@ -73,10 +73,6 @@ export default class Waveline {
     );
 
     const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
-
-    // If using buffer geometry - seem to hit bug in three though
-    // geometry.morphAttributes.position = morphGeometry.attributes.position.array;
-
 
     geometry.morphTargets.push( {
       name: 'movement',
@@ -86,23 +82,34 @@ export default class Waveline {
 
     const l = geometry.vertices.length;
     geometry.faces = [];
-    for (let i = 0; i < (l - 2) / 2; i++) {
-      geometry.faces.push(new THREE.Face3(i, l - 1 - i, l - 2 - i));
-      geometry.faces.push(new THREE.Face3(i, l - 2 - i, i + 1));
+    for ( let i = 0; i < ( l - 2 ) / 2; i++ ) {
+      geometry.faces.push( new THREE.Face3( i, l - 1 - i, l - 2 - i ) );
+      geometry.faces.push( new THREE.Face3( i, l - 2 - i, i + 1 ) );
     }
-
-    // Convert to buffer geometry
-    // const bufferGeometry = new THREE.BufferGeometry();
-    // bufferGeometry.fromGeometry( geometry );
-
-    // console.log( geometry, bufferGeometry );
-    // bufferGeometry.morphTargets = [];
-    // bufferGeometry.morphTargets.push( 0 );
-
-    // return bufferGeometry;
 
     return geometry;
   }
+
+  // create the line geometry and add morphtargets - return BufferGeometry from createLine to use this
+  // lineBufferGeometry() {
+  //   const geometry = this.createLine(
+  //     this.spec.xInitial,
+  //     this.spec.yInitial,
+  //   );
+
+  //   const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
+
+  //   // If using buffer geometry - seem to hit bug in three though
+  //   geometry.morphAttributes.position = [];
+  //   geometry.morphAttributes.position[0] = morphGeometry.attributes.position;
+
+  //   // Hack required to get Mesh to have morphTargetInfluences attribute
+  //   geometry.morphTargets = [];
+  //   geometry.morphTargets.push( 0 );
+
+  //   return geometry;
+  // }
+
 
   createMesh() {
     const line = this.lineGeometry();

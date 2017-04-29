@@ -93,7 +93,7 @@ export default class WavelinesCanvas {
         thickness: 0.0035,
         material: this.lineMat,
         zDepth: this.lineDepth,
-        meshFineness: 16,
+        meshFineness: 32,
     }
 
     // x positions at start of animation
