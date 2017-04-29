@@ -1,7 +1,4 @@
 import throttle from 'lodash.throttle';
-import * as Ham from 'hammerjs';
-
-const Hammer = Ham.default;
 
 const calculateCanvasDims = () => {
   const dim = ( window.innerWidth < window.innerHeight ) 
@@ -12,17 +9,21 @@ const calculateCanvasDims = () => {
 
 
 export default function wavelinesLayout() {
+  const page = document.querySelector( '.page' );
+
+  page.style.width = '100%';
+  page.style.padding = 0;
+
   const canvasContainer = document.querySelector( '.canvas-container' );
 
   let canvasContainerDim = calculateCanvasDims();
 
   canvasContainer.style.height = canvasContainerDim + 'px';
-  canvasContainer.style.width = canvasContainerDim + 'px';
+  canvasContainer.style.width = '100%';
 
   window.addEventListener( 'resize', throttle( () => {
     canvasContainerDim = calculateCanvasDims();
     canvasContainer.style.height = canvasContainerDim + 'px';
-    canvasContainer.style.width = canvasContainerDim + 'px';
   }), 250 );
 
 }

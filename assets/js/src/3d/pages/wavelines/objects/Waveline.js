@@ -39,11 +39,7 @@ export default class Waveline {
         });
       if (len < 2) console.error('Waveline: all initialisation arrays must have length >= 2!');
     })();
-    // this.spec.xInitial = this.spec.xInitial.map(x => xCoord(x));
-    // this.spec.xFinal = this.spec.xFinal.map(x => xCoord(x));
-    // this.spec.yInitial = this.spec.yInitial.map(y => yCoord(y));
-    // this.spec.yFinal = this.spec.yFinal.map(y => yCoord(y));
-    this.meshFineness = 24;
+
   }
 
   //create a line geometry to be used either for a mesh or as a morph target
@@ -52,7 +48,7 @@ export default class Waveline {
     const upperPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i]));
     //create a lower curve seperated by 1 from the first
     //and going in the opposite direction
-    const lowerPoints = xArray.map((l, i) => new THREE.Vector2(l, yArray[i] - 0.25))
+    const lowerPoints = xArray.map((l, i) => new THREE.Vector2( l, yArray[i] - this.spec.thickness ))
       .reverse();
 
     const line = new THREE.Shape();
@@ -63,9 +59,10 @@ export default class Waveline {
     //lower curve
     line.splineThru(lowerPoints.slice(1, lowerPoints.length));
 
-    // return line.extractAllPoints(this.meshFineness)
-    //  .shape;
-    return new THREE.ShapeGeometry(line, 12);
+    // return line.extractAllPoints(this.meshFineness).shape;
+
+    return new THREE.ShapeGeometry(line, this.spec.meshFineness);
+    // return new THREE.ShapeBufferGeometry(line, this.spec.meshFineness);
   }
 
   //create the line geometry and add morphtargets
@@ -75,11 +72,17 @@ export default class Waveline {
       this.spec.yInitial,
     );
 
-    const morphGeometry = this.createLine(this.spec.xFinal, this.spec.yFinal);
-    geometry.morphTargets.push({
+    const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
+
+    // If using buffer geometry - seem to hit bug in three though
+    // geometry.morphAttributes.position = morphGeometry.attributes.position.array;
+
+
+    geometry.morphTargets.push( {
       name: 'movement',
       vertices: morphGeometry.vertices,
-    });
+    } );
+
 
     const l = geometry.vertices.length;
     geometry.faces = [];
@@ -88,16 +91,26 @@ export default class Waveline {
       geometry.faces.push(new THREE.Face3(i, l - 2 - i, i + 1));
     }
 
+    // Convert to buffer geometry
+    // const bufferGeometry = new THREE.BufferGeometry();
+    // bufferGeometry.fromGeometry( geometry );
+
+    // console.log( geometry, bufferGeometry );
+    // bufferGeometry.morphTargets = [];
+    // bufferGeometry.morphTargets.push( 0 );
+
+    // return bufferGeometry;
+
     return geometry;
   }
 
   createMesh() {
     const line = this.lineGeometry();
 
-    const mesh = new THREE.Mesh(line, this.spec.material);
-  
+    const mesh = new THREE.Mesh( line, this.spec.material );
+
     mesh.position.z = this.spec.zDepth;
-    // console.log(mesh);
+    // console.log( mesh );
     return mesh;
   }
 }
