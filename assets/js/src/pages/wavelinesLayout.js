@@ -14,6 +14,8 @@ export default function wavelinesLayout() {
   page.style.width = '100%';
   page.style.padding = 0;
 
+  document.querySelector( '.pagination' ).style.display = 'none';
+
   const canvasContainer = document.querySelector( '.canvas-container' );
 
   let canvasContainerDim = calculateCanvasDims();

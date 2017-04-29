@@ -468,6 +468,8 @@ function wavelinesLayout() {
   page.style.width = '100%';
   page.style.padding = 0;
 
+  document.querySelector('.pagination').style.display = 'none';
+
   var canvasContainer = document.querySelector('.canvas-container');
 
   var canvasContainerDim = calculateCanvasDims();
@@ -42036,22 +42038,6 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 }
-
-// * ***********************************************************************
-// *
-// *  WAVELINE CLASS
-// *
-// *************************************************************************
-// const spec = {
-//    material: new THREE.someKindOfMaterial,
-//    zDepth: -1, //how far from the camera to create the line
-//    color: 0xffffff,
-//    //the following array must all be of the same size, >=2
-//    xInitial: [], //first should be 0, last 100 to cover screen
-//    xFinal: [], ////first should be 0, last 100 to cover screen
-//    yInitial: [],
-//    yFinal: [],
-// }
 
 var Waveline = function () {
   function Waveline(spec) {
