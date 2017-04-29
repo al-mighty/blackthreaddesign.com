@@ -3,7 +3,7 @@ layout: single
 title: Wavelines
 permalink: /hidden/wavelines/
 js:
-  - waveLines
+  - wavelines
 ---
 
 <div class="canvas-container">
