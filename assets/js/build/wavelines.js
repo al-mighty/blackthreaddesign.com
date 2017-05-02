@@ -42157,6 +42157,10 @@ var Waveline = function () {
   return Waveline;
 }();
 
+var basicVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nvoid main() {\n  vec3 transformed = vec3( position );\n  transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n}";
+
+var basicFrag = "precision lowp float;\n#define GLSLIFY 1\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, 1.0);\n} ";
+
 // import * as THREE from 'three';
 // import threeUtils from '../../App/threeUtils.js';
 
@@ -42296,21 +42300,16 @@ var WavelinesCanvas = function () {
     };
 
     WavelinesCanvas.prototype.initMaterials = function initMaterials() {
-        this.lineMat = new MeshBasicMaterial({
-            color: 0x4CCEEF,
+        this.lineMat = new ShaderMaterial({
+            uniforms: {
+                morphTargetInfluences: {
+                    value: [0, 0, 0, 0]
+                }
+            },
+            vertexShader: basicVert,
+            fragmentShader: basicFrag,
             morphTargets: true
         });
-
-        // this.lineMat = new THREE.ShaderMaterial( {
-        //   uniforms: {
-        //     color: {
-        //       value: new THREE.Color( 0x4CCEEF ),
-        //     },
-        //   },
-        //   vertexShader: basicVert,
-        //   fragmentShader: basicFrag,
-        //   morphTargets: true,
-        // } );
     };
 
     return WavelinesCanvas;

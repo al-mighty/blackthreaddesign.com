@@ -112,18 +112,18 @@ export default class WavelinesCanvas {
         xInitial, 
         xFinal, 
         yInitial: [ //y positions at start of animation
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
           0,
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
         ],
         yFinal: [ //y positions at end of animation
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
           0,
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
+          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
         ]
       }, spec );
 
@@ -136,21 +136,16 @@ export default class WavelinesCanvas {
   }
 
   initMaterials() {
-    this.lineMat = new THREE.MeshBasicMaterial( { 
-      color: 0x4CCEEF,
+    this.lineMat = new THREE.ShaderMaterial( {
+      uniforms: {
+        morphTargetInfluences: {
+          value: [0, 0, 0, 0],
+        },
+      },
+      vertexShader: basicVert,
+      fragmentShader: basicFrag,
       morphTargets: true,
     } );
-
-    // this.lineMat = new THREE.ShaderMaterial( {
-    //   uniforms: {
-    //     color: {
-    //       value: new THREE.Color( 0x4CCEEF ),
-    //     },
-    //   },
-    //   vertexShader: basicVert,
-    //   fragmentShader: basicFrag,
-    //   morphTargets: true,
-    // } );
 
   }
 
