@@ -12,7 +12,7 @@ export default {
     finalParams: {
       amp: 2,
       freq: 0.1,
-      phase: Math.PI / 2,
+      phase: Math.PI,
       yOffset: 0.05,
     },
   },
