@@ -28,30 +28,11 @@ export default class SineWave {
     return this.createMesh();
   }
 
-  // create a line geometry to be used either for a mesh or as a morph target
-  createLine( xArray, yArray ) {
-    // create an upper curve
-    const upperPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] ) );
-    // create a lower curve separated by desired thickness from the first
-    // and going in the opposite direction
-    const lowerPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] - this.spec.thickness ) )
-      .reverse();
-
-    const line = new THREE.Shape();
-    line.moveTo( upperPoints[0].x, upperPoints[0].y ); // starting point
-    // upper curve through the rest of the upperPoints array
-    line.splineThru( upperPoints.slice( 1, upperPoints.length ) );
-    line.lineTo( lowerPoints[0].x, lowerPoints[0].y );
-    // lower curve
-    line.splineThru( lowerPoints.slice( 1, lowerPoints.length ) );
-
-    return line;
-  }
-
   createWave( initialSpec = {}, finalSpec = {} ) {
     const l = this.spec.fineness;
-    const positions = new Float32Array( l * 3 * 2 );
 
+    const positions = new Float32Array( l * 3 * 2 );
+    const morphPositions = new Float32Array( l * 3 * 2 );
     const indices = new Uint16Array( ( ( l * 2 ) - 2 ) * 3 );
 
     const xInitial = -this.spec.canvasWidth / 2;
@@ -65,13 +46,21 @@ export default class SineWave {
       const offset = i * 6;
       const currentXPos = xInitial + step * i;
 
+      const init = this.spec.initialParams;
+      const y = sineWave( init.amp, currentXPos, init.freq, init.phase );
 
-      const y = sineWave( 0.5, currentXPos, 2, 0 );
+      const final = this.spec.finalParams;
+      const yMorph = sineWave( final.amp, currentXPos, final.freq, final.phase );
 
-      positions[ offset ] = positions [ offset + 3 ] = currentXPos;
-      positions[ offset + 1 ] = y;
-      positions[ offset + 4 ] = y - this.spec.thickness;
-      positions[ offset + 2 ] = positions[ offset + 5 ] = this.spec.z;
+      positions[ offset ] = positions[ offset + 3 ] = morphPositions[ offset ] = morphPositions[ offset + 3 ] = currentXPos;
+
+      positions[ offset + 1 ] = y + init.yOffset;
+      positions[ offset + 4 ] = y - this.spec.thickness + final.yOffset;
+
+      morphPositions[ offset + 1 ] = yMorph;
+      morphPositions[ offset + 4 ] = yMorph - this.spec.thickness;
+
+      positions[ offset + 2 ] = positions[ offset + 5 ] = morphPositions[ offset + 2 ] = morphPositions[ offset + 5 ] = this.spec.z;
 
     }
 
@@ -89,12 +78,19 @@ export default class SineWave {
       indices[ offset + 5 ] = k + 2;
     }
 
-    const wave = new THREE.BufferGeometry();
+    const geometry = new THREE.BufferGeometry();
 
-    wave.setIndex( new THREE.BufferAttribute( indices, 1 ) );
-    wave.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+    geometry.setIndex( new THREE.BufferAttribute( indices, 1 ) );
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
 
-    return wave;
+    geometry.morphAttributes.position = [];
+    geometry.morphAttributes.position[0] = new THREE.BufferAttribute( morphPositions, 3 );
+
+    // Hack required to get Mesh to have morphTargetInfluences attribute
+    geometry.morphTargets = [];
+    geometry.morphTargets.push( 0 );
+
+    return geometry;
   }
 
   // create the line geometry and add morph targets

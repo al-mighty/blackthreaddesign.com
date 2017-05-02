@@ -41486,6 +41486,26 @@ var ImageUtils = {
 
 //
 
+var lineSpec = {
+  l1: {
+    thickness: 1,
+    opacity: 0.5,
+    z: -10,
+    initialParams: {
+      amp: 2,
+      freq: 0.1,
+      phase: 0,
+      yOffset: 0.05
+    },
+    finalParams: {
+      amp: 2,
+      freq: 0.1,
+      phase: Math.PI / 2,
+      yOffset: 0.05
+    }
+  }
+};
+
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
 var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
@@ -42039,8 +42059,6 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-// import { sineWave, visibleWidthAtZDepth } from '../wavelinesCanvasHelpers.js';
-
 var sineWave = function (amp, time, freq, phase) {
     return amp * Math.sin(2 * Math.PI * freq * time + phase);
 };
@@ -42071,40 +42089,14 @@ var SineWave = function () {
         return this.createMesh();
     }
 
-    // create a line geometry to be used either for a mesh or as a morph target
-
-
-    SineWave.prototype.createLine = function createLine(xArray, yArray) {
-        var _this = this;
-
-        // create an upper curve
-        var upperPoints = xArray.map(function (l, i) {
-            return new Vector2(l, yArray[i]);
-        });
-        // create a lower curve separated by desired thickness from the first
-        // and going in the opposite direction
-        var lowerPoints = xArray.map(function (l, i) {
-            return new Vector2(l, yArray[i] - _this.spec.thickness);
-        }).reverse();
-
-        var line = new Shape();
-        line.moveTo(upperPoints[0].x, upperPoints[0].y); // starting point
-        // upper curve through the rest of the upperPoints array
-        line.splineThru(upperPoints.slice(1, upperPoints.length));
-        line.lineTo(lowerPoints[0].x, lowerPoints[0].y);
-        // lower curve
-        line.splineThru(lowerPoints.slice(1, lowerPoints.length));
-
-        return line;
-    };
-
     SineWave.prototype.createWave = function createWave() {
         var initialSpec = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var finalSpec = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var l = this.spec.fineness;
-        var positions = new Float32Array(l * 3 * 2);
 
+        var positions = new Float32Array(l * 3 * 2);
+        var morphPositions = new Float32Array(l * 3 * 2);
         var indices = new Uint16Array((l * 2 - 2) * 3);
 
         var xInitial = -this.spec.canvasWidth / 2;
@@ -42118,12 +42110,21 @@ var SineWave = function () {
             var offset = i * 6;
             var currentXPos = xInitial + step * i;
 
-            var y = sineWave(0.5, currentXPos, 2, 0);
+            var init = this.spec.initialParams;
+            var y = sineWave(init.amp, currentXPos, init.freq, init.phase);
 
-            positions[offset] = positions[offset + 3] = currentXPos;
-            positions[offset + 1] = y;
-            positions[offset + 4] = y - this.spec.thickness;
-            positions[offset + 2] = positions[offset + 5] = this.spec.z;
+            var final = this.spec.finalParams;
+            var yMorph = sineWave(final.amp, currentXPos, final.freq, final.phase);
+
+            positions[offset] = positions[offset + 3] = morphPositions[offset] = morphPositions[offset + 3] = currentXPos;
+
+            positions[offset + 1] = y + init.yOffset;
+            positions[offset + 4] = y - this.spec.thickness + final.yOffset;
+
+            morphPositions[offset + 1] = yMorph;
+            morphPositions[offset + 4] = yMorph - this.spec.thickness;
+
+            positions[offset + 2] = positions[offset + 5] = morphPositions[offset + 2] = morphPositions[offset + 5] = this.spec.z;
         }
 
         for (var j = 0; j < (l * 2 - 2) / 2; j++) {
@@ -42140,12 +42141,19 @@ var SineWave = function () {
             indices[_offset + 5] = k + 2;
         }
 
-        var wave = new BufferGeometry();
+        var geometry = new BufferGeometry();
 
-        wave.setIndex(new BufferAttribute(indices, 1));
-        wave.addAttribute('position', new BufferAttribute(positions, 3));
+        geometry.setIndex(new BufferAttribute(indices, 1));
+        geometry.addAttribute('position', new BufferAttribute(positions, 3));
 
-        return wave;
+        geometry.morphAttributes.position = [];
+        geometry.morphAttributes.position[0] = new BufferAttribute(morphPositions, 3);
+
+        // Hack required to get Mesh to have morphTargetInfluences attribute
+        geometry.morphTargets = [];
+        geometry.morphTargets.push(0);
+
+        return geometry;
     };
 
     // create the line geometry and add morph targets
@@ -42189,7 +42197,7 @@ var SineWave = function () {
 
 var basicVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nvoid main() {\n  vec3 transformed = vec3( position );\n  transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n}";
 
-var basicFrag = "precision lowp float;\n#define GLSLIFY 1\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, 1.0);\n} ";
+var basicFrag = "precision lowp float;\n#define GLSLIFY 1\nuniform float opacity;\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, opacity );\n} ";
 
 // import * as THREE from 'three';
 // import threeUtils from '../../App/threeUtils.js';
@@ -42231,7 +42239,7 @@ var WavelinesCanvas = function () {
 
         self.app.onUpdate = function () {
 
-            // self.mixer.update( self.app.delta * 0.001 );
+            self.mixer.update(self.app.delta * 0.001);
 
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
@@ -42247,10 +42255,9 @@ var WavelinesCanvas = function () {
 
         self.wavelinesAnimationObjectGroup = new AnimationObjectGroup();
 
-        self.initMaterials();
         self.initLines();
 
-        // this.initAnimation();
+        this.initAnimation();
 
         self.centreCircle();
 
@@ -42293,36 +42300,41 @@ var WavelinesCanvas = function () {
     };
 
     WavelinesCanvas.prototype.initLines = function initLines() {
+        var _this = this;
 
-        var z = 0;
-        var spec = {
-            thickness: 0.025,
-            fineness: 200,
-            material: this.lineMat,
-            canvasWidth: visibleWidthAtZDepth(z, this.app.camera),
-            z: z
-        };
+        Object.keys(lineSpec).forEach(function (key) {
+            var spec = lineSpec[key];
 
-        var sinewave = new SineWave(spec);
+            spec.material = _this.initMaterial(spec.opacity);
+            spec.fineness = 200;
+            spec.canvasWidth = visibleWidthAtZDepth(spec.z, _this.app.camera);
 
-        this.wavelinesAnimationObjectGroup.add(sinewave);
+            var sinewave = new SineWave(spec);
 
-        this.app.scene.add(sinewave);
+            _this.wavelinesAnimationObjectGroup.add(sinewave);
+
+            _this.app.scene.add(sinewave);
+        });
     };
 
-    WavelinesCanvas.prototype.initMaterials = function initMaterials() {
+    WavelinesCanvas.prototype.initMaterial = function initMaterial(opacity) {
+        opacity = opacity || 1.0;
 
         // this.lineMat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
-        this.lineMat = new ShaderMaterial({
+        return new ShaderMaterial({
             uniforms: {
+                opacity: {
+                    value: opacity
+                },
                 morphTargetInfluences: {
                     value: [0, 0, 0, 0]
                 }
             },
             vertexShader: basicVert,
             fragmentShader: basicFrag,
-            morphTargets: true
+            morphTargets: true,
+            transparent: true
         });
     };
 

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-// import threeUtils from '../../App/threeUtils.js';
-// import utils from '../../../utilities.js';
+import lineSpec from './spec/lines.js';
+
 import './wavelinesCanvasSetup.js';
 
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
@@ -40,7 +40,7 @@ export default class WavelinesCanvas {
 
     self.app.onUpdate = function () {
 
-      // self.mixer.update( self.app.delta * 0.001 );
+      self.mixer.update( self.app.delta * 0.001 );
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -57,10 +57,9 @@ export default class WavelinesCanvas {
 
     self.wavelinesAnimationObjectGroup = new THREE.AnimationObjectGroup();
 
-    self.initMaterials();
     self.initLines();
 
-    // this.initAnimation();
+    this.initAnimation();
 
     self.centreCircle();
 
@@ -101,30 +100,33 @@ export default class WavelinesCanvas {
   }
 
   initLines() {
+    Object.keys( lineSpec ).forEach( ( key ) => {
+      const spec = lineSpec[key];
 
-    const z =  0;
-    const spec = {
-      thickness: 0.025,
-      fineness: 200,
-      material: this.lineMat,
-      canvasWidth: visibleWidthAtZDepth( z, this.app.camera ),
-      z,
-    }
+      spec.material = this.initMaterial( spec.opacity );
+      spec.fineness = 200;
+      spec.canvasWidth = visibleWidthAtZDepth( spec.z, this.app.camera )
 
-    const sinewave = new SineWave( spec );
+      const sinewave = new SineWave( spec );
 
-    this.wavelinesAnimationObjectGroup.add( sinewave );
+      this.wavelinesAnimationObjectGroup.add( sinewave );
 
-    this.app.scene.add( sinewave );
+      this.app.scene.add( sinewave );
+
+    } );
 
   }
 
-  initMaterials() {
+  initMaterial( opacity ) {
+    opacity = opacity || 1.0;
 
     // this.lineMat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
 
-    this.lineMat = new THREE.ShaderMaterial( {
+    return new THREE.ShaderMaterial( {
       uniforms: {
+        opacity: {
+          value: opacity,
+        },
         morphTargetInfluences: {
           value: [0, 0, 0, 0],
         },
@@ -132,6 +134,7 @@ export default class WavelinesCanvas {
       vertexShader: basicVert,
       fragmentShader: basicFrag,
       morphTargets: true,
+      transparent: true,
     } );
 
   }
