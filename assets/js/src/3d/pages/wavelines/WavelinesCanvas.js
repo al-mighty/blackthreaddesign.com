@@ -10,11 +10,13 @@ import App from '../../App/App.js';
 
 import Waveline from './objects/Waveline.js';
 
+import SineWave from './objects/SineWave.js';
+
 import basicVert from './shaders/basic.vert';
 import basicFrag from './shaders/basic.frag';
 
 
-import { initialSurfaceGen, finalSurfaceGen, xCoord, yCoord, visibleHeightAtZDepth, visibleWidthAtZDepth } from './wavelinesCanvasHelpers.js';
+import { xCoord, yCoord, visibleHeightAtZDepth, visibleWidthAtZDepth } from './wavelinesCanvasHelpers.js';
 
 let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
@@ -29,7 +31,7 @@ export default class WavelinesCanvas {
     self.app = new App( document.querySelector( '#wavelines-canvas' ) );
 
     self.app.renderer.setClearColor( 0xffffff );
-    self.app.camera.position.set( 0, 0, 1);
+    self.app.camera.position.set( 0, 0, 1 );
 
     // TODO: not working in Edge
     let statisticsOverlay;
@@ -38,7 +40,7 @@ export default class WavelinesCanvas {
 
     self.app.onUpdate = function () {
 
-      self.mixer.update( self.app.delta * 0.001 );
+      // self.mixer.update( self.app.delta * 0.001 );
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
@@ -50,7 +52,6 @@ export default class WavelinesCanvas {
       self.canvasWidth = visibleWidthAtZDepth( self.lineDepth, self.app.camera );
     };
 
-    self.lineDepth = 0;
     self.canvasHeight = visibleHeightAtZDepth( self.lineDepth, self.app.camera );
     self.canvasWidth = visibleWidthAtZDepth( self.lineDepth, self.app.camera );
 
@@ -59,9 +60,21 @@ export default class WavelinesCanvas {
     self.initMaterials();
     self.initLines();
 
-    this.initAnimation();
+    // this.initAnimation();
+
+    self.centreCircle();
 
     self.app.play();
+  }
+
+  // For testing
+  centreCircle() {
+    const geom = new THREE.SphereBufferGeometry( 1.5, 32, 32 );
+    const mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { color: 0xff00ff } ) );
+
+    mesh.position.set( 0, 0, -5 );
+
+    this.app.scene.add( mesh );
   }
 
   initAnimation() {
@@ -89,53 +102,27 @@ export default class WavelinesCanvas {
 
   initLines() {
 
+    const z =  0;
     const spec = {
-        thickness: 0.0035,
-        material: this.lineMat,
-        zDepth: this.lineDepth,
-        meshFineness: 32,
+      thickness: 0.025,
+      fineness: 200,
+      material: this.lineMat,
+      canvasWidth: visibleWidthAtZDepth( z, this.app.camera ),
+      z,
     }
 
-    // x positions at start of animation
-    const xInitial = [xCoord( 0, this.canvasWidth ), 0, 0, 0,  xCoord( 100, this.canvasWidth )];
-    // x positions at start of animation
-    const xFinal = [xCoord( 0, this.canvasWidth ), 0, 0, 0, xCoord( 100, this.canvasWidth )];
+    const sinewave = new SineWave( spec );
 
-    for ( let i = 0; i < 50; i++ ) {
-      xInitial[1] = xCoord( THREE.Math.randInt( 15, 25 ), this.canvasWidth );
-      xInitial[3] = xCoord( THREE.Math.randInt( 65, 85 ), this.canvasWidth );
-      xFinal[1] = xCoord( THREE.Math.randInt( 15, 25 ), this.canvasWidth );
-      xFinal[3] = xCoord( THREE.Math.randInt( 65, 85 ), this.canvasWidth );
+    this.wavelinesAnimationObjectGroup.add( sinewave );
 
-      const s = Object.assign( {
-        //the following arrays must all be of the same size, >=2
-        xInitial, 
-        xFinal, 
-        yInitial: [ //y positions at start of animation
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          0,
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-        ],
-        yFinal: [ //y positions at end of animation
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          0,
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-          yCoord( THREE.Math.randInt( 35, 65 ), this.canvasHeight ),
-        ]
-      }, spec );
+    this.app.scene.add( sinewave );
 
-      const waveline = new Waveline( s );
-
-      this.wavelinesAnimationObjectGroup.add( waveline );
-
-      this.app.scene.add( waveline );
-    }
   }
 
   initMaterials() {
+
+    // this.lineMat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+
     this.lineMat = new THREE.ShaderMaterial( {
       uniforms: {
         morphTargetInfluences: {

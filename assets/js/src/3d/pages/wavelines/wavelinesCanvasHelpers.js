@@ -27,25 +27,27 @@ export const yCoord = ( y, visibleHeight ) => {
   return y < 50 ? ( -50 + y ) * onePercent : ( y - 50 ) * onePercent;
 }
 
+export const sineWave = ( amp, time, freq, phase ) => amp * Math.sin( 2 * Math.PI * freq * time + phase );
+
 // parametrically generated surfaces
-const initialSurfaceFunc = ( x, z ) => x * x * x - z * z * z;
+// const initialSurfaceFunc = ( x, z ) => x * x * x - z * z * z;
 
-const finalSurfaceFunc = ( x, z, ) => Math.sin( x * x * x ) - Math.sin( z * z * z );
+// const finalSurfaceFunc = ( x, z, ) => Math.sin( x * x * x ) - Math.sin( z * z * z );
 
-// 0 <= x <= 1, 0 <= z <=1
-export const initialSurfaceGen = ( x, z, cam ) => {
-  const height = visibleHeightAtZDepth( z, cam );
+// // 0 <= x <= 1, 0 <= z <=1
+// export const initialSurfaceGen = ( x, z, cam ) => {
+//   const height = visibleHeightAtZDepth( z, cam );
 
-  const y = initialSurfaceFunc( x, z );
+//   const y = initialSurfaceFunc( x, z );
 
-  return yCoord( y * 100, height );
-};
+//   return yCoord( y * 100, height );
+// };
 
-// 0 <= x <= 1, 0 <= z <=1
-export const finalSurfaceGen = ( x, z, cam ) => {
-  const height = visibleHeightAtZDepth( z, cam );
+// // 0 <= x <= 1, 0 <= z <=1
+// export const finalSurfaceGen = ( x, z, cam ) => {
+//   const height = visibleHeightAtZDepth( z, cam );
 
-  const y = finalSurfaceFunc( x, z );
+//   const y = finalSurfaceFunc( x, z );
 
-  return yCoord( y * 100, height );
-};
+//   return yCoord( y * 100, height );
+// };

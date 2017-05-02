@@ -42039,122 +42039,152 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-var Waveline = function () {
-  function Waveline(spec) {
-    classCallCheck(this, Waveline);
+// import { sineWave, visibleWidthAtZDepth } from '../wavelinesCanvasHelpers.js';
+
+var sineWave = function (amp, time, freq, phase) {
+    return amp * Math.sin(2 * Math.PI * freq * time + phase);
+};
+
+// * ***********************************************************************
+// *
+// *  SINE WAVE CLASS
+// *
+// *************************************************************************
+// const spec = {
+//    material: new THREE.someKindOfMaterial,
+//    z: -1, //how far from the camera to create the line
+//    color: 0xffffff,
+//    //the following array must all be of the same size, >=2
+//    xInitial: [], //first should be 0, last 100 to cover screen
+//    xFinal: [], ////first should be 0, last 100 to cover screen
+//    yInitial: [],
+//    yFinal: [],
+// }
+
+var SineWave = function () {
+    function SineWave(spec) {
+        classCallCheck(this, SineWave);
 
 
-    this.spec = spec || {};
+        this.spec = spec || {};
 
-    this.calculateParams();
-    return this.createMesh();
-  }
-
-  // check the spec is correct and map points to screen space
-
-
-  Waveline.prototype.calculateParams = function calculateParams() {
-    var _this = this;
-
-    // warn if all initialisation arrays are not the same length
-    var checkArrays = function () {
-      var len = _this.spec.xInitial.length;
-      Object.keys(_this.spec).forEach(function (key) {
-        if (_this.spec[key] instanceof Array) {
-          if (_this.spec[key].length !== len) {
-            console.warn('Waveline: Warning: all initialisation arrays must be the same length');
-          }
-        }
-      });
-      if (len < 2) console.error('Waveline: all initialisation arrays must have length >= 2!');
-    }();
-  };
-
-  // create a line geometry to be used either for a mesh or as a morph target
-
-
-  Waveline.prototype.createLine = function createLine(xArray, yArray) {
-    var _this2 = this;
-
-    // create an upper curve
-    var upperPoints = xArray.map(function (l, i) {
-      return new Vector2(l, yArray[i]);
-    });
-    // create a lower curve seperated by 1 from the first
-    // and going in the opposite direction
-    var lowerPoints = xArray.map(function (l, i) {
-      return new Vector2(l, yArray[i] - _this2.spec.thickness);
-    }).reverse();
-
-    var line = new Shape();
-    line.moveTo(upperPoints[0].x, upperPoints[0].y); // starting point
-    // upper curve through the rest of the upperPoints array
-    line.splineThru(upperPoints.slice(1, upperPoints.length));
-    line.lineTo(lowerPoints[0].x, lowerPoints[0].y);
-    // lower curve
-    line.splineThru(lowerPoints.slice(1, lowerPoints.length));
-
-    return new ShapeGeometry(line, this.spec.meshFineness);
-
-    // If using lineBufferGeometry method
-    // return new THREE.ShapeBufferGeometry(line, this.spec.meshFineness);
-  };
-
-  // create the line geometry and add morphtargets
-
-
-  Waveline.prototype.lineGeometry = function lineGeometry() {
-    var geometry = this.createLine(this.spec.xInitial, this.spec.yInitial);
-
-    var morphGeometry = this.createLine(this.spec.xFinal, this.spec.yFinal);
-
-    geometry.morphTargets.push({
-      name: 'movement',
-      vertices: morphGeometry.vertices
-    });
-
-    var l = geometry.vertices.length;
-    geometry.faces = [];
-    for (var i = 0; i < (l - 2) / 2; i++) {
-      geometry.faces.push(new Face3(i, l - 1 - i, l - 2 - i));
-      geometry.faces.push(new Face3(i, l - 2 - i, i + 1));
+        return this.createMesh();
     }
 
-    return geometry;
-  };
-
-  // create the line geometry and add morphtargets - return BufferGeometry from createLine to use this
-  // lineBufferGeometry() {
-  //   const geometry = this.createLine(
-  //     this.spec.xInitial,
-  //     this.spec.yInitial,
-  //   );
-
-  //   const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
-
-  //   // If using buffer geometry - seem to hit bug in three though
-  //   geometry.morphAttributes.position = [];
-  //   geometry.morphAttributes.position[0] = morphGeometry.attributes.position;
-
-  //   // Hack required to get Mesh to have morphTargetInfluences attribute
-  //   geometry.morphTargets = [];
-  //   geometry.morphTargets.push( 0 );
-
-  //   return geometry;
-  // }
+    // create a line geometry to be used either for a mesh or as a morph target
 
 
-  Waveline.prototype.createMesh = function createMesh() {
-    var line = this.lineGeometry();
+    SineWave.prototype.createLine = function createLine(xArray, yArray) {
+        var _this = this;
 
-    var mesh = new Mesh(line, this.spec.material);
+        // create an upper curve
+        var upperPoints = xArray.map(function (l, i) {
+            return new Vector2(l, yArray[i]);
+        });
+        // create a lower curve separated by desired thickness from the first
+        // and going in the opposite direction
+        var lowerPoints = xArray.map(function (l, i) {
+            return new Vector2(l, yArray[i] - _this.spec.thickness);
+        }).reverse();
 
-    mesh.position.z = this.spec.zDepth;
-    // console.log( mesh );
-    return mesh;
-  };
+        var line = new Shape();
+        line.moveTo(upperPoints[0].x, upperPoints[0].y); // starting point
+        // upper curve through the rest of the upperPoints array
+        line.splineThru(upperPoints.slice(1, upperPoints.length));
+        line.lineTo(lowerPoints[0].x, lowerPoints[0].y);
+        // lower curve
+        line.splineThru(lowerPoints.slice(1, lowerPoints.length));
 
-  return Waveline;
+        return line;
+    };
+
+    SineWave.prototype.createWave = function createWave() {
+        var initialSpec = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var finalSpec = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var l = this.spec.fineness;
+        var positions = new Float32Array(l * 3 * 2);
+
+        var indices = new Uint16Array((l * 2 - 2) * 3);
+
+        var xInitial = -this.spec.canvasWidth / 2;
+
+        var dist = this.spec.canvasWidth;
+
+        var step = dist / l;
+
+        // generate forward and reverse positions on top and bottom of wave
+        for (var i = 0; i < l; i++) {
+            var offset = i * 6;
+            var currentXPos = xInitial + step * i;
+
+            var y = sineWave(0.5, currentXPos, 2, 0);
+
+            positions[offset] = positions[offset + 3] = currentXPos;
+            positions[offset + 1] = y;
+            positions[offset + 4] = y - this.spec.thickness;
+            positions[offset + 2] = positions[offset + 5] = this.spec.z;
+        }
+
+        for (var j = 0; j < (l * 2 - 2) / 2; j++) {
+
+            var k = j * 2;
+            var _offset = j * 6;
+
+            indices[_offset] = k;
+            indices[_offset + 1] = k + 1;
+            indices[_offset + 2] = k + 2;
+
+            indices[_offset + 3] = k + 1;
+            indices[_offset + 4] = k + 3;
+            indices[_offset + 5] = k + 2;
+        }
+
+        var wave = new BufferGeometry();
+
+        wave.setIndex(new BufferAttribute(indices, 1));
+        wave.addAttribute('position', new BufferAttribute(positions, 3));
+
+        return wave;
+    };
+
+    // create the line geometry and add morph targets
+
+
+    SineWave.prototype.lineGeometry = function lineGeometry() {
+        var line = this.createLine(this.spec.xInitial, this.spec.yInitial);
+
+        var geometry = new ShapeGeometry(line, this.spec.meshFineness);
+
+        var morphLine = this.createLine(this.spec.xFinal, this.spec.yFinal);
+        var morphGeometry = new ShapeGeometry(morphLine, this.spec.meshFineness);
+
+        geometry.morphTargets.push({
+            name: 'movement',
+            vertices: morphGeometry.vertices
+        });
+
+        var l = geometry.vertices.length;
+        geometry.faces = [];
+        for (var i = 0; i < (l - 2) / 2; i++) {
+            geometry.faces.push(new Face3(i, l - 1 - i, l - 2 - i));
+            geometry.faces.push(new Face3(i, l - 2 - i, i + 1));
+        }
+
+        return geometry;
+    };
+
+    SineWave.prototype.createMesh = function createMesh() {
+        var geometry = this.createWave();
+
+        var mesh = new Mesh(geometry, this.spec.material);
+
+        // mesh.position.z = this.spec.zDepth;
+
+        return mesh;
+    };
+
+    return SineWave;
 }();
 
 var basicVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nvoid main() {\n  vec3 transformed = vec3( position );\n  transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n}";
@@ -42179,18 +42209,6 @@ var visibleWidthAtZDepth = function (depth, camera) {
   return height * camera.aspect;
 };
 
-var xCoord = function (x, visibleWidth) {
-  var onePercent = visibleWidth / 100;
-  return x < 50 ? (-50 + x) * onePercent : (x - 50) * onePercent;
-};
-
-var yCoord = function (y, visibleHeight) {
-  var onePercent = visibleHeight / 100;
-  return y < 50 ? (-50 + y) * onePercent : (y - 50) * onePercent;
-};
-
-// parametrically generated surfaces
-
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
 var WavelinesCanvas = function () {
@@ -42213,7 +42231,7 @@ var WavelinesCanvas = function () {
 
         self.app.onUpdate = function () {
 
-            self.mixer.update(self.app.delta * 0.001);
+            // self.mixer.update( self.app.delta * 0.001 );
 
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
@@ -42224,7 +42242,6 @@ var WavelinesCanvas = function () {
             self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
         };
 
-        self.lineDepth = 0;
         self.canvasHeight = visibleHeightAtZDepth(self.lineDepth, self.app.camera);
         self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
 
@@ -42233,10 +42250,24 @@ var WavelinesCanvas = function () {
         self.initMaterials();
         self.initLines();
 
-        this.initAnimation();
+        // this.initAnimation();
+
+        self.centreCircle();
 
         self.app.play();
     }
+
+    // For testing
+
+
+    WavelinesCanvas.prototype.centreCircle = function centreCircle() {
+        var geom = new SphereBufferGeometry(1.5, 32, 32);
+        var mesh = new Mesh(geom, new MeshBasicMaterial({ color: 0xff00ff }));
+
+        mesh.position.set(0, 0, -5);
+
+        this.app.scene.add(mesh);
+    };
 
     WavelinesCanvas.prototype.initAnimation = function initAnimation() {
         var animationLength = 10.0;
@@ -42263,43 +42294,26 @@ var WavelinesCanvas = function () {
 
     WavelinesCanvas.prototype.initLines = function initLines() {
 
+        var z = 0;
         var spec = {
-            thickness: 0.0035,
+            thickness: 0.025,
+            fineness: 200,
             material: this.lineMat,
-            zDepth: this.lineDepth,
-            meshFineness: 32
+            canvasWidth: visibleWidthAtZDepth(z, this.app.camera),
+            z: z
         };
 
-        // x positions at start of animation
-        var xInitial = [xCoord(0, this.canvasWidth), 0, 0, 0, xCoord(100, this.canvasWidth)];
-        // x positions at start of animation
-        var xFinal = [xCoord(0, this.canvasWidth), 0, 0, 0, xCoord(100, this.canvasWidth)];
+        var sinewave = new SineWave(spec);
 
-        for (var i = 0; i < 50; i++) {
-            xInitial[1] = xCoord(_Math.randInt(15, 25), this.canvasWidth);
-            xInitial[3] = xCoord(_Math.randInt(65, 85), this.canvasWidth);
-            xFinal[1] = xCoord(_Math.randInt(15, 25), this.canvasWidth);
-            xFinal[3] = xCoord(_Math.randInt(65, 85), this.canvasWidth);
+        this.wavelinesAnimationObjectGroup.add(sinewave);
 
-            var s = Object.assign({
-                //the following arrays must all be of the same size, >=2
-                xInitial: xInitial,
-                xFinal: xFinal,
-                yInitial: [//y positions at start of animation
-                yCoord(_Math.randInt(35, 65), this.canvasHeight), yCoord(_Math.randInt(35, 65), this.canvasHeight), 0, yCoord(_Math.randInt(35, 65), this.canvasHeight), yCoord(_Math.randInt(35, 65), this.canvasHeight)],
-                yFinal: [//y positions at end of animation
-                yCoord(_Math.randInt(35, 65), this.canvasHeight), yCoord(_Math.randInt(35, 65), this.canvasHeight), 0, yCoord(_Math.randInt(35, 65), this.canvasHeight), yCoord(_Math.randInt(35, 65), this.canvasHeight)]
-            }, spec);
-
-            var waveline = new Waveline(s);
-
-            this.wavelinesAnimationObjectGroup.add(waveline);
-
-            this.app.scene.add(waveline);
-        }
+        this.app.scene.add(sinewave);
     };
 
     WavelinesCanvas.prototype.initMaterials = function initMaterials() {
+
+        // this.lineMat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+
         this.lineMat = new ShaderMaterial({
             uniforms: {
                 morphTargetInfluences: {

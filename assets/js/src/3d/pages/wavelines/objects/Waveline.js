@@ -59,6 +59,7 @@ export default class Waveline {
     // lower curve
     line.splineThru( lowerPoints.slice( 1, lowerPoints.length ) );
 
+    console.log( line )
     return new THREE.ShapeGeometry( line, this.spec.meshFineness );
 
     // If using lineBufferGeometry method
@@ -106,6 +107,25 @@ export default class Waveline {
   //   // Hack required to get Mesh to have morphTargetInfluences attribute
   //   geometry.morphTargets = [];
   //   geometry.morphTargets.push( 0 );
+
+  //   // indexing needs work
+  //   const indices = new Uint32Array( geometry.attributes.position.count );
+
+  //   const l = geometry.attributes.position.count / 3;
+
+  //   for ( let i = 0; i < indices.length / 6; i ++ ) {
+  //     const k = i * 6;
+  //     indices[k] = i;
+  //     indices[k + 1] = l - 1 - k;
+  //     indices[k + 2] = l - 2 - k;
+
+  //     cont j = k + 3;
+  //     indices[j] = i;
+  //     indices[j + 1] = l - 1 - k;
+  //     indices[j + 2] = l - 2 - k;
+  //   }
+
+  //   geometry.setIndex( new THREE.BufferAttribute( indices, 1 ) );
 
   //   return geometry;
   // }
