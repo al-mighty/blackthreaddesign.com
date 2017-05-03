@@ -44919,6 +44919,83 @@ function createGroup1(camera) {
   };
 }
 
+function createGroup2(camera) {
+  var group = new Group();
+
+  var animationGroup = new AnimationObjectGroup();
+  var mixer = initAnimation(20, animationGroup);
+
+  var z = -15;
+  var material = initMaterial(0.3);
+  var spec = {
+    z: z,
+    initialParams: {
+      thickness: 2,
+      yOffset: 3,
+      points: [new Vector2(0, -3.0), new Vector2(0.25, 2), new Vector2(0.75, -2), new Vector2(1.0, 5)]
+    },
+    finalParams: {
+      thickness: 2,
+      yOffset: 4,
+      points: [new Vector2(0, 2.0), new Vector2(0.25, -2.4), new Vector2(0.75, 0.0), new Vector2(1.0, 0.0)]
+    },
+    material: material,
+    canvasWidth: visibleWidthAtZDepth(z, camera),
+    canvasHeight: visibleHeightAtZDepth(z, camera)
+  };
+
+  var sineWave = new SineWave(spec);
+
+  animationGroup.add(sineWave);
+
+  group.add(sineWave);
+
+  return {
+    group: group,
+    mixer: mixer
+  };
+}
+
+function createGroup3(camera) {
+  var group = new Group();
+
+  var animationGroup = new AnimationObjectGroup();
+  var mixer = initAnimation(8, animationGroup);
+
+  var z = -2;
+  var material = initMaterial(1.0);
+  var spec = {
+    z: z,
+    initialParams: {
+      thickness: 0.005
+    },
+    finalParams: {
+      thickness: 0.005
+    },
+    material: material,
+    canvasWidth: visibleWidthAtZDepth(z, camera),
+    canvasHeight: visibleHeightAtZDepth(z, camera)
+  };
+
+  for (var i = 0; i < 45; i++) {
+    var a = i * 0.02;
+    spec.initialParams.points = [new Vector2(0, 1.0 + a), new Vector2(0.25, 0.4 - a), new Vector2(0.6, 0.5 + a), new Vector2(1.0, -0.0 - a)];
+
+    spec.finalParams.points = [new Vector2(0, 1.0 - a), new Vector2(0.4, 0.0 + a), new Vector2(0.9, 0.5 - a), new Vector2(1.0, -0.0 + a)];
+
+    var sineWave = new SineWave(spec);
+
+    animationGroup.add(sineWave);
+
+    group.add(sineWave);
+  }
+
+  return {
+    group: group,
+    mixer: mixer
+  };
+}
+
 var WavelinesCanvas = function () {
     function WavelinesCanvas(showStats) {
         classCallCheck(this, WavelinesCanvas);
@@ -44950,14 +45027,7 @@ var WavelinesCanvas = function () {
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
 
-        self.app.onWindowResize = function () {
-
-            self.canvasHeight = visibleHeightAtZDepth(self.lineDepth, self.app.camera);
-            self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
-        };
-
-        self.canvasHeight = visibleHeightAtZDepth(self.lineDepth, self.app.camera);
-        self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
+        self.app.onWindowResize = function () {};
 
         self.initLines();
 
@@ -44970,10 +45040,18 @@ var WavelinesCanvas = function () {
 
 
     WavelinesCanvas.prototype.centreCircle = function centreCircle() {
-        var geom = new SphereBufferGeometry(1.5, 32, 32);
-        var mesh = new Mesh(geom, new MeshBasicMaterial({ color: 0xff00ff }));
+        var map = new TextureLoader().load('/assets/images/work/wavelines/blueball-trans.png');
+        var geom = new SphereBufferGeometry(0.5, 32, 32);
 
-        mesh.position.set(0, 0, -5);
+        var mat = new MeshBasicMaterial({
+            color: 0xffffff,
+            map: map,
+            transparent: true
+        });
+
+        var mesh = new Mesh(geom, mat);
+
+        mesh.position.set(0, 0, -1);
 
         this.circle = mesh;
 
@@ -44981,11 +45059,14 @@ var WavelinesCanvas = function () {
     };
 
     WavelinesCanvas.prototype.initLines = function initLines() {
-        var group1 = createGroup1(this.app.camera);
+        var _this = this;
 
-        this.app.scene.add(group1.group);
+        var groups = [createGroup1(this.app.camera), createGroup2(this.app.camera), createGroup3(this.app.camera)];
 
-        this.mixers.push(group1.mixer);
+        groups.forEach(function (group) {
+            _this.app.scene.add(group.group);
+            _this.mixers.push(group.mixer);
+        });
     };
 
     WavelinesCanvas.prototype.animateCamera = function animateCamera() {

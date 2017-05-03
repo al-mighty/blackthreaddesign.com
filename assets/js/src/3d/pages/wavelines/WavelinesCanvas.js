@@ -1,20 +1,10 @@
 import * as THREE from 'three';
 
 import utils from '../../../utilities.js';
-
-
-
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
-
 import App from '../../App/App.js';
 
-import SineWave from './objects/SineWave.js';
-
-import basicVert from './shaders/basic.vert';
-import basicFrag from './shaders/basic.frag';
-
-import { createGroup1 } from './spec/lines.js';
-import { visibleHeightAtZDepth, visibleWidthAtZDepth } from './wavelinesCanvasHelpers.js';
+import { createGroup1, createGroup2, createGroup3 } from './spec/lines.js';
 
 export default class WavelinesCanvas {
 
@@ -47,13 +37,7 @@ export default class WavelinesCanvas {
 
     self.app.onWindowResize = function () { 
 
-      self.canvasHeight = visibleHeightAtZDepth( self.lineDepth, self.app.camera );
-      self.canvasWidth = visibleWidthAtZDepth( self.lineDepth, self.app.camera );
- 
    };
-
-    self.canvasHeight = visibleHeightAtZDepth( self.lineDepth, self.app.camera );
-    self.canvasWidth = visibleWidthAtZDepth( self.lineDepth, self.app.camera );
 
     self.initLines();
 
@@ -64,10 +48,18 @@ export default class WavelinesCanvas {
 
   // For testing
   centreCircle() {
-    const geom = new THREE.SphereBufferGeometry( 1.5, 32, 32 );
-    const mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { color: 0xff00ff } ) );
+    const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
+    const geom = new THREE.SphereBufferGeometry( 0.5, 32, 32 );
 
-    mesh.position.set( 0, 0, -5 );
+    const mat = new THREE.MeshBasicMaterial( { 
+      color: 0xffffff, 
+      map: map, 
+      transparent: true,
+    } );
+
+    const mesh = new THREE.Mesh( geom, mat );
+
+    mesh.position.set( 0, 0, -1 );
 
     this.circle = mesh;
 
@@ -75,12 +67,16 @@ export default class WavelinesCanvas {
   }
 
   initLines() {
-    const group1 = createGroup1( this.app.camera );
+    const groups = [
+      createGroup1( this.app.camera ),
+      createGroup2( this.app.camera ),
+      createGroup3( this.app.camera ),
+    ];
 
-    this.app.scene.add( group1.group );
-
-    this.mixers.push( group1.mixer );
-
+    groups.forEach( ( group ) => {
+      this.app.scene.add( group.group );
+      this.mixers.push( group.mixer );
+    } );
   }
 
   animateCamera() {
