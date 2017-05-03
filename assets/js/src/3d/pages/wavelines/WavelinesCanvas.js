@@ -45,6 +45,7 @@ export default class WavelinesCanvas {
 
     self.app.play();
   }
+  
 
   // For testing
   centreCircle() {
