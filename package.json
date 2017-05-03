@@ -81,7 +81,8 @@
       "import/no-unresolved": 0,
       "func-names": 0,
       "no-param-reassign": 0,
-      "radix": 0
+      "radix": 0,
+      "computed-property-spacing": 0
     }
   }
 }
