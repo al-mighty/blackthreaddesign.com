@@ -1,9 +1,6 @@
 import * as THREE from 'three';
 
-// import { sineWave, visibleWidthAtZDepth } from '../wavelinesCanvasHelpers.js';
-
-const sineWave = ( amp, time, freq, phase ) => amp * Math.sin( 2 * Math.PI * freq * time + phase );
-
+import { sineWave } from '../wavelinesCanvasHelpers.js';
 
 // * ***********************************************************************
 // *
@@ -28,7 +25,7 @@ export default class SineWave {
     return this.createMesh();
   }
 
-  createWave( initialSpec = {}, finalSpec = {} ) {
+  createWave( ) {
     const l = this.spec.fineness;
 
     const positions = new Float32Array( l * 3 * 2 );
@@ -41,24 +38,37 @@ export default class SineWave {
 
     const step = dist / l;
 
+    const init = this.spec.initialParams;
+    const final = this.spec.finalParams;
+
+    const points = init.points.map( ( v ) => {
+      // map the passed in x value in [0, 1] to screen width
+      v.x = xInitial + ( dist * v.x ); 
+      return v;
+    } );
+
+    const morphPoints = final.points.map( ( v ) => {
+      v.x = xInitial + ( dist * v.x ); 
+      return v;
+    } );
+
+    // also test getSpacedPoints
+    const initialPositions = new THREE.SplineCurve( points ).getSpacedPoints( l - 1 );
+
+    const finalPositions = new THREE.SplineCurve( morphPoints ).getSpacedPoints( l - 1 );
+
     // generate forward and reverse positions on top and bottom of wave
     for ( let i = 0; i < l; i++ ) {
       const offset = i * 6;
-      const currentXPos = xInitial + step * i;
 
-      const init = this.spec.initialParams;
-      const y = sineWave( init.amp, currentXPos, init.freq, init.phase );
+      positions[ offset ] = positions[ offset + 3 ] = initialPositions[i].x;
+      morphPositions[ offset ] = morphPositions[ offset + 3 ] = finalPositions[i].x;
 
-      const final = this.spec.finalParams;
-      const yMorph = sineWave( final.amp, currentXPos, final.freq, final.phase );
+      positions[ offset + 1 ] = initialPositions[i].y + init.yOffset;
+      positions[ offset + 4 ] = initialPositions[i].y - init.thickness + init.yOffset;
 
-      positions[ offset ] = positions[ offset + 3 ] = morphPositions[ offset ] = morphPositions[ offset + 3 ] = currentXPos;
-
-      positions[ offset + 1 ] = y + init.yOffset;
-      positions[ offset + 4 ] = y - this.spec.thickness + final.yOffset;
-
-      morphPositions[ offset + 1 ] = yMorph;
-      morphPositions[ offset + 4 ] = yMorph - this.spec.thickness;
+      morphPositions[ offset + 1 ] = finalPositions[i].y + final.yOffset;
+      morphPositions[ offset + 4 ] = finalPositions[i].y - final.thickness + final.yOffset;
 
       positions[ offset + 2 ] = positions[ offset + 5 ] = morphPositions[ offset + 2 ] = morphPositions[ offset + 5 ] = this.spec.z;
 
@@ -93,40 +103,10 @@ export default class SineWave {
     return geometry;
   }
 
-  // create the line geometry and add morph targets
-  lineGeometry() {
-    const line = this.createLine(
-      this.spec.xInitial,
-      this.spec.yInitial,
-    );
-
-    const geometry =  new THREE.ShapeGeometry( line, this.spec.meshFineness );
-
-    const morphLine = this.createLine( this.spec.xFinal, this.spec.yFinal );
-    const morphGeometry = new THREE.ShapeGeometry( morphLine, this.spec.meshFineness );
-
-    geometry.morphTargets.push( {
-      name: 'movement',
-      vertices: morphGeometry.vertices,
-    } );
-
-
-    const l = geometry.vertices.length;
-    geometry.faces = [];
-    for ( let i = 0; i < ( l - 2 ) / 2; i++ ) {
-      geometry.faces.push( new THREE.Face3( i, l - 1 - i, l - 2 - i ) );
-      geometry.faces.push( new THREE.Face3( i, l - 2 - i, i + 1 ) );
-    }
-
-    return geometry;
-  }
-
   createMesh() {
     const geometry = this.createWave();
 
     const mesh = new THREE.Mesh( geometry, this.spec.material );
-
-    // mesh.position.z = this.spec.zDepth;
 
     return mesh;
   }
