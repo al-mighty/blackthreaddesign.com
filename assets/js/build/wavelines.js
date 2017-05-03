@@ -44173,25 +44173,6 @@ var utils = {
 window.addEventListener('mousemove', utils.moveHandler);
 new Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
 
-var lineSpec = {
-  l1: {
-    opacity: 0.5,
-    z: -10,
-    initialParams: {
-      thickness: 1,
-      yOffset: 0.0,
-      // array of x, y, pairs between 0 and 1
-      // first x must be 0, final x must be 1, x must increase
-      points: [new Vector2(0, 2.5), new Vector2(0.25, 0.2), new Vector2(0.6, 2.6), new Vector2(1.0, 1.0)]
-    },
-    finalParams: {
-      thickness: 1,
-      yOffset: 0.0,
-      points: [new Vector2(0, -2.1), new Vector2(0.1, 0.5), new Vector2(0.7, -2.6), new Vector2(1.0, 0.6)]
-    }
-  }
-};
-
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
 var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
@@ -44745,46 +44726,20 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-// import * as THREE from 'three';
-// import threeUtils from '../../App/threeUtils.js';
-
-var visibleHeightAtZDepth = function (depth, camera) {
-  // compensate for cameras not positioned at z=0
-  var cameraOffset = camera.position.z;
-  if (depth < cameraOffset) depth -= cameraOffset;else depth += cameraOffset;
-
-  // vertical fov in radians
-  var vFOV = camera.fov * Math.PI / 180;
-  return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
-};
-
-var visibleWidthAtZDepth = function (depth, camera) {
-  var height = visibleHeightAtZDepth(depth, camera);
-  return height * camera.aspect;
-};
-
-// * ***********************************************************************
-// *
-// *  SINE WAVE CLASS
-// *
-// *************************************************************************
-// const spec = {
-//    material: new THREE.someKindOfMaterial,
-//    z: -1, //how far from the camera to create the line
-//    color: 0xffffff,
-//    //the following array must all be of the same size, >=2
-//    xInitial: [], //first should be 0, last 100 to cover screen
-//    xFinal: [], ////first should be 0, last 100 to cover screen
-//    yInitial: [],
-//    yFinal: [],
-// }
-
 var SineWave = function () {
     function SineWave(spec) {
         classCallCheck(this, SineWave);
 
 
         this.spec = spec || {};
+
+        this.spec.opacity = this.spec.opacity || 1.0;
+        this.spec.z = this.spec.z || -10;
+        this.spec.fineness = this.spec.fineness || 200;
+        this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
+        this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
+        this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
+        this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
 
         return this.createMesh();
     }
@@ -44799,8 +44754,6 @@ var SineWave = function () {
         var xInitial = -this.spec.canvasWidth / 2;
 
         var dist = this.spec.canvasWidth;
-
-        var step = dist / l;
 
         var init = this.spec.initialParams;
         var final = this.spec.finalParams;
@@ -44881,6 +44834,91 @@ var basicVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nv
 
 var basicFrag = "precision lowp float;\n#define GLSLIFY 1\nuniform float opacity;\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, opacity );\n} ";
 
+// import * as THREE from 'three';
+// import threeUtils from '../../App/threeUtils.js';
+
+var visibleHeightAtZDepth = function (depth, camera) {
+  // compensate for cameras not positioned at z=0
+  var cameraOffset = camera.position.z;
+  if (depth < cameraOffset) depth -= cameraOffset;else depth += cameraOffset;
+
+  // vertical fov in radians
+  var vFOV = camera.fov * Math.PI / 180;
+  return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+};
+
+var visibleWidthAtZDepth = function (depth, camera) {
+  var height = visibleHeightAtZDepth(depth, camera);
+  return height * camera.aspect;
+};
+
+function initMaterial(opacity) {
+  return new ShaderMaterial({
+    uniforms: {
+      opacity: {
+        value: opacity
+      },
+      morphTargetInfluences: {
+        value: [0, 0, 0, 0]
+      }
+    },
+    vertexShader: basicVert,
+    fragmentShader: basicFrag,
+    morphTargets: true,
+    transparent: true
+  });
+}
+
+function initAnimation(length, group) {
+  var keyFrame = new NumberKeyframeTrack('geometry.morphTargetInfluences', [0.0, length], [0.0, 1.0], InterpolateSmooth);
+  var clip = new AnimationClip('wavelineMorphTargetsClip', length, [keyFrame]);
+
+  var mixer = new AnimationMixer(group);
+  var animationAction = mixer.clipAction(clip);
+
+  animationAction.loop = LoopPingPong;
+
+  animationAction.play();
+
+  return mixer;
+}
+
+function createGroup1(camera) {
+  var group = new Group();
+
+  var animationGroup = new AnimationObjectGroup();
+  var mixer = initAnimation(15, animationGroup);
+
+  var z = -10;
+  var material = initMaterial(1.0);
+  var spec = {
+    z: z,
+    initialParams: {},
+    finalParams: {},
+    material: material,
+    canvasWidth: visibleWidthAtZDepth(z, camera),
+    canvasHeight: visibleHeightAtZDepth(z, camera)
+  };
+
+  for (var i = 0; i < 18; i++) {
+    var a = i * 0.1;
+    spec.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4 + a), new Vector2(0.8, 0.0 + 2 * a), new Vector2(1.0, -1.0 - 2 * a)];
+
+    spec.finalParams.points = [new Vector2(0, -a * 3), new Vector2(0.4, 0.0 + a), new Vector2(0.8, 1.0 - 2 * a), new Vector2(1.0, -2.4 - 2 * a)];
+
+    var sineWave = new SineWave(spec);
+
+    animationGroup.add(sineWave);
+
+    group.add(sineWave);
+  }
+
+  return {
+    group: group,
+    mixer: mixer
+  };
+}
+
 var WavelinesCanvas = function () {
     function WavelinesCanvas(showStats) {
         classCallCheck(this, WavelinesCanvas);
@@ -44899,17 +44937,21 @@ var WavelinesCanvas = function () {
         var statisticsOverlay = void 0;
         if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
 
+        self.mixers = [];
+
         self.app.onUpdate = function () {
 
-            // self.animateCamera();
+            self.animateCamera();
 
-            self.mixer.update(self.app.delta * 0.001);
+            self.mixers.forEach(function (mixer) {
+                return mixer.update(self.app.delta * 0.001);
+            });
 
             if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
 
         self.app.onWindowResize = function () {
-            mastHeadHeight = document.querySelector('.masthead').clientHeight;
+
             self.canvasHeight = visibleHeightAtZDepth(self.lineDepth, self.app.camera);
             self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
         };
@@ -44917,13 +44959,9 @@ var WavelinesCanvas = function () {
         self.canvasHeight = visibleHeightAtZDepth(self.lineDepth, self.app.camera);
         self.canvasWidth = visibleWidthAtZDepth(self.lineDepth, self.app.camera);
 
-        self.wavelinesAnimationObjectGroup = new AnimationObjectGroup();
-
         self.initLines();
 
-        this.initAnimation();
-
-        // self.centreCircle();
+        self.centreCircle();
 
         self.app.play();
     }
@@ -44937,78 +44975,25 @@ var WavelinesCanvas = function () {
 
         mesh.position.set(0, 0, -5);
 
+        this.circle = mesh;
+
         this.app.scene.add(mesh);
     };
 
-    WavelinesCanvas.prototype.initAnimation = function initAnimation() {
-        var animationLength = 10.0;
-
-        // Create keyframes for start and end of morph target, setting the final time equal to the total length of the animation
-        // Note: 'name' must reference the propery being animated
-        var keyFrame = new NumberKeyframeTrack('geometry.morphTargetInfluences', [0.0, animationLength], [0.0, 1.0], InterpolateSmooth);
-
-        // Create an animation clip with the keyframes
-        var clip = new AnimationClip('wavelineMorphTargetsClip', animationLength, [keyFrame]);
-
-        // Create a mixer of the clip referencing the object to be animated
-        this.mixer = new AnimationMixer(this.wavelinesAnimationObjectGroup);
-
-        // create an animationAction using the mixer's clipAction function
-        var animationAction = this.mixer.clipAction(clip);
-
-        // Set the loop mode to play / reverse infinitely
-        animationAction.loop = LoopPingPong;
-
-        // Start the animation
-        animationAction.play();
-    };
-
     WavelinesCanvas.prototype.initLines = function initLines() {
-        var _this = this;
+        var group1 = createGroup1(this.app.camera);
 
-        Object.keys(lineSpec).forEach(function (key) {
-            var spec = lineSpec[key];
+        this.app.scene.add(group1.group);
 
-            spec.material = _this.initMaterial(spec.opacity);
-            spec.fineness = 200;
-            spec.canvasWidth = visibleWidthAtZDepth(spec.z, _this.app.camera);
-
-            var sinewave = new SineWave(spec);
-
-            _this.wavelinesAnimationObjectGroup.add(sinewave);
-
-            _this.app.scene.add(sinewave);
-        });
-    };
-
-    WavelinesCanvas.prototype.initMaterial = function initMaterial(opacity) {
-        opacity = opacity || 1.0;
-
-        // this.lineMat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-
-        return new ShaderMaterial({
-            uniforms: {
-                opacity: {
-                    value: opacity
-                },
-                morphTargetInfluences: {
-                    value: [0, 0, 0, 0]
-                }
-            },
-            vertexShader: basicVert,
-            fragmentShader: basicFrag,
-            morphTargets: true,
-            transparent: true,
-            side: DoubleSide
-        });
+        this.mixers.push(group1.mixer);
     };
 
     WavelinesCanvas.prototype.animateCamera = function animateCamera() {
         var pointerY = utils.pointerPos.y;
 
-        console.log(pointerY / window.innerHeight);
+        this.app.camera.position.y = pointerY / window.innerHeight;
 
-        this.app.camera.position.set(0, pointerY / window.innerHeight, 0);
+        this.circle.position.y = pointerY / window.innerHeight;
     };
 
     return WavelinesCanvas;

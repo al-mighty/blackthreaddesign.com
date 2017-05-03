@@ -1,26 +1,23 @@
 import * as THREE from 'three';
 
-import { sineWave } from '../wavelinesCanvasHelpers.js';
-
 // * ***********************************************************************
 // *
 // *  SINE WAVE CLASS
 // *
 // *************************************************************************
-// const spec = {
-//    material: new THREE.someKindOfMaterial,
-//    z: -1, //how far from the camera to create the line
-//    color: 0xffffff,
-//    //the following array must all be of the same size, >=2
-//    xInitial: [], //first should be 0, last 100 to cover screen
-//    xFinal: [], ////first should be 0, last 100 to cover screen
-//    yInitial: [],
-//    yFinal: [],
-// }
+
 export default class SineWave {
   constructor( spec ) {
 
     this.spec = spec || {};
+
+    this.spec.opacity = this.spec.opacity || 1.0;
+    this.spec.z = this.spec.z || -10;
+    this.spec.fineness = this.spec.fineness || 200;
+    this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
+    this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
+    this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
+    this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
 
     return this.createMesh();
   }
@@ -35,8 +32,6 @@ export default class SineWave {
     const xInitial = -this.spec.canvasWidth / 2;
 
     const dist = this.spec.canvasWidth;
-
-    const step = dist / l;
 
     const init = this.spec.initialParams;
     const final = this.spec.finalParams;
