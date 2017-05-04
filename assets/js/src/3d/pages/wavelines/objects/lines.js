@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
-import SineWave from '../objects/SineWave.js';
+import WaveLine from '../objects/WaveLine.js';
 
-import basicVert from '../shaders/basic.vert';
-import basicFrag from '../shaders/basic.frag';
+import morphLineVert from '../shaders/morphLine.vert';
+import morphLineFrag from '../shaders/morphLine.frag';
 
 import { visibleHeightAtZDepth, visibleWidthAtZDepth } from '../wavelinesCanvasHelpers.js';
 
 function initMaterial( opacity ) {
-  return  new THREE.ShaderMaterial( {
+  return new THREE.ShaderMaterial( {
     uniforms: {
       opacity: {
         value: opacity,
@@ -17,8 +17,8 @@ function initMaterial( opacity ) {
         value: [0, 0, 0, 0],
       },
     },
-    vertexShader: basicVert,
-    fragmentShader: basicFrag,
+    vertexShader: morphLineVert,
+    fragmentShader: morphLineFrag,
     morphTargets: true,
     transparent: true,
     // side: THREE.DoubleSide,
@@ -46,7 +46,7 @@ export function createGroup1( camera ) {
   const mixer = initAnimation( 15, animationGroup );
 
   const z = -10;
-  const material = initMaterial( 1.0 ); 
+  const material = initMaterial( 1.0 );
   const spec = {
     z,
     initialParams: {},
@@ -72,11 +72,11 @@ export function createGroup1( camera ) {
       new THREE.Vector2( 1.0, -2.4 - ( 2 * a ) ),
     ];
 
-    const sineWave = new SineWave( spec );
+    const wave = new WaveLine( spec );
 
-    animationGroup.add( sineWave );
+    animationGroup.add( wave );
 
-    group.add( sineWave );
+    group.add( wave );
   }
 
   return {
@@ -120,11 +120,11 @@ export function createGroup2( camera ) {
     canvasHeight: visibleHeightAtZDepth( z, camera ),
   };
 
-  const sineWave = new SineWave( spec );
+  const wave = new WaveLine( spec );
 
-  animationGroup.add( sineWave );
+  animationGroup.add( wave );
 
-  group.add( sineWave );
+  group.add( wave );
 
   return {
     group,
@@ -169,11 +169,11 @@ export function createGroup3( camera ) {
       new THREE.Vector2( 1.0, -0.0 + a ),
     ];
 
-    const sineWave = new SineWave( spec );
+    const wave = new WaveLine( spec );
 
-    animationGroup.add( sineWave );
+    animationGroup.add( wave );
 
-    group.add( sineWave );
+    group.add( wave );
   }
 
   return {

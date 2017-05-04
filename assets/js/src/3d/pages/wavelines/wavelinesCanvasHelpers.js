@@ -17,18 +17,18 @@ export const visibleWidthAtZDepth = ( depth, camera ) => {
   return height * camera.aspect;
 };
 
-export const xCoord = ( x, visibleWidth ) => {
-  const onePercent = visibleWidth  / 100;
-  return x < 50 ? ( -50 + x ) * onePercent : ( x - 50 ) * onePercent;
-}
+// export const xCoord = ( x, visibleWidth ) => {
+//   const onePercent = visibleWidth  / 100;
+//   return x < 50 ? ( -50 + x ) * onePercent : ( x - 50 ) * onePercent;
+// };
 
-export const yCoord = ( y, visibleHeight ) => {
-  const onePercent = visibleHeight / 100;
-  return y < 50 ? ( -50 + y ) * onePercent : ( y - 50 ) * onePercent;
-}
+// export const yCoord = ( y, visibleHeight ) => {
+//   const onePercent = visibleHeight / 100;
+//   return y < 50 ? ( -50 + y ) * onePercent : ( y - 50 ) * onePercent;
+// };
 
-export const sineWave = ( amp, time, freq, phase, offset ) =>
-  amp * Math.cos( 2 * Math.PI * freq * time + phase ) + offset;
+// export const sineWave = ( amp, time, freq, phase, offset ) =>
+//   amp * Math.cos( 2 * Math.PI * freq * time + phase ) + offset;
 
 
 // parametrically generated surfaces

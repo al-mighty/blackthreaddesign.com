@@ -2,142 +2,106 @@ import * as THREE from 'three';
 
 // * ***********************************************************************
 // *
-// *  WAVELINE CLASS
+// *  WAVE LINE CLASS
 // *
 // *************************************************************************
-// const spec = {
-//    material: new THREE.someKindOfMaterial,
-//    zDepth: -1, //how far from the camera to create the line
-//    color: 0xffffff,
-//    //the following array must all be of the same size, >=2
-//    xInitial: [], //first should be 0, last 100 to cover screen
-//    xFinal: [], ////first should be 0, last 100 to cover screen
-//    yInitial: [],
-//    yFinal: [],
-// }
-export default class Waveline {
-  constructor( spec ) {
 
+export default class WaveLine {
+  constructor( spec ) {
     this.spec = spec || {};
 
-    this.calculateParams();
+    this.spec.opacity = this.spec.opacity || 1.0;
+    this.spec.z = this.spec.z || -10;
+    this.spec.fineness = this.spec.fineness || 100;
+    this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
+    this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
+    this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
+    this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
+
     return this.createMesh();
   }
 
-  // check the spec is correct and map points to screen space
-  calculateParams() {
-    // warn if all initialisation arrays are not the same length
-    const checkArrays = ( () => {
-      const len = this.spec.xInitial.length;
-      Object.keys( this.spec )
-        .forEach( ( key ) => {
-          if ( this.spec[key] instanceof Array ) {
-            if ( this.spec[key].length !== len ) {
-              console.warn( 'Waveline: Warning: all initialisation arrays must be the same length' );
-            }
-          }
-        } );
-      if ( len < 2 ) console.error( 'Waveline: all initialisation arrays must have length >= 2!' );
-    } )();
+  createWave( ) {
+    const l = this.spec.fineness;
 
-  }
+    const positions = new Float32Array( l * 3 * 2 );
+    const morphPositions = new Float32Array( l * 3 * 2 );
+    const indices = new Uint16Array( ( ( l * 2 ) - 2 ) * 3 );
 
-  // create a line geometry to be used either for a mesh or as a morph target
-  createLine( xArray, yArray ) {
-    // create an upper curve
-    const upperPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] ) );
-    // create a lower curve seperated by 1 from the first
-    // and going in the opposite direction
-    const lowerPoints = xArray.map( ( l, i ) => new THREE.Vector2( l, yArray[i] - this.spec.thickness ) )
-      .reverse();
+    const xInitial = -this.spec.canvasWidth / 2;
 
-    const line = new THREE.Shape();
-    line.moveTo( upperPoints[0].x, upperPoints[0].y ); // starting point
-    // upper curve through the rest of the upperPoints array
-    line.splineThru( upperPoints.slice( 1, upperPoints.length ) );
-    line.lineTo( lowerPoints[0].x, lowerPoints[0].y );
-    // lower curve
-    line.splineThru( lowerPoints.slice( 1, lowerPoints.length ) );
+    const dist = this.spec.canvasWidth;
 
-    console.log( line )
-    return new THREE.ShapeGeometry( line, this.spec.meshFineness );
+    const init = this.spec.initialParams;
+    const final = this.spec.finalParams;
 
-    // If using lineBufferGeometry method
-    // return new THREE.ShapeBufferGeometry(line, this.spec.meshFineness);
-  }
-
-  // create the line geometry and add morphtargets
-  lineGeometry() {
-    const geometry = this.createLine(
-      this.spec.xInitial,
-      this.spec.yInitial,
-    );
-
-    const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
-
-    geometry.morphTargets.push( {
-      name: 'movement',
-      vertices: morphGeometry.vertices,
+    const points = init.points.map( ( v ) => {
+      // map the passed in x value in [0, 1] to screen width
+      v.x = xInitial + ( dist * v.x );
+      return v;
     } );
 
+    const morphPoints = final.points.map( ( v ) => {
+      v.x = xInitial + ( dist * v.x );
+      return v;
+    } );
 
-    const l = geometry.vertices.length;
-    geometry.faces = [];
-    for ( let i = 0; i < ( l - 2 ) / 2; i++ ) {
-      geometry.faces.push( new THREE.Face3( i, l - 1 - i, l - 2 - i ) );
-      geometry.faces.push( new THREE.Face3( i, l - 2 - i, i + 1 ) );
+    // also test getSpacedPoints
+    const initialPositions = new THREE.SplineCurve( points ).getSpacedPoints( l - 1 );
+
+    const finalPositions = new THREE.SplineCurve( morphPoints ).getSpacedPoints( l - 1 );
+
+    // generate forward and reverse positions on top and bottom of wave
+    for ( let i = 0; i < l; i++ ) {
+      const offset = i * 6;
+
+      positions[ offset ] = positions[ offset + 3 ] = initialPositions[i].x;
+      morphPositions[ offset ] = morphPositions[ offset + 3 ] = finalPositions[i].x;
+
+      positions[ offset + 1 ] = initialPositions[i].y + init.yOffset;
+      positions[ offset + 4 ] = initialPositions[i].y - init.thickness + init.yOffset;
+
+      morphPositions[ offset + 1 ] = finalPositions[i].y + final.yOffset;
+      morphPositions[ offset + 4 ] = finalPositions[i].y - final.thickness + final.yOffset;
+
+      positions[ offset + 2 ] = positions[ offset + 5 ] = morphPositions[ offset + 2 ] = morphPositions[ offset + 5 ] = this.spec.z;
+
     }
+
+    for ( let j = 0; j < ( ( l * 2 ) - 2 ) / 2; j++ ) {
+
+      const k = j * 2;
+      const offset = j * 6;
+
+      indices[ offset ] = k;
+      indices[ offset + 1 ] = k + 1;
+      indices[ offset + 2 ] = k + 2;
+
+      indices[ offset + 3 ] = k + 1;
+      indices[ offset + 4 ] = k + 3;
+      indices[ offset + 5 ] = k + 2;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+
+    geometry.setIndex( new THREE.BufferAttribute( indices, 1 ) );
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+
+    geometry.morphAttributes.position = [];
+    geometry.morphAttributes.position[0] = new THREE.BufferAttribute( morphPositions, 3 );
+
+    // Hack required to get Mesh to have morphTargetInfluences attribute
+    geometry.morphTargets = [];
+    geometry.morphTargets.push( 0 );
 
     return geometry;
   }
 
-  // create the line geometry and add morphtargets - return BufferGeometry from createLine to use this
-  // lineBufferGeometry() {
-  //   const geometry = this.createLine(
-  //     this.spec.xInitial,
-  //     this.spec.yInitial,
-  //   );
-
-  //   const morphGeometry = this.createLine( this.spec.xFinal, this.spec.yFinal );
-
-  //   // If using buffer geometry - seem to hit bug in three though
-  //   geometry.morphAttributes.position = [];
-  //   geometry.morphAttributes.position[0] = morphGeometry.attributes.position;
-
-  //   // Hack required to get Mesh to have morphTargetInfluences attribute
-  //   geometry.morphTargets = [];
-  //   geometry.morphTargets.push( 0 );
-
-  //   // indexing needs work
-  //   const indices = new Uint32Array( geometry.attributes.position.count );
-
-  //   const l = geometry.attributes.position.count / 3;
-
-  //   for ( let i = 0; i < indices.length / 6; i ++ ) {
-  //     const k = i * 6;
-  //     indices[k] = i;
-  //     indices[k + 1] = l - 1 - k;
-  //     indices[k + 2] = l - 2 - k;
-
-  //     cont j = k + 3;
-  //     indices[j] = i;
-  //     indices[j + 1] = l - 1 - k;
-  //     indices[j + 2] = l - 2 - k;
-  //   }
-
-  //   geometry.setIndex( new THREE.BufferAttribute( indices, 1 ) );
-
-  //   return geometry;
-  // }
-
-
   createMesh() {
-    const line = this.lineGeometry();
+    const geometry = this.createWave();
 
-    const mesh = new THREE.Mesh( line, this.spec.material );
+    const mesh = new THREE.Mesh( geometry, this.spec.material );
 
-    mesh.position.z = this.spec.zDepth;
-    // console.log( mesh );
     return mesh;
   }
 }

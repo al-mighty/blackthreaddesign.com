@@ -44726,16 +44726,15 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-var SineWave = function () {
-    function SineWave(spec) {
-        classCallCheck(this, SineWave);
-
+var WaveLine = function () {
+    function WaveLine(spec) {
+        classCallCheck(this, WaveLine);
 
         this.spec = spec || {};
 
         this.spec.opacity = this.spec.opacity || 1.0;
         this.spec.z = this.spec.z || -10;
-        this.spec.fineness = this.spec.fineness || 200;
+        this.spec.fineness = this.spec.fineness || 100;
         this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
         this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
         this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
@@ -44744,7 +44743,7 @@ var SineWave = function () {
         return this.createMesh();
     }
 
-    SineWave.prototype.createWave = function createWave() {
+    WaveLine.prototype.createWave = function createWave() {
         var l = this.spec.fineness;
 
         var positions = new Float32Array(l * 3 * 2);
@@ -44819,7 +44818,7 @@ var SineWave = function () {
         return geometry;
     };
 
-    SineWave.prototype.createMesh = function createMesh() {
+    WaveLine.prototype.createMesh = function createMesh() {
         var geometry = this.createWave();
 
         var mesh = new Mesh(geometry, this.spec.material);
@@ -44827,12 +44826,12 @@ var SineWave = function () {
         return mesh;
     };
 
-    return SineWave;
+    return WaveLine;
 }();
 
-var basicVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nvoid main() {\n  vec3 transformed = vec3( position );\n  transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n}";
+var morphLineVert = "#define GLSLIFY 1\nuniform float morphTargetInfluences[ 4 ];\nvoid main() {\n  vec3 transformed = vec3( position );\n  transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );\n}";
 
-var basicFrag = "precision lowp float;\n#define GLSLIFY 1\nuniform float opacity;\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, opacity );\n} ";
+var morphLineFrag = "precision lowp float;\n#define GLSLIFY 1\nuniform float opacity;\nvoid main() {\n\tgl_FragColor = vec4( 0.296875, 0.8046875, 0.93359375, opacity );\n} ";
 
 // import * as THREE from 'three';
 // import threeUtils from '../../App/threeUtils.js';
@@ -44852,6 +44851,43 @@ var visibleWidthAtZDepth = function (depth, camera) {
   return height * camera.aspect;
 };
 
+// export const xCoord = ( x, visibleWidth ) => {
+//   const onePercent = visibleWidth  / 100;
+//   return x < 50 ? ( -50 + x ) * onePercent : ( x - 50 ) * onePercent;
+// };
+
+// export const yCoord = ( y, visibleHeight ) => {
+//   const onePercent = visibleHeight / 100;
+//   return y < 50 ? ( -50 + y ) * onePercent : ( y - 50 ) * onePercent;
+// };
+
+// export const sineWave = ( amp, time, freq, phase, offset ) =>
+//   amp * Math.cos( 2 * Math.PI * freq * time + phase ) + offset;
+
+
+// parametrically generated surfaces
+// const initialSurfaceFunc = ( x, z ) => x * x * x - z * z * z;
+
+// const finalSurfaceFunc = ( x, z, ) => Math.sin( x * x * x ) - Math.sin( z * z * z );
+
+// // 0 <= x <= 1, 0 <= z <=1
+// export const initialSurfaceGen = ( x, z, cam ) => {
+//   const height = visibleHeightAtZDepth( z, cam );
+
+//   const y = initialSurfaceFunc( x, z );
+
+//   return yCoord( y * 100, height );
+// };
+
+// // 0 <= x <= 1, 0 <= z <=1
+// export const finalSurfaceGen = ( x, z, cam ) => {
+//   const height = visibleHeightAtZDepth( z, cam );
+
+//   const y = finalSurfaceFunc( x, z );
+
+//   return yCoord( y * 100, height );
+// };
+
 function initMaterial(opacity) {
   return new ShaderMaterial({
     uniforms: {
@@ -44862,8 +44898,8 @@ function initMaterial(opacity) {
         value: [0, 0, 0, 0]
       }
     },
-    vertexShader: basicVert,
-    fragmentShader: basicFrag,
+    vertexShader: morphLineVert,
+    fragmentShader: morphLineFrag,
     morphTargets: true,
     transparent: true
   });
@@ -44906,11 +44942,11 @@ function createGroup1(camera) {
 
     spec.finalParams.points = [new Vector2(0, -a * 3), new Vector2(0.4, 0.0 + a), new Vector2(0.8, 1.0 - 2 * a), new Vector2(1.0, -2.4 - 2 * a)];
 
-    var sineWave = new SineWave(spec);
+    var wave = new WaveLine(spec);
 
-    animationGroup.add(sineWave);
+    animationGroup.add(wave);
 
-    group.add(sineWave);
+    group.add(wave);
   }
 
   return {
@@ -44944,11 +44980,11 @@ function createGroup2(camera) {
     canvasHeight: visibleHeightAtZDepth(z, camera)
   };
 
-  var sineWave = new SineWave(spec);
+  var wave = new WaveLine(spec);
 
-  animationGroup.add(sineWave);
+  animationGroup.add(wave);
 
-  group.add(sineWave);
+  group.add(wave);
 
   return {
     group: group,
@@ -44983,11 +45019,11 @@ function createGroup3(camera) {
 
     spec.finalParams.points = [new Vector2(0, 1.0 - a), new Vector2(0.4, 0.0 + a), new Vector2(0.9, 0.5 - a), new Vector2(1.0, -0.0 + a)];
 
-    var sineWave = new SineWave(spec);
+    var wave = new WaveLine(spec);
 
-    animationGroup.add(sineWave);
+    animationGroup.add(wave);
 
-    group.add(sineWave);
+    group.add(wave);
   }
 
   return {

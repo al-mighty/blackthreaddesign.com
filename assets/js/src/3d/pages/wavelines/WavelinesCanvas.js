@@ -4,7 +4,7 @@ import utils from '../../../utilities.js';
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
 
-import { createGroup1, createGroup2, createGroup3 } from './spec/lines.js';
+import { createGroup1, createGroup2, createGroup3 } from './objects/lines.js';
 
 export default class WavelinesCanvas {
 
@@ -35,9 +35,9 @@ export default class WavelinesCanvas {
 
     };
 
-    self.app.onWindowResize = function () { 
+    self.app.onWindowResize = function () {
 
-   };
+    };
 
     self.initLines();
 
@@ -45,16 +45,15 @@ export default class WavelinesCanvas {
 
     self.app.play();
   }
-  
 
   // For testing
   centreCircle() {
     const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
     const geom = new THREE.SphereBufferGeometry( 0.5, 32, 32 );
 
-    const mat = new THREE.MeshBasicMaterial( { 
-      color: 0xffffff, 
-      map: map, 
+    const mat = new THREE.MeshBasicMaterial( {
+      color: 0xffffff,
+      map,
       transparent: true,
     } );
 

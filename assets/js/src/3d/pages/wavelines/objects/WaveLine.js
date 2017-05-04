@@ -2,18 +2,17 @@ import * as THREE from 'three';
 
 // * ***********************************************************************
 // *
-// *  SINE WAVE CLASS
+// *  WAVE LINE CLASS
 // *
 // *************************************************************************
 
-export default class SineWave {
+export default class WaveLine {
   constructor( spec ) {
-
     this.spec = spec || {};
 
     this.spec.opacity = this.spec.opacity || 1.0;
     this.spec.z = this.spec.z || -10;
-    this.spec.fineness = this.spec.fineness || 200;
+    this.spec.fineness = this.spec.fineness || 100;
     this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
     this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
     this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
@@ -38,12 +37,12 @@ export default class SineWave {
 
     const points = init.points.map( ( v ) => {
       // map the passed in x value in [0, 1] to screen width
-      v.x = xInitial + ( dist * v.x ); 
+      v.x = xInitial + ( dist * v.x );
       return v;
     } );
 
     const morphPoints = final.points.map( ( v ) => {
-      v.x = xInitial + ( dist * v.x ); 
+      v.x = xInitial + ( dist * v.x );
       return v;
     } );
 
@@ -69,12 +68,12 @@ export default class SineWave {
 
     }
 
-    for ( let j = 0;  j < ( ( l * 2 ) - 2 ) / 2; j++ ) {
+    for ( let j = 0; j < ( ( l * 2 ) - 2 ) / 2; j++ ) {
 
       const k = j * 2;
       const offset = j * 6;
 
-      indices[ offset ] =  k;
+      indices[ offset ] = k;
       indices[ offset + 1 ] = k + 1;
       indices[ offset + 2 ] = k + 2;
 
