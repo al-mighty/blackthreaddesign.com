@@ -11,5 +11,5 @@ function initWavelines( showStats ) {
 }
 
 // Set up Splash scene
-const showStats = true;
+const showStats = false;
 initWavelines( showStats );
