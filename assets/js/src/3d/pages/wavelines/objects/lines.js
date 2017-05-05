@@ -26,7 +26,7 @@ function initMaterial( opacity ) {
 }
 
 function initAnimation( length, group ) {
-  const keyFrame = new THREE.NumberKeyframeTrack( 'geometry.morphTargetInfluences', [0.0, length], [0.0, 1.0], THREE.InterpolateSmooth );
+  const keyFrame = new THREE.NumberKeyframeTrack( '.morphTargetInfluences', [0.0, length], [0.0, 1.0], THREE.InterpolateSmooth );
   const clip = new THREE.AnimationClip( 'wavelineMorphTargetsClip', length, [keyFrame] );
 
   const mixer = new THREE.AnimationMixer( group );
@@ -39,145 +39,118 @@ function initAnimation( length, group ) {
   return mixer;
 }
 
-export function createGroup1( camera ) {
-  const group = new THREE.Group();
+function createGroup1( camera ) {
+  // const group = new THREE.Group();
 
-  const animationGroup = new THREE.AnimationObjectGroup();
-  const mixer = initAnimation( 15, animationGroup );
+  const morphAnimGroup = new THREE.AnimationObjectGroup();
+  // const positionAnimGroup = new THREE.AnimationObjectGroup();
+  const morphMixer = initAnimation( 5, morphAnimGroup );
 
   const z = -10;
+  const canvasWidth = visibleWidthAtZDepth( z, camera );
   const material = initMaterial( 1.0 );
   const spec = {
     z,
-    initialParams: {},
-    finalParams: {},
-    material,
-    canvasWidth: visibleWidthAtZDepth( z, camera ),
-    canvasHeight: visibleHeightAtZDepth( z, camera ),
-  };
-
-  for ( let i = 0; i < 18; i++ ) {
-    const a = i * 0.1;
-    spec.initialParams.points = [
-      new THREE.Vector2( 0, 2.0 ),
-      new THREE.Vector2( 0.3, -2.4  + a ),
-      new THREE.Vector2( 0.8, 0.0 + ( 2 * a) ),
-      new THREE.Vector2( 1.0, -1.0 - ( 2 * a ) ),
-    ];
-
-    spec.finalParams.points = [
-      new THREE.Vector2( 0, -a * 3 ),
-      new THREE.Vector2( 0.4, 0.0 + a ),
-      new THREE.Vector2( 0.8, 1.0 - ( 2 * a ) ),
-      new THREE.Vector2( 1.0, -2.4 - ( 2 * a ) ),
-    ];
-
-    const wave = new WaveLine( spec );
-
-    animationGroup.add( wave );
-
-    group.add( wave );
-  }
-
-  return {
-    group,
-    mixer,
-  };
-}
-
-export function createGroup2( camera ) {
-  const group = new THREE.Group();
-
-  const animationGroup = new THREE.AnimationObjectGroup();
-  const mixer = initAnimation( 20, animationGroup );
-
-  const z = -15;
-  const material = initMaterial( 0.3 ); 
-  const spec = {
-    z,
+    fineness: 100,
     initialParams: {
-      thickness: 2,
-      yOffset: 3,
-      points: [
-        new THREE.Vector2( 0, -3.0 ),
-        new THREE.Vector2( 0.25, 2 ),
-        new THREE.Vector2( 0.75, -2 ),
-        new THREE.Vector2( 1.0, 5 ),
-      ],
+      thickness: 0.03,
+      yOffset: 0,
     },
     finalParams: {
-      thickness: 2,
-      yOffset: 4,
-      points:[
-        new THREE.Vector2( 0, 2.0 ),
-        new THREE.Vector2( 0.25, -2.4 ),
-        new THREE.Vector2( 0.75, 0.0 ),
-        new THREE.Vector2( 1.0, 0.0 ),
-      ],
+      thickness: 0.03,
+      yOffset: 0,
     },
     material,
-    canvasWidth: visibleWidthAtZDepth( z, camera ),
+    canvasWidth,
     canvasHeight: visibleHeightAtZDepth( z, camera ),
   };
 
-  const wave = new WaveLine( spec );
+  spec.initialParams.points = [
+    new THREE.Vector2( 0, 2.0 ),
+    new THREE.Vector2( 0.3, -2.4 ),
+    new THREE.Vector2( 0.8, 0.0 ),
+    new THREE.Vector2( 1.0, -1.0 ),
+  ];
 
-  animationGroup.add( wave );
+  spec.finalParams.points = [
+    new THREE.Vector2( 0, 0 ),
+    new THREE.Vector2( 0.4, 0.0 ),
+    new THREE.Vector2( 0.8, 1.0 ),
+    new THREE.Vector2( 1.0, -2.4 ),
+  ];
 
-  group.add( wave );
+  const wave1 = new WaveLine( spec );
 
-  return {
-    group,
-    mixer,
-  };
-}
+  morphAnimGroup.add( wave1 );
 
-export function createGroup3( camera ) {
-  const group = new THREE.Group();
+  const keyFrame = new THREE.NumberKeyframeTrack( '.position', [0.0, 15], [0, 0, 0, -canvasWidth, 0, 0], THREE.InterpolateLinear );
 
-  const animationGroup = new THREE.AnimationObjectGroup();
-  const mixer = initAnimation( 8, animationGroup );
+  const clip = new THREE.AnimationClip( 'wavelinePositionClip', 15, [keyFrame] );
 
-  const z = -2;
-  const material = initMaterial( 1.0 ); 
-  const spec = {
+  const positionMixer = new THREE.AnimationMixer( wave1 );
+  const animationAction = positionMixer.clipAction( clip );
+
+  animationAction.loop = THREE.LoopRepeat;
+
+  animationAction.play();
+
+  /* *************************   LINE 2 ********************************* */
+
+  const material2 = initMaterial( 1.0 );
+  const spec2 = {
     z,
+    fineness: 100,
     initialParams: {
-      thickness: 0.005,
+      thickness: 0.03,
+      yOffset: 0,
     },
     finalParams: {
-      thickness: 0.005,
+      thickness: 0.03,
+      yOffset: 0,
     },
-    material,
-    canvasWidth: visibleWidthAtZDepth( z, camera ),
+    material2,
+    canvasWidth,
     canvasHeight: visibleHeightAtZDepth( z, camera ),
   };
 
-  for ( let i = 0; i < 45; i++ ){
-    const a = i * 0.02;
-    spec.initialParams.points = [
-      new THREE.Vector2( 0, 1.0 + a ),
-      new THREE.Vector2( 0.25, 0.4 - a ),
-      new THREE.Vector2( 0.6, 0.5 + a ),
-      new THREE.Vector2( 1.0, -0.0 - a ),
-    ];
+  spec2.initialParams.points = [
+    new THREE.Vector2( 0, 2.0 ),
+    new THREE.Vector2( 0.3, -2.4 ),
+    new THREE.Vector2( 0.8, 0.0 ),
+    new THREE.Vector2( 1.0, -1.0 ),
+  ];
 
-    spec.finalParams.points = [
-      new THREE.Vector2( 0, 1.0 - a ),
-      new THREE.Vector2( 0.4, 0.0 + a ),
-      new THREE.Vector2( 0.9, 0.5 - a ),
-      new THREE.Vector2( 1.0, -0.0 + a ),
-    ];
+  spec2.finalParams.points = [
+    new THREE.Vector2( 0, 0 ),
+    new THREE.Vector2( 0.4, 0.0 ),
+    new THREE.Vector2( 0.8, 1.0 ),
+    new THREE.Vector2( 1.0, -2.4 ),
+  ];
 
-    const wave = new WaveLine( spec );
+  const wave2 = new WaveLine( spec2 );
 
-    animationGroup.add( wave );
+  morphAnimGroup.add( wave2 );
 
-    group.add( wave );
-  }
+  const keyFrame2 = new THREE.NumberKeyframeTrack( '.position', [0.0, 15], [canvasWidth, 0, 0, 0, 0, 0], THREE.InterpolateLinear );
+
+  const clip2 = new THREE.AnimationClip( 'waveline2PositionClip', 15, [keyFrame2] );
+
+  const positionMixer2 = new THREE.AnimationMixer( wave2 );
+  const animationAction2 = positionMixer2.clipAction( clip2 );
+
+  animationAction2.loop = THREE.LoopRepeat;
+
+  animationAction2.play();
 
   return {
-    group,
-    mixer,
+    wave1,
+    wave2,
+    morphMixer,
+    positionMixer,
+    positionMixer2,
   };
 }
+
+export default [
+  createGroup1,
+];

@@ -10,13 +10,13 @@ export default class WaveLine {
   constructor( spec ) {
     this.spec = spec || {};
 
-    this.spec.opacity = this.spec.opacity || 1.0;
-    this.spec.z = this.spec.z || -10;
-    this.spec.fineness = this.spec.fineness || 100;
-    this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
-    this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
-    this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
-    this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
+    // this.spec.opacity = this.spec.opacity || 1.0;
+    // this.spec.z = this.spec.z || -10;
+    // this.spec.fineness = this.spec.fineness || 100;
+    // this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
+    // this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
+    // this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
+    // this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
 
     return this.createMesh();
   }

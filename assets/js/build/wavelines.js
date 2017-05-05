@@ -44732,13 +44732,13 @@ var WaveLine = function () {
 
         this.spec = spec || {};
 
-        this.spec.opacity = this.spec.opacity || 1.0;
-        this.spec.z = this.spec.z || -10;
-        this.spec.fineness = this.spec.fineness || 100;
-        this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
-        this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
-        this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
-        this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
+        // this.spec.opacity = this.spec.opacity || 1.0;
+        // this.spec.z = this.spec.z || -10;
+        // this.spec.fineness = this.spec.fineness || 100;
+        // this.spec.initialParams.thickness = this.spec.initialParams.thickness || 0.03;
+        // this.spec.finalParams.thickness = this.spec.finalParams.thickness || 0.03;
+        // this.spec.initialParams.yOffset = this.spec.initialParams.yOffset || 0.0;
+        // this.spec.finalParams.yOffset = this.spec.finalParams.yOffset || 0.0;
 
         return this.createMesh();
     }
@@ -44906,7 +44906,7 @@ function initMaterial(opacity) {
 }
 
 function initAnimation(length, group) {
-  var keyFrame = new NumberKeyframeTrack('geometry.morphTargetInfluences', [0.0, length], [0.0, 1.0], InterpolateSmooth);
+  var keyFrame = new NumberKeyframeTrack('.morphTargetInfluences', [0.0, length], [0.0, 1.0], InterpolateSmooth);
   var clip = new AnimationClip('wavelineMorphTargetsClip', length, [keyFrame]);
 
   var mixer = new AnimationMixer(group);
@@ -44920,117 +44920,98 @@ function initAnimation(length, group) {
 }
 
 function createGroup1(camera) {
-  var group = new Group();
+  // const group = new THREE.Group();
 
-  var animationGroup = new AnimationObjectGroup();
-  var mixer = initAnimation(15, animationGroup);
+  var morphAnimGroup = new AnimationObjectGroup();
+  // const positionAnimGroup = new THREE.AnimationObjectGroup();
+  var morphMixer = initAnimation(5, morphAnimGroup);
 
   var z = -10;
+  var canvasWidth = visibleWidthAtZDepth(z, camera);
   var material = initMaterial(1.0);
   var spec = {
     z: z,
-    initialParams: {},
-    finalParams: {},
-    material: material,
-    canvasWidth: visibleWidthAtZDepth(z, camera),
-    canvasHeight: visibleHeightAtZDepth(z, camera)
-  };
-
-  for (var i = 0; i < 18; i++) {
-    var a = i * 0.1;
-    spec.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4 + a), new Vector2(0.8, 0.0 + 2 * a), new Vector2(1.0, -1.0 - 2 * a)];
-
-    spec.finalParams.points = [new Vector2(0, -a * 3), new Vector2(0.4, 0.0 + a), new Vector2(0.8, 1.0 - 2 * a), new Vector2(1.0, -2.4 - 2 * a)];
-
-    var wave = new WaveLine(spec);
-
-    animationGroup.add(wave);
-
-    group.add(wave);
-  }
-
-  return {
-    group: group,
-    mixer: mixer
-  };
-}
-
-function createGroup2(camera) {
-  var group = new Group();
-
-  var animationGroup = new AnimationObjectGroup();
-  var mixer = initAnimation(20, animationGroup);
-
-  var z = -15;
-  var material = initMaterial(0.3);
-  var spec = {
-    z: z,
+    fineness: 100,
     initialParams: {
-      thickness: 2,
-      yOffset: 3,
-      points: [new Vector2(0, -3.0), new Vector2(0.25, 2), new Vector2(0.75, -2), new Vector2(1.0, 5)]
+      thickness: 0.03,
+      yOffset: 0
     },
     finalParams: {
-      thickness: 2,
-      yOffset: 4,
-      points: [new Vector2(0, 2.0), new Vector2(0.25, -2.4), new Vector2(0.75, 0.0), new Vector2(1.0, 0.0)]
+      thickness: 0.03,
+      yOffset: 0
     },
     material: material,
-    canvasWidth: visibleWidthAtZDepth(z, camera),
+    canvasWidth: canvasWidth,
     canvasHeight: visibleHeightAtZDepth(z, camera)
   };
 
-  var wave = new WaveLine(spec);
+  spec.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4), new Vector2(0.8, 0.0), new Vector2(1.0, -1.0)];
 
-  animationGroup.add(wave);
+  spec.finalParams.points = [new Vector2(0, 0), new Vector2(0.4, 0.0), new Vector2(0.8, 1.0), new Vector2(1.0, -2.4)];
 
-  group.add(wave);
+  var wave1 = new WaveLine(spec);
 
-  return {
-    group: group,
-    mixer: mixer
-  };
-}
+  morphAnimGroup.add(wave1);
 
-function createGroup3(camera) {
-  var group = new Group();
+  var keyFrame = new NumberKeyframeTrack('.position', [0.0, 15], [0, 0, 0, -canvasWidth, 0, 0], InterpolateLinear);
 
-  var animationGroup = new AnimationObjectGroup();
-  var mixer = initAnimation(8, animationGroup);
+  var clip = new AnimationClip('wavelinePositionClip', 15, [keyFrame]);
 
-  var z = -2;
-  var material = initMaterial(1.0);
-  var spec = {
+  var positionMixer = new AnimationMixer(wave1);
+  var animationAction = positionMixer.clipAction(clip);
+
+  animationAction.loop = LoopRepeat;
+
+  animationAction.play();
+
+  /* *************************   LINE 2 ********************************* */
+
+  var material2 = initMaterial(1.0);
+  var spec2 = {
     z: z,
+    fineness: 100,
     initialParams: {
-      thickness: 0.005
+      thickness: 0.03,
+      yOffset: 0
     },
     finalParams: {
-      thickness: 0.005
+      thickness: 0.03,
+      yOffset: 0
     },
-    material: material,
-    canvasWidth: visibleWidthAtZDepth(z, camera),
+    material2: material2,
+    canvasWidth: canvasWidth,
     canvasHeight: visibleHeightAtZDepth(z, camera)
   };
 
-  for (var i = 0; i < 45; i++) {
-    var a = i * 0.02;
-    spec.initialParams.points = [new Vector2(0, 1.0 + a), new Vector2(0.25, 0.4 - a), new Vector2(0.6, 0.5 + a), new Vector2(1.0, -0.0 - a)];
+  spec2.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4), new Vector2(0.8, 0.0), new Vector2(1.0, -1.0)];
 
-    spec.finalParams.points = [new Vector2(0, 1.0 - a), new Vector2(0.4, 0.0 + a), new Vector2(0.9, 0.5 - a), new Vector2(1.0, -0.0 + a)];
+  spec2.finalParams.points = [new Vector2(0, 0), new Vector2(0.4, 0.0), new Vector2(0.8, 1.0), new Vector2(1.0, -2.4)];
 
-    var wave = new WaveLine(spec);
+  var wave2 = new WaveLine(spec2);
 
-    animationGroup.add(wave);
+  morphAnimGroup.add(wave2);
 
-    group.add(wave);
-  }
+  var keyFrame2 = new NumberKeyframeTrack('.position', [0.0, 15], [canvasWidth, 0, 0, 0, 0, 0], InterpolateLinear);
+
+  var clip2 = new AnimationClip('waveline2PositionClip', 15, [keyFrame2]);
+
+  var positionMixer2 = new AnimationMixer(wave2);
+  var animationAction2 = positionMixer2.clipAction(clip2);
+
+  animationAction2.loop = LoopRepeat;
+
+  animationAction2.play();
 
   return {
-    group: group,
-    mixer: mixer
+    wave1: wave1,
+    wave2: wave2,
+    morphMixer: morphMixer,
+    positionMixer: positionMixer,
+    positionMixer2: positionMixer2
   };
 }
+
+var lineGroups = [createGroup1];
 
 var WavelinesCanvas = function () {
     function WavelinesCanvas(showStats) {
@@ -45097,11 +45078,13 @@ var WavelinesCanvas = function () {
     WavelinesCanvas.prototype.initLines = function initLines() {
         var _this = this;
 
-        var groups = [createGroup1(this.app.camera), createGroup2(this.app.camera), createGroup3(this.app.camera)];
-
-        groups.forEach(function (group) {
-            _this.app.scene.add(group.group);
-            _this.mixers.push(group.mixer);
+        lineGroups.forEach(function (createGroup) {
+            var lines = createGroup(_this.app.camera);
+            _this.app.scene.add(lines.wave1);
+            _this.app.scene.add(lines.wave2);
+            _this.mixers.push(lines.morphMixer);
+            _this.mixers.push(lines.positionMixer);
+            _this.mixers.push(lines.positionMixer2);
         });
     };
 
