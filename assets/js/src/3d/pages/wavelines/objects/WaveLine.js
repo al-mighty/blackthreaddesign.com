@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+// import sineWave from '../wavelineCanvasHelpers.js';
+
 // * ***********************************************************************
 // *
 // *  WAVE LINE CLASS
@@ -28,21 +30,21 @@ export default class WaveLine {
     const morphPositions = new Float32Array( l * 3 * 2 );
     const indices = new Uint16Array( ( ( l * 2 ) - 2 ) * 3 );
 
-    const xInitial = -this.spec.canvasWidth / 2;
+    const xInitial = -this.spec.width / 2;
 
-    const dist = this.spec.canvasWidth;
+    const width = this.spec.width;
 
     const init = this.spec.initialParams;
     const final = this.spec.finalParams;
 
     const points = init.points.map( ( v ) => {
       // map the passed in x value in [0, 1] to screen width
-      v.x = xInitial + ( dist * v.x );
+      v.x = xInitial + ( width * v.x );
       return v;
     } );
 
     const morphPoints = final.points.map( ( v ) => {
-      v.x = xInitial + ( dist * v.x );
+      v.x = xInitial + ( width * v.x );
       return v;
     } );
 

@@ -37323,358 +37323,6 @@ PropertyBinding.findNode = function( root, nodeName ) {
  * @author tschw
  */
 
-function AnimationObjectGroup( var_args ) {
-
-	this.uuid = _Math.generateUUID();
-
-	// cached objects followed by the active ones
-	this._objects = Array.prototype.slice.call( arguments );
-
-	this.nCachedObjects_ = 0;			// threshold
-	// note: read by PropertyBinding.Composite
-
-	var indices = {};
-	this._indicesByUUID = indices;		// for bookkeeping
-
-	for ( var i = 0, n = arguments.length; i !== n; ++ i ) {
-
-		indices[ arguments[ i ].uuid ] = i;
-
-	}
-
-	this._paths = [];					// inside: string
-	this._parsedPaths = [];				// inside: { we don't care, here }
-	this._bindings = []; 				// inside: Array< PropertyBinding >
-	this._bindingsIndicesByPath = {}; 	// inside: indices in these arrays
-
-	var scope = this;
-
-	this.stats = {
-
-		objects: {
-			get total() { return scope._objects.length; },
-			get inUse() { return this.total - scope.nCachedObjects_;  }
-		},
-
-		get bindingsPerObject() { return scope._bindings.length; }
-
-	};
-
-}
-
-AnimationObjectGroup.prototype = {
-
-	constructor: AnimationObjectGroup,
-
-	isAnimationObjectGroup: true,
-
-	add: function( var_args ) {
-
-		var objects = this._objects,
-			nObjects = objects.length,
-			nCachedObjects = this.nCachedObjects_,
-			indicesByUUID = this._indicesByUUID,
-			paths = this._paths,
-			parsedPaths = this._parsedPaths,
-			bindings = this._bindings,
-			nBindings = bindings.length;
-
-		for ( var i = 0, n = arguments.length; i !== n; ++ i ) {
-
-			var object = arguments[ i ],
-				uuid = object.uuid,
-				index = indicesByUUID[ uuid ],
-				knownObject = undefined;
-
-			if ( index === undefined ) {
-
-				// unknown object -> add it to the ACTIVE region
-
-				index = nObjects ++;
-				indicesByUUID[ uuid ] = index;
-				objects.push( object );
-
-				// accounting is done, now do the same for all bindings
-
-				for ( var j = 0, m = nBindings; j !== m; ++ j ) {
-
-					bindings[ j ].push(
-							new PropertyBinding(
-								object, paths[ j ], parsedPaths[ j ] ) );
-
-				}
-
-			} else if ( index < nCachedObjects ) {
-
-				knownObject = objects[ index ];
-
-				// move existing object to the ACTIVE region
-
-				var firstActiveIndex = -- nCachedObjects,
-					lastCachedObject = objects[ firstActiveIndex ];
-
-				indicesByUUID[ lastCachedObject.uuid ] = index;
-				objects[ index ] = lastCachedObject;
-
-				indicesByUUID[ uuid ] = firstActiveIndex;
-				objects[ firstActiveIndex ] = object;
-
-				// accounting is done, now do the same for all bindings
-
-				for ( var j = 0, m = nBindings; j !== m; ++ j ) {
-
-					var bindingsForPath = bindings[ j ],
-						lastCached = bindingsForPath[ firstActiveIndex ],
-						binding = bindingsForPath[ index ];
-
-					bindingsForPath[ index ] = lastCached;
-
-					if ( binding === undefined ) {
-
-						// since we do not bother to create new bindings
-						// for objects that are cached, the binding may
-						// or may not exist
-
-						binding = new PropertyBinding(
-								object, paths[ j ], parsedPaths[ j ] );
-
-					}
-
-					bindingsForPath[ firstActiveIndex ] = binding;
-
-				}
-
-			} else if ( objects[ index ] !== knownObject) {
-
-				console.error( "Different objects with the same UUID " +
-						"detected. Clean the caches or recreate your " +
-						"infrastructure when reloading scenes..." );
-
-			} // else the object is already where we want it to be
-
-		} // for arguments
-
-		this.nCachedObjects_ = nCachedObjects;
-
-	},
-
-	remove: function( var_args ) {
-
-		var objects = this._objects,
-			nCachedObjects = this.nCachedObjects_,
-			indicesByUUID = this._indicesByUUID,
-			bindings = this._bindings,
-			nBindings = bindings.length;
-
-		for ( var i = 0, n = arguments.length; i !== n; ++ i ) {
-
-			var object = arguments[ i ],
-				uuid = object.uuid,
-				index = indicesByUUID[ uuid ];
-
-			if ( index !== undefined && index >= nCachedObjects ) {
-
-				// move existing object into the CACHED region
-
-				var lastCachedIndex = nCachedObjects ++,
-					firstActiveObject = objects[ lastCachedIndex ];
-
-				indicesByUUID[ firstActiveObject.uuid ] = index;
-				objects[ index ] = firstActiveObject;
-
-				indicesByUUID[ uuid ] = lastCachedIndex;
-				objects[ lastCachedIndex ] = object;
-
-				// accounting is done, now do the same for all bindings
-
-				for ( var j = 0, m = nBindings; j !== m; ++ j ) {
-
-					var bindingsForPath = bindings[ j ],
-						firstActive = bindingsForPath[ lastCachedIndex ],
-						binding = bindingsForPath[ index ];
-
-					bindingsForPath[ index ] = firstActive;
-					bindingsForPath[ lastCachedIndex ] = binding;
-
-				}
-
-			}
-
-		} // for arguments
-
-		this.nCachedObjects_ = nCachedObjects;
-
-	},
-
-	// remove & forget
-	uncache: function( var_args ) {
-
-		var objects = this._objects,
-			nObjects = objects.length,
-			nCachedObjects = this.nCachedObjects_,
-			indicesByUUID = this._indicesByUUID,
-			bindings = this._bindings,
-			nBindings = bindings.length;
-
-		for ( var i = 0, n = arguments.length; i !== n; ++ i ) {
-
-			var object = arguments[ i ],
-				uuid = object.uuid,
-				index = indicesByUUID[ uuid ];
-
-			if ( index !== undefined ) {
-
-				delete indicesByUUID[ uuid ];
-
-				if ( index < nCachedObjects ) {
-
-					// object is cached, shrink the CACHED region
-
-					var firstActiveIndex = -- nCachedObjects,
-						lastCachedObject = objects[ firstActiveIndex ],
-						lastIndex = -- nObjects,
-						lastObject = objects[ lastIndex ];
-
-					// last cached object takes this object's place
-					indicesByUUID[ lastCachedObject.uuid ] = index;
-					objects[ index ] = lastCachedObject;
-
-					// last object goes to the activated slot and pop
-					indicesByUUID[ lastObject.uuid ] = firstActiveIndex;
-					objects[ firstActiveIndex ] = lastObject;
-					objects.pop();
-
-					// accounting is done, now do the same for all bindings
-
-					for ( var j = 0, m = nBindings; j !== m; ++ j ) {
-
-						var bindingsForPath = bindings[ j ],
-							lastCached = bindingsForPath[ firstActiveIndex ],
-							last = bindingsForPath[ lastIndex ];
-
-						bindingsForPath[ index ] = lastCached;
-						bindingsForPath[ firstActiveIndex ] = last;
-						bindingsForPath.pop();
-
-					}
-
-				} else {
-
-					// object is active, just swap with the last and pop
-
-					var lastIndex = -- nObjects,
-						lastObject = objects[ lastIndex ];
-
-					indicesByUUID[ lastObject.uuid ] = index;
-					objects[ index ] = lastObject;
-					objects.pop();
-
-					// accounting is done, now do the same for all bindings
-
-					for ( var j = 0, m = nBindings; j !== m; ++ j ) {
-
-						var bindingsForPath = bindings[ j ];
-
-						bindingsForPath[ index ] = bindingsForPath[ lastIndex ];
-						bindingsForPath.pop();
-
-					}
-
-				} // cached or active
-
-			} // if object is known
-
-		} // for arguments
-
-		this.nCachedObjects_ = nCachedObjects;
-
-	},
-
-	// Internal interface used by befriended PropertyBinding.Composite:
-
-	subscribe_: function( path, parsedPath ) {
-		// returns an array of bindings for the given path that is changed
-		// according to the contained objects in the group
-
-		var indicesByPath = this._bindingsIndicesByPath,
-			index = indicesByPath[ path ],
-			bindings = this._bindings;
-
-		if ( index !== undefined ) return bindings[ index ];
-
-		var paths = this._paths,
-			parsedPaths = this._parsedPaths,
-			objects = this._objects,
-			nObjects = objects.length,
-			nCachedObjects = this.nCachedObjects_,
-			bindingsForPath = new Array( nObjects );
-
-		index = bindings.length;
-
-		indicesByPath[ path ] = index;
-
-		paths.push( path );
-		parsedPaths.push( parsedPath );
-		bindings.push( bindingsForPath );
-
-		for ( var i = nCachedObjects,
-				n = objects.length; i !== n; ++ i ) {
-
-			var object = objects[ i ];
-
-			bindingsForPath[ i ] =
-					new PropertyBinding( object, path, parsedPath );
-
-		}
-
-		return bindingsForPath;
-
-	},
-
-	unsubscribe_: function( path ) {
-		// tells the group to forget about a property path and no longer
-		// update the array previously obtained with 'subscribe_'
-
-		var indicesByPath = this._bindingsIndicesByPath,
-			index = indicesByPath[ path ];
-
-		if ( index !== undefined ) {
-
-			var paths = this._paths,
-				parsedPaths = this._parsedPaths,
-				bindings = this._bindings,
-				lastBindingsIndex = bindings.length - 1,
-				lastBindings = bindings[ lastBindingsIndex ],
-				lastBindingsPath = path[ lastBindingsIndex ];
-
-			indicesByPath[ lastBindingsPath ] = index;
-
-			bindings[ index ] = lastBindings;
-			bindings.pop();
-
-			parsedPaths[ index ] = parsedPaths[ lastBindingsIndex ];
-			parsedPaths.pop();
-
-			paths[ index ] = paths[ lastBindingsIndex ];
-			paths.pop();
-
-		}
-
-	}
-
-};
-
-/**
- *
- * Action provided by AnimationMixer for scheduling clip playback on specific
- * objects.
- *
- * @author Ben Houston / http://clara.io/
- * @author David Sarno / http://lighthaus.us/
- * @author tschw
- *
- */
-
 function AnimationAction( mixer, clip, localRoot ) {
 
 	this._mixer = mixer;
@@ -44750,21 +44398,21 @@ var WaveLine = function () {
         var morphPositions = new Float32Array(l * 3 * 2);
         var indices = new Uint16Array((l * 2 - 2) * 3);
 
-        var xInitial = -this.spec.canvasWidth / 2;
+        var xInitial = -this.spec.width / 2;
 
-        var dist = this.spec.canvasWidth;
+        var width = this.spec.width;
 
         var init = this.spec.initialParams;
         var final = this.spec.finalParams;
 
         var points = init.points.map(function (v) {
             // map the passed in x value in [0, 1] to screen width
-            v.x = xInitial + dist * v.x;
+            v.x = xInitial + width * v.x;
             return v;
         });
 
         var morphPoints = final.points.map(function (v) {
-            v.x = xInitial + dist * v.x;
+            v.x = xInitial + width * v.x;
             return v;
         });
 
@@ -44861,33 +44509,6 @@ var visibleWidthAtZDepth = function (depth, camera) {
 //   return y < 50 ? ( -50 + y ) * onePercent : ( y - 50 ) * onePercent;
 // };
 
-// export const sineWave = ( amp, time, freq, phase, offset ) =>
-//   amp * Math.cos( 2 * Math.PI * freq * time + phase ) + offset;
-
-
-// parametrically generated surfaces
-// const initialSurfaceFunc = ( x, z ) => x * x * x - z * z * z;
-
-// const finalSurfaceFunc = ( x, z, ) => Math.sin( x * x * x ) - Math.sin( z * z * z );
-
-// // 0 <= x <= 1, 0 <= z <=1
-// export const initialSurfaceGen = ( x, z, cam ) => {
-//   const height = visibleHeightAtZDepth( z, cam );
-
-//   const y = initialSurfaceFunc( x, z );
-
-//   return yCoord( y * 100, height );
-// };
-
-// // 0 <= x <= 1, 0 <= z <=1
-// export const finalSurfaceGen = ( x, z, cam ) => {
-//   const height = visibleHeightAtZDepth( z, cam );
-
-//   const y = finalSurfaceFunc( x, z );
-
-//   return yCoord( y * 100, height );
-// };
-
 function initMaterial(opacity) {
   return new ShaderMaterial({
     uniforms: {
@@ -44906,26 +44527,24 @@ function initMaterial(opacity) {
 }
 
 function initAnimation(length, group) {
-  var keyFrame = new NumberKeyframeTrack('.morphTargetInfluences', [0.0, length], [0.0, 1.0], InterpolateSmooth);
-  var clip = new AnimationClip('wavelineMorphTargetsClip', length, [keyFrame]);
+  var keyFrame = new NumberKeyframeTrack('.morphTargetInfluences', [0.0, length / 2, length], [0.0, 1.0, 0], InterpolateSmooth);
+
+  var clip = new AnimationClip('wavelineMorphTargetsClip', -1, [keyFrame]);
 
   var mixer = new AnimationMixer(group);
   var animationAction = mixer.clipAction(clip);
 
-  animationAction.loop = LoopPingPong;
+  // animationAction.loop = THREE.LoopRepeat;
 
   animationAction.play();
 
   return mixer;
 }
 
-function createGroup1(camera) {
-  // const group = new THREE.Group();
+function createWave(camera) {
+  var animLength = 5;
 
-  var morphAnimGroup = new AnimationObjectGroup();
-  // const positionAnimGroup = new THREE.AnimationObjectGroup();
-  var morphMixer = initAnimation(5, morphAnimGroup);
-
+  // const z = THREE.Math.randFloat( -5, -50 );
   var z = -10;
   var canvasWidth = visibleWidthAtZDepth(z, camera);
   var material = initMaterial(1.0);
@@ -44933,85 +44552,42 @@ function createGroup1(camera) {
     z: z,
     fineness: 100,
     initialParams: {
-      thickness: 0.03,
+      thickness: 0.04,
       yOffset: 0
     },
     finalParams: {
-      thickness: 0.03,
+      thickness: 0.04,
       yOffset: 0
     },
     material: material,
-    canvasWidth: canvasWidth,
-    canvasHeight: visibleHeightAtZDepth(z, camera)
+    width: canvasWidth
   };
 
-  spec.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4), new Vector2(0.8, 0.0), new Vector2(1.0, -1.0)];
+  var v1 = void 0,
+      v2 = void 0;
+  if (_Math.randInt(0, 1)) {
+    v1 = new Vector2(0.25, _Math.randFloat(-5, 1));
+    v2 = new Vector2(0.75, _Math.randFloat(-3, 5));
+  } else {
+    v1 = new Vector2(0.75, _Math.randFloat(-3, 5));
+    v2 = new Vector2(0.25, _Math.randFloat(-5, 1));
+  }
 
-  spec.finalParams.points = [new Vector2(0, 0), new Vector2(0.4, 0.0), new Vector2(0.8, 1.0), new Vector2(1.0, -2.4)];
+  spec.initialParams.points = [new Vector2(0, _Math.randFloat(-7, 1)), v1, new Vector2(1.0, _Math.randFloat(-3, 5))];
 
-  var wave1 = new WaveLine(spec);
+  spec.finalParams.points = [new Vector2(0, _Math.randFloat(-7, 1)), v2, new Vector2(1.0, _Math.randFloat(-3, 5))];
 
-  morphAnimGroup.add(wave1);
+  var wave = new WaveLine(spec);
 
-  var keyFrame = new NumberKeyframeTrack('.position', [0.0, 15], [0, 0, 0, -canvasWidth, 0, 0], InterpolateLinear);
+  var mixer = initAnimation(animLength, wave);
 
-  var clip = new AnimationClip('wavelinePositionClip', 15, [keyFrame]);
-
-  var positionMixer = new AnimationMixer(wave1);
-  var animationAction = positionMixer.clipAction(clip);
-
-  animationAction.loop = LoopRepeat;
-
-  animationAction.play();
-
-  /* *************************   LINE 2 ********************************* */
-
-  var material2 = initMaterial(1.0);
-  var spec2 = {
-    z: z,
-    fineness: 100,
-    initialParams: {
-      thickness: 0.03,
-      yOffset: 0
-    },
-    finalParams: {
-      thickness: 0.03,
-      yOffset: 0
-    },
-    material2: material2,
-    canvasWidth: canvasWidth,
-    canvasHeight: visibleHeightAtZDepth(z, camera)
-  };
-
-  spec2.initialParams.points = [new Vector2(0, 2.0), new Vector2(0.3, -2.4), new Vector2(0.8, 0.0), new Vector2(1.0, -1.0)];
-
-  spec2.finalParams.points = [new Vector2(0, 0), new Vector2(0.4, 0.0), new Vector2(0.8, 1.0), new Vector2(1.0, -2.4)];
-
-  var wave2 = new WaveLine(spec2);
-
-  morphAnimGroup.add(wave2);
-
-  var keyFrame2 = new NumberKeyframeTrack('.position', [0.0, 15], [canvasWidth, 0, 0, 0, 0, 0], InterpolateLinear);
-
-  var clip2 = new AnimationClip('waveline2PositionClip', 15, [keyFrame2]);
-
-  var positionMixer2 = new AnimationMixer(wave2);
-  var animationAction2 = positionMixer2.clipAction(clip2);
-
-  animationAction2.loop = LoopRepeat;
-
-  animationAction2.play();
+  mixer.update(_Math.randFloat(0, animLength));
 
   return {
-    wave1: wave1,
-    wave2: wave2,
-    morphMixer: morphMixer,
-    positionMixer: positionMixer,
-    positionMixer2: positionMixer2
+    wave: wave,
+    mixer: mixer
   };
 }
-
-var lineGroups = [createGroup1];
 
 var WavelinesCanvas = function () {
     function WavelinesCanvas(showStats) {
@@ -45076,16 +44652,11 @@ var WavelinesCanvas = function () {
     };
 
     WavelinesCanvas.prototype.initLines = function initLines() {
-        var _this = this;
-
-        lineGroups.forEach(function (createGroup) {
-            var lines = createGroup(_this.app.camera);
-            _this.app.scene.add(lines.wave1);
-            _this.app.scene.add(lines.wave2);
-            _this.mixers.push(lines.morphMixer);
-            _this.mixers.push(lines.positionMixer);
-            _this.mixers.push(lines.positionMixer2);
-        });
+        for (var i = 0; i < 15; i++) {
+            var line = createWave(this.app.camera);
+            this.app.scene.add(line.wave);
+            this.mixers.push(line.mixer);
+        }
     };
 
     WavelinesCanvas.prototype.animateCamera = function animateCamera() {
@@ -45107,7 +44678,7 @@ function initWavelines(showStats) {
 }
 
 // Set up Splash scene
-var showStats = false;
+var showStats = true;
 initWavelines(showStats);
 
 }());

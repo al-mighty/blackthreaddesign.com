@@ -4,7 +4,7 @@ import utils from '../../../utilities.js';
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
 
-import lineGroups from './objects/lines.js';
+import { createWave } from './objects/lines.js';
 
 export default class WavelinesCanvas {
 
@@ -67,15 +67,11 @@ export default class WavelinesCanvas {
   }
 
   initLines() {
-
-    lineGroups.forEach( ( createGroup ) => {
-      const lines = createGroup( this.app.camera );
-      this.app.scene.add( lines.wave1 );
-      this.app.scene.add( lines.wave2 );
-      this.mixers.push( lines.morphMixer );
-      this.mixers.push( lines.positionMixer );
-      this.mixers.push( lines.positionMixer2 );
-    } );
+    for ( let i = 0; i < 15; i++ ) {
+      const line = createWave( this.app.camera );
+      this.app.scene.add( line.wave );
+      this.mixers.push( line.mixer );
+    }
   }
 
   animateCamera() {
