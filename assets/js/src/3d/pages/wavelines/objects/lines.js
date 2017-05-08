@@ -68,9 +68,9 @@ export function createWave( camera ) {
   let v1, v2;
   if ( THREE.Math.randInt( 0, 1 ) ) {
     v1 = new THREE.Vector2( 0.25, THREE.Math.randFloat( -5, 1 ) );
-    v2 = new THREE.Vector2( 0.75, THREE.Math.randFloat( -3, 5 ) );
+    v2 = new THREE.Vector2( 0.75, THREE.Math.randFloat( -3, 3 ) );
   } else {
-    v1 = new THREE.Vector2( 0.75, THREE.Math.randFloat( -3, 5 ) );
+    v1 = new THREE.Vector2( 0.75, THREE.Math.randFloat( -3, 3 ) );
     v2 = new THREE.Vector2( 0.25, THREE.Math.randFloat( -5, 1 ) );
   }
 

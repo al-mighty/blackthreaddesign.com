@@ -44567,9 +44567,9 @@ function createWave(camera) {
       v2 = void 0;
   if (_Math.randInt(0, 1)) {
     v1 = new Vector2(0.25, _Math.randFloat(-5, 1));
-    v2 = new Vector2(0.75, _Math.randFloat(-3, 5));
+    v2 = new Vector2(0.75, _Math.randFloat(-3, 3));
   } else {
-    v1 = new Vector2(0.75, _Math.randFloat(-3, 5));
+    v1 = new Vector2(0.75, _Math.randFloat(-3, 3));
     v2 = new Vector2(0.25, _Math.randFloat(-5, 1));
   }
 
