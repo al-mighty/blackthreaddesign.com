@@ -44678,7 +44678,7 @@ function initWavelines(showStats) {
 }
 
 // Set up Splash scene
-var showStats = true;
+var showStats = false;
 initWavelines(showStats);
 
 }());
