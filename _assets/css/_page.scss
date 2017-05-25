@@ -74,21 +74,21 @@
   }
 
   h1{
-    padding-left: 1em;
+    //padding-left: 1em;
     padding-top: 2em;
     border-bottom: 2px solid $border-color;
 
-    &:before{
-      content: "\f054";
-      font-family: FontAwesome !important;
-      font-style: normal;
-      font-weight: normal;
-      text-decoration: inherit;
-      font-size: 0.75em;
-      position: absolute;
-      padding-top: 0.25em;
-      margin-left: -1em;
-    }
+    // &:before{
+    //   content: "\f054";
+    //   font-family: FontAwesome !important;
+    //   font-style: normal;
+    //   font-weight: normal;
+    //   text-decoration: inherit;
+    //   font-size: 0.75em;
+    //   position: absolute;
+    //   padding-top: 0.25em;
+    //   margin-left: -1em;
+    // }
   }
 
   p, li, dl {
