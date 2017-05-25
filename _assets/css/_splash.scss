@@ -119,9 +119,16 @@
     height: 8em;
 }
 
-.splash-row-body-title {
-    border-bottom: none !important;
-    height: 1em;
+.splash-row-title {
+  border-bottom: none !important;
+  position: absolute;
+  top: 25%;
+  font-weight: 900;
+  color: $text-color;
+  left: 50%;
+  font-size: 200%;
+  text-shadow: 3px 3px 2px $border-color, -3px -3px 2px $border-color;
+  transform: translate( -50%, -50%);
 }
 
 .splash-row-title-link {}
