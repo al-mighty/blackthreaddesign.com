@@ -30,6 +30,9 @@ export default class WaveLine {
     const morphPositions = new Float32Array( l * 3 * 2 );
     const indices = new Uint16Array( ( ( l * 2 ) - 2 ) * 3 );
 
+    const positionsLINE = new Float32Array( l * 3 * 2 );
+    const morphPositionsLINE = new Float32Array( l * 3 * 2 );
+
     const xInitial = -this.spec.width / 2;
 
     const width = this.spec.width;
@@ -53,6 +56,7 @@ export default class WaveLine {
 
     const finalPositions = new THREE.SplineCurve( morphPoints ).getSpacedPoints( l - 1 );
 
+    
     // generate forward and reverse positions on top and bottom of wave
     for ( let i = 0; i < l; i++ ) {
       const offset = i * 6;
@@ -96,13 +100,22 @@ export default class WaveLine {
     geometry.morphTargets = [];
     geometry.morphTargets.push( 0 );
 
-    return geometry;
+    const g = new THREE.Geometry();
+    g.vertices = initialPositions;
+    g.morphTargets.push( {
+      name: 'm',
+      vertices: finalPositions,
+    } );
+
+    return g;
   }
 
   createMesh() {
     const geometry = this.createWave();
 
-    const mesh = new THREE.Mesh( geometry, this.spec.material );
+    const material = new THREE.LineBasicMaterial( { color : 0xff0000, morphTargets: true, } );
+
+    const mesh = new THREE.Mesh( geometry, material );
 
     return mesh;
   }
