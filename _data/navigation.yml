@@ -1,8 +1,8 @@
 # Primary home navigation links
 
 home-primary:
-  - title: "Blog"
-    url: /blog/
+  # - title: "Blog"
+  #   url: /blog/
   - title: "Tutorials"
     url: /tutorials/
 
@@ -26,8 +26,8 @@ masthead:
     url: /tutorials/
   - title: "Work"
     url: /work/
-  - title: "Blog"
-    url: /blog/
+  # - title: "Blog"
+  #   url: /blog/
   - title: "Experiments"
     url: /experiments/
 
