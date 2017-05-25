@@ -95,7 +95,7 @@ This chapter will serve as a very quick introduction to writing your own shaders
 Here we'll go over anything that doesn't quite fit in the previous sections. We'll take a look at draw calls (and the importance of reducing them), how to clear objects from a scene and free up memory, as well as some useful code snippets that you can reuse in your work. 
 
 ## Code examples
-You can find any of the codepens used in the tutorials [here]((http://codepen.io/collection/DKNVdO/)), and all the gists [here](https://gist.github.com/looeee/). 
+You can find any of the codepens used in the tutorials [here]((https://codepen.io/collection/DKNVdO/)), and all the gists [here](https://gist.github.com/looeee/). 
 
 
 Happy coding! 

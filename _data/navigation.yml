@@ -70,9 +70,9 @@ tutorials:
     - title: "Getting started"
       url: /tutorials/1.0-getting-started
     - title: "Introduction to textures"
-      url: /tutorials/1.2-textures-intro/
+      url: /tutorials/1.1-textures-intro/
     - title: "Adding Orbit Controls"
-      url: /tutorials/1.3-orbit-controls/
+      url: /tutorials/1.2-orbit-controls/
     - title: "Curves, paths, lines, shapes"
       url: /tutorials/1.4-curves-paths-lines-shapes/
       unavailable: true
