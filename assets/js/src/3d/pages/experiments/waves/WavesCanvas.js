@@ -41,20 +41,20 @@ export default class WavelinesCanvas {
 
     self.initLines();
 
-    self.centreCircle();
+    // self.centreCircle();
 
     self.app.play();
   }
 
   // For testing
   centreCircle() {
-    const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
+    // const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
     const geom = new THREE.SphereBufferGeometry( 0.5, 32, 32 );
 
     const mat = new THREE.MeshBasicMaterial( {
-      color: 0xffffff,
-      map,
-      transparent: true,
+      color: 0x51D7F2,
+      // map,
+      // transparent: true,
     } );
 
     const mesh = new THREE.Mesh( geom, mat );
@@ -84,7 +84,7 @@ export default class WavelinesCanvas {
 
     this.app.camera.position.y = pointerY / window.innerHeight;
 
-    this.circle.position.y = pointerY / window.innerHeight;
+    // this.circle.position.y = pointerY / window.innerHeight;
   }
 
 }
