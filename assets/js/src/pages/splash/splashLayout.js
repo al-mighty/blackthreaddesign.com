@@ -1,22 +1,21 @@
 import throttle from 'lodash.throttle';
 
 export default function initSplashLayout() {
-  const splashHeroContainer = document.querySelector( '#splash-hero-container' );
-  const underCanvas = document.querySelector('#splash-under-hero-row');
+  let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
-  const splashHeroContainerHeight = window.innerHeight * 0.75;
+  const splashHeroContainer = document.querySelector( '#splash-hero-container' );
+
+  const splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
 
   splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
 
-  const underCanvasHeight = window.innerHeight - ( splashHeroContainer.clientTop + splashHeroContainerHeight );
-  underCanvas.style.height = underCanvasHeight + 'px';
 
   window.addEventListener('resize', throttle(() => {
-    const splashHeroContainerHeight = window.innerHeight * 0.75;
+    mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
+    const splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
     splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
 
-    const underCanvasHeight = window.innerHeight - ( splashHeroContainer.clientTop + splashHeroContainerHeight );
-    underCanvas.style.height = underCanvasHeight + 'px';
   }), 250 );
 
   
