@@ -34,8 +34,6 @@ export default class BottleCanvas {
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
-      // self.bottleGroup.rotation.y -= self.app.delta * 0.0005;
-
       self.controls.update();
 
     };
@@ -46,8 +44,9 @@ export default class BottleCanvas {
 
     self.initMaterials();
     self.initLights();
-    // self.initTestObject();
     self.initBottle();
+    self.initSmiley();
+
     self.initControls();
 
     self.app.play();
@@ -55,22 +54,17 @@ export default class BottleCanvas {
   }
 
   initMaterials() {
-    const maxAnistropy = this.app.renderer.getMaxAnisotropy();
-
     const envMap = textureLoader.load( '/assets/images/textures/env_maps/test_env_map.jpg' );
     // envMap.mapping = THREE.EquirectangularReflectionMapping;
     envMap.mapping = THREE.EquirectangularRefractionMapping;
-    envMap.magFilter = THREE.LinearFilter;
-    envMap.minFilter = THREE.LinearMipMapLinearFilter;
+    // envMap.magFilter = THREE.LinearFilter;
+    // envMap.minFilter = THREE.LinearMipMapLinearFilter;
 
-    envMap.anisotropy = maxAnistropy;
-
-    const smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
-    smileyTexture.anisotropy = maxAnistropy;
+    envMap.anisotropy = this.app.renderer.getMaxAnisotropy();
 
     this.bottleCapMat = new THREE.MeshStandardMaterial( {
       envMap,
-      map: smileyTexture,
+      // map: smileyTexture,
       roughness: 0.8,
       metalness: 0.75,
       color: 0xFFFFFF,
@@ -79,18 +73,13 @@ export default class BottleCanvas {
 
     this.bottleGlassMat = new THREE.MeshStandardMaterial( {
       envMap,
-      color: 0x541E00, // 0x662805,
+      color: 0x541E00,
       roughness: 0.1,
       metalness: 0.9,
       transparent: true,
       opacity: 0.8,
-      // side: THREE.DoubleSide,
       side: THREE.FrontSide,
       refractionRatio: 1.44,
-
-      // specular: 0xCCCCCC,
-      // shininess: 230,
-      // shading: THREE.SmoothShading,
     } );
   }
 
@@ -105,13 +94,6 @@ export default class BottleCanvas {
 
     this.app.scene.add( ambient, directionalLight1, directionalLight2 );
   }
-
-  // initTestObject() {
-  //   const testCube = new THREE.BoxBufferGeometry( 30, 30, 30 );
-  //   this.testMesh = new THREE.Mesh( testCube, this.bottleGlassMat );
-
-  //   this.app.scene.add( this.testMesh );
-  // }
 
   initBottle() {
     this.bottleGroup = new THREE.Group();
@@ -135,6 +117,26 @@ export default class BottleCanvas {
   }
 
   initSmiley() {
+    const smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
+    smileyTexture.anisotropy = this.app.renderer.getMaxAnisotropy();
+
+    const geometry = new THREE.PlaneBufferGeometry( 3.8, 3.8, 1, 1 );
+
+    const labelmat = new THREE.MeshBasicMaterial( {
+      map: smileyTexture,
+      // side: THREE.FrontSide,
+      transparent: true
+    } );
+
+    const label = new THREE.Mesh( geometry, labelmat );
+    label.rotation.x = -Math.PI / 2;
+    label.position.set( -0.1, 18.95, 0 );
+    label.scale.set( 0.9, 0.9, 1 );
+
+    this.bottleGroup.add( label );
+  }
+
+  initLabel() {
 
   }
 
