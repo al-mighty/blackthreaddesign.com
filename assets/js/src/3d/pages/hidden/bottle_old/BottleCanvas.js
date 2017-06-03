@@ -124,6 +124,7 @@ export default class BottleCanvas {
 
     jsonLoader.load( '/assets/models/hidden/bottle/bottle-real-applied.model.old.json', ( geometry ) => {
       geometry.computeVertexNormals();
+      console.log( geometry );
       const bottleGlassMesh = new THREE.Mesh( geometry, this.bottleGlassMat );
       this.bottleGroup.add( bottleGlassMesh );
     } );

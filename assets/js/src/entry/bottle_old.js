@@ -1,5 +1,5 @@
 import bottleLayout from '../pages/hidden/bottle/bottleLayout.js';
-import BottleCanvas from '../3d/pages/hidden/bottle/BottleCanvas.js';
+import BottleCanvas from '../3d/pages/hidden/bottle_old/BottleCanvas.js';
 
 
 function initBottle( showStats ) {
@@ -11,4 +11,3 @@ function initBottle( showStats ) {
 
 const showStats = true;
 initBottle( showStats );
-
