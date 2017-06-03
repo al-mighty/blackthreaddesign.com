@@ -45592,7 +45592,7 @@ var StatisticsOverlay = function () {
 
         this.statsElem = this.container.appendChild(document.createElement('div'));
         this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
+        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      color: black;  \n    ';
 
         this.statsElem.classList.add('hidden');
 
@@ -46605,67 +46605,44 @@ var BottleCanvas = function () {
 
     var self = this;
 
-    self.container = document.querySelector('.canvas-container');
+    this.container = document.querySelector('.canvas-container');
 
     this.canvas = document.querySelector('#bottle-canvas');
 
-    self.app = new App(this.canvas);
+    this.app = new App(this.canvas);
 
-    self.app.camera.position.set(0, 0, 35);
+    this.app.camera.position.set(0, 0, 35);
 
-    self.app.renderer.setClearColor(0xF9F9F9, 1.0);
+    this.app.renderer.setClearColor(0xF9F9F9, 1.0);
 
     var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+    if (showStats) statisticsOverlay = new StatisticsOverlay(this.app, this.container);
 
-    self.app.onUpdate = function () {
+    this.app.onUpdate = function () {
+      // NB: use self inside this function
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
 
       self.controls.update();
     };
 
-    self.app.onWindowResize = function () {};
+    this.app.onWindowResize = function () {
+      // NB: use self inside this function
+    };
 
-    self.initMaterials();
-    self.initLights();
-    self.initBottle();
-    self.initSmiley();
+    this.initLights();
 
-    self.initControls();
+    this.initTextures();
+    this.initMaterials();
 
-    self.app.play();
+    this.initBottle();
+    this.initSmiley();
+    this.initLabel();
+
+    this.initControls();
+
+    this.app.play();
   }
-
-  BottleCanvas.prototype.initMaterials = function initMaterials() {
-    var envMap = textureLoader.load('/assets/images/textures/env_maps/test_env_map.jpg');
-    // envMap.mapping = THREE.EquirectangularReflectionMapping;
-    envMap.mapping = EquirectangularRefractionMapping;
-    // envMap.magFilter = THREE.LinearFilter;
-    // envMap.minFilter = THREE.LinearMipMapLinearFilter;
-
-    envMap.anisotropy = this.app.renderer.getMaxAnisotropy();
-
-    this.bottleCapMat = new MeshStandardMaterial({
-      envMap: envMap,
-      // map: smileyTexture,
-      roughness: 0.8,
-      metalness: 0.75,
-      color: 0xFFFFFF,
-      side: FrontSide
-    });
-
-    this.bottleGlassMat = new MeshStandardMaterial({
-      envMap: envMap,
-      color: 0x541E00,
-      roughness: 0.1,
-      metalness: 0.9,
-      transparent: true,
-      opacity: 0.8,
-      side: FrontSide,
-      refractionRatio: 1.44
-    });
-  };
 
   BottleCanvas.prototype.initLights = function initLights() {
     var ambient = new AmbientLight(0x404040, 1.0);
@@ -46677,6 +46654,52 @@ var BottleCanvas = function () {
     directionalLight2.position.set(-10, 0, 10);
 
     this.app.scene.add(ambient, directionalLight1, directionalLight2);
+  };
+
+  BottleCanvas.prototype.initTextures = function initTextures() {
+    this.envMap = textureLoader.load('/assets/images/textures/env_maps/test_env_map.jpg');
+    this.envMap.mapping = EquirectangularRefractionMapping;
+
+    this.smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
+
+    this.labelMap = new Texture();
+  };
+
+  BottleCanvas.prototype.initMaterials = function initMaterials() {
+    this.bottleCapMat = new MeshStandardMaterial({
+      color: 0xffffff,
+      envMap: this.envMap,
+      metalness: 0.75,
+      roughness: 0.8,
+      side: DoubleSide
+    });
+
+    this.bottleGlassMat = new MeshStandardMaterial({
+      color: 0x541e00,
+      envMap: this.envMap,
+      metalness: 0.9,
+      opacity: 0.8,
+      refractionRatio: 1.9,
+      roughness: 0.1,
+      transparent: true
+    });
+
+    this.smileyMat = new MeshBasicMaterial({
+      map: this.smileyTexture,
+      transparent: true
+    });
+
+    this.labelmat = new MeshStandardMaterial({
+      color: 0x7279a5,
+      envMap: this.envMap,
+      metalness: 0.2,
+      roughness: 0.8
+    });
+
+    this.labelBackMat = new MeshBasicMaterial({
+      color: 0x7279a5,
+      side: BackSide
+    });
   };
 
   BottleCanvas.prototype.initBottle = function initBottle() {
@@ -46693,35 +46716,34 @@ var BottleCanvas = function () {
 
     jsonLoader.load('/assets/models/hidden/bottle/bottle-cap.model.old.json', function (geometry) {
       var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
-
       bottleCapMesh.scale.set(2.15, 2.5, 2.15);
       bottleCapMesh.position.y = 19;
-
       _this.bottleGroup.add(bottleCapMesh);
     });
   };
 
   BottleCanvas.prototype.initSmiley = function initSmiley() {
-    var smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
-    smileyTexture.anisotropy = this.app.renderer.getMaxAnisotropy();
-
     var geometry = new PlaneBufferGeometry(3.8, 3.8, 1, 1);
 
-    var labelmat = new MeshBasicMaterial({
-      map: smileyTexture,
-      // side: THREE.FrontSide,
-      transparent: true
-    });
+    var smiley = new Mesh(geometry, this.smileyMat);
+    smiley.rotation.x = -Math.PI / 2;
+    smiley.position.set(-0.1, 18.95, 0);
+    smiley.scale.set(0.9, 0.9, 1);
 
-    var label = new Mesh(geometry, labelmat);
-    label.rotation.x = -Math.PI / 2;
-    label.position.set(-0.1, 18.95, 0);
-    label.scale.set(0.9, 0.9, 1);
-
-    this.bottleGroup.add(label);
+    this.bottleGroup.add(smiley);
   };
 
-  BottleCanvas.prototype.initLabel = function initLabel() {};
+  BottleCanvas.prototype.initLabel = function initLabel() {
+    var geometry = new CylinderBufferGeometry(4.93, 4.93, 18, 64, 1, true);
+
+    var label = new Mesh(geometry, this.labelmat);
+    var labelBack = new Mesh(geometry, this.labelBackMat);
+
+    label.position.y = labelBack.position.y = -8;
+    label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
+
+    this.bottleGroup.add(label, labelBack);
+  };
 
   BottleCanvas.prototype.initControls = function initControls() {
     var controls = new OrbitControls(this.app.camera, this.canvas);
@@ -46730,10 +46752,9 @@ var BottleCanvas = function () {
     controls.enablePan = false;
 
     controls.autoRotate = true;
-    controls.autoRotateSpeed = -1.0; // 30 seconds per round when fps is 60
+    controls.autoRotateSpeed = -1.0;
 
-    // controls.minPolarAngle = 0; // radians
-    controls.maxPolarAngle = Math.PI * 0.75; // radians
+    controls.maxPolarAngle = Math.PI * 0.75;
 
     controls.enableDamping = true;
     controls.dampingFactor = 0.1;

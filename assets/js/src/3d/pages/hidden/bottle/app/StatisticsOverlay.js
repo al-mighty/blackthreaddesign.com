@@ -49,7 +49,8 @@ export default class StatisticsOverlay {
       top: 0;
       left: 0;
       width: 100%;
-      height: 30%;`;
+      color: black;  
+    `;
 
     this.statsElem.classList.add( 'hidden' );
 
