@@ -30,7 +30,7 @@ export default class StatisticsOverlay {
 
     const label = hide.appendChild( document.createElement( 'span' ) );
     label.innerText = 'Show Stats';
-    label.style = 'color: white;';
+    label.style = 'color: black;';
 
     checkbox.addEventListener( 'change', () => {
 
@@ -58,10 +58,6 @@ export default class StatisticsOverlay {
     timeCount.innerText = 'Total Time: ';
     this.total = timeCount.appendChild( document.createElement( 'span' ) );
 
-    const totalUnscaled = this.statsElem.appendChild( document.createElement( 'span' ) );
-    totalUnscaled.innerText = ' Total Unscaled Time: ';
-    this.totalUnscaled = totalUnscaled.appendChild( document.createElement( 'span' ) );
-
     const frameCount = this.statsElem.appendChild( document.createElement( 'span' ) );
     frameCount.innerText = ' Frame Count: ';
     this.frameCount = frameCount.appendChild( document.createElement( 'span' ) );
@@ -86,19 +82,14 @@ export default class StatisticsOverlay {
     avgFrameTime.innerText = 'Average Frame Time: ';
     this.avgFrameTime = avgFrameTime.appendChild( document.createElement( 'span' ) );
 
-    const fps = this.statsElem.appendChild( document.createElement( 'span' ) );
-    fps.innerText = ' FPS: ';
-    this.fps = fps.appendChild( document.createElement( 'span' ) );
-
     this.hideCheck = document.querySelector( '#hideOverlayChk' );
-
 
     this.stats = new Stats();
     this.stats.dom.style = `position: absolute;
     top: 0px;
     right: 0px;
     cursor: pointer;
-    opacity: 0.9;`
+    opacity: 0.9;`;
 
     this.statsElem.appendChild( this.stats.dom );
 
@@ -109,22 +100,19 @@ export default class StatisticsOverlay {
     if ( !this.show ) return;
 
     this.total.innerText = Math.floor( this.app.time.totalTime / 1000 );
-    this.totalUnscaled.innerText = Math.floor( this.app.time.unscaledTotalTime / 1000 );
+
     this.frameCount.innerText = this.app.frameCount;
 
     if ( delta ) {
-
       const unscaledDelta = Math.floor( delta / this.app.time.timeScale );
 
-      if ( unscaledDelta < minFrame )	this.minFrameTime.innerText = minFrame = unscaledDelta;
+      if ( unscaledDelta < minFrame ) this.minFrameTime.innerText = minFrame = unscaledDelta;
       if ( unscaledDelta > maxFrame ) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
 
       this.lastFrameTime.innerText = unscaledDelta;
-
     }
 
     this.avgFrameTime.innerText = Math.floor( this.app.averageFrameTime );
-    this.fps.innerText = ( this.app.averageFrameTime !== 0 ) ? Math.floor( 1000 / this.app.averageFrameTime ) : 0;
 
     this.stats.update();
   }

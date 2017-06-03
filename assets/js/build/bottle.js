@@ -45579,7 +45579,7 @@ var StatisticsOverlay = function () {
 
         var label = hide.appendChild(document.createElement('span'));
         label.innerText = 'Show Stats';
-        label.style = 'color: white;';
+        label.style = 'color: black;';
 
         checkbox.addEventListener('change', function () {
 
@@ -45599,10 +45599,6 @@ var StatisticsOverlay = function () {
         var timeCount = this.statsElem.appendChild(document.createElement('span'));
         timeCount.innerText = 'Total Time: ';
         this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
 
         var frameCount = this.statsElem.appendChild(document.createElement('span'));
         frameCount.innerText = ' Frame Count: ';
@@ -45628,10 +45624,6 @@ var StatisticsOverlay = function () {
         avgFrameTime.innerText = 'Average Frame Time: ';
         this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
 
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
         this.hideCheck = document.querySelector('#hideOverlayChk');
 
         this.stats = new Stats();
@@ -45645,11 +45637,10 @@ var StatisticsOverlay = function () {
         if (!this.show) return;
 
         this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
+
         this.frameCount.innerText = this.app.frameCount;
 
         if (delta) {
-
             var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
 
             if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
@@ -45659,7 +45650,6 @@ var StatisticsOverlay = function () {
         }
 
         this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
 
         this.stats.update();
     };
