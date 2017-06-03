@@ -342,7 +342,7 @@ export default {
     })
   },
 
-    // promisified version of THREE.FontLoader
+    // promisified version of THREE.ObjectLoader
   ObjectLoader: ( url ) => {
     const promiseLoader = url => new Promise( ( resolve, reject ) => {
       if ( !objectLoader ) objectLoader = new THREE.ObjectLoader();

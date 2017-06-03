@@ -6,7 +6,7 @@ import './splashCanvasSetup.js';
 
 import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
-import OrbitControls from '../../modules/OrbitControls.module.js';
+// import OrbitControls from '../../modules/OrbitControls.module.js';
 
 import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';
