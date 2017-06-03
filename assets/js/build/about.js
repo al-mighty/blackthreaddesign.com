@@ -43809,6 +43809,400 @@ var utils = {
 window.addEventListener('mousemove', utils.moveHandler);
 new Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
 
+var fontLoader = void 0;
+var objectLoader = void 0;
+
+var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
+  var buffer = new Float32Array(count * itemSize);
+  var attribute = new BufferAttribute(buffer, itemSize);
+
+  bufferGeometry.addAttribute(name, attribute);
+
+  return attribute;
+};
+
+// const visibleHeightAtZDepth = ( depth, camera ) => {
+//   const vFOV = camera.fov * Math.PI / 180;
+//   return 2 * Math.tan( vFOV / 2 ) * depth; // visible height
+// };
+
+// const visibleWidthAtZDepth = ( depth, camera ) => {
+//   const height = visibleHeightAtZDepth( depth, camera );
+//   return height * camera.aspect;
+// },
+
+var threeUtils = {
+  // visibleHeightAtZDepth,
+
+  pointerPosToCanvasCentre: function (canvas) {
+    var offsetY = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var offsetX = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+    var halfWidth = canvas.clientWidth / 2 + offsetX;
+    var halfHeight = canvas.clientHeight / 2 + offsetY;
+    return {
+      x: utils.pointerPos.x <= halfWidth ? -halfWidth + utils.pointerPos.x : utils.pointerPos.x - halfWidth,
+      y: halfHeight - utils.pointerPos.y
+    };
+  },
+
+  /**
+   * Duplicates vertices so each face becomes separate.
+   * copied from  THREE.ExplodeModifier.
+     */
+  explodeModifier: function (geometry) {
+    var vertices = [];
+
+    for (var i = 0, il = geometry.faces.length; i < il; i++) {
+      var n = vertices.length;
+      var face = geometry.faces[i];
+
+      var a = face.a;
+      var b = face.b;
+      var c = face.c;
+
+      var va = geometry.vertices[a];
+      var vb = geometry.vertices[b];
+      var vc = geometry.vertices[c];
+
+      vertices.push(va.clone());
+      vertices.push(vb.clone());
+      vertices.push(vc.clone());
+
+      face.a = n;
+      face.b = n + 1;
+      face.c = n + 2;
+    }
+
+    geometry.vertices = vertices;
+  },
+
+
+  /**
+  * Break faces with edges longer than maxEdgeLength.
+  * copied from  THREE.TessellateModifier.
+    */
+  tessellate: function (geometry, maxEdgeLength) {
+    var edge = void 0;
+
+    var faces = [];
+    var faceVertexUvs = [];
+    var maxEdgeLengthSquared = maxEdgeLength * maxEdgeLength;
+
+    for (var i = 0, il = geometry.faceVertexUvs.length; i < il; i++) {
+
+      faceVertexUvs[i] = [];
+    }
+
+    for (var _i = 0, _il = geometry.faces.length; _i < _il; _i++) {
+
+      var face = geometry.faces[_i];
+
+      if (face instanceof Face3) {
+
+        var a = face.a;
+        var b = face.b;
+        var c = face.c;
+
+        var va = geometry.vertices[a];
+        var vb = geometry.vertices[b];
+        var vc = geometry.vertices[c];
+
+        var dab = va.distanceToSquared(vb);
+        var dbc = vb.distanceToSquared(vc);
+        var dac = va.distanceToSquared(vc);
+
+        if (dab > maxEdgeLengthSquared || dbc > maxEdgeLengthSquared || dac > maxEdgeLengthSquared) {
+
+          var m = geometry.vertices.length;
+
+          var triA = face.clone();
+          var triB = face.clone();
+
+          var vm = void 0;
+          var vnm = void 0;
+          var vcm = void 0;
+
+          if (dab >= dbc && dab >= dac) {
+
+            vm = va.clone();
+            vm.lerp(vb, 0.5);
+
+            triA.a = a;
+            triA.b = m;
+            triA.c = c;
+
+            triB.a = m;
+            triB.b = b;
+            triB.c = c;
+
+            if (face.vertexNormals.length === 3) {
+
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp(face.vertexNormals[1], 0.5);
+
+              triA.vertexNormals[1].copy(vnm);
+              triB.vertexNormals[0].copy(vnm);
+            }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp(face.vertexColors[1], 0.5);
+
+              triA.vertexColors[1].copy(vcm);
+              triB.vertexColors[0].copy(vcm);
+            }
+
+            edge = 0;
+          } else if (dbc >= dab && dbc >= dac) {
+
+            vm = vb.clone();
+            vm.lerp(vc, 0.5);
+
+            triA.a = a;
+            triA.b = b;
+            triA.c = m;
+
+            triB.a = m;
+            triB.b = c;
+            triB.c = a;
+
+            if (face.vertexNormals.length === 3) {
+
+              vnm = face.vertexNormals[1].clone();
+              vnm.lerp(face.vertexNormals[2], 0.5);
+
+              triA.vertexNormals[2].copy(vnm);
+
+              triB.vertexNormals[0].copy(vnm);
+              triB.vertexNormals[1].copy(face.vertexNormals[2]);
+              triB.vertexNormals[2].copy(face.vertexNormals[0]);
+            }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[1].clone();
+              vcm.lerp(face.vertexColors[2], 0.5);
+
+              triA.vertexColors[2].copy(vcm);
+
+              triB.vertexColors[0].copy(vcm);
+              triB.vertexColors[1].copy(face.vertexColors[2]);
+              triB.vertexColors[2].copy(face.vertexColors[0]);
+            }
+
+            edge = 1;
+          } else {
+
+            vm = va.clone();
+            vm.lerp(vc, 0.5);
+
+            triA.a = a;
+            triA.b = b;
+            triA.c = m;
+
+            triB.a = m;
+            triB.b = b;
+            triB.c = c;
+
+            if (face.vertexNormals.length === 3) {
+
+              vnm = face.vertexNormals[0].clone();
+              vnm.lerp(face.vertexNormals[2], 0.5);
+
+              triA.vertexNormals[2].copy(vnm);
+              triB.vertexNormals[0].copy(vnm);
+            }
+
+            if (face.vertexColors.length === 3) {
+
+              vcm = face.vertexColors[0].clone();
+              vcm.lerp(face.vertexColors[2], 0.5);
+
+              triA.vertexColors[2].copy(vcm);
+              triB.vertexColors[0].copy(vcm);
+            }
+
+            edge = 2;
+          }
+
+          faces.push(triA, triB);
+          geometry.vertices.push(vm);
+
+          for (var j = 0, jl = geometry.faceVertexUvs.length; j < jl; j++) {
+
+            if (geometry.faceVertexUvs[j].length) {
+
+              var uvs = geometry.faceVertexUvs[j][_i];
+
+              var uvA = uvs[0];
+              var uvB = uvs[1];
+              var uvC = uvs[2];
+
+              // AB
+
+              var uvsTriA = void 0;
+              var uvsTriB = void 0;
+              var uvM = void 0;
+
+              if (edge === 0) {
+
+                uvM = uvA.clone();
+                uvM.lerp(uvB, 0.5);
+
+                uvsTriA = [uvA.clone(), uvM.clone(), uvC.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+
+                // BC
+              } else if (edge === 1) {
+
+                uvM = uvB.clone();
+                uvM.lerp(uvC, 0.5);
+
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvC.clone(), uvA.clone()];
+
+                // AC
+              } else {
+
+                uvM = uvA.clone();
+                uvM.lerp(uvC, 0.5);
+
+                uvsTriA = [uvA.clone(), uvB.clone(), uvM.clone()];
+                uvsTriB = [uvM.clone(), uvB.clone(), uvC.clone()];
+              }
+
+              faceVertexUvs[j].push(uvsTriA, uvsTriB);
+            }
+          }
+        } else {
+
+          faces.push(face);
+
+          for (var _j = 0, _jl = geometry.faceVertexUvs.length; _j < _jl; _j++) {
+
+            faceVertexUvs[_j].push(geometry.faceVertexUvs[_j][_i]);
+          }
+        }
+      }
+    }
+
+    geometry.faces = faces;
+    geometry.faceVertexUvs = faceVertexUvs;
+  },
+
+
+  // recursive version of tesselate
+  tessellateRecursive: function (geometry, maxEdgeLength, depth) {
+    for (var i = 0; i < depth; i++) {
+      this.tessellate(geometry, maxEdgeLength);
+    }
+  },
+
+
+  // compute the centroid of a triangular face
+  computeCentroid: function () {
+    var v = new Vector3();
+
+    return function (geometry, face) {
+      var a = geometry.vertices[face.a];
+      var b = geometry.vertices[face.b];
+      var c = geometry.vertices[face.c];
+
+      v.x = (a.x + b.x + c.x) / 3;
+      v.y = (a.y + b.y + c.y) / 3;
+      v.z = (a.z + b.z + c.z) / 3;
+
+      return v;
+    };
+  }(),
+
+  // promisified version of THREE.FontLoader
+  fontLoader: function (url) {
+    var promiseLoader = function (url) {
+      return new Promise(function (resolve, reject) {
+        if (!fontLoader) fontLoader = new FontLoader();
+        fontLoader.load(url, resolve);
+      });
+    };
+
+    return promiseLoader(url).then(function (object) {
+      return object;
+    });
+  },
+
+  // promisified version of THREE.FontLoader
+  ObjectLoader: function (url) {
+    var promiseLoader = function (url) {
+      return new Promise(function (resolve, reject) {
+        if (!objectLoader) objectLoader = new ObjectLoader();
+        objectLoader.load(url, resolve);
+      });
+    };
+
+    return promiseLoader(url).then(function (object) {
+      return object;
+    });
+  },
+
+  // Add an attribute to a bufferGeometry and return a reference to the attribute
+  createBufferAttribute: createBufferAttribute,
+
+  // set the .index property of a bufferGeometry from faces
+  setBufferGeometryIndicesFromFaces: function (bufferGeometry, faceCount, faces) {
+    var indexBuffer = new Uint32Array(faceCount * 3);
+
+    bufferGeometry.setIndex(new BufferAttribute(indexBuffer, 1));
+
+    for (var i = 0, offset = 0; i < faceCount; i++, offset += 3) {
+      var face = faces[i];
+
+      indexBuffer[offset] = face.a;
+      indexBuffer[offset + 1] = face.b;
+      indexBuffer[offset + 2] = face.c;
+    }
+  },
+
+  // create an attribute 'positions' from a set of vertices
+  bufferPositions: function (bufferGeometry, vertices) {
+    var vertexCount = vertices.length;
+    var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
+
+    for (var i = 0, offset = 0; i < vertexCount; i++, offset += 3) {
+      var vertex = vertices[i];
+
+      positionBuffer[offset] = vertex.x;
+      positionBuffer[offset + 1] = vertex.y;
+      positionBuffer[offset + 2] = vertex.z;
+    }
+  },
+
+  positionTextGeometry: function (geometry, anchor) {
+    geometry.computeBoundingBox();
+
+    var size = geometry.boundingBox.getSize();
+    var anchorX = size.x * -anchor.x;
+    var anchorY = size.y * -anchor.y;
+    var anchorZ = size.z * -anchor.z;
+    var matrix = new Matrix4().makeTranslation(anchorX, anchorY, anchorZ);
+
+    geometry.applyMatrix(matrix);
+
+    return geometry;
+  },
+
+  //TODO: fix
+  meshToJSON: function (mesh) {
+    var meshJSON = mesh.toJSON();
+    // console.log(textMeshJSON);
+
+    var jsonWindow = window.open('data:text,' + encodeURIComponent(JSON.stringify(textMeshJSON)), '_blank');
+    jsonWindow.focus();
+  }
+
+};
+
 // pnltri.js / raw.github.com/jahting/pnltri.js/master/LICENSE
 /**
  * @author jahting / http://www.ameco.tv/
@@ -46329,14 +46723,19 @@ function App(canvas) {
   this.onUpdate = function () {};
 }
 
-var backgroundVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tscreenUV = vec2(position.x, position.y) * 0.5;\n}";
+var backgroundVert = "#define GLSLIFY 1\nvarying vec2 screenUV;\nvoid main() {\n\tgl_Position = vec4( vec3( position.x, position.y, 1.0 ), 1.0 );\n\tscreenUV = vec2( position.x, position.y ) * 0.5;\n}";
 
 var backgroundFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nvarying vec2 screenUV;\nvoid main() {\n\tfloat dst = length(screenUV - offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color1, color2, dst);\n\tvec3 noise = mix(color, texture2D(noiseTexture, screenUV).rgb, 0.08);\n\tvec4 col = vec4( mix( noise, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
 
-// import threeUtils from '../../App/threeUtils.js';
+var portraitVert = "#define GLSLIFY 1\nuniform float uTime;\nuniform vec2 pointer;\nvarying vec2 screenUV;\nvarying vec2 vUv;\nvoid main() {\n  vUv = uv;\n \n  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n  screenUV = vec2( gl_Position.xy / gl_Position.z ) * 0.5;\n}\n";
+
+var portraitFrag = "#define GLSLIFY 1\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec2 offset;\nuniform vec2 smooth;\nuniform sampler2D noiseTexture;\nuniform sampler2D portraitTexture;\nvarying vec2 screenUV;\nvarying vec2 vUv;\nvoid main() {\n\tfloat dst = length(screenUV + offset);\n\tdst = smoothstep(smooth.x, smooth.y, dst);\n\tvec3 color = mix(color2, color1, dst);\n  vec3 portrait =  color * texture2D(portraitTexture, vUv).rgb;\n\tvec4 col = vec4( mix( portrait, vec3( -2.6 ), dot( screenUV, screenUV ) ), 1.0);\n\tgl_FragColor = col;\n}";
+
 // import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './aboutCanvasHelpers.js';
 
 var mastHeadHeight = document.querySelector('.masthead').clientHeight;
+
+var textureLoader = new TextureLoader();
 
 var AboutCanvas = function () {
     function AboutCanvas(showStats) {
@@ -46367,8 +46766,8 @@ var AboutCanvas = function () {
                 self.offset.set(offsetX, offsetY);
                 self.smooth.set(1.0, offsetY);
 
-                // const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
-                // self.pointer.set( pointer.x, pointer.y );
+                var pointer = threeUtils.pointerPosToCanvasCentre(self.app.canvas, mastHeadHeight);
+                self.pointer.set(pointer.x, pointer.y);
             }
         };
 
@@ -46385,6 +46784,7 @@ var AboutCanvas = function () {
 
         self.initMaterials();
         self.addBackground();
+        self.addPortrait();
 
         self.app.play();
     }
@@ -46395,14 +46795,30 @@ var AboutCanvas = function () {
         this.app.scene.add(this.bgMesh);
     };
 
+    AboutCanvas.prototype.addPortrait = function addPortrait() {
+        var portrait = textureLoader.load('/assets/images/about/portrait-512.png');
+
+        var geometry = new CircleBufferGeometry(40, 64);
+
+        var material = new MeshBasicMaterial({
+            color: 0xffffff,
+            map: portrait
+        });
+        var circle = new Mesh(geometry, this.portraitMat);
+
+        circle.position.set(50, 30, 0);
+        this.app.scene.add(circle);
+    };
+
     AboutCanvas.prototype.initMaterials = function initMaterials() {
-        var loader = new TextureLoader();
-        var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+        var noiseTexture = textureLoader.load('/assets/images/textures/noise-1024.jpg');
         noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
+
+        var portraitTexture = textureLoader.load('/assets/images/about/portrait-512.png');
 
         this.offset = new Vector2(0, 0);
         this.smooth = new Vector2(1.0, 1.0);
-        // this.pointer = new THREE.Vector2( 100, 100 );
+        this.pointer = new Vector2(100, 100);
 
         var colA = new Color(0xffffff);
         var colB = new Color(0x283844);
@@ -46412,6 +46828,19 @@ var AboutCanvas = function () {
             offset: { value: this.offset },
             smooth: { value: this.smooth }
         };
+
+        this.portraitMat = new ShaderMaterial({
+            uniforms: Object.assign({
+                portraitTexture: { value: portraitTexture },
+                color1: { value: colB },
+                color2: { value: colA },
+                uTime: { value: 0.0 },
+                pointer: { value: this.pointer }
+            }, uniforms),
+            vertexShader: portraitVert,
+            fragmentShader: portraitFrag,
+            side: DoubleSide
+        });
 
         this.backgroundMat = new ShaderMaterial({
             uniforms: Object.assign({

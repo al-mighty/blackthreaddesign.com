@@ -5,18 +5,16 @@ export default function initSplashLayout() {
 
   const splashHeroContainer = document.querySelector( '#splash-hero-container' );
 
-  const splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
+  let splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
 
   splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
 
 
-  window.addEventListener('resize', throttle(() => {
+  window.addEventListener( 'resize', throttle( () => {
     mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
-    const splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
+    splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
     splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
 
-  }), 250 );
-
-  
+  } ), 250 );
 }

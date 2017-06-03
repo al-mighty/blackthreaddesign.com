@@ -468,7 +468,7 @@ function initSplashLayout() {
   window.addEventListener('resize', throttle(function () {
     mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
-    var splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
+    splashHeroContainerHeight = window.innerHeight - mastHeadHeight;
     splashHeroContainer.style.height = splashHeroContainerHeight + 'px';
   }), 250);
 }
@@ -2430,7 +2430,10 @@ WebGLRenderTarget.prototype = {
 Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12487,8 +12490,6 @@ BufferAttribute.prototype = {
 
 };
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12518,6 +12519,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -24362,7 +24367,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24391,6 +24396,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -35871,10 +35877,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -37285,33 +37288,13 @@ PropertyBinding.findNode = function( root, nodeName ) {
 
 /**
  *
- * A group of objects that receives a shared animation state.
+ * Action provided by AnimationMixer for scheduling clip playback on specific
+ * objects.
  *
- * Usage:
- *
- * 	-	Add objects you would otherwise pass as 'root' to the
- * 		constructor or the .clipAction method of AnimationMixer.
- *
- * 	-	Instead pass this object as 'root'.
- *
- * 	-	You can also add and remove objects later when the mixer
- * 		is running.
- *
- * Note:
- *
- *  	Objects of this class appear as one object to the mixer,
- *  	so cache control of the individual objects must be done
- *  	on the group.
- *
- * Limitation:
- *
- * 	- 	The animated properties must be compatible among the
- * 		all objects in the group.
- *
- *  -	A single property can either be controlled through a
- *  	target group or directly, but not both.
- *
+ * @author Ben Houston / http://clara.io/
+ * @author David Sarno / http://lighthaus.us/
  * @author tschw
+ *
  */
 
 function AnimationAction( mixer, clip, localRoot ) {
@@ -38720,7 +38703,13 @@ Uniform.prototype.clone = function () {
 };
 
 /**
- * @author benaadams / https://twitter.com/ben_a_adams
+ * @author bhouston / http://clara.io
+ * @author WestLangley / http://github.com/WestLangley
+ *
+ * Ref: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+ *
+ * The poles (phi) are at the positive and negative y axis.
+ * The equator starts at positive z.
  */
 
 function Spherical( radius, phi, theta ) {
@@ -38796,11 +38785,9 @@ Spherical.prototype = {
 };
 
 /**
- * @author Mugen87 / https://github.com/Mugen87
- *
- * Ref: https://en.wikipedia.org/wiki/Cylindrical_coordinate_system
- *
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -39141,8 +39128,8 @@ SkeletonHelper.prototype.update = function () {
 }();
 
 /**
- * @author alteredq / http://alteredqualia.com/
- * @author mrdoob / http://mrdoob.com/
+ * @author abelnation / http://github.com/abelnation
+ * @author Mugen87 / http://github.com/Mugen87
  */
 
 function RectAreaLightHelper( light ) {
@@ -39321,7 +39308,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -39904,9 +39892,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -40061,6 +40066,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -40098,9 +40107,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -40148,6 +40155,7 @@ Object.assign( Spline.prototype, {
 } );
 
 //
+
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -41152,8 +41160,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -41201,8 +41207,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 var hammer = createCommonjsModule(function (module) {
 /*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -43852,6 +43856,7 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
+// Set up any globals
 var Hammer = hammer$1;
 
 /* ****************************************
@@ -46231,6 +46236,7 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
+//Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
   var pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts(points) {
@@ -46615,6 +46621,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -46798,6 +46809,21 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -47780,8 +47806,6 @@ var createTextGeometry = function (font) {
   return textGeometry;
 };
 
-var mastHeadHeight = document.querySelector('.masthead').clientHeight;
-
 var SplashCanvas = function () {
     function SplashCanvas(showStats) {
         classCallCheck(this, SplashCanvas);
@@ -47806,6 +47830,8 @@ var SplashCanvas = function () {
         self.addText();
 
         this.pauseWhenOffscreen();
+
+        var mastHeadHeight = document.querySelector('.masthead').clientHeight;
 
         var updateMaterials = function () {
             // Pan events on mobile sometimes register as (0,0); ignore these

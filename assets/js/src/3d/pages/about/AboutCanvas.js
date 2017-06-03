@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// import threeUtils from '../../App/threeUtils.js';
+import threeUtils from '../../App/threeUtils.js';
 import utils from '../../../utilities.js';
 import './aboutCanvasSetup.js';
 
@@ -11,10 +11,15 @@ import App from '../../App/App.js';
 import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';
 
+import portraitVert from './shaders/portrait.vert';
+import portraitFrag from './shaders/portrait.frag';
+
 
 // import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './aboutCanvasHelpers.js';
 
 let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
+const textureLoader = new THREE.TextureLoader();
 
 export default class AboutCanvas {
 
@@ -44,8 +49,8 @@ export default class AboutCanvas {
         self.offset.set( offsetX, offsetY );
         self.smooth.set( 1.0, offsetY );
 
-        // const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
-        // self.pointer.set( pointer.x, pointer.y );
+        const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
+        self.pointer.set( pointer.x, pointer.y );
       }
     };
 
@@ -64,6 +69,7 @@ export default class AboutCanvas {
 
     self.initMaterials();
     self.addBackground();
+    self.addPortrait();
 
     self.app.play();
 
@@ -76,14 +82,30 @@ export default class AboutCanvas {
     this.app.scene.add( this.bgMesh );
   }
 
+  addPortrait() {
+    const portrait = textureLoader.load( '/assets/images/about/portrait-512.png' );
+
+    const geometry = new THREE.CircleBufferGeometry( 40, 64 );
+
+    const material = new THREE.MeshBasicMaterial( {
+      color: 0xffffff,
+      map: portrait,
+    } );
+    const circle = new THREE.Mesh( geometry, this.portraitMat );
+
+    circle.position.set( 50, 30, 0 );
+    this.app.scene.add( circle );
+  }
+
   initMaterials() {
-    const loader = new THREE.TextureLoader();
-    const noiseTexture = loader.load( '/assets/images/textures/noise-1024.jpg' );
+    const noiseTexture = textureLoader.load( '/assets/images/textures/noise-1024.jpg' );
     noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+    const portraitTexture = textureLoader.load( '/assets/images/about/portrait-512.png' );
 
     this.offset = new THREE.Vector2( 0, 0 );
     this.smooth = new THREE.Vector2( 1.0, 1.0 );
-    // this.pointer = new THREE.Vector2( 100, 100 );
+    this.pointer = new THREE.Vector2( 100, 100 );
 
     const colA = new THREE.Color( 0xffffff );
     const colB = new THREE.Color( 0x283844 );
@@ -93,6 +115,19 @@ export default class AboutCanvas {
       offset: { value: this.offset },
       smooth: { value: this.smooth },
     };
+
+    this.portraitMat = new THREE.ShaderMaterial( {
+        uniforms: Object.assign( {
+          portraitTexture: { value: portraitTexture },
+          color1: { value: colB },
+          color2: { value: colA },
+          uTime: { value: 0.0 },
+          pointer: { value: this.pointer },
+        }, uniforms ),
+        vertexShader: portraitVert,
+        fragmentShader: portraitFrag,
+        side: THREE.DoubleSide,
+    } );
 
     this.backgroundMat = new THREE.ShaderMaterial( {
       uniforms: Object.assign( {

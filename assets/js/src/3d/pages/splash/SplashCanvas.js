@@ -16,7 +16,7 @@ import textFrag from './shaders/text.frag';
 import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './splashCanvasHelpers.js';
 
 
-let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
 
 
 export default class SplashCanvas {
@@ -42,6 +42,8 @@ export default class SplashCanvas {
     self.addText();
 
     this.pauseWhenOffscreen();
+
+    let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
     const updateMaterials = function () {
         // Pan events on mobile sometimes register as (0,0); ignore these

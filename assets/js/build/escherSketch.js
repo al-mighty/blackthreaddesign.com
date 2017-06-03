@@ -45320,7 +45320,7 @@ var RegularHyperbolicTesselation = function () {
     return centralPattern;
   };
 
-  // TODO document this function
+  // recursively build tiling from transformed copies of central pattern
 
 
   RegularHyperbolicTesselation.prototype.generateTiling = function generateTiling() {
@@ -45349,7 +45349,6 @@ var RegularHyperbolicTesselation = function () {
   };
 
   // calculate the polygons in each layer and add them to this.tiling[]
-  // TODO: document this function
   // TODO: better designMode
 
 

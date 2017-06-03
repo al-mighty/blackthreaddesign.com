@@ -1,5 +1,3 @@
-import { transformPoint } from './mathFunctions.js';
-
 import {
   HyperbolicPolygon as Polygon,
 }
@@ -121,7 +119,7 @@ export default class RegularHyperbolicTesselation {
     return centralPattern;
   }
 
-  // TODO document this function
+  // recursively build tiling from transformed copies of central pattern
   generateTiling( designMode = false ) {
     const tiling = this.buildCentralPattern();
 
@@ -146,7 +144,6 @@ export default class RegularHyperbolicTesselation {
   }
 
   // calculate the polygons in each layer and add them to this.tiling[]
-  // TODO: document this function
   // TODO: better designMode
   layerRecursion( exposure, layer, transform, tiling, designMode = false ) {
     this.addTransformedPattern( tiling, transform );
