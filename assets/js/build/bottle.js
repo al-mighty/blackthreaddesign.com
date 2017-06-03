@@ -46595,8 +46595,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-// import { JSONLoader } from './bottleCanvasHelpers.js';
-
 var jsonLoader = new JSONLoader();
 var textureLoader = new TextureLoader();
 
@@ -46623,6 +46621,10 @@ var BottleCanvas = function () {
     self.app.onUpdate = function () {
 
       if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+
+      // self.bottleGroup.rotation.y -= self.app.delta * 0.0005;
+
+      self.controls.update();
     };
 
     self.app.onWindowResize = function () {};
@@ -46637,49 +46639,60 @@ var BottleCanvas = function () {
   }
 
   BottleCanvas.prototype.initMaterials = function initMaterials() {
+    var maxAnistropy = this.app.renderer.getMaxAnisotropy();
 
     var envMap = textureLoader.load('/assets/images/textures/env_maps/test_env_map.jpg');
-    envMap.mapping = EquirectangularReflectionMapping;
-    // envMap.mapping = THREE.EquirectangularRefractionMapping;
+    // envMap.mapping = THREE.EquirectangularReflectionMapping;
+    envMap.mapping = EquirectangularRefractionMapping;
     envMap.magFilter = LinearFilter;
     envMap.minFilter = LinearMipMapLinearFilter;
 
-    envMap.anisotropy = this.app.renderer.getMaxAnisotropy();
+    envMap.anisotropy = maxAnistropy;
+
+    var smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
+    smileyTexture.anisotropy = maxAnistropy;
 
     this.bottleCapMat = new MeshStandardMaterial({
+      envMap: envMap,
+      map: smileyTexture,
+      roughness: 0.8,
+      metalness: 0.75,
       color: 0xFFFFFF,
-      shading: SmoothShading,
       side: FrontSide
     });
 
     this.bottleGlassMat = new MeshStandardMaterial({
       envMap: envMap,
-      color: 0x541E00,
-      roughness: 0.5,
-      metalness: 1.0,
+      color: 0x541E00, // 0x662805,
+      roughness: 0.1,
+      metalness: 0.9,
       transparent: true,
-      opacity: 0.75,
-      // shading: THREE.SmoothShading,
+      opacity: 0.8,
       // side: THREE.DoubleSide,
-      side: FrontSide
+      side: FrontSide,
+      refractionRatio: 1.44
+
     });
   };
 
   BottleCanvas.prototype.initLights = function initLights() {
     var ambient = new AmbientLight(0x404040, 1.0);
 
-    var directionalLight = new DirectionalLight(0xffffff, 1.0);
-    directionalLight.position.set(0, 100, 0);
+    var directionalLight1 = new DirectionalLight(0xffffff, 1.0);
+    directionalLight1.position.set(20, 20, 30);
 
-    this.app.scene.add(ambient, directionalLight);
+    var directionalLight2 = new DirectionalLight(0xffffff, 1.0);
+    directionalLight2.position.set(-10, 0, 10);
+
+    this.app.scene.add(ambient, directionalLight1, directionalLight2);
   };
 
-  BottleCanvas.prototype.initTestObject = function initTestObject() {
-    var testCube = new BoxBufferGeometry(30, 30, 30);
-    this.testMesh = new Mesh(testCube, this.bottleGlassMat);
+  // initTestObject() {
+  //   const testCube = new THREE.BoxBufferGeometry( 30, 30, 30 );
+  //   this.testMesh = new THREE.Mesh( testCube, this.bottleGlassMat );
 
-    this.app.scene.add(this.testMesh);
-  };
+  //   this.app.scene.add( this.testMesh );
+  // }
 
   BottleCanvas.prototype.initBottle = function initBottle() {
     var _this = this;
@@ -46688,13 +46701,12 @@ var BottleCanvas = function () {
     this.app.scene.add(this.bottleGroup);
 
     jsonLoader.load('/assets/models/hidden/bottle/bottle-real-applied.model.old.json', function (geometry) {
-      // console.log( geometry );
+      geometry.computeVertexNormals();
       var bottleGlassMesh = new Mesh(geometry, _this.bottleGlassMat);
       _this.bottleGroup.add(bottleGlassMesh);
     });
 
     jsonLoader.load('/assets/models/hidden/bottle/bottle-cap.model.old.json', function (geometry) {
-      // console.log( geometry );
       var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
 
       bottleCapMesh.scale.set(2.15, 2.5, 2.15);
@@ -46704,8 +46716,24 @@ var BottleCanvas = function () {
     });
   };
 
+  BottleCanvas.prototype.initSmiley = function initSmiley() {};
+
   BottleCanvas.prototype.initControls = function initControls() {
     var controls = new OrbitControls(this.app.camera, this.canvas);
+
+    controls.enableZoom = false;
+    controls.enablePan = false;
+
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = -1.0; // 30 seconds per round when fps is 60
+
+    // controls.minPolarAngle = 0; // radians
+    controls.maxPolarAngle = Math.PI * 0.75; // radians
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+
+    this.controls = controls;
   };
 
   return BottleCanvas;

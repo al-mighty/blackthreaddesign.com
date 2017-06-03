@@ -2,8 +2,6 @@ import * as THREE from 'three';
 
 import App from './App/App.js';
 
-// import { JSONLoader } from './bottleCanvasHelpers.js';
-
 import './bottleCanvasSetup.js';
 
 import StatisticsOverlay from './App/StatisticsOverlay.js';
@@ -22,7 +20,7 @@ export default class BottleCanvas {
     self.container = document.querySelector( '.canvas-container' );
 
     this.canvas = document.querySelector( '#bottle-canvas' );
-    
+
     self.app = new App( this.canvas );
 
     self.app.camera.position.set( 0, 0, 35 );
@@ -35,6 +33,10 @@ export default class BottleCanvas {
     self.app.onUpdate = function () {
 
       if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
+
+      // self.bottleGroup.rotation.y -= self.app.delta * 0.0005;
+
+      self.controls.update();
 
     };
 
@@ -53,63 +55,75 @@ export default class BottleCanvas {
   }
 
   initMaterials() {
+    const maxAnistropy = this.app.renderer.getMaxAnisotropy();
 
     const envMap = textureLoader.load( '/assets/images/textures/env_maps/test_env_map.jpg' );
-    envMap.mapping = THREE.EquirectangularReflectionMapping;
-    // envMap.mapping = THREE.EquirectangularRefractionMapping;
+    // envMap.mapping = THREE.EquirectangularReflectionMapping;
+    envMap.mapping = THREE.EquirectangularRefractionMapping;
     envMap.magFilter = THREE.LinearFilter;
     envMap.minFilter = THREE.LinearMipMapLinearFilter;
 
-    envMap.anisotropy = this.app.renderer.getMaxAnisotropy();
+    envMap.anisotropy = maxAnistropy;
 
+    const smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
+    smileyTexture.anisotropy = maxAnistropy;
 
     this.bottleCapMat = new THREE.MeshStandardMaterial( {
-        color: 0xFFFFFF,
-        shading: THREE.SmoothShading,
-        side: THREE.FrontSide
+      envMap,
+      map: smileyTexture,
+      roughness: 0.8,
+      metalness: 0.75,
+      color: 0xFFFFFF,
+      side: THREE.FrontSide,
     } );
 
     this.bottleGlassMat = new THREE.MeshStandardMaterial( {
       envMap,
-      color: 0x541E00,
-      roughness: 0.5,
-      metalness: 1.0,
+      color: 0x541E00, // 0x662805,
+      roughness: 0.1,
+      metalness: 0.9,
       transparent: true,
-      opacity: 0.75,
-      // shading: THREE.SmoothShading,
+      opacity: 0.8,
       // side: THREE.DoubleSide,
       side: THREE.FrontSide,
+      refractionRatio: 1.44,
+
+      // specular: 0xCCCCCC,
+      // shininess: 230,
+      // shading: THREE.SmoothShading,
     } );
   }
 
   initLights() {
     const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
 
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
-    directionalLight.position.set( 0, 100, 0 );
+    const directionalLight1 = new THREE.DirectionalLight( 0xffffff, 1.0 );
+    directionalLight1.position.set( 20, 20, 30 );
 
-    this.app.scene.add( ambient, directionalLight );
+    const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 1.0 );
+    directionalLight2.position.set( -10, 0, 10 );
+
+    this.app.scene.add( ambient, directionalLight1, directionalLight2 );
   }
 
-  initTestObject() {
-    const testCube = new THREE.BoxBufferGeometry( 30, 30, 30 );
-    this.testMesh = new THREE.Mesh( testCube, this.bottleGlassMat );
+  // initTestObject() {
+  //   const testCube = new THREE.BoxBufferGeometry( 30, 30, 30 );
+  //   this.testMesh = new THREE.Mesh( testCube, this.bottleGlassMat );
 
-    this.app.scene.add( this.testMesh );
-  }
+  //   this.app.scene.add( this.testMesh );
+  // }
 
   initBottle() {
     this.bottleGroup = new THREE.Group();
     this.app.scene.add( this.bottleGroup );
 
     jsonLoader.load( '/assets/models/hidden/bottle/bottle-real-applied.model.old.json', ( geometry ) => {
-      // console.log( geometry );
+      geometry.computeVertexNormals();
       const bottleGlassMesh = new THREE.Mesh( geometry, this.bottleGlassMat );
       this.bottleGroup.add( bottleGlassMesh );
     } );
 
     jsonLoader.load( '/assets/models/hidden/bottle/bottle-cap.model.old.json', ( geometry ) => {
-      // console.log( geometry );
       const bottleCapMesh = new THREE.Mesh( geometry, this.bottleCapMat );
 
       bottleCapMesh.scale.set( 2.15, 2.5, 2.15 );
@@ -120,7 +134,25 @@ export default class BottleCanvas {
 
   }
 
+  initSmiley() {
+
+  }
+
   initControls() {
     const controls = new OrbitControls( this.app.camera, this.canvas );
+
+    controls.enableZoom = false;
+    controls.enablePan = false;
+
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = -1.0; // 30 seconds per round when fps is 60
+
+    // controls.minPolarAngle = 0; // radians
+    controls.maxPolarAngle = Math.PI * 0.75; // radians
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+
+    this.controls = controls;
   }
 }
