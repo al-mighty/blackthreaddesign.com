@@ -46602,7 +46602,7 @@ var BottleCanvas = function () {
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, -0.5, 2.3);
+    this.app.camera.position.set(0, 0, 80);
     this.app.camera.near = 0.01;
     this.app.camera.far = 1000;
 
@@ -46630,7 +46630,7 @@ var BottleCanvas = function () {
 
     this.initBottle();
     this.initSmiley();
-    // this.initLabel();
+    this.initLabel();
 
     this.initControls();
 
@@ -46641,10 +46641,10 @@ var BottleCanvas = function () {
     var ambient = new AmbientLight(0x404040, 1.0);
 
     var directionalLight1 = new DirectionalLight(0xffffff, 1.0);
-    directionalLight1.position.set(20, 20, 30);
+    directionalLight1.position.set(200, 200, 300);
 
     var directionalLight2 = new DirectionalLight(0xffffff, 1.0);
-    directionalLight2.position.set(-10, 0, 10);
+    directionalLight2.position.set(-100, 0, 100);
 
     this.app.scene.add(ambient, directionalLight1, directionalLight2);
   };
@@ -46667,19 +46667,46 @@ var BottleCanvas = function () {
       side: DoubleSide
     });
 
-    this.bottleGlassMat = new MeshStandardMaterial({
+    this.bottleMat = new MeshStandardMaterial({
       color: 0x541e00,
       envMap: this.envMap,
       metalness: 0.9,
-      opacity: 0.8,
+      opacity: 0.7,
       refractionRatio: 1.9,
-      roughness: 0.2,
-      // side: THREE.DoubleSide,
+      roughness: 0.6,
       transparent: true
     });
 
-    this.beerLiquidMat = new MeshBasicMaterial({
-      color: 0x4A3830
+    this.bottleBackMat = new MeshStandardMaterial({
+      color: 0x541e00,
+      envMap: this.envMap,
+      metalness: 0.9,
+      opacity: 0.7,
+      refractionRatio: 1.9,
+      roughness: 0.6,
+      side: BackSide,
+      transparent: true
+    });
+
+    this.beerLiquidMat = new MeshStandardMaterial({
+      color: 0x362823,
+      envMap: this.envMap,
+      metalness: 0.0,
+      opacity: 0.8,
+      refractionRatio: 1.3,
+      roughness: 0.3,
+      transparent: true
+    });
+
+    this.beerLiquidBackMat = new MeshStandardMaterial({
+      color: 0x362823,
+      envMap: this.envMap,
+      metalness: 0.0,
+      opacity: 0.6,
+      refractionRatio: 1.3,
+      roughness: 0.3,
+      side: BackSide,
+      transparent: true
     });
 
     this.smileyMat = new MeshBasicMaterial({
@@ -46707,57 +46734,53 @@ var BottleCanvas = function () {
     this.bottleGroup.position.set(0, -1, 0);
     this.app.scene.add(this.bottleGroup);
 
-    objectLoader.load('/assets/models/hidden/bottle/bottle_group.json', function (scene) {
+    objectLoader.load('/assets/models/hidden/bottle/bottle_group3.json', function (scene) {
       var bottle = scene.children[0];
-      bottle.scale.set(10, 10, 10);
 
-      _this.bottleGroup.add(bottle);
+      var liquidGeom = bottle.children[0].geometry;
+      liquidGeom.scale(1, -1, 1);
+      var glassExteriorGeom = bottle.children[1].geometry;
+      glassExteriorGeom.scale(1, -1, 1);
+      var glassInteriorGeom = bottle.children[2].geometry;
+      glassInteriorGeom.scale(1, -1, 1);
+      var liquidTopGeom = bottle.children[3].geometry;
+      liquidTopGeom.scale(1, -1, 1);
+
+      var liquid = new Mesh(liquidGeom, _this.beerLiquidMat);
+      var liquidBack = new Mesh(liquidGeom, _this.beerLiquidBackMat);
+      var glassExterior = new Mesh(glassExteriorGeom, _this.bottleMat);
+      var glassInterior = new Mesh(glassInteriorGeom, _this.bottleBackMat);
+      var liquidTop = new Mesh(liquidTopGeom, _this.beerLiquidMat);
+      var liquidTopBack = new Mesh(liquidTopGeom, _this.beerLiquidBackMat);
+
+      _this.bottleGroup.add(liquid, liquidBack, liquidTop, liquidTopBack, glassInterior, glassExterior);
     });
 
-    // objectLoader.load( '/assets/models/hidden/bottle/bottle_no_interior.json', ( scene ) => {
-    //   // const bufferGeometry = new THREE.BufferGeometry().fromGeometry( geometry );
-    //   // console.log(bufferGeometry.toJSON())
-
-    //   const geometry = scene.children[0].children[0].geometry;
-    //   console.log( geometry )
-
-
-    //   const bottleGlassMesh = new THREE.Mesh( geometry, this.bottleGlassMat );
-
-    //   bottleGlassMesh.scale.set( 1, -1, 1 );
-    //   this.bottleGroup.add( bottleGlassMesh );
-    // } );
-
-    // jsonLoader.load( '/assets/models/hidden/bottle/cap.json', ( geometry ) => {
-    //   const bottleCapMesh = new THREE.Mesh( geometry, this.bottleCapMat );
-    //   bottleCapMesh.scale.set( 10, 10, 10 );
-    //   this.bottleGroup.add( bottleCapMesh );
-    // } );
-
-    // jsonLoader.load( '/assets/models/hidden/bottle/beer.json', ( geometry ) => {
-    //   const beerMesh = new THREE.Mesh( geometry, this.beerLiquidMat );
-    //   beerMesh.scale.set( 10, 10, 10 );
-    //   this.bottleGroup.add( beerMesh );
-    // } );
+    jsonLoader.load('/assets/models/hidden/bottle/cap.json', function (geometry) {
+      geometry.scale(335, 335, 335);
+      geometry.translate(0, -37.5, 0);
+      var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
+      _this.bottleGroup.add(bottleCapMesh);
+    });
   };
 
   BottleCanvas.prototype.initSmiley = function initSmiley() {
-    var geometry = new PlaneBufferGeometry(0.2, 0.2, 1, 1);
+    var geometry = new PlaneBufferGeometry(7, 7, 1, 1);
 
     var smiley = new Mesh(geometry, this.smileyMat);
     smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set(-0.01, 2.27, 0);
+    smiley.position.set(-0.1, 38.5, 0);
 
     this.bottleGroup.add(smiley);
   };
 
   BottleCanvas.prototype.initLabel = function initLabel() {
-    var geometry = new CylinderBufferGeometry(0.296, 0.296, 1, 64, 1, true);
+    var geometry = new CylinderBufferGeometry(9.95, 9.95, 35, 64, 1, true);
 
     var label = new Mesh(geometry, this.labelmat);
     var labelBack = new Mesh(geometry, this.labelBackMat);
 
-    label.position.y = labelBack.position.y = 0.67;
+    label.position.y = labelBack.position.y = -16;
     label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
 
     this.bottleGroup.add(label, labelBack);

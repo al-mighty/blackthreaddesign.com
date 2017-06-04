@@ -24,7 +24,7 @@ export default class BottleCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, -0.5, 2.3 );
+    this.app.camera.position.set( 0, 0, 80 );
     this.app.camera.near = 0.01;
     this.app.camera.far = 1000;
 
@@ -53,7 +53,7 @@ export default class BottleCanvas {
 
     this.initBottle();
     this.initSmiley();
-    // this.initLabel();
+    this.initLabel();
 
     this.initControls();
 
@@ -65,10 +65,10 @@ export default class BottleCanvas {
     const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
 
     const directionalLight1 = new THREE.DirectionalLight( 0xffffff, 1.0 );
-    directionalLight1.position.set( 20, 20, 30 );
+    directionalLight1.position.set( 200, 200, 300 );
 
     const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 1.0 );
-    directionalLight2.position.set( -10, 0, 10 );
+    directionalLight2.position.set( -100, 0, 100 );
 
     this.app.scene.add( ambient, directionalLight1, directionalLight2 );
   }
@@ -91,20 +91,46 @@ export default class BottleCanvas {
       side: THREE.DoubleSide,
     } );
 
-    this.bottleGlassMat = new THREE.MeshStandardMaterial( {
+    this.bottleMat = new THREE.MeshStandardMaterial( {
       color: 0x541e00,
       envMap: this.envMap,
       metalness: 0.9,
-      opacity: 0.8,
+      opacity: 0.7,
       refractionRatio: 1.9,
-      roughness: 0.2,
-      // side: THREE.DoubleSide,
+      roughness: 0.6,
       transparent: true,
     } );
 
+    this.bottleBackMat = new THREE.MeshStandardMaterial( {
+      color: 0x541e00,
+      envMap: this.envMap,
+      metalness: 0.9,
+      opacity: 0.7,
+      refractionRatio: 1.9,
+      roughness: 0.6,
+      side: THREE.BackSide,
+      transparent: true,
+    } );
 
-    this.beerLiquidMat = new THREE.MeshBasicMaterial( {
-      color: 0x4A3830,
+    this.beerLiquidMat = new THREE.MeshStandardMaterial( {
+      color: 0x362823,
+      envMap: this.envMap,
+      metalness: 0.0,
+      opacity: 0.8,
+      refractionRatio: 1.3,
+      roughness: 0.3,
+      transparent: true,
+    } );
+
+    this.beerLiquidBackMat = new THREE.MeshStandardMaterial( {
+      color: 0x362823,
+      envMap: this.envMap,
+      metalness: 0.0,
+      opacity: 0.6,
+      refractionRatio: 1.3,
+      roughness: 0.3,
+      side: THREE.BackSide,
+      transparent: true,
     } );
 
     this.smileyMat = new THREE.MeshBasicMaterial( {
@@ -131,57 +157,54 @@ export default class BottleCanvas {
     this.bottleGroup.position.set( 0, -1, 0 );
     this.app.scene.add( this.bottleGroup );
 
-    objectLoader.load( '/assets/models/hidden/bottle/bottle_group.json', ( scene ) => {
+    objectLoader.load( '/assets/models/hidden/bottle/bottle_group3.json', ( scene ) => {
       const bottle = scene.children[0];
-      bottle.scale.set( 10, 10, 10 );
-      
-      this.bottleGroup.add( bottle );
+
+      const liquidGeom = bottle.children[0].geometry;
+      liquidGeom.scale( 1, -1, 1 );
+      const glassExteriorGeom = bottle.children[1].geometry;
+      glassExteriorGeom.scale( 1, -1, 1 );
+      const glassInteriorGeom = bottle.children[2].geometry;
+      glassInteriorGeom.scale( 1, -1, 1 );
+      const liquidTopGeom = bottle.children[3].geometry;
+      liquidTopGeom.scale( 1, -1, 1 );
+
+      const liquid = new THREE.Mesh( liquidGeom, this.beerLiquidMat );
+      const liquidBack = new THREE.Mesh( liquidGeom, this.beerLiquidBackMat );
+      const glassExterior = new THREE.Mesh( glassExteriorGeom, this.bottleMat );
+      const glassInterior = new THREE.Mesh( glassInteriorGeom, this.bottleBackMat );
+      const liquidTop = new THREE.Mesh( liquidTopGeom, this.beerLiquidMat );
+      const liquidTopBack = new THREE.Mesh( liquidTopGeom, this.beerLiquidBackMat );
+
+      this.bottleGroup.add( liquid, liquidBack, liquidTop, liquidTopBack, glassInterior, glassExterior );
     } );
 
-    // objectLoader.load( '/assets/models/hidden/bottle/bottle_no_interior.json', ( scene ) => {
-    //   // const bufferGeometry = new THREE.BufferGeometry().fromGeometry( geometry );
-    //   // console.log(bufferGeometry.toJSON())
+    jsonLoader.load( '/assets/models/hidden/bottle/cap.json', ( geometry ) => {
+      geometry.scale( 335, 335, 335 );
+      geometry.translate( 0, -37.5, 0 );
+      const bottleCapMesh = new THREE.Mesh( geometry, this.bottleCapMat );
+      this.bottleGroup.add( bottleCapMesh );
+    } );
 
-    //   const geometry = scene.children[0].children[0].geometry;
-    //   console.log( geometry )
-
-
-    //   const bottleGlassMesh = new THREE.Mesh( geometry, this.bottleGlassMat );
-
-    //   bottleGlassMesh.scale.set( 1, -1, 1 );
-    //   this.bottleGroup.add( bottleGlassMesh );
-    // } );
-
-    // jsonLoader.load( '/assets/models/hidden/bottle/cap.json', ( geometry ) => {
-    //   const bottleCapMesh = new THREE.Mesh( geometry, this.bottleCapMat );
-    //   bottleCapMesh.scale.set( 10, 10, 10 );
-    //   this.bottleGroup.add( bottleCapMesh );
-    // } );
-
-    // jsonLoader.load( '/assets/models/hidden/bottle/beer.json', ( geometry ) => {
-    //   const beerMesh = new THREE.Mesh( geometry, this.beerLiquidMat );
-    //   beerMesh.scale.set( 10, 10, 10 );
-    //   this.bottleGroup.add( beerMesh );
-    // } );
   }
 
   initSmiley() {
-    const geometry = new THREE.PlaneBufferGeometry( 0.2, 0.2, 1, 1 );
+    const geometry = new THREE.PlaneBufferGeometry( 7, 7, 1, 1 );
 
     const smiley = new THREE.Mesh( geometry, this.smileyMat );
     smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set( -0.01, 2.27, 0 );
+    smiley.position.set( -0.1, 38.5, 0 );
 
     this.bottleGroup.add( smiley );
   }
 
   initLabel() {
-    const geometry = new THREE.CylinderBufferGeometry( 0.296, 0.296, 1, 64, 1, true );
+    const geometry = new THREE.CylinderBufferGeometry( 9.95, 9.95, 35, 64, 1, true );
 
     const label = new THREE.Mesh( geometry, this.labelmat );
     const labelBack = new THREE.Mesh( geometry, this.labelBackMat );
 
-    label.position.y = labelBack.position.y = 0.67;
+    label.position.y = labelBack.position.y = -16;
     label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
 
     this.bottleGroup.add( label, labelBack );
