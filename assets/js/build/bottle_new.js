@@ -46604,7 +46604,7 @@ var BottleCanvas = function () {
 
     this.app.camera.position.set(0, -0.5, 2.3);
     this.app.camera.near = 0.01;
-    this.app.camera.far = 50;
+    this.app.camera.far = 1000;
 
     this.app.renderer.setClearColor(0xF9F9F9, 1.0);
 
@@ -46673,8 +46673,8 @@ var BottleCanvas = function () {
       metalness: 0.9,
       opacity: 0.8,
       refractionRatio: 1.9,
-      roughness: 0.1,
-      side: DoubleSide,
+      roughness: 0.2,
+      // side: THREE.DoubleSide,
       transparent: true
     });
 
@@ -46707,21 +46707,32 @@ var BottleCanvas = function () {
     this.bottleGroup.position.set(0, -1, 0);
     this.app.scene.add(this.bottleGroup);
 
-    jsonLoader.load('/assets/models/hidden/bottle/bottle.json', function (geometry) {
-      // const bufferGeometry = new THREE.BufferGeometry().fromGeometry( geometry );
-      // console.log(bufferGeometry.toJSON())
+    objectLoader.load('/assets/models/hidden/bottle/bottle_group.json', function (scene) {
+      var bottle = scene.children[0];
+      bottle.scale.set(10, 10, 10);
 
-      var bottleGlassMesh = new Mesh(geometry, _this.bottleGlassMat);
-
-      bottleGlassMesh.scale.set(10, 10, 10);
-      _this.bottleGroup.add(bottleGlassMesh);
+      _this.bottleGroup.add(bottle);
     });
 
-    jsonLoader.load('/assets/models/hidden/bottle/cap.json', function (geometry) {
-      var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
-      bottleCapMesh.scale.set(10, 10, 10);
-      _this.bottleGroup.add(bottleCapMesh);
-    });
+    // objectLoader.load( '/assets/models/hidden/bottle/bottle_no_interior.json', ( scene ) => {
+    //   // const bufferGeometry = new THREE.BufferGeometry().fromGeometry( geometry );
+    //   // console.log(bufferGeometry.toJSON())
+
+    //   const geometry = scene.children[0].children[0].geometry;
+    //   console.log( geometry )
+
+
+    //   const bottleGlassMesh = new THREE.Mesh( geometry, this.bottleGlassMat );
+
+    //   bottleGlassMesh.scale.set( 1, -1, 1 );
+    //   this.bottleGroup.add( bottleGlassMesh );
+    // } );
+
+    // jsonLoader.load( '/assets/models/hidden/bottle/cap.json', ( geometry ) => {
+    //   const bottleCapMesh = new THREE.Mesh( geometry, this.bottleCapMat );
+    //   bottleCapMesh.scale.set( 10, 10, 10 );
+    //   this.bottleGroup.add( bottleCapMesh );
+    // } );
 
     // jsonLoader.load( '/assets/models/hidden/bottle/beer.json', ( geometry ) => {
     //   const beerMesh = new THREE.Mesh( geometry, this.beerLiquidMat );
@@ -46755,8 +46766,8 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initControls = function initControls() {
     var controls = new OrbitControls(this.app.camera, this.canvas);
 
-    controls.enableZoom = false;
-    controls.enablePan = false;
+    // controls.enableZoom = false;
+    // controls.enablePan = false;
 
     controls.autoRotate = true;
     controls.autoRotateSpeed = -1.0;

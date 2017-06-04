@@ -4,15 +4,15 @@
 
 function Time() {
 
-	// Keep track of time when pause() was called
+  // Keep track of time when pause() was called
   let _pauseTime;
 
-	// Keep track of time when delta was last checked
+  // Keep track of time when delta was last checked
   let _lastDelta = 0;
 
-	// Hold the time when start() was called
-	// There is no point in exposing this as it's essentially a random number
-	// and will be different depending on whether performance.now or Date.now is used
+  // Hold the time when start() was called
+  // There is no point in exposing this as it's essentially a random number
+  // and will be different depending on whether performance.now or Date.now is used
   let _startTime = 0;
 
   this.running = false;
@@ -146,4 +146,4 @@ function Time() {
 
 }
 
-export default Time ;
+export default Time;

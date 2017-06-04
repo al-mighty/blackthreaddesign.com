@@ -20,4 +20,3 @@ Aside from this issue though, the new model looks good, and at first glance it l
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
 </div>
-
