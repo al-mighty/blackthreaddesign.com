@@ -8,14 +8,14 @@ js:
   'bottle_new'
 ---
 
-This is the new model - you can see the extra detail in the cap and glass if you look closely. 
-But... the export from Blender has not gone completely smoothly, resulting in this cool faceted look. 
+This is the new (fixed) model - you can see the extra detail in the cap and glass. 
 
-I've disabled the label and the beer inside for now so that you can see the problem more clearly. 
+There were a number of issues (which you can pass onto your artist - they are not actually problems with the work, but rather good things to know regarding doing 3D modelling work for web).
 
-I'll have to take the model back into Blender and fix it, which shouldn't be too hard but will take some experimentation to get right (basically, trying something, re-exporting, loading it here again, trying something else if that doesn't work etc. etc.). These kind of issues are unfortunately pretty common issue when importing models from 3D applications onto the web, it's far from an exact science! 
+* The bottle and cap were modelled with quads - these should always be converted to triangles when preparing work for the web as WebGL does not support quads. They are automatically converted by three.js but it doesn't always do a good job (as in this case).
+* The bottle and interior liquid were modelled with "depth" - so the bottle glass had an interior and exterior surface. This is not handled well in WebGL (it was the main cause of the visual artefacts in this case). I've solved this by splitting the glass into two pieces, one exterior and one interior glass wall, and the beer liquid into a body and top surface.
 
-Aside from this issue though, the new model looks good, and at first glance it looks like performance should actually be pretty similar to your current model.
+The next step is working to improve the efficiency of the models, and better lighting and materials. 
 
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
