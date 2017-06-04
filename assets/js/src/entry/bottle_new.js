@@ -9,6 +9,6 @@ function initBottle( showStats ) {
 
 }
 
-const showStats = true;
+const showStats = false;
 initBottle( showStats );
 

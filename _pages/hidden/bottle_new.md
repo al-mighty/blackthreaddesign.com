@@ -17,6 +17,8 @@ There were a number of issues (which you can pass onto your artist - they are no
 
 The next step is working to improve the efficiency of the models, and better lighting and materials. 
 
+## Codeword: fabaceous
+
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
 </div>
