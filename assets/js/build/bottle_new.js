@@ -5068,7 +5068,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -15129,8 +15132,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -15160,6 +15161,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -27107,7 +27112,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -27136,6 +27141,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -38805,10 +38811,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function ArrayCamera( array ) {
@@ -42761,8 +42764,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -43103,6 +43107,7 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -43175,7 +43180,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -43768,9 +43774,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -43927,6 +43950,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -43964,9 +43991,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -44014,6 +44039,7 @@ Object.assign( Spline.prototype, {
 } );
 
 //
+
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -45062,8 +45088,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -45111,8 +45135,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -45235,6 +45257,11 @@ function Time() {
         this.paused = true;
     };
 }
+
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
 
 function App(canvas) {
 
@@ -45418,6 +45445,16 @@ function App(canvas) {
   };
 
   this.onUpdate = function () {};
+
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
 }
 
 var stats_min = createCommonjsModule(function (module) {
@@ -45549,9 +45586,6 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-var minFrame = 1000000;
-var maxFrame = 0;
-
 var StatisticsOverlay = function () {
     function StatisticsOverlay(app, container) {
         classCallCheck(this, StatisticsOverlay);
@@ -45596,33 +45630,33 @@ var StatisticsOverlay = function () {
 
         this.statsElem.classList.add('hidden');
 
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
+        // const timeCount = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // timeCount.innerText = 'Total Time: ';
+        // this.total = timeCount.appendChild( document.createElement( 'span' ) );
 
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
+        // const frameCount = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // frameCount.innerText = ' Frame Count: ';
+        // this.frameCount = frameCount.appendChild( document.createElement( 'span' ) );
 
-        this.statsElem.appendChild(document.createElement('br'));
+        // this.statsElem.appendChild( document.createElement( 'br' ) );
 
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
+        // const lastFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // lastFrameTime.innerText = 'Last Frame Time: ';
+        // this.lastFrameTime = lastFrameTime.appendChild( document.createElement( 'span' ) );
 
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
+        // const minFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // minFrameTime.innerText = ' Min Frame Time: ';
+        // this.minFrameTime = minFrameTime.appendChild( document.createElement( 'span' ) );
 
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
+        // const maxFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // maxFrameTime.innerText = ' Max Frame Time: ';
+        // this.maxFrameTime = maxFrameTime.appendChild( document.createElement( 'span' ) );
 
-        this.statsElem.appendChild(document.createElement('br'));
+        // this.statsElem.appendChild( document.createElement( 'br' ) );
 
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
+        // const avgFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+        // avgFrameTime.innerText = 'Average Frame Time: ';
+        // this.avgFrameTime = avgFrameTime.appendChild( document.createElement( 'span' ) );
 
         this.hideCheck = document.querySelector('#hideOverlayChk');
 
@@ -45636,26 +45670,41 @@ var StatisticsOverlay = function () {
 
         if (!this.show) return;
 
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
+        // this.total.innerText = Math.floor( this.app.time.totalTime / 1000 );
 
-        this.frameCount.innerText = this.app.frameCount;
+        // this.frameCount.innerText = this.app.frameCount;
 
-        if (delta) {
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
+        // if ( delta ) {
+        //   const unscaledDelta = Math.floor( delta / this.app.time.timeScale );
 
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
+        //   if ( unscaledDelta < minFrame ) this.minFrameTime.innerText = minFrame = unscaledDelta;
+        //   if ( unscaledDelta > maxFrame ) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
 
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
+        //   this.lastFrameTime.innerText = unscaledDelta;
+        // }
 
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
+        // this.avgFrameTime.innerText = Math.floor( this.app.averageFrameTime );
 
         this.stats.update();
     };
 
     return StatisticsOverlay;
 }();
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 

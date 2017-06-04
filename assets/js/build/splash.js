@@ -48083,6 +48083,16 @@ function App(canvas) {
   };
 
   this.onUpdate = function () {};
+
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
 }
 
 var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";

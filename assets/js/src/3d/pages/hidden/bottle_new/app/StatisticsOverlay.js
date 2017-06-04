@@ -54,33 +54,33 @@ export default class StatisticsOverlay {
 
     this.statsElem.classList.add( 'hidden' );
 
-    const timeCount = this.statsElem.appendChild( document.createElement( 'span' ) );
-    timeCount.innerText = 'Total Time: ';
-    this.total = timeCount.appendChild( document.createElement( 'span' ) );
+    // const timeCount = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // timeCount.innerText = 'Total Time: ';
+    // this.total = timeCount.appendChild( document.createElement( 'span' ) );
 
-    const frameCount = this.statsElem.appendChild( document.createElement( 'span' ) );
-    frameCount.innerText = ' Frame Count: ';
-    this.frameCount = frameCount.appendChild( document.createElement( 'span' ) );
+    // const frameCount = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // frameCount.innerText = ' Frame Count: ';
+    // this.frameCount = frameCount.appendChild( document.createElement( 'span' ) );
 
-    this.statsElem.appendChild( document.createElement( 'br' ) );
+    // this.statsElem.appendChild( document.createElement( 'br' ) );
 
-    const lastFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
-    lastFrameTime.innerText = 'Last Frame Time: ';
-    this.lastFrameTime = lastFrameTime.appendChild( document.createElement( 'span' ) );
+    // const lastFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // lastFrameTime.innerText = 'Last Frame Time: ';
+    // this.lastFrameTime = lastFrameTime.appendChild( document.createElement( 'span' ) );
 
-    const minFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
-    minFrameTime.innerText = ' Min Frame Time: ';
-    this.minFrameTime = minFrameTime.appendChild( document.createElement( 'span' ) );
+    // const minFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // minFrameTime.innerText = ' Min Frame Time: ';
+    // this.minFrameTime = minFrameTime.appendChild( document.createElement( 'span' ) );
 
-    const maxFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
-    maxFrameTime.innerText = ' Max Frame Time: ';
-    this.maxFrameTime = maxFrameTime.appendChild( document.createElement( 'span' ) );
+    // const maxFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // maxFrameTime.innerText = ' Max Frame Time: ';
+    // this.maxFrameTime = maxFrameTime.appendChild( document.createElement( 'span' ) );
 
-    this.statsElem.appendChild( document.createElement( 'br' ) );
+    // this.statsElem.appendChild( document.createElement( 'br' ) );
 
-    const avgFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
-    avgFrameTime.innerText = 'Average Frame Time: ';
-    this.avgFrameTime = avgFrameTime.appendChild( document.createElement( 'span' ) );
+    // const avgFrameTime = this.statsElem.appendChild( document.createElement( 'span' ) );
+    // avgFrameTime.innerText = 'Average Frame Time: ';
+    // this.avgFrameTime = avgFrameTime.appendChild( document.createElement( 'span' ) );
 
     this.hideCheck = document.querySelector( '#hideOverlayChk' );
 
@@ -99,20 +99,20 @@ export default class StatisticsOverlay {
 
     if ( !this.show ) return;
 
-    this.total.innerText = Math.floor( this.app.time.totalTime / 1000 );
+    // this.total.innerText = Math.floor( this.app.time.totalTime / 1000 );
 
-    this.frameCount.innerText = this.app.frameCount;
+    // this.frameCount.innerText = this.app.frameCount;
 
-    if ( delta ) {
-      const unscaledDelta = Math.floor( delta / this.app.time.timeScale );
+    // if ( delta ) {
+    //   const unscaledDelta = Math.floor( delta / this.app.time.timeScale );
 
-      if ( unscaledDelta < minFrame ) this.minFrameTime.innerText = minFrame = unscaledDelta;
-      if ( unscaledDelta > maxFrame ) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
+    //   if ( unscaledDelta < minFrame ) this.minFrameTime.innerText = minFrame = unscaledDelta;
+    //   if ( unscaledDelta > maxFrame ) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
 
-      this.lastFrameTime.innerText = unscaledDelta;
-    }
+    //   this.lastFrameTime.innerText = unscaledDelta;
+    // }
 
-    this.avgFrameTime.innerText = Math.floor( this.app.averageFrameTime );
+    // this.avgFrameTime.innerText = Math.floor( this.app.averageFrameTime );
 
     this.stats.update();
   }

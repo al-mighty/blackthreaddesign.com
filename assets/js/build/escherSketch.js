@@ -45502,6 +45502,16 @@ function App(canvas) {
   };
 
   this.onUpdate = function () {};
+
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
 }
 
 // * ***********************************************************************
