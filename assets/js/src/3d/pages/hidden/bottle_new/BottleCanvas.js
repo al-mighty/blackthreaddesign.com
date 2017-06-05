@@ -12,7 +12,8 @@ const jsonLoader = new THREE.JSONLoader();
 const objectLoader = new THREE.ObjectLoader();
 const textureLoader = new THREE.TextureLoader();
 const bufferGeometryLoader = new THREE.BufferGeometryLoader();
-// const fileLoader = new THREE.FileLoader();
+const fileLoader = new THREE.FileLoader();
+fileLoader.setResponseType( 'json' );
 
 export default class BottleCanvas {
 
@@ -26,7 +27,7 @@ export default class BottleCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, 0, 10 );
+    this.app.camera.position.set( 0, 2, 12 );
     this.app.camera.near = 0.01;
     this.app.camera.far = 1000;
 
@@ -154,77 +155,44 @@ export default class BottleCanvas {
     this.bottleGroup.position.set( 0, -1, 0 );
     this.app.scene.add( this.bottleGroup );
 
-    // objectLoader.load( '/assets/models/hidden/bottle/bottle.json', ( scene ) => {
-    //   const bottle = scene.children[0];
+    fileLoader.load( '/assets/models/hidden/bottle/bottle_reduced.json', ( json ) => {
+      const geometries = {};
 
-    //   // const bottleExteriorGeom = bottle.children[0].geometry;
-    //   // bottleExteriorGeom.scale( 1, -1, 1 );
-    //   // const bottleExteriorBufferGeom = new THREE.BufferGeometry().fromGeometry( bottleExteriorGeom );
+      json.geometries.forEach( ( obj ) => {
+        const name = obj.data.name;
+        const geometry = jsonLoader.parse( obj ).geometry;
 
-    //   // self.app.toJSON( bottleExteriorBufferGeom );
+        // blender model tend to be upside down in three.js
+        geometry.scale( 1, -1, 1 );
 
-    //   // const capGeom = bottle.children[2].geometry;
-    //   // capGeom.scale( 1, -1, 1 );
-    //   // capGeom.translate( 0, 6.5, 0 );
-    //   // const capBufferGeom = new THREE.BufferGeometry().fromGeometry( capGeom );
+        geometries[ name ] = geometry;
+      } );
 
-    //   // self.app.toJSON( capBufferGeom );
+      geometries.cap.translate( 0, 6.5, 0 );
 
-    //   // const liquidGeom = bottle.children[3].geometry;
-    //   // liquidGeom.scale( 1, -1, 1 );
-    //   // const liquidBufferGeom = new THREE.BufferGeometry().fromGeometry( liquidGeom );
+      const cap = new THREE.Mesh( geometries.cap, this.capMat );
+      const capBack = new THREE.Mesh( geometries.cap, this.capBackMat );
 
-    //   // self.app.toJSON( liquidBufferGeom );
+      const bottleExterior = new THREE.Mesh( geometries.bottle, this.bottleMat );
+      const bottleExteriorBack = new THREE.Mesh( geometries.bottle, this.bottleBackMat );
 
-    //   // const liquidTopGeom = bottle.children[4].geometry;
-    //   // liquidTopGeom.scale( 1, -1, 1 );
-    //   // const liquidTopBufferGeom = new THREE.BufferGeometry().fromGeometry( liquidTopGeom );
+      const liquidTop = new THREE.Mesh( geometries.liquidTop, this.liquidMat );
+      const liquidTopBack = new THREE.Mesh( geometries.liquidTop, this.liquidBackMat );
+      // self.app.toJSON( geometries.liquidTop );
 
-    //   // self.app.toJSON( liquidTopBufferGeom );
+      const liquid = new THREE.Mesh( geometries.liquid, this.bottleMat );
+      const liquidBack = new THREE.Mesh( geometries.liquid, this.bottleBackMat );
 
-    //   // const liquid = new THREE.Mesh( liquidBufferGeom, this.liquidMat );
-    //   // const liquidBack = new THREE.Mesh( liquidBufferGeom, this.liquidBackMat );
-    //   // // const bottleExterior = new THREE.Mesh( bottleExteriorBufferGeom, this.bottleMat );
-    //   // const bottleExteriorBack = new THREE.Mesh( bottleExteriorBufferGeom, this.bottleBackMat );
-
-    //   // const liquidTop = new THREE.Mesh( liquidTopBufferGeom, this.liquidMat );
-    //   // const liquidTopBack = new THREE.Mesh( liquidTopBufferGeom, this.liquidBackMat );
-    //   // const cap = new THREE.Mesh( capBufferGeom, this.capMat );
-    //   // const capBack = new THREE.Mesh( capBufferGeom, this.capBackMat );
-
-    //   // this.bottleGroup.add(
-    //   //   liquidTop,
-    //   //   liquidTopBack
-    //   // );
-
-    // } );
-
-    bufferGeometryLoader.load( '/assets/models/hidden/bottle/bottle_exterior_buffer_geom.json', ( geometry ) => {
-      const bottleExterior = new THREE.Mesh( geometry, this.bottleMat );
-      const bottleExteriorBack = new THREE.Mesh( geometry, this.bottleBackMat );
-
-      this.bottleGroup.add( bottleExterior, bottleExteriorBack );
-    } );
-
-    bufferGeometryLoader.load( '/assets/models/hidden/bottle/cap_buffer_geom.json', ( geometry ) => {
-      const cap = new THREE.Mesh( geometry, this.capMat );
-      const capBack = new THREE.Mesh( geometry, this.capBackMat );
-
-      this.bottleGroup.add( cap, capBack );
-    } );
-
-    bufferGeometryLoader.load( '/assets/models/hidden/bottle/liquid_buffer_geom.json', ( geometry ) => {
-      const liquid = new THREE.Mesh( geometry, this.bottleMat );
-      const liquidBack = new THREE.Mesh( geometry, this.bottleBackMat );
-
-      this.bottleGroup.add( liquid, liquidBack );
-    } );
-
-    bufferGeometryLoader.load( '/assets/models/hidden/bottle/liquid_buffer_geom.json', ( geometry ) => {
-      const liquidTop = new THREE.Mesh( geometry, this.liquidMat );
-      const liquidTopBack = new THREE.Mesh( geometry, this.liquidBackMat );
-
-      this.bottleGroup.add( liquidTop, liquidTopBack );
+      this.bottleGroup.add(
+        cap,
+        capBack,
+        bottleExterior,
+        bottleExteriorBack,
+        liquidTop,
+        liquidTopBack,
+        liquid,
+        liquidBack
+      );
     } );
 
   }
