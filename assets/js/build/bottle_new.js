@@ -45423,7 +45423,7 @@ function App(canvas) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
 
-      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+      window.open('data:application/json;' + JSON.stringify(json));
     } else {
       console.error('App.toJSON error: object does not have a toJSON function.');
     }
@@ -46595,6 +46595,8 @@ Object.defineProperties(OrbitControls.prototype, {
 var jsonLoader = new JSONLoader();
 var objectLoader = new ObjectLoader();
 var textureLoader = new TextureLoader();
+var bufferGeometryLoader = new BufferGeometryLoader();
+// const fileLoader = new THREE.FileLoader();
 
 var BottleCanvas = function () {
   function BottleCanvas(showStats) {
@@ -46609,7 +46611,7 @@ var BottleCanvas = function () {
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, 0, 80);
+    this.app.camera.position.set(0, 0, 10);
     this.app.camera.near = 0.01;
     this.app.camera.far = 1000;
 
@@ -46636,6 +46638,7 @@ var BottleCanvas = function () {
     this.initMaterials();
 
     this.initBottle();
+
     this.initSmiley();
     this.initLabel();
 
@@ -46651,9 +46654,14 @@ var BottleCanvas = function () {
     directionalLight1.position.set(200, 200, 300);
 
     var directionalLight2 = new DirectionalLight(0xffffff, 1.0);
-    directionalLight2.position.set(-100, 0, 100);
+    directionalLight2.position.set(100, 0, 100);
 
-    this.app.scene.add(ambient, directionalLight1, directionalLight2);
+    var hemiLight = new HemisphereLight(0xffffbb, 0x080820, 1);
+
+    this.app.scene.add(ambient, hemiLight
+    // directionalLight1,
+    // directionalLight2
+    );
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
@@ -46666,13 +46674,16 @@ var BottleCanvas = function () {
   };
 
   BottleCanvas.prototype.initMaterials = function initMaterials() {
-    this.bottleCapMat = new MeshStandardMaterial({
+    this.capMat = new MeshStandardMaterial({
       color: 0xffffff,
       envMap: this.envMap,
       metalness: 0.75,
       roughness: 0.8,
-      side: DoubleSide
+      side: BackSide
     });
+
+    this.capBackMat = this.capMat.clone();
+    this.capBackMat.side = FrontSide;
 
     this.bottleMat = new MeshStandardMaterial({
       color: 0x541e00,
@@ -46684,18 +46695,10 @@ var BottleCanvas = function () {
       transparent: true
     });
 
-    this.bottleBackMat = new MeshStandardMaterial({
-      color: 0x541e00,
-      envMap: this.envMap,
-      metalness: 0.9,
-      opacity: 0.7,
-      refractionRatio: 1.9,
-      roughness: 0.6,
-      side: BackSide,
-      transparent: true
-    });
+    this.bottleBackMat = this.bottleMat.clone();
+    this.bottleBackMat.side = BackSide;
 
-    this.beerLiquidMat = new MeshStandardMaterial({
+    this.liquidMat = new MeshStandardMaterial({
       color: 0x362823,
       envMap: this.envMap,
       metalness: 0.0,
@@ -46705,16 +46708,8 @@ var BottleCanvas = function () {
       transparent: true
     });
 
-    this.beerLiquidBackMat = new MeshStandardMaterial({
-      color: 0x362823,
-      envMap: this.envMap,
-      metalness: 0.0,
-      opacity: 0.6,
-      refractionRatio: 1.3,
-      roughness: 0.3,
-      side: BackSide,
-      transparent: true
-    });
+    this.liquidBackMat = this.liquidMat.clone();
+    this.liquidBackMat.side = BackSide;
 
     this.smileyMat = new MeshBasicMaterial({
       map: this.smileyTexture,
@@ -46737,60 +46732,105 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initBottle = function initBottle() {
     var _this = this;
 
+    var self = this;
     this.bottleGroup = new Group();
     this.bottleGroup.position.set(0, -1, 0);
     this.app.scene.add(this.bottleGroup);
 
-    objectLoader.load('/assets/models/hidden/bottle/bottle_group_no_wobble.json', function (scene) {
-      var bottle = scene.children[0];
+    // objectLoader.load( '/assets/models/hidden/bottle/bottle.json', ( scene ) => {
+    //   const bottle = scene.children[0];
 
-      console.log(bottle);
+    //   // const bottleExteriorGeom = bottle.children[0].geometry;
+    //   // bottleExteriorGeom.scale( 1, -1, 1 );
+    //   // const bottleExteriorBufferGeom = new THREE.BufferGeometry().fromGeometry( bottleExteriorGeom );
 
-      var glassExteriorGeom = bottle.children[0].geometry;
-      glassExteriorGeom.scale(1, -1, 1);
-      var glassInteriorGeom = bottle.children[1].geometry;
-      glassInteriorGeom.scale(1, -1, 1);
-      var liquidGeom = bottle.children[2].geometry;
-      liquidGeom.scale(1, -1, 1);
-      var liquidTopGeom = bottle.children[3].geometry;
-      liquidTopGeom.scale(1, -1, 1);
+    //   // self.app.toJSON( bottleExteriorBufferGeom );
 
-      var liquid = new Mesh(liquidGeom, _this.beerLiquidMat);
-      var liquidBack = new Mesh(liquidGeom, _this.beerLiquidBackMat);
-      var glassExterior = new Mesh(glassExteriorGeom, _this.bottleMat);
-      var glassInterior = new Mesh(glassInteriorGeom, _this.bottleBackMat);
-      var liquidTop = new Mesh(liquidTopGeom, _this.beerLiquidMat);
-      var liquidTopBack = new Mesh(liquidTopGeom, _this.beerLiquidBackMat);
+    //   // const capGeom = bottle.children[2].geometry;
+    //   // capGeom.scale( 1, -1, 1 );
+    //   // capGeom.translate( 0, 6.5, 0 );
+    //   // const capBufferGeom = new THREE.BufferGeometry().fromGeometry( capGeom );
 
-      _this.bottleGroup.add(liquid, liquidBack, liquidTop, liquidTopBack, glassInterior, glassExterior);
+    //   // self.app.toJSON( capBufferGeom );
+
+    //   // const liquidGeom = bottle.children[3].geometry;
+    //   // liquidGeom.scale( 1, -1, 1 );
+    //   // const liquidBufferGeom = new THREE.BufferGeometry().fromGeometry( liquidGeom );
+
+    //   // self.app.toJSON( liquidBufferGeom );
+
+    //   // const liquidTopGeom = bottle.children[4].geometry;
+    //   // liquidTopGeom.scale( 1, -1, 1 );
+    //   // const liquidTopBufferGeom = new THREE.BufferGeometry().fromGeometry( liquidTopGeom );
+
+    //   // self.app.toJSON( liquidTopBufferGeom );
+
+    //   // const liquid = new THREE.Mesh( liquidBufferGeom, this.liquidMat );
+    //   // const liquidBack = new THREE.Mesh( liquidBufferGeom, this.liquidBackMat );
+    //   // // const bottleExterior = new THREE.Mesh( bottleExteriorBufferGeom, this.bottleMat );
+    //   // const bottleExteriorBack = new THREE.Mesh( bottleExteriorBufferGeom, this.bottleBackMat );
+
+    //   // const liquidTop = new THREE.Mesh( liquidTopBufferGeom, this.liquidMat );
+    //   // const liquidTopBack = new THREE.Mesh( liquidTopBufferGeom, this.liquidBackMat );
+    //   // const cap = new THREE.Mesh( capBufferGeom, this.capMat );
+    //   // const capBack = new THREE.Mesh( capBufferGeom, this.capBackMat );
+
+    //   // this.bottleGroup.add(
+    //   //   liquidTop,
+    //   //   liquidTopBack
+    //   // );
+
+    // } );
+
+    bufferGeometryLoader.load('/assets/models/hidden/bottle/bottle_exterior_buffer_geom.json', function (geometry) {
+      var bottleExterior = new Mesh(geometry, _this.bottleMat);
+      var bottleExteriorBack = new Mesh(geometry, _this.bottleBackMat);
+
+      _this.bottleGroup.add(bottleExterior, bottleExteriorBack);
     });
 
-    jsonLoader.load('/assets/models/hidden/bottle/cap.json', function (geometry) {
-      geometry.scale(335, 335, 335);
-      geometry.translate(0, -37.5, 0);
-      var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
-      _this.bottleGroup.add(bottleCapMesh);
+    bufferGeometryLoader.load('/assets/models/hidden/bottle/cap_buffer_geom.json', function (geometry) {
+      var cap = new Mesh(geometry, _this.capMat);
+      var capBack = new Mesh(geometry, _this.capBackMat);
+
+      _this.bottleGroup.add(cap, capBack);
+    });
+
+    bufferGeometryLoader.load('/assets/models/hidden/bottle/liquid_buffer_geom.json', function (geometry) {
+      var liquid = new Mesh(geometry, _this.bottleMat);
+      var liquidBack = new Mesh(geometry, _this.bottleBackMat);
+
+      _this.bottleGroup.add(liquid, liquidBack);
+    });
+
+    bufferGeometryLoader.load('/assets/models/hidden/bottle/liquid_buffer_geom.json', function (geometry) {
+      var liquidTop = new Mesh(geometry, _this.liquidMat);
+      var liquidTopBack = new Mesh(geometry, _this.liquidBackMat);
+
+      _this.bottleGroup.add(liquidTop, liquidTopBack);
     });
   };
 
   BottleCanvas.prototype.initSmiley = function initSmiley() {
-    var geometry = new PlaneBufferGeometry(7, 7, 1, 1);
+    var geometry = new PlaneBufferGeometry(1.25, 1.25);
 
     var smiley = new Mesh(geometry, this.smileyMat);
     smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set(-0.1, 38.5, 0);
+    smiley.position.set(-0.025, 6.7, 0);
 
     this.bottleGroup.add(smiley);
   };
 
   BottleCanvas.prototype.initLabel = function initLabel() {
-    var geometry = new CylinderBufferGeometry(9.95, 9.95, 35, 64, 1, true);
+    var geometry = new CylinderBufferGeometry(1.71, 1.71, 5.5, 64, 1, true);
 
     var label = new Mesh(geometry, this.labelmat);
     var labelBack = new Mesh(geometry, this.labelBackMat);
 
-    label.position.y = labelBack.position.y = -16;
-    label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
+    label.position.y = labelBack.position.y = -2.6;
+
+    // this rotation was in the old scene - leaving it here in case it is needed for some reason
+    // label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
 
     this.bottleGroup.add(label, labelBack);
   };
