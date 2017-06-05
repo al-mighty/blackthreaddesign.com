@@ -157,15 +157,17 @@ export default class BottleCanvas {
     this.bottleGroup.position.set( 0, -1, 0 );
     this.app.scene.add( this.bottleGroup );
 
-    objectLoader.load( '/assets/models/hidden/bottle/bottle_group3.json', ( scene ) => {
+    objectLoader.load( '/assets/models/hidden/bottle/bottle_group_no_wobble.json', ( scene ) => {
       const bottle = scene.children[0];
 
-      const liquidGeom = bottle.children[0].geometry;
-      liquidGeom.scale( 1, -1, 1 );
-      const glassExteriorGeom = bottle.children[1].geometry;
+      console.log(bottle)
+
+      const glassExteriorGeom = bottle.children[0].geometry;
       glassExteriorGeom.scale( 1, -1, 1 );
-      const glassInteriorGeom = bottle.children[2].geometry;
+      const glassInteriorGeom = bottle.children[1].geometry;
       glassInteriorGeom.scale( 1, -1, 1 );
+      const liquidGeom = bottle.children[2].geometry;
+      liquidGeom.scale( 1, -1, 1 );
       const liquidTopGeom = bottle.children[3].geometry;
       liquidTopGeom.scale( 1, -1, 1 );
 

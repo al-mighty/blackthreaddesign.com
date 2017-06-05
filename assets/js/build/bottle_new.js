@@ -46741,15 +46741,17 @@ var BottleCanvas = function () {
     this.bottleGroup.position.set(0, -1, 0);
     this.app.scene.add(this.bottleGroup);
 
-    objectLoader.load('/assets/models/hidden/bottle/bottle_group3.json', function (scene) {
+    objectLoader.load('/assets/models/hidden/bottle/bottle_group_no_wobble.json', function (scene) {
       var bottle = scene.children[0];
 
-      var liquidGeom = bottle.children[0].geometry;
-      liquidGeom.scale(1, -1, 1);
-      var glassExteriorGeom = bottle.children[1].geometry;
+      console.log(bottle);
+
+      var glassExteriorGeom = bottle.children[0].geometry;
       glassExteriorGeom.scale(1, -1, 1);
-      var glassInteriorGeom = bottle.children[2].geometry;
+      var glassInteriorGeom = bottle.children[1].geometry;
       glassInteriorGeom.scale(1, -1, 1);
+      var liquidGeom = bottle.children[2].geometry;
+      liquidGeom.scale(1, -1, 1);
       var liquidTopGeom = bottle.children[3].geometry;
       liquidTopGeom.scale(1, -1, 1);
 
