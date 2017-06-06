@@ -23,7 +23,7 @@ Remaining issues: if you zoom in very close you can see some tiny artefacts alon
 
 I'll spend the rest of today streamlining things and getting a version ready for you to integrate in your site, then if I have time I'll work on lighting and materials. 
 
-## Codeword: wobbleBeGone
+## Codeword: Lights and mats
 
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>

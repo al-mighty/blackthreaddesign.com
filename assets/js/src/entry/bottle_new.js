@@ -1,14 +1,9 @@
 import bottleLayout from '../pages/hidden/bottle/bottleLayout.js';
 import BottleCanvas from '../3d/pages/hidden/bottle_new/BottleCanvas.js';
 
+const canvas = document.querySelector( '#bottle-canvas' );
 
-function initBottle( showStats ) {
-  bottleLayout();
+bottleLayout();
 
-  const bottleCanvas = new BottleCanvas( showStats );
-
-}
-
-const showStats = false;
-initBottle( showStats );
+const bottleCanvas = new BottleCanvas( canvas, null, 0x505050 );
 
