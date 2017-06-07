@@ -46534,10 +46534,10 @@ var BottleCanvas = function () {
 
     this.app.renderer.setClearColor(backgroundColor, 1.0);
 
-    this.app.renderer.toneMapping = CineonToneMapping;
-    this.app.renderer.gammaInput = true;
-    this.app.renderer.gammaOutput = true;
-    this.app.renderer.toneMappingExposure = 0.2;
+    // this.app.renderer.toneMapping = THREE.CineonToneMapping;
+    // this.app.renderer.gammaInput = true;
+    // this.app.renderer.gammaOutput = true;
+    // this.app.renderer.toneMappingExposure = 0.2;
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -46574,12 +46574,12 @@ var BottleCanvas = function () {
 
   BottleCanvas.prototype.initLights = function initLights() {
 
-    var spotLight1 = new SpotLight(0xffffff, 6, 600, Math.PI / 4, 0.7, 2);
+    var spotLight1 = new SpotLight(0xffffff, 4, 600, Math.PI / 4, 0.7, 2);
     spotLight1.position.set(-15, 100, -180);
     // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add(spotLight1);
 
-    var hemi = new HemisphereLight(0x111111, 0x000000, 3.0);
+    var hemi = new HemisphereLight(0x111111, 0x101010, 1);
     this.app.scene.add(hemi);
   };
 
@@ -46638,7 +46638,7 @@ var BottleCanvas = function () {
 
       // STANDARD
       metalness: 0.6,
-      roughness: 0.15
+      roughness: 0.25
     });
 
     this.liquidMat = new MeshStandardMaterial({
@@ -46648,7 +46648,7 @@ var BottleCanvas = function () {
       transparent: true,
 
       // STANDARD
-      metalness: 0.0,
+      metalness: 0.4,
       roughness: 0.1
     });
 

@@ -8,7 +8,7 @@ js:
   'bottle_new'
 ---
 
-## Codeword: tranluscentIsDecent
+## Codeword: TranluscentIsDecent
 
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
