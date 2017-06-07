@@ -35,7 +35,6 @@ export default class BottleCanvas {
     this.canvas = canvas;
     this.labelCanvas = labelCanvas;
 
-
     this.app = new App( this.canvas );
 
     this.app.camera.position.set( 0, 0, 250 );
@@ -77,53 +76,32 @@ export default class BottleCanvas {
   }
 
   initLights() {
-
-    const lightTarget = new THREE.Object3D();
-
-    // // set the target position to the top of the bottlecap
-    // lightTarget.position.set( 100, 6.5, 0 );
-
-    // this.app.scene.add( lightTarget );
-
-    const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
     // this.app.scene.add( ambient );
 
-    const directionalLight1 = new THREE.DirectionalLight( 0xffffff, 0.75 );
-    directionalLight1.position.set( 100, 300, 150 );
-    // directionalLight1.target.position.set( 0, 6.5, 0 ); //= lightTarget;
-    // this.app.scene.add( directionalLight1.target );
-    this.app.scene.add( directionalLight1 );
-    const dl1Hhelper = new THREE.DirectionalLightHelper( directionalLight1, 5 );
-    // this.app.scene.add( dl1Hhelper );
-
-
-    const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 0.75 );
-    directionalLight2.position.set( 100, 300, -150 );
-    const dl2Hhelper = new THREE.DirectionalLightHelper( directionalLight2, 5 );
-    // this.app.scene.add( dl2Hhelper );
-    this.app.scene.add( directionalLight2 );
-
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 0.75, 0, Math.PI / 8, 1.0, 2 );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 12, 0.5, 2 );
     spotLight1.position.set( -100, 300, 100 );
-    spotLight1.target = lightTarget;
     const spotLight1Helper = new THREE.SpotLightHelper( spotLight1 );
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add( spotLight1 );
+
+    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
+    spotLight2.position.set( 100, 300, -150 );
+    const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
+    // this.app.scene.add( spotLight2Helper );
+    this.app.scene.add( spotLight2 );
+
+    const spotLight3 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 10, 0.5, 2 );
+    spotLight3.position.set(100, 300, 150 );
+    const spotLight3Helper = new THREE.SpotLightHelper( spotLight3 );
+    // this.app.scene.add( spotLight3Helper );
+    this.app.scene.add( spotLight3 );
+  
   }
 
   initTextures() {
     this.envMapRefraction = textureLoader.load( '/assets/images/textures/env_maps/grey_room.jpg' );
     this.envMapRefraction.mapping = THREE.EquirectangularRefractionMapping;
-
-    this.envMapReflection = this.envMapRefraction.clone();
-    this.envMapReflection.mapping = THREE.EquirectangularReflectionMapping;
-
-    // this.cubeMap = cubeTextureLoader
-    //   .setPath( '/assets/images/textures/cube_maps/football_field/' )
-    //   .load( ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'] );
-    // this.cubeMap.mapping = THREE.CubeRefractionMapping;
-
-    // this.envMap = this.cubeMap;
 
     this.smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
 
@@ -133,68 +111,104 @@ export default class BottleCanvas {
   initMaterials() {
     const glassColor = 0x3b1a0e;
     const liquidColor = 0xdc621c;
-    const envMapIntensity = 0.15;
+    const envMapIntensity = 0.1;
 
     this.capMat = new THREE.MeshStandardMaterial( {
       color: 0xffffff,
       emissive: 0x606060,
-      envMap: this.envMapReflection,
+      envMap: this.envMapRefraction,
+      envMapIntensity,
+      side: THREE.BackSide,
+
+      // STANDARD
       metalness: 0.5,
       roughness: 0.4,
-      side: THREE.BackSide,
+
+      // PHONG
+      // reflectivity: 1,
+      // shininess: 100,
+      // specular: 0xbe745f,
     } );
 
     this.capBackMat = new THREE.MeshBasicMaterial( {
       color: 0x505050,
-      side: THREE.FrontSide,
     } );
 
     this.bottleMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity,
-      metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
-      roughness: 0.3,
       transparent: true,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.15,
+
+      // PHONG
+      // reflectivity: 5,
+      // shininess: 400,
+      // specular: 0xbe745f,
     } );
 
     this.bottleBackMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity,
-      metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
-      roughness: 0.2,
       transparent: true,
       side: THREE.BackSide,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.15,
+
+      // PHONG
+      // reflectivity: 5,
+      // shininess: 400,
+      // specular: 0xbe745f,
     } );
 
     this.liquidMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
       envMap: this.envMapRefraction,
       envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.6,
+      opacity: 0.4,
       refractionRatio: 1.3,
-      roughness: 0.3,
       transparent: true,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.1,
+
+      // PHONG
+      // reflectivity: 1,
+      // shininess: 200,
+      // specular: 0xbe745f,
     } );
 
     this.liquidBackMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      emissive: liquidColor,
-      emissiveIntensity: 0.25,
       envMap: this.envMapRefraction,
       envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.6,
+      opacity: 0.4,
       refractionRatio: 1.3,
-      roughness: 0.3,
       transparent: true,
+
       side: THREE.BackSide,
+      // emissive: 0xdc621c,
+      // emissiveIntensity: 0.15,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.1,
+
+      // PHONG
+      // reflectivity: 1,
+      // shininess: 200,
+      // specular: 0xbe745f,
     } );
 
     this.smileyMat = new THREE.MeshBasicMaterial( {
@@ -202,7 +216,7 @@ export default class BottleCanvas {
       transparent: true,
     } );
 
-    this.labelmat = new THREE.MeshLambertMaterial( {
+    this.labelmat = new THREE.MeshStandardMaterial( {
       color: 0x7279a5,
       map: this.labelMap,
     } );
@@ -214,13 +228,13 @@ export default class BottleCanvas {
   }
 
   initBottle() {
-    // const self = this;
+
     this.bottleGroup = new THREE.Group();
     this.bottleGroup.position.set( 0, -1, 0 );
     this.bottleGroup.scale.set( 20, 20, 20 );
     this.app.scene.add( this.bottleGroup );
 
-    fileLoader.load( '/assets/models/hidden/bottle/bottle.json', ( json ) => {
+    fileLoader.load( '/assets/models/hidden/bottle/bottle2.json', ( json ) => {
       const geometries = {};
 
       json.geometries.forEach( ( obj ) => {

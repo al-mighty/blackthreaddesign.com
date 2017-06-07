@@ -46566,53 +46566,31 @@ var BottleCanvas = function () {
   }
 
   BottleCanvas.prototype.initLights = function initLights() {
-
-    var lightTarget = new Object3D();
-
-    // // set the target position to the top of the bottlecap
-    // lightTarget.position.set( 100, 6.5, 0 );
-
-    // this.app.scene.add( lightTarget );
-
-    var ambient = new AmbientLight(0x404040, 1.0);
+    var ambient = new AmbientLight(0x404040, 0.5);
     // this.app.scene.add( ambient );
 
-    var directionalLight1 = new DirectionalLight(0xffffff, 0.75);
-    directionalLight1.position.set(100, 300, 150);
-    // directionalLight1.target.position.set( 0, 6.5, 0 ); //= lightTarget;
-    // this.app.scene.add( directionalLight1.target );
-    this.app.scene.add(directionalLight1);
-    var dl1Hhelper = new DirectionalLightHelper(directionalLight1, 5);
-    // this.app.scene.add( dl1Hhelper );
-
-
-    var directionalLight2 = new DirectionalLight(0xffffff, 0.75);
-    directionalLight2.position.set(100, 300, -150);
-    var dl2Hhelper = new DirectionalLightHelper(directionalLight2, 5);
-    // this.app.scene.add( dl2Hhelper );
-    this.app.scene.add(directionalLight2);
-
-    var spotLight1 = new SpotLight(0xffffff, 0.75, 0, Math.PI / 8, 1.0, 2);
+    var spotLight1 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 12, 0.5, 2);
     spotLight1.position.set(-100, 300, 100);
-    spotLight1.target = lightTarget;
     var spotLight1Helper = new SpotLightHelper(spotLight1);
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add(spotLight1);
+
+    var spotLight2 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2);
+    spotLight2.position.set(100, 300, -150);
+    var spotLight2Helper = new SpotLightHelper(spotLight2);
+    // this.app.scene.add( spotLight2Helper );
+    this.app.scene.add(spotLight2);
+
+    var spotLight3 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 10, 0.5, 2);
+    spotLight3.position.set(100, 300, 150);
+    var spotLight3Helper = new SpotLightHelper(spotLight3);
+    // this.app.scene.add( spotLight3Helper );
+    this.app.scene.add(spotLight3);
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
     this.envMapRefraction = textureLoader.load('/assets/images/textures/env_maps/grey_room.jpg');
     this.envMapRefraction.mapping = EquirectangularRefractionMapping;
-
-    this.envMapReflection = this.envMapRefraction.clone();
-    this.envMapReflection.mapping = EquirectangularReflectionMapping;
-
-    // this.cubeMap = cubeTextureLoader
-    //   .setPath( '/assets/images/textures/cube_maps/football_field/' )
-    //   .load( ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'] );
-    // this.cubeMap.mapping = THREE.CubeRefractionMapping;
-
-    // this.envMap = this.cubeMap;
 
     this.smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
 
@@ -46622,68 +46600,84 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initMaterials = function initMaterials() {
     var glassColor = 0x3b1a0e;
     var liquidColor = 0xdc621c;
-    var envMapIntensity = 0.15;
+    var envMapIntensity = 0.1;
 
     this.capMat = new MeshStandardMaterial({
       color: 0xffffff,
       emissive: 0x606060,
-      envMap: this.envMapReflection,
+      envMap: this.envMapRefraction,
+      envMapIntensity: envMapIntensity,
+      side: BackSide,
+
+      // STANDARD
       metalness: 0.5,
-      roughness: 0.4,
-      side: BackSide
+      roughness: 0.4
+
     });
 
     this.capBackMat = new MeshBasicMaterial({
-      color: 0x505050,
-      side: FrontSide
+      color: 0x505050
     });
 
     this.bottleMat = new MeshStandardMaterial({
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
-      metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
-      roughness: 0.3,
-      transparent: true
+      transparent: true,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.15
+
     });
 
     this.bottleBackMat = new MeshStandardMaterial({
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
-      metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
-      roughness: 0.2,
       transparent: true,
-      side: BackSide
+      side: BackSide,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.15
+
     });
 
     this.liquidMat = new MeshStandardMaterial({
       color: liquidColor,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.6,
+      opacity: 0.4,
       refractionRatio: 1.3,
-      roughness: 0.3,
-      transparent: true
+      transparent: true,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.1
+
     });
 
     this.liquidBackMat = new MeshStandardMaterial({
       color: liquidColor,
-      emissive: liquidColor,
-      emissiveIntensity: 0.25,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.6,
+      opacity: 0.4,
       refractionRatio: 1.3,
-      roughness: 0.3,
       transparent: true,
-      side: BackSide
+
+      side: BackSide,
+      // emissive: 0xdc621c,
+      // emissiveIntensity: 0.15,
+
+      // STANDARD
+      metalness: 0.2,
+      roughness: 0.1
+
     });
 
     this.smileyMat = new MeshBasicMaterial({
@@ -46691,7 +46685,7 @@ var BottleCanvas = function () {
       transparent: true
     });
 
-    this.labelmat = new MeshLambertMaterial({
+    this.labelmat = new MeshStandardMaterial({
       color: 0x7279a5,
       map: this.labelMap
     });
@@ -46705,13 +46699,12 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initBottle = function initBottle() {
     var _this = this;
 
-    // const self = this;
     this.bottleGroup = new Group();
     this.bottleGroup.position.set(0, -1, 0);
     this.bottleGroup.scale.set(20, 20, 20);
     this.app.scene.add(this.bottleGroup);
 
-    fileLoader.load('/assets/models/hidden/bottle/bottle.json', function (json) {
+    fileLoader.load('/assets/models/hidden/bottle/bottle2.json', function (json) {
       var geometries = {};
 
       json.geometries.forEach(function (obj) {
