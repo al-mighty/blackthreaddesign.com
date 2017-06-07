@@ -46566,26 +46566,23 @@ var BottleCanvas = function () {
   }
 
   BottleCanvas.prototype.initLights = function initLights() {
-    var ambient = new AmbientLight(0x404040, 0.5);
+    // const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
     // this.app.scene.add( ambient );
 
-    var spotLight1 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 12, 0.5, 2);
-    spotLight1.position.set(-100, 300, 100);
+    var spotLight1 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2);
+    spotLight1.position.set(-100, 300, 200);
     var spotLight1Helper = new SpotLightHelper(spotLight1);
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add(spotLight1);
 
-    var spotLight2 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2);
-    spotLight2.position.set(100, 300, -150);
+    var spotLight2 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 6, 0.5, 2);
+    spotLight2.position.set(0, 200, -150);
     var spotLight2Helper = new SpotLightHelper(spotLight2);
     // this.app.scene.add( spotLight2Helper );
     this.app.scene.add(spotLight2);
 
-    var spotLight3 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 10, 0.5, 2);
-    spotLight3.position.set(100, 300, 150);
-    var spotLight3Helper = new SpotLightHelper(spotLight3);
-    // this.app.scene.add( spotLight3Helper );
-    this.app.scene.add(spotLight3);
+    var hemi = new HemisphereLight(0x606060, 0x303030, 0.25);
+    this.app.scene.add(hemi);
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
@@ -46628,7 +46625,7 @@ var BottleCanvas = function () {
       transparent: true,
 
       // STANDARD
-      metalness: 0.2,
+      metalness: 0.1,
       roughness: 0.15
 
     });
@@ -46643,7 +46640,7 @@ var BottleCanvas = function () {
       side: BackSide,
 
       // STANDARD
-      metalness: 0.2,
+      metalness: 0.1,
       roughness: 0.15
 
     });

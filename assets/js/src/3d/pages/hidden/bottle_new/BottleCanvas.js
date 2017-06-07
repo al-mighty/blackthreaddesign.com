@@ -76,27 +76,23 @@ export default class BottleCanvas {
   }
 
   initLights() {
-    const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
+    // const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
     // this.app.scene.add( ambient );
 
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 12, 0.5, 2 );
-    spotLight1.position.set( -100, 300, 100 );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
+    spotLight1.position.set( -100, 300, 200 );
     const spotLight1Helper = new THREE.SpotLightHelper( spotLight1 );
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add( spotLight1 );
 
-    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
-    spotLight2.position.set( 100, 300, -150 );
+    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 6, 0.5, 2 );
+    spotLight2.position.set( 0, 200, -150 );
     const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
     // this.app.scene.add( spotLight2Helper );
     this.app.scene.add( spotLight2 );
 
-    const spotLight3 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 10, 0.5, 2 );
-    spotLight3.position.set(100, 300, 150 );
-    const spotLight3Helper = new THREE.SpotLightHelper( spotLight3 );
-    // this.app.scene.add( spotLight3Helper );
-    this.app.scene.add( spotLight3 );
-  
+    const hemi = new THREE.HemisphereLight( 0x606060, 0x303030, 0.25 );
+    this.app.scene.add( hemi );
   }
 
   initTextures() {
@@ -143,7 +139,7 @@ export default class BottleCanvas {
       transparent: true,
 
       // STANDARD
-      metalness: 0.2,
+      metalness: 0.1,
       roughness: 0.15,
 
       // PHONG
@@ -162,7 +158,7 @@ export default class BottleCanvas {
       side: THREE.BackSide,
 
       // STANDARD
-      metalness: 0.2,
+      metalness: 0.1,
       roughness: 0.15,
 
       // PHONG
