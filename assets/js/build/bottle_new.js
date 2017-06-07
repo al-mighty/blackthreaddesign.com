@@ -46576,7 +46576,7 @@ var BottleCanvas = function () {
 
     var spotLight1 = new SpotLight(0xffffff, 6, 600, Math.PI / 4, 0.7, 2);
     spotLight1.position.set(-15, 100, -180);
-    this.app.scene.add(new SpotLightHelper(spotLight1));
+    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add(spotLight1);
 
     var hemi = new HemisphereLight(0x111111, 0x000000, 3.0);

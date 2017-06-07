@@ -86,7 +86,7 @@ export default class BottleCanvas {
 
     const spotLight1 = new THREE.SpotLight( 0xffffff, 6, 600, Math.PI / 4, 0.7, 2 );
     spotLight1.position.set( -15, 100, -180 );
-    this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
+    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add( spotLight1 );
 
     const hemi = new THREE.HemisphereLight( 0x111111, 0x000000, 3.0 );
