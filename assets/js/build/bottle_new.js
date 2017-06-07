@@ -46534,15 +46534,10 @@ var BottleCanvas = function () {
 
     this.app.renderer.setClearColor(backgroundColor, 1.0);
 
-    // this.app.renderer.toneMapping = THREE.NoToneMapping;
-    // this.app.renderer.toneMapping = THREE.LinearToneMapping;
-    // this.app.renderer.toneMapping = THREE.ReinhardToneMapping;
-    // this.app.renderer.toneMapping = THREE.Uncharted2ToneMapping;
     this.app.renderer.toneMapping = CineonToneMapping;
     this.app.renderer.gammaInput = true;
     this.app.renderer.gammaOutput = true;
     this.app.renderer.toneMappingExposure = 0.2;
-    // this.app.renderer.toneMappingWhitePoint = 20.0;
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
