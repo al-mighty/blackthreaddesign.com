@@ -133,7 +133,7 @@ export default class BottleCanvas {
   initMaterials() {
     const glassColor = 0x3b1a0e;
     const liquidColor = 0xdc621c;
-    const envMapIntensity = 0.2;
+    const envMapIntensity = 0.15;
 
     this.capMat = new THREE.MeshStandardMaterial( {
       color: 0xffffff,
@@ -149,62 +149,31 @@ export default class BottleCanvas {
       side: THREE.FrontSide,
     } );
 
-    this.bottleExteriorMat = new THREE.MeshStandardMaterial( {
+    this.bottleMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      metalness: 0.2,
-      opacity: 0.75,
-      refractionRatio: 1.9,
-      roughness: 0.5,
-      transparent: true,
-    } );
-
-    this.bottleExteriorBackMat = new THREE.MeshStandardMaterial( {
-      color: glassColor,
-      // depthFunc: THREE.GreaterDepth,
-      // depthTest: false,
-      // depthWrite: true,
       envMap: this.envMapRefraction,
       envMapIntensity,
       metalness: 0.2,
       opacity: 0.5,
-      // premultipliedAlpha: true,
       refractionRatio: 1.9,
-      roughness: 0.2,
+      roughness: 0.3,
       transparent: true,
-      side: THREE.BackSide,
     } );
 
-
-    this.bottleInteriorMat = new THREE.MeshStandardMaterial( {
+    this.bottleBackMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity,
       metalness: 0.2,
-      opacity: 0.7,
-      refractionRatio: 1.9,
-      roughness: 0.5,
-      transparent: true,
-    } );
-
-    this.bottleInteriorBackMat = new THREE.MeshStandardMaterial( {
-      color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      metalness: 0.2,
-      opacity: 0.7,
+      opacity: 0.5,
       refractionRatio: 1.9,
       roughness: 0.2,
       transparent: true,
       side: THREE.BackSide,
-      // depthTest: false,
-      // depthWrite: false,
     } );
 
     this.liquidMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      // emissive: 0xdc621c,
       envMap: this.envMapRefraction,
       envMapIntensity,
       metalness: 0.0,
@@ -216,34 +185,12 @@ export default class BottleCanvas {
 
     this.liquidBackMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      // emissive: 0xdc621c,
+      emissive: liquidColor,
+      emissiveIntensity: 0.25,
       envMap: this.envMapRefraction,
       envMapIntensity,
       metalness: 0.0,
       opacity: 0.6,
-      refractionRatio: 1.3,
-      roughness: 0.3,
-      transparent: true,
-      side: THREE.BackSide,
-    } );
-
-    this.liquidTopMat = new THREE.MeshStandardMaterial( {
-      color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.2,
-      refractionRatio: 1.3,
-      roughness: 0.3,
-      transparent: true,
-    } );
-
-    this.liquidTopBackMat = new THREE.MeshStandardMaterial( {
-      color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.2,
       refractionRatio: 1.3,
       roughness: 0.3,
       transparent: true,
@@ -257,10 +204,7 @@ export default class BottleCanvas {
 
     this.labelmat = new THREE.MeshLambertMaterial( {
       color: 0x7279a5,
-      // envMap: this.envMapReflection,
       map: this.labelMap,
-      // metalness: 0.0,
-      // roughness: 0.7,
     } );
 
     this.labelBackMat = new THREE.MeshBasicMaterial( {
@@ -289,45 +233,29 @@ export default class BottleCanvas {
       geometries.cap.translate( 0, 6.5, 0 );
 
       const cap = new THREE.Mesh( geometries.cap, this.capMat );
-
       const capBack = new THREE.Mesh( geometries.cap, this.capBackMat );
 
-      const bottleExterior = new THREE.Mesh( geometries.bottle, this.bottleExteriorMat );
-      // bottleExterior.renderOrder = 0;
-      const bottleExteriorBack = new THREE.Mesh( geometries.bottle, this.bottleExteriorBackMat );
-      bottleExteriorBack.renderOrder = 2;
+      geometries.bottle.merge( geometries.bottle_interior );
 
-      const bottleInterior = new THREE.Mesh( geometries.bottle_interior, this.bottleInteriorMat );
-      bottleInterior.renderOrder = 3;
-      const bottleInteriorBack = new THREE.Mesh( geometries.bottle_interior, this.bottleInteriorBackMat );
-      // bottleInteriorBack.renderOrder = 0;
+      const bottle_front = new THREE.Mesh( geometries.bottle, this.bottleMat );
+      bottle_front.renderOrder = 2;
+      const bottle_back = new THREE.Mesh( geometries.bottle, this.bottleBackMat );
+      bottle_back.renderOrder = 3;
 
-      const liquidTop = new THREE.Mesh( geometries.liquidTop, this.liquidTopMat );
-      // liquidTop.renderOrder = 0;
-      const liquidTopBack = new THREE.Mesh( geometries.liquidTop, this.liquidTopBackMat );
-      // liquidTopBack.renderOrder = 0;
+      geometries.liquid.merge( geometries.liquidTop );
 
       const liquid = new THREE.Mesh( geometries.liquid, this.liquidMat );
       liquid.renderOrder = 0;
       const liquidBack = new THREE.Mesh( geometries.liquid, this.liquidBackMat );
       liquidBack.renderOrder = 1;
 
-      const underCap = new THREE.Mesh( geometries.liquidTop, this.bottleExteriorMat );
-      underCap.position.set( 0, 3.9, 0 );
-      underCap.scale.set( 0.69, 0.69, 0.69 );
-
       this.bottleGroup.add(
-        liquidBack,
-        liquid,
-        liquidTop,
-        liquidTopBack,
-        underCap,
+        bottle_front,
+        bottle_back,
+        cap,
         capBack,
-        bottleInterior,
-        bottleInteriorBack,
-        bottleExterior,
-        bottleExteriorBack,
-        cap
+        liquid,
+        liquidBack
       );
     } );
 

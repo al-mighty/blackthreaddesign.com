@@ -46622,7 +46622,7 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initMaterials = function initMaterials() {
     var glassColor = 0x3b1a0e;
     var liquidColor = 0xdc621c;
-    var envMapIntensity = 0.2;
+    var envMapIntensity = 0.15;
 
     this.capMat = new MeshStandardMaterial({
       color: 0xffffff,
@@ -46638,50 +46638,23 @@ var BottleCanvas = function () {
       side: FrontSide
     });
 
-    this.bottleExteriorMat = new MeshStandardMaterial({
+    this.bottleMat = new MeshStandardMaterial({
       color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity: envMapIntensity,
-      metalness: 0.2,
-      opacity: 0.75,
-      refractionRatio: 1.9,
-      roughness: 0.5,
-      transparent: true
-    });
-
-    this.bottleExteriorBackMat = new MeshStandardMaterial({
-      color: glassColor,
-      // depthFunc: THREE.GreaterDepth,
-      // depthTest: false,
-      // depthWrite: true,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
       metalness: 0.2,
       opacity: 0.5,
-      // premultipliedAlpha: true,
       refractionRatio: 1.9,
-      roughness: 0.2,
-      transparent: true,
-      side: BackSide
-    });
-
-    this.bottleInteriorMat = new MeshStandardMaterial({
-      color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity: envMapIntensity,
-      metalness: 0.2,
-      opacity: 0.7,
-      refractionRatio: 1.9,
-      roughness: 0.5,
+      roughness: 0.3,
       transparent: true
     });
 
-    this.bottleInteriorBackMat = new MeshStandardMaterial({
+    this.bottleBackMat = new MeshStandardMaterial({
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
       metalness: 0.2,
-      opacity: 0.7,
+      opacity: 0.5,
       refractionRatio: 1.9,
       roughness: 0.2,
       transparent: true,
@@ -46690,7 +46663,6 @@ var BottleCanvas = function () {
 
     this.liquidMat = new MeshStandardMaterial({
       color: liquidColor,
-      // emissive: 0xdc621c,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
       metalness: 0.0,
@@ -46702,34 +46674,12 @@ var BottleCanvas = function () {
 
     this.liquidBackMat = new MeshStandardMaterial({
       color: liquidColor,
-      // emissive: 0xdc621c,
+      emissive: liquidColor,
+      emissiveIntensity: 0.25,
       envMap: this.envMapRefraction,
       envMapIntensity: envMapIntensity,
       metalness: 0.0,
       opacity: 0.6,
-      refractionRatio: 1.3,
-      roughness: 0.3,
-      transparent: true,
-      side: BackSide
-    });
-
-    this.liquidTopMat = new MeshStandardMaterial({
-      color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity: envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.2,
-      refractionRatio: 1.3,
-      roughness: 0.3,
-      transparent: true
-    });
-
-    this.liquidTopBackMat = new MeshStandardMaterial({
-      color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity: envMapIntensity,
-      metalness: 0.0,
-      opacity: 0.2,
       refractionRatio: 1.3,
       roughness: 0.3,
       transparent: true,
@@ -46743,7 +46693,6 @@ var BottleCanvas = function () {
 
     this.labelmat = new MeshLambertMaterial({
       color: 0x7279a5,
-      // envMap: this.envMapReflection,
       map: this.labelMap
     });
 
@@ -46775,34 +46724,23 @@ var BottleCanvas = function () {
       geometries.cap.translate(0, 6.5, 0);
 
       var cap = new Mesh(geometries.cap, _this.capMat);
-
       var capBack = new Mesh(geometries.cap, _this.capBackMat);
 
-      var bottleExterior = new Mesh(geometries.bottle, _this.bottleExteriorMat);
-      // bottleExterior.renderOrder = 0;
-      var bottleExteriorBack = new Mesh(geometries.bottle, _this.bottleExteriorBackMat);
-      bottleExteriorBack.renderOrder = 2;
+      geometries.bottle.merge(geometries.bottle_interior);
 
-      var bottleInterior = new Mesh(geometries.bottle_interior, _this.bottleInteriorMat);
-      bottleInterior.renderOrder = 3;
-      var bottleInteriorBack = new Mesh(geometries.bottle_interior, _this.bottleInteriorBackMat);
-      // bottleInteriorBack.renderOrder = 0;
+      var bottle_front = new Mesh(geometries.bottle, _this.bottleMat);
+      bottle_front.renderOrder = 2;
+      var bottle_back = new Mesh(geometries.bottle, _this.bottleBackMat);
+      bottle_back.renderOrder = 3;
 
-      var liquidTop = new Mesh(geometries.liquidTop, _this.liquidTopMat);
-      // liquidTop.renderOrder = 0;
-      var liquidTopBack = new Mesh(geometries.liquidTop, _this.liquidTopBackMat);
-      // liquidTopBack.renderOrder = 0;
+      geometries.liquid.merge(geometries.liquidTop);
 
       var liquid = new Mesh(geometries.liquid, _this.liquidMat);
       liquid.renderOrder = 0;
       var liquidBack = new Mesh(geometries.liquid, _this.liquidBackMat);
       liquidBack.renderOrder = 1;
 
-      var underCap = new Mesh(geometries.liquidTop, _this.bottleExteriorMat);
-      underCap.position.set(0, 3.9, 0);
-      underCap.scale.set(0.69, 0.69, 0.69);
-
-      _this.bottleGroup.add(liquidBack, liquid, liquidTop, liquidTopBack, underCap, capBack, bottleInterior, bottleInteriorBack, bottleExterior, bottleExteriorBack, cap);
+      _this.bottleGroup.add(bottle_front, bottle_back, cap, capBack, liquid, liquidBack);
     });
   };
 
