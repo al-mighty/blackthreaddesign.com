@@ -13,15 +13,16 @@ const jsonLoader = new THREE.JSONLoader();
 const textureLoader = new THREE.TextureLoader();
 const fileLoader = new THREE.FileLoader();
 fileLoader.setResponseType( 'json' );
+const cubeTextureLoader = new THREE.CubeTextureLoader();
 
 const stats = new Stats();
 stats.dom.style = `position: absolute;
-top: 0;
-right: 0;
-cursor: pointer;
-opacity: 0.9;
-z-index: 1;
-width: 100px;`
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  opacity: 0.9;
+  z-index: 1;
+  width: 100px;`;
 
 document.body.appendChild( stats.dom );
 
@@ -111,8 +112,18 @@ export default class BottleCanvas {
   }
 
   initTextures() {
-    this.envMap = textureLoader.load( '/assets/images/textures/env_maps/test_env_map.jpg' );
-    this.envMap.mapping = THREE.EquirectangularRefractionMapping;
+    this.envMapRefraction = textureLoader.load( '/assets/images/textures/env_maps/grey_room.jpg' );
+    this.envMapRefraction.mapping = THREE.EquirectangularRefractionMapping;
+
+    this.envMapReflection = this.envMapRefraction.clone();
+    this.envMapReflection.mapping = THREE.EquirectangularReflectionMapping;
+
+    // this.cubeMap = cubeTextureLoader
+    //   .setPath( '/assets/images/textures/cube_maps/football_field/' )
+    //   .load( ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'] );
+    // this.cubeMap.mapping = THREE.CubeRefractionMapping;
+
+    // this.envMap = this.cubeMap;
 
     this.smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
 
@@ -125,19 +136,21 @@ export default class BottleCanvas {
 
     this.capMat = new THREE.MeshStandardMaterial( {
       color: 0xffffff,
-      emissive: 0x303030,
-      envMap: this.envMap,
-      metalness: 0.9,
+      emissive: 0x505050,
+      envMap: this.envMapReflection,
+      metalness: 0.5,
       roughness: 0.4,
       side: THREE.BackSide,
     } );
 
-    this.capBackMat = this.capMat.clone();
-    this.capBackMat.side = THREE.FrontSide;
+    this.capBackMat = new THREE.MeshBasicMaterial( {
+      color: 0x505050,
+      side: THREE.FrontSide,
+    } );
 
     this.bottleExteriorMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.75,
       refractionRatio: 1.9,
@@ -147,7 +160,7 @@ export default class BottleCanvas {
 
     this.bottleExteriorBackMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
@@ -158,7 +171,7 @@ export default class BottleCanvas {
 
     this.bottleInteriorMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.7,
       refractionRatio: 1.9,
@@ -168,7 +181,7 @@ export default class BottleCanvas {
 
     this.bottleInteriorBackMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.7,
       refractionRatio: 1.9,
@@ -181,7 +194,7 @@ export default class BottleCanvas {
 
     this.liquidMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.6,
       refractionRatio: 1.3,
@@ -191,7 +204,7 @@ export default class BottleCanvas {
 
     this.liquidBackMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.6,
       refractionRatio: 1.3,
@@ -202,7 +215,7 @@ export default class BottleCanvas {
 
     this.liquidTopMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.2,
       refractionRatio: 1.3,
@@ -212,7 +225,7 @@ export default class BottleCanvas {
 
     this.liquidTopBackMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.2,
       refractionRatio: 1.3,
@@ -226,12 +239,12 @@ export default class BottleCanvas {
       transparent: true,
     } );
 
-    this.labelmat = new THREE.MeshStandardMaterial( {
+    this.labelmat = new THREE.MeshLambertMaterial( {
       color: 0x7279a5,
-      envMap: this.envMap,
+      // envMap: this.envMapReflection,
       map: this.labelMap,
-      metalness: 0.2,
-      roughness: 0.8,
+      // metalness: 0.0,
+      // roughness: 0.7,
     } );
 
     this.labelBackMat = new THREE.MeshBasicMaterial( {

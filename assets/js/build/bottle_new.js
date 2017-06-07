@@ -46507,9 +46507,10 @@ var jsonLoader = new JSONLoader();
 var textureLoader = new TextureLoader();
 var fileLoader = new FileLoader();
 fileLoader.setResponseType('json');
+var cubeTextureLoader = new CubeTextureLoader();
 
 var stats = new Stats();
-stats.dom.style = 'position: absolute;\ntop: 0;\nright: 0;\ncursor: pointer;\nopacity: 0.9;\nz-index: 1;\nwidth: 100px;';
+stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
 
 document.body.appendChild(stats.dom);
 
@@ -46600,8 +46601,18 @@ var BottleCanvas = function () {
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
-    this.envMap = textureLoader.load('/assets/images/textures/env_maps/test_env_map.jpg');
-    this.envMap.mapping = EquirectangularRefractionMapping;
+    this.envMapRefraction = textureLoader.load('/assets/images/textures/env_maps/grey_room.jpg');
+    this.envMapRefraction.mapping = EquirectangularRefractionMapping;
+
+    this.envMapReflection = this.envMapRefraction.clone();
+    this.envMapReflection.mapping = EquirectangularReflectionMapping;
+
+    // this.cubeMap = cubeTextureLoader
+    //   .setPath( '/assets/images/textures/cube_maps/football_field/' )
+    //   .load( ['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg'] );
+    // this.cubeMap.mapping = THREE.CubeRefractionMapping;
+
+    // this.envMap = this.cubeMap;
 
     this.smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
 
@@ -46614,19 +46625,21 @@ var BottleCanvas = function () {
 
     this.capMat = new MeshStandardMaterial({
       color: 0xffffff,
-      emissive: 0x303030,
-      envMap: this.envMap,
-      metalness: 0.9,
+      emissive: 0x505050,
+      envMap: this.envMapReflection,
+      metalness: 0.5,
       roughness: 0.4,
       side: BackSide
     });
 
-    this.capBackMat = this.capMat.clone();
-    this.capBackMat.side = FrontSide;
+    this.capBackMat = new MeshBasicMaterial({
+      color: 0x505050,
+      side: FrontSide
+    });
 
     this.bottleExteriorMat = new MeshStandardMaterial({
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.75,
       refractionRatio: 1.9,
@@ -46636,7 +46649,7 @@ var BottleCanvas = function () {
 
     this.bottleExteriorBackMat = new MeshStandardMaterial({
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.5,
       refractionRatio: 1.9,
@@ -46647,7 +46660,7 @@ var BottleCanvas = function () {
 
     this.bottleInteriorMat = new MeshStandardMaterial({
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.7,
       refractionRatio: 1.9,
@@ -46657,7 +46670,7 @@ var BottleCanvas = function () {
 
     this.bottleInteriorBackMat = new MeshStandardMaterial({
       color: glassColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.2,
       opacity: 0.7,
       refractionRatio: 1.9,
@@ -46668,7 +46681,7 @@ var BottleCanvas = function () {
 
     this.liquidMat = new MeshStandardMaterial({
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.6,
       refractionRatio: 1.3,
@@ -46678,7 +46691,7 @@ var BottleCanvas = function () {
 
     this.liquidBackMat = new MeshStandardMaterial({
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.6,
       refractionRatio: 1.3,
@@ -46689,7 +46702,7 @@ var BottleCanvas = function () {
 
     this.liquidTopMat = new MeshStandardMaterial({
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.2,
       refractionRatio: 1.3,
@@ -46699,7 +46712,7 @@ var BottleCanvas = function () {
 
     this.liquidTopBackMat = new MeshStandardMaterial({
       color: liquidColor,
-      envMap: this.envMap,
+      envMap: this.envMapRefraction,
       metalness: 0.0,
       opacity: 0.2,
       refractionRatio: 1.3,
@@ -46713,12 +46726,10 @@ var BottleCanvas = function () {
       transparent: true
     });
 
-    this.labelmat = new MeshStandardMaterial({
+    this.labelmat = new MeshLambertMaterial({
       color: 0x7279a5,
-      envMap: this.envMap,
-      map: this.labelMap,
-      metalness: 0.2,
-      roughness: 0.8
+      // envMap: this.envMapReflection,
+      map: this.labelMap
     });
 
     this.labelBackMat = new MeshBasicMaterial({
