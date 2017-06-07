@@ -85,8 +85,8 @@ export default class BottleCanvas {
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add( spotLight1 );
 
-    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 6, 0.5, 2 );
-    spotLight2.position.set( 0, 200, -150 );
+    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
+    spotLight2.position.set( 0, 250, -150 );
     const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
     // this.app.scene.add( spotLight2Helper );
     this.app.scene.add( spotLight2 );

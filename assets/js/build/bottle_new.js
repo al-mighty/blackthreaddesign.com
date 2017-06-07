@@ -46575,8 +46575,8 @@ var BottleCanvas = function () {
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add(spotLight1);
 
-    var spotLight2 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 6, 0.5, 2);
-    spotLight2.position.set(0, 200, -150);
+    var spotLight2 = new SpotLight(0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2);
+    spotLight2.position.set(0, 250, -150);
     var spotLight2Helper = new SpotLightHelper(spotLight2);
     // this.app.scene.add( spotLight2Helper );
     this.app.scene.add(spotLight2);
