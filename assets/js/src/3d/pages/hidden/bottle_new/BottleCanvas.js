@@ -37,7 +37,7 @@ export default class BottleCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, 0, 250 );
+    this.app.camera.position.set( 0, 20, 250 );
     this.app.camera.near = 1.0;
     this.app.camera.far = 1000;
 
@@ -51,7 +51,7 @@ export default class BottleCanvas {
     this.app.renderer.gammaInput = true;
     this.app.renderer.gammaOutput = true;
     this.app.renderer.toneMappingExposure = 0.2;
-    this.app.renderer.toneMappingWhitePoint = 20.0;
+    // this.app.renderer.toneMappingWhitePoint = 20.0;
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -88,28 +88,13 @@ export default class BottleCanvas {
   }
 
   initLights() {
-    // const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
-    // this.app.scene.add( ambient );
 
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 2, 1000, Math.PI / 4, 1.0, 2 );
-    spotLight1.position.set( -150, 200, 200 );
-    // const spotLight1Helper = new THREE.SpotLightHelper( spotLight1 );
-    // this.app.scene.add( spotLight1Helper );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 6, 600, Math.PI / 4, 0.7, 2 );
+    spotLight1.position.set( -15, 100, -180 );
+    this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add( spotLight1 );
 
-    const spotLight2 = new THREE.SpotLight( 0xffffff, 4, 1000, Math.PI / 4, 1.0, 2 );
-    spotLight2.position.set( 120, 250, 0 );
-    // const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
-    // this.app.scene.add( spotLight2Helper );
-    this.app.scene.add( spotLight2 );
-
-    const spotLight3 = new THREE.SpotLight( 0xffffff, 2, 1000, Math.PI / 4, 1.0, 2 );
-    spotLight3.position.set( 0, 150, -200 );
-    // const spotLight3Helper = new THREE.SpotLightHelper( spotLight3 );
-    // this.app.scene.add( spotLight3Helper );
-    this.app.scene.add( spotLight3 );
-
-    const hemi = new THREE.HemisphereLight( 0x606060, 0x303030, 1.0 );
+    const hemi = new THREE.HemisphereLight( 0x111111, 0x000000, 3.0 );
     this.app.scene.add( hemi );
   }
 
@@ -152,77 +137,38 @@ export default class BottleCanvas {
       color: glassColor,
       envMap: this.envMapRefraction,
       envMapIntensity,
-      opacity: 0.5,
+      opacity: 0.6,
       refractionRatio: 1.9,
       transparent: true,
 
       // STANDARD
-      metalness: 0.1,
+      metalness: 0.2,
       roughness: 0.15,
-
-      // PHONG
-      // reflectivity: 5,
-      // shininess: 400,
-      // specular: 0xbe745f,
     } );
 
     this.bottleBackMat = new THREE.MeshStandardMaterial( {
       color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      opacity: 0.5,
+      // envMap: this.envMapRefraction,
+      // envMapIntensity,
+      opacity: 0.3,
       refractionRatio: 1.9,
       transparent: true,
       side: THREE.BackSide,
 
       // STANDARD
-      metalness: 0.1,
+      metalness: 0.6,
       roughness: 0.15,
-
-      // PHONG
-      // reflectivity: 5,
-      // shininess: 400,
-      // specular: 0xbe745f,
     } );
 
     this.liquidMat = new THREE.MeshStandardMaterial( {
       color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      opacity: 0.4,
+      opacity: 0.8,
       refractionRatio: 1.3,
       transparent: true,
 
       // STANDARD
-      metalness: 0.2,
+      metalness: 0.0,
       roughness: 0.1,
-
-      // PHONG
-      // reflectivity: 1,
-      // shininess: 200,
-      // specular: 0xbe745f,
-    } );
-
-    this.liquidBackMat = new THREE.MeshStandardMaterial( {
-      color: liquidColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      opacity: 0.4,
-      refractionRatio: 1.3,
-      transparent: true,
-
-      side: THREE.BackSide,
-      // emissive: 0xdc621c,
-      // emissiveIntensity: 0.15,
-
-      // STANDARD
-      metalness: 0.2,
-      roughness: 0.1,
-
-      // PHONG
-      // reflectivity: 1,
-      // shininess: 200,
-      // specular: 0xbe745f,
     } );
 
     this.smileyMat = new THREE.MeshBasicMaterial( {
@@ -242,7 +188,6 @@ export default class BottleCanvas {
   }
 
   initBottle() {
-
     this.bottleGroup = new THREE.Group();
     this.bottleGroup.position.set( 0, -1, 0 );
     this.bottleGroup.scale.set( 20, 20, 20 );
@@ -265,36 +210,33 @@ export default class BottleCanvas {
 
       geometries.bottle.merge( geometries.bottle_interior );
 
-      const bottle_front = new THREE.Mesh( geometries.bottle, this.bottleMat );
-      bottle_front.renderOrder = 2;
-      const bottle_back = new THREE.Mesh( geometries.bottle, this.bottleBackMat );
-      bottle_back.renderOrder = 3;
+      const bottleFront = new THREE.Mesh( geometries.bottle, this.bottleMat );
+      bottleFront.renderOrder = 1;
+      const bottleBack = new THREE.Mesh( geometries.bottle, this.bottleBackMat );
+      bottleBack.renderOrder = 2;
 
       geometries.liquid.merge( geometries.liquidTop );
 
       const liquid = new THREE.Mesh( geometries.liquid, this.liquidMat );
       liquid.renderOrder = 0;
-      const liquidBack = new THREE.Mesh( geometries.liquid, this.liquidBackMat );
-      liquidBack.renderOrder = 1;
 
       this.bottleGroup.add(
-        bottle_front,
-        bottle_back,
+        bottleFront,
+        bottleBack,
         cap,
         capBack,
-        liquid,
-        liquidBack
+        liquid
       );
     } );
 
   }
 
   initSmiley() {
-    const geometry = new THREE.PlaneBufferGeometry( 1.25, 1.25 );
+    const geometry = new THREE.PlaneBufferGeometry( 1.1, 1.1 );
 
     const smiley = new THREE.Mesh( geometry, this.smileyMat );
     smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set( -0.025, 6.7, 0 );
+    smiley.position.set( -0.025, 6.7, 0.1 );
 
     this.bottleGroup.add( smiley );
   }
@@ -322,6 +264,11 @@ export default class BottleCanvas {
 
     // controls.autoRotate = true;
     // controls.autoRotateSpeed = -1.0;
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    controls.minAzimuthAngle = 0; // radians
+    controls.maxAzimuthAngle = 0; // radians
 
     controls.maxPolarAngle = Math.PI * 0.75;
 
