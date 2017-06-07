@@ -46558,7 +46558,7 @@ var BottleCanvas = function () {
     this.initBottle();
 
     this.initSmiley();
-    this.initLabel();
+    // this.initLabel();
 
     this.initControls();
 

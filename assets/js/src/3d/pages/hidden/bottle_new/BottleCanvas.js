@@ -68,7 +68,7 @@ export default class BottleCanvas {
     this.initBottle();
 
     this.initSmiley();
-    this.initLabel();
+    // this.initLabel();
 
     this.initControls();
 
