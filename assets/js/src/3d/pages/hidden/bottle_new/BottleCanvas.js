@@ -43,8 +43,20 @@ export default class BottleCanvas {
 
     this.app.renderer.setClearColor( backgroundColor, 1.0 );
 
+    // this.app.renderer.toneMapping = THREE.NoToneMapping;
+    // this.app.renderer.toneMapping = THREE.LinearToneMapping;
+    // this.app.renderer.toneMapping = THREE.ReinhardToneMapping;
+    // this.app.renderer.toneMapping = THREE.Uncharted2ToneMapping;
+    this.app.renderer.toneMapping = THREE.CineonToneMapping;
+    this.app.renderer.gammaInput = true;
+    this.app.renderer.gammaOutput = true;
+    this.app.renderer.toneMappingExposure = 0.2;
+    this.app.renderer.toneMappingWhitePoint = 20.0;
+
     this.app.onUpdate = function () {
       // NB: use self inside this function
+
+      self.bottleGroup.rotateY( -self.app.delta * 0.001 );
 
       // required if using 'damping' in controls
       self.controls.update();
@@ -79,19 +91,25 @@ export default class BottleCanvas {
     // const ambient = new THREE.AmbientLight( 0x404040, 0.5 );
     // this.app.scene.add( ambient );
 
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
-    spotLight1.position.set( -100, 300, 200 );
-    const spotLight1Helper = new THREE.SpotLightHelper( spotLight1 );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 2, 1000, Math.PI / 4, 1.0, 2 );
+    spotLight1.position.set( -150, 200, 200 );
+    // const spotLight1Helper = new THREE.SpotLightHelper( spotLight1 );
     // this.app.scene.add( spotLight1Helper );
     this.app.scene.add( spotLight1 );
 
-    const spotLight2 = new THREE.SpotLight( 0xffffff, 1.25, 0, Math.PI / 8, 0.5, 2 );
-    spotLight2.position.set( 0, 250, -150 );
-    const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
+    const spotLight2 = new THREE.SpotLight( 0xffffff, 4, 1000, Math.PI / 4, 1.0, 2 );
+    spotLight2.position.set( 120, 250, 0 );
+    // const spotLight2Helper = new THREE.SpotLightHelper( spotLight2 );
     // this.app.scene.add( spotLight2Helper );
     this.app.scene.add( spotLight2 );
 
-    const hemi = new THREE.HemisphereLight( 0x606060, 0x303030, 0.25 );
+    const spotLight3 = new THREE.SpotLight( 0xffffff, 2, 1000, Math.PI / 4, 1.0, 2 );
+    spotLight3.position.set( 0, 150, -200 );
+    // const spotLight3Helper = new THREE.SpotLightHelper( spotLight3 );
+    // this.app.scene.add( spotLight3Helper );
+    this.app.scene.add( spotLight3 );
+
+    const hemi = new THREE.HemisphereLight( 0x606060, 0x303030, 1.0 );
     this.app.scene.add( hemi );
   }
 
@@ -105,8 +123,8 @@ export default class BottleCanvas {
   }
 
   initMaterials() {
-    const glassColor = 0x3b1a0e;
-    const liquidColor = 0xdc621c;
+    const glassColor = 0x421d06;
+    const liquidColor = 0xd15c1a;
     const envMapIntensity = 0.1;
 
     this.capMat = new THREE.MeshStandardMaterial( {
@@ -302,8 +320,8 @@ export default class BottleCanvas {
     // controls.enableZoom = false;
     // controls.enablePan = false;
 
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = -1.0;
+    // controls.autoRotate = true;
+    // controls.autoRotateSpeed = -1.0;
 
     controls.maxPolarAngle = Math.PI * 0.75;
 
