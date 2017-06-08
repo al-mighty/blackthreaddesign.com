@@ -8,7 +8,7 @@ js:
   'bottle_new'
 ---
 
-## Codeword: BrighterBottoms
+## Codeword: BrightererBottoms
 
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
