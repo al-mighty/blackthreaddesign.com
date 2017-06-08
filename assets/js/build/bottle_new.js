@@ -46382,7 +46382,7 @@ Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePix
 v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 });
 
-var Stats = interopDefault(stats_min);
+interopDefault(stats_min);
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -46509,10 +46509,16 @@ var fileLoader = new FileLoader();
 fileLoader.setResponseType('json');
 var cubeTextureLoader = new CubeTextureLoader();
 
-var stats = new Stats();
-stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
+// const stats = new Stats();
+// stats.dom.style = `position: absolute;
+//   top: 0;
+//   right: 0;
+//   cursor: pointer;
+//   opacity: 0.9;
+//   z-index: 1;
+//   width: 100px;`;
 
-document.body.appendChild(stats.dom);
+// document.body.appendChild( stats.dom );
 
 var BottleCanvas = function () {
   function BottleCanvas(canvas) {
@@ -46528,7 +46534,7 @@ var BottleCanvas = function () {
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, 20, 330);
+    this.app.camera.position.set(0, 20, 320);
     this.app.camera.near = 100;
     this.app.camera.far = 500;
     this.app.camera.updateProjectionMatrix();
@@ -46544,7 +46550,7 @@ var BottleCanvas = function () {
       self.controls.update();
 
       // remove if no longer using stats
-      if (stats) stats.update();
+      // if ( stats ) stats.update();
 
       if (this.labelMap) this.labelMap.needsUpdate = true;
     };
@@ -46569,16 +46575,16 @@ var BottleCanvas = function () {
   }
 
   BottleCanvas.prototype.initLights = function initLights() {
-    var ambient = new AmbientLight(0x421d06, 0.5);
-    this.app.scene.add(ambient);
-
-    var spotLight1 = new SpotLight(0xffffff, 4, 600, Math.PI / 4, 0.3, 2);
-    spotLight1.position.set(-15, 50, -180);
-    this.app.scene.add(new SpotLightHelper(spotLight1));
+    var spotLight1 = new SpotLight(0xffffff, 4, 600, Math.PI / 4, 0.9, 2);
+    spotLight1.position.set(-15, 110, -180);
+    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add(spotLight1);
 
-    var hemi = new HemisphereLight(0xb0b0b0, 0x505050, 0.5);
-    // this.app.scene.add( hemi );
+    // const ambient = new THREE.AmbientLight( 0x707070, 0.75 );
+    // this.app.scene.add( ambient );
+
+    var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
+    this.app.scene.add(hemi);
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
@@ -46591,7 +46597,7 @@ var BottleCanvas = function () {
   };
 
   BottleCanvas.prototype.initMaterials = function initMaterials() {
-    var glassColor = 0x421d06;
+    var glassColor = 0x371805;
     var liquidColor = 0xd15c1a;
     var envMapIntensity = 0.1;
 
@@ -46759,6 +46765,6 @@ var canvas = document.querySelector('#bottle-canvas');
 
 escherSketchLayout();
 
-var bottleCanvas = new BottleCanvas(canvas, null, 0xb0b0b0);
+var bottleCanvas = new BottleCanvas(canvas, null, 0x707070);
 
 }());

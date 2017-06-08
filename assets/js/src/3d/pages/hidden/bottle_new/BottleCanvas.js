@@ -15,16 +15,16 @@ const fileLoader = new THREE.FileLoader();
 fileLoader.setResponseType( 'json' );
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 
-const stats = new Stats();
-stats.dom.style = `position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
-  opacity: 0.9;
-  z-index: 1;
-  width: 100px;`;
+// const stats = new Stats();
+// stats.dom.style = `position: absolute;
+//   top: 0;
+//   right: 0;
+//   cursor: pointer;
+//   opacity: 0.9;
+//   z-index: 1;
+//   width: 100px;`;
 
-document.body.appendChild( stats.dom );
+// document.body.appendChild( stats.dom );
 
 export default class BottleCanvas {
 
@@ -37,12 +37,13 @@ export default class BottleCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, 20, 330 );
+    this.app.camera.position.set( 0, 20, 320 );
     this.app.camera.near = 100;
     this.app.camera.far = 500;
     this.app.camera.updateProjectionMatrix();
 
     this.app.renderer.setClearColor( backgroundColor, 1.0 );
+
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -53,7 +54,7 @@ export default class BottleCanvas {
       self.controls.update();
 
       // remove if no longer using stats
-      if ( stats ) stats.update();
+      // if ( stats ) stats.update();
 
       if ( this.labelMap ) this.labelMap.needsUpdate = true;
 
@@ -79,16 +80,16 @@ export default class BottleCanvas {
   }
 
   initLights() {
-    const ambient = new THREE.AmbientLight( 0x421d06, 0.5 );
-    this.app.scene.add( ambient );
-
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 4, 600, Math.PI / 4, 0.3, 2 );
-    spotLight1.position.set( -15, 50, -180 );
-    this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 4, 600, Math.PI / 4, 0.9, 2 );
+    spotLight1.position.set( -15, 110, -180 );
+    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add( spotLight1 );
 
-    const hemi = new THREE.HemisphereLight( 0xb0b0b0, 0x505050, 0.5 );
-    // this.app.scene.add( hemi );
+    // const ambient = new THREE.AmbientLight( 0x707070, 0.75 );
+    // this.app.scene.add( ambient );
+
+    const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
+    this.app.scene.add( hemi );
   }
 
   initTextures() {
@@ -101,7 +102,7 @@ export default class BottleCanvas {
   }
 
   initMaterials() {
-    const glassColor = 0x421d06;
+    const glassColor = 0x371805;
     const liquidColor = 0xd15c1a;
     const envMapIntensity = 0.1;
 
