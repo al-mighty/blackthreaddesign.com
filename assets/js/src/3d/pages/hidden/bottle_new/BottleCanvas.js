@@ -15,16 +15,16 @@ const fileLoader = new THREE.FileLoader();
 fileLoader.setResponseType( 'json' );
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 
-// const stats = new Stats();
-// stats.dom.style = `position: absolute;
-//   top: 0;
-//   right: 0;
-//   cursor: pointer;
-//   opacity: 0.9;
-//   z-index: 1;
-//   width: 100px;`;
+const stats = new Stats();
+stats.dom.style = `position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  opacity: 0.9;
+  z-index: 1;
+  width: 100px;`;
 
-// document.body.appendChild( stats.dom );
+document.body.appendChild( stats.dom );
 
 export default class BottleCanvas {
 
@@ -54,7 +54,7 @@ export default class BottleCanvas {
       self.controls.update();
 
       // remove if no longer using stats
-      // if ( stats ) stats.update();
+      if ( stats ) stats.update();
 
       if ( this.labelMap ) this.labelMap.needsUpdate = true;
 
