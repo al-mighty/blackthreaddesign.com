@@ -5,5 +5,5 @@ const canvas = document.querySelector( '#bottle-canvas' );
 
 bottleLayout();
 
-const bottleCanvas = new BottleCanvas( canvas, null, 0x505050 );
+const bottleCanvas = new BottleCanvas( canvas, null, 0xb0b0b0 );
 

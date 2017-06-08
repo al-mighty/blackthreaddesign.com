@@ -45333,7 +45333,7 @@ function App(canvas) {
 
         if (_camera === undefined) {
 
-          _camera = new PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
         }
 
         return _camera;
@@ -46528,16 +46528,12 @@ var BottleCanvas = function () {
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, 20, 250);
-    this.app.camera.near = 1.0;
-    this.app.camera.far = 1000;
+    this.app.camera.position.set(0, 20, 330);
+    this.app.camera.near = 100;
+    this.app.camera.far = 500;
+    this.app.camera.updateProjectionMatrix();
 
     this.app.renderer.setClearColor(backgroundColor, 1.0);
-
-    // this.app.renderer.toneMapping = THREE.CineonToneMapping;
-    // this.app.renderer.gammaInput = true;
-    // this.app.renderer.gammaOutput = true;
-    // this.app.renderer.toneMappingExposure = 0.2;
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -46573,14 +46569,16 @@ var BottleCanvas = function () {
   }
 
   BottleCanvas.prototype.initLights = function initLights() {
+    var ambient = new AmbientLight(0x421d06, 0.5);
+    this.app.scene.add(ambient);
 
-    var spotLight1 = new SpotLight(0xffffff, 4, 600, Math.PI / 4, 0.7, 2);
-    spotLight1.position.set(-15, 100, -180);
-    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
+    var spotLight1 = new SpotLight(0xffffff, 4, 600, Math.PI / 4, 0.3, 2);
+    spotLight1.position.set(-15, 50, -180);
+    this.app.scene.add(new SpotLightHelper(spotLight1));
     this.app.scene.add(spotLight1);
 
-    var hemi = new HemisphereLight(0x111111, 0x101010, 1);
-    this.app.scene.add(hemi);
+    var hemi = new HemisphereLight(0xb0b0b0, 0x505050, 0.5);
+    // this.app.scene.add( hemi );
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
@@ -46761,6 +46759,6 @@ var canvas = document.querySelector('#bottle-canvas');
 
 escherSketchLayout();
 
-var bottleCanvas = new BottleCanvas(canvas, null, 0x505050);
+var bottleCanvas = new BottleCanvas(canvas, null, 0xb0b0b0);
 
 }());

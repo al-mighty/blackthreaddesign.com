@@ -37,16 +37,12 @@ export default class BottleCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, 20, 250 );
-    this.app.camera.near = 1.0;
-    this.app.camera.far = 1000;
+    this.app.camera.position.set( 0, 20, 330 );
+    this.app.camera.near = 100;
+    this.app.camera.far = 500;
+    this.app.camera.updateProjectionMatrix();
 
     this.app.renderer.setClearColor( backgroundColor, 1.0 );
-
-    // this.app.renderer.toneMapping = THREE.CineonToneMapping;
-    // this.app.renderer.gammaInput = true;
-    // this.app.renderer.gammaOutput = true;
-    // this.app.renderer.toneMappingExposure = 0.2;
 
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -83,14 +79,16 @@ export default class BottleCanvas {
   }
 
   initLights() {
+    const ambient = new THREE.AmbientLight( 0x421d06, 0.5 );
+    this.app.scene.add( ambient );
 
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 4, 600, Math.PI / 4, 0.7, 2 );
-    spotLight1.position.set( -15, 100, -180 );
-    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
+    const spotLight1 = new THREE.SpotLight( 0xffffff, 4, 600, Math.PI / 4, 0.3, 2 );
+    spotLight1.position.set( -15, 50, -180 );
+    this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
     this.app.scene.add( spotLight1 );
 
-    const hemi = new THREE.HemisphereLight( 0x111111, 0x101010, 1 );
-    this.app.scene.add( hemi );
+    const hemi = new THREE.HemisphereLight( 0xb0b0b0, 0x505050, 0.5 );
+    // this.app.scene.add( hemi );
   }
 
   initTextures() {
