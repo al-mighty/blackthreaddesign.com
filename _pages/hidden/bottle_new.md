@@ -8,8 +8,6 @@ js:
   'bottle_new'
 ---
 
-## Codeword: BrighterBottoms
-
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
 </div>

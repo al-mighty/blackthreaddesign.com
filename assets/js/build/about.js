@@ -47978,7 +47978,7 @@ function App(canvas) {
 
         if (_camera === undefined) {
 
-          _camera = new PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
         }
 
         return _camera;

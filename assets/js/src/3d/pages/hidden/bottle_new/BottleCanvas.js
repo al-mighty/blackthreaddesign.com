@@ -1,10 +1,11 @@
 import * as THREE from 'three';
-
-import App from './App/App.js';
-
-import OrbitControls from './App/OrbitControls.module.js';
-
 import Stats from 'three/examples/js/libs/stats.min';
+
+import App from '../../../App/App.js';
+
+import OrbitControls from '../../../App/modules/OrbitControls.module.js';
+
+import LightHelperExtended from '../../../App/utilities/LightHelperExtended.js';
 
 // Set up THREE
 THREE.Cache.enabled = true;
@@ -14,20 +15,20 @@ const textureLoader = new THREE.TextureLoader();
 const fileLoader = new THREE.FileLoader();
 fileLoader.setResponseType( 'json' );
 
-// const stats = new Stats();
-// stats.dom.style = `position: absolute;
-//   top: 0;
-//   right: 0;
-//   cursor: pointer;
-//   opacity: 0.9;
-//   z-index: 1;
-//   width: 100px;`;
+const stats = new Stats();
+stats.dom.style = `position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  opacity: 0.9;
+  z-index: 1;
+  width: 100px;`;
 
-// document.body.appendChild( stats.dom );
+document.body.appendChild( stats.dom );
 
 export default class BottleCanvas {
 
-  constructor( canvas, labelCanvas = null, backgroundColor = 0xffffff ) {
+  constructor( canvas, labelCanvas = null, backgroundColor = 0xffffff, quality = 'high' ) {
 
     const self = this;
 
@@ -43,7 +44,17 @@ export default class BottleCanvas {
 
     this.app.renderer.setClearColor( backgroundColor, 1.0 );
 
+    // NOTE: uncomment these lines to render a transparent background - i.e. to draw
+    // again the background color of the containing element
+    // this.app.renderer.setClearColor( backgroundColor, 0.0 );
+    // this.app.renderer.alpha = true;
 
+    // NOTE: this means that the order in which the objects are added determines the render
+    // order (for transparency), since the built in method was failing (does not render liquid)
+    // *may* also marginally improve performance
+    this.app.renderer.sortObjects = false;
+
+    // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
 
@@ -53,12 +64,13 @@ export default class BottleCanvas {
       self.controls.update();
 
       // remove if no longer using stats
-      // if ( stats ) stats.update();
+      if ( stats ) stats.update();
 
       if ( this.labelMap ) this.labelMap.needsUpdate = true;
 
     };
 
+    // put any per resize calculations here (throttled to once per 250ms)
     this.app.onWindowResize = function () {
       // NB: use self inside this function
     };
@@ -66,118 +78,43 @@ export default class BottleCanvas {
     this.initLights();
 
     this.initTextures();
-    this.initMaterials();
+
+    switch ( quality ) {
+      case 'high':
+        this.initMaterialsHigh();
+        break;
+      default: // "low""
+        this.initMaterialsLow();
+    }
 
     this.initBottle();
 
-    this.initSmiley();
+    // this.initSmiley();
     // this.initLabel();
 
     this.initControls();
 
+    // App has play / pause / stop functions
     this.app.play();
   }
 
   initLights() {
-    const spotLight1 = new THREE.SpotLight( 0xffffff, 4, 600, Math.PI / 4, 0.9, 2 );
-    spotLight1.position.set( -15, 110, -180 );
-    // this.app.scene.add( new THREE.SpotLightHelper( spotLight1 ) );
-    this.app.scene.add( spotLight1 );
-
-    // const ambient = new THREE.AmbientLight( 0x707070, 0.75 );
-    // this.app.scene.add( ambient );
+    const spot = new THREE.SpotLight( 0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5 );
+    spot.position.set( -15, 130, -180 );
+    this.app.scene.add( spot );
+    const lh = new LightHelperExtended( spot, true );
 
     const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
     this.app.scene.add( hemi );
   }
 
   initTextures() {
-    this.envMapRefraction = textureLoader.load( '/assets/images/textures/env_maps/grey_room.jpg' );
-    this.envMapRefraction.mapping = THREE.EquirectangularRefractionMapping;
+    this.envMap = textureLoader.load( '/assets/images/textures/env_maps/grey_room.jpg' );
+    this.envMap.mapping = THREE.EquirectangularRefractionMapping;
 
     this.smileyTexture = textureLoader.load( '/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png' );
 
     this.labelMap = this.labelCanvas ? new THREE.CanvasTexture( this.labelCanvas ) : null;
-  }
-
-  initMaterials() {
-    const glassColor = 0x371805;
-    const liquidColor = 0xd15c1a;
-    const envMapIntensity = 0.1;
-
-    this.capMat = new THREE.MeshStandardMaterial( {
-      color: 0xffffff,
-      emissive: 0x606060,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      side: THREE.BackSide,
-
-      // STANDARD
-      metalness: 0.5,
-      roughness: 0.4,
-
-      // PHONG
-      // reflectivity: 1,
-      // shininess: 100,
-      // specular: 0xbe745f,
-    } );
-
-    this.capBackMat = new THREE.MeshBasicMaterial( {
-      color: 0x505050,
-    } );
-
-    this.bottleMat = new THREE.MeshStandardMaterial( {
-      color: glassColor,
-      envMap: this.envMapRefraction,
-      envMapIntensity,
-      opacity: 0.6,
-      refractionRatio: 1.9,
-      transparent: true,
-
-      // STANDARD
-      metalness: 0.2,
-      roughness: 0.15,
-    } );
-
-    this.bottleBackMat = new THREE.MeshStandardMaterial( {
-      color: glassColor,
-      // envMap: this.envMapRefraction,
-      // envMapIntensity,
-      opacity: 0.3,
-      refractionRatio: 1.9,
-      transparent: true,
-      side: THREE.BackSide,
-
-      // STANDARD
-      metalness: 0.6,
-      roughness: 0.25
-    } );
-
-    this.liquidMat = new THREE.MeshStandardMaterial( {
-      color: liquidColor,
-      opacity: 0.8,
-      refractionRatio: 1.3,
-      transparent: true,
-
-      // STANDARD
-      metalness: 0.4,
-      roughness: 0.1,
-    } );
-
-    this.smileyMat = new THREE.MeshBasicMaterial( {
-      map: this.smileyTexture,
-      transparent: true,
-    } );
-
-    this.labelmat = new THREE.MeshStandardMaterial( {
-      color: 0x7279a5,
-      map: this.labelMap,
-    } );
-
-    this.labelBackMat = new THREE.MeshBasicMaterial( {
-      color: 0x7279a5,
-      side: THREE.BackSide,
-    } );
   }
 
   initBottle() {
@@ -186,7 +123,7 @@ export default class BottleCanvas {
     this.bottleGroup.scale.set( 20, 20, 20 );
     this.app.scene.add( this.bottleGroup );
 
-    fileLoader.load( '/assets/models/hidden/bottle/bottle2.json', ( json ) => {
+    fileLoader.load( '/assets/models/hidden/bottle/bottle.json', ( json ) => {
       const geometries = {};
 
       json.geometries.forEach( ( obj ) => {
@@ -201,27 +138,21 @@ export default class BottleCanvas {
       const cap = new THREE.Mesh( geometries.cap, this.capMat );
       const capBack = new THREE.Mesh( geometries.cap, this.capBackMat );
 
-      geometries.bottle.merge( geometries.bottle_interior );
-
-      const bottleFront = new THREE.Mesh( geometries.bottle, this.bottleMat );
-      bottleFront.renderOrder = 1;
-      const bottleBack = new THREE.Mesh( geometries.bottle, this.bottleBackMat );
-      bottleBack.renderOrder = 2;
-
-      geometries.liquid.merge( geometries.liquidTop );
+      const bottle = new THREE.Mesh( geometries.bottle, this.bottleMat );
+      const bottleInterior = new THREE.Mesh( geometries.bottle_interior, this.bottleMatInterior );
 
       const liquid = new THREE.Mesh( geometries.liquid, this.liquidMat );
-      liquid.renderOrder = 0;
+      const liquidTop = new THREE.Mesh( geometries.liquidTop, this.liquidMat );
 
       this.bottleGroup.add(
-        bottleFront,
-        bottleBack,
         cap,
         capBack,
-        liquid
+        liquidTop,
+        liquid,
+        bottle,
+        bottleInterior
       );
     } );
-
   }
 
   initSmiley() {
@@ -269,5 +200,89 @@ export default class BottleCanvas {
     controls.dampingFactor = 0.1;
 
     this.controls = controls;
+  }
+
+  initMaterialsHigh() {
+    const glassColor = 0x371805;
+
+    this.capMat = new THREE.MeshLambertMaterial( {
+      color: 0xffffff,
+      emissive: 0x606060,
+      envMap: this.envMap,
+      side: THREE.BackSide,
+
+      // Lambert
+      reflectivity: 0.15,
+    } );
+
+    this.capBackMat = new THREE.MeshBasicMaterial( {
+      color: 0x505050,
+    } );
+
+    this.bottleMat = new THREE.MeshLambertMaterial( {
+      color: glassColor,
+      opacity: 0.85,
+      transparent: true,
+    } );
+
+    this.bottleMatInterior = new THREE.MeshStandardMaterial( {
+      color: glassColor,
+      envMap: this.envMap,
+      envMapIntensity: 0.1,
+      opacity: 0.7,
+      refractionRatio: 1.9,
+      transparent: true,
+
+      // STANDARD
+      metalness: 0.4,
+      roughness: 0.15,
+    } );
+
+    this.liquidMat = new THREE.MeshLambertMaterial( {
+      color: 0x8c3e13, // 0x8c3e13 0x58360d 0xd15c1a
+      opacity: 0.8,
+      transparent: true,
+    } );
+  }
+
+  initMaterialsLow() {
+    const glassColor = 0x371805;
+
+    this.capMat = new THREE.MeshLambertMaterial( {
+      color: 0xffffff,
+      emissive: 0x808080,
+      envMap: this.envMap,
+      side: THREE.BackSide,
+
+      // Lambert
+      reflectivity: 0.15,
+    } );
+
+    this.capBackMat = new THREE.MeshBasicMaterial( {
+      color: 0x505050,
+    } );
+
+    this.bottleMat = new THREE.MeshLambertMaterial( {
+      color: glassColor,
+      opacity: 0.85,
+      transparent: true,
+    } );
+
+    this.bottleMatInterior = new THREE.MeshLambertMaterial( {
+      color: glassColor,
+      envMap: this.envMap,
+      opacity: 0.7,
+
+      transparent: true,
+
+      // LAMBERT
+      reflectivity: 0.3,
+    } );
+
+    this.liquidMat = new THREE.MeshLambertMaterial( {
+      color: 0x8c3e13,
+      opacity: 0.8,
+      transparent: true,
+    } );
   }
 }
