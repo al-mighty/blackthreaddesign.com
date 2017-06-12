@@ -36,7 +36,8 @@ export default class LightHelperExtended {
 
     } else {
 
-      this.light.parent.add( new THREE[ this.type + 'LightHelper']( this.light ) );
+      this.helper = new THREE[ this.type + 'LightHelper']( this.light );
+      this.light.parent.add( this.helper );
 
     }
   }
@@ -207,14 +208,41 @@ export default class LightHelperExtended {
       decay: object.decay
     }
 
-    lightParams.add( params, 'angle', 0, Math.PI / 2 ).step( 0.1 ).onChange( ( val ) => { object.angle = val; } );
+    lightParams.add( params, 'angle', 0, Math.PI / 2 ).step( 0.1 ).onChange( ( val ) => { 
+      object.angle = val;
+      if ( this.helper ) this.helper.update();
+    } );
     lightParams.addColor( params, 'color' ).onChange( ( val ) => { object.color.setHex( val ); } );
     lightParams.add( params, 'decay', 0 ).step( 0.1 ).onChange( ( val ) => { object.decay = val; } );
-    lightParams.add( params, 'distance', 0 ).step( 0.1 ).onChange( ( val ) => { object.distance = val; } );
+    lightParams.add( params, 'distance', 0 ).step( 0.1 ).onChange( ( val ) => { 
+      object.distance = val;
+      if ( this.helper ) this.helper.update();
+    } );
     lightParams.add( params, 'intensity', 0 ).step( 0.1 ).onChange( ( val ) => { object.intensity = val; } );
     lightParams.add( params, 'penumbra', 0, 5 ).step( 0.1 ).onChange( ( val ) => { object.penumbra = val; } );
 
-    
+    if ( object.target ) {
+      if ( !object.target.parent ) {
+        console.warn( 'LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).' )
+      }
+      params[ 'target.position.x' ] = object.target.position.x;
+      params[ 'target.position.y' ] = object.target.position.y;
+      params[ 'target.position.z' ] = object.target.position.z;
+
+      lightParams.add( params, 'target.position.x' ).step( 0.1 ).onChange( ( val ) => { 
+        object.target.position.x = val;
+        if ( this.helper ) this.helper.update();
+      } );
+      lightParams.add( params, 'target.position.y' ).step( 0.1 ).onChange( ( val ) => { 
+        object.target.position.y = val;
+        if ( this.helper ) this.helper.update();
+      } );
+      lightParams.add( params, 'target.position.z' ).step( 0.1 ).onChange( ( val ) => { 
+        object.target.position.z = val;
+        if ( this.helper ) this.helper.update();
+      } );
+   
+    }
   }
 
 }
