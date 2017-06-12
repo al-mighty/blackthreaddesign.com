@@ -52660,7 +52660,8 @@ var LightHelperExtended = function () {
             console.warn('LightHelperExtended: to show light helper add the light to the scene first.');
         } else {
 
-            this.light.parent.add(new THREE[this.type + 'LightHelper'](this.light));
+            this.helper = new THREE[this.type + 'LightHelper'](this.light);
+            this.light.parent.add(this.helper);
         }
     };
 
@@ -52824,6 +52825,7 @@ var LightHelperExtended = function () {
     };
 
     LightHelperExtended.prototype.initLightGUI = function initLightGUI(object) {
+        var _this2 = this;
 
         var lightParams = this.guiFolder.addFolder('Light Params');
         lightParams.open();
@@ -52846,6 +52848,7 @@ var LightHelperExtended = function () {
 
         lightParams.add(params, 'angle', 0, Math.PI / 2).step(0.1).onChange(function (val) {
             object.angle = val;
+            if (_this2.helper) _this2.helper.update();
         });
         lightParams.addColor(params, 'color').onChange(function (val) {
             object.color.setHex(val);
@@ -52855,6 +52858,7 @@ var LightHelperExtended = function () {
         });
         lightParams.add(params, 'distance', 0).step(0.1).onChange(function (val) {
             object.distance = val;
+            if (_this2.helper) _this2.helper.update();
         });
         lightParams.add(params, 'intensity', 0).step(0.1).onChange(function (val) {
             object.intensity = val;
@@ -52862,6 +52866,28 @@ var LightHelperExtended = function () {
         lightParams.add(params, 'penumbra', 0, 5).step(0.1).onChange(function (val) {
             object.penumbra = val;
         });
+
+        if (object.target) {
+            if (!object.target.parent) {
+                console.warn('LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).');
+            }
+            params['target.position.x'] = object.target.position.x;
+            params['target.position.y'] = object.target.position.y;
+            params['target.position.z'] = object.target.position.z;
+
+            lightParams.add(params, 'target.position.x').step(0.1).onChange(function (val) {
+                object.target.position.x = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+            lightParams.add(params, 'target.position.y').step(0.1).onChange(function (val) {
+                object.target.position.y = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+            lightParams.add(params, 'target.position.z').step(0.1).onChange(function (val) {
+                object.target.position.z = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+        }
     };
 
     return LightHelperExtended;
@@ -52923,7 +52949,7 @@ var BottleCanvas = function () {
 
       if (this.labelMap) this.labelMap.needsUpdate = true;
 
-      // Helper Extened test
+      // Helper Extended test
       // console.log( self.spot.name );
     };
 
@@ -52959,7 +52985,7 @@ var BottleCanvas = function () {
   BottleCanvas.prototype.initLights = function initLights() {
     var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
     spot.position.set(-15, 130, -180);
-    this.app.scene.add(spot);
+    this.app.scene.add(spot, spot.target);
     var lh = new LightHelperExtended(spot, true, true);
 
     this.spot = spot;

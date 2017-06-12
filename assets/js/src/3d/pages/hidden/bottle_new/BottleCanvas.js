@@ -68,7 +68,7 @@ export default class BottleCanvas {
 
       if ( this.labelMap ) this.labelMap.needsUpdate = true;
 
-      // Helper Extened test
+      // Helper Extended test
       // console.log( self.spot.name );
 
     };
@@ -104,7 +104,7 @@ export default class BottleCanvas {
   initLights() {
     const spot = new THREE.SpotLight( 0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5 );
     spot.position.set( -15, 130, -180 );
-    this.app.scene.add( spot );
+    this.app.scene.add( spot, spot.target );
     const lh = new LightHelperExtended( spot, true, true );
 
     this.spot = spot;
