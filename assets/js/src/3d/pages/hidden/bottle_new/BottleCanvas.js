@@ -105,14 +105,25 @@ export default class BottleCanvas {
     const spot = new THREE.SpotLight( 0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5 );
     spot.position.set( -15, 130, -180 );
     this.app.scene.add( spot, spot.target );
-    const lh = new LightHelperExtended( spot, true, true );
+    // const lhSpot = new LightHelperExtended( spot, true, true );
 
     this.spot = spot;
 
     const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
     this.app.scene.add( hemi );
-    // const lh2 = new LightHelperExtended( hemi, true, true );
+    // const lhHemi = new LightHelperExtended( hemi, true, true );
 
+    // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    // const lhAmbient = new LightHelperExtended( ambient, true, true );
+
+    // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // const lhHemi = new LightHelperExtended( directional, true, true );
+
+    // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
+    // const lhPoint = new LightHelperExtended( point, true, true );
+
+    const RectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 2, 10 );
+    const lhPoint = new LightHelperExtended( RectArea, true, true );
   }
 
   initTextures() {

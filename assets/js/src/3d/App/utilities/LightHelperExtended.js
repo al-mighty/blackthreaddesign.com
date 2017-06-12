@@ -25,7 +25,9 @@ export default class LightHelperExtended {
 
     if ( showHelper && this.type !== 'Ambient' ) this.initHelper();
 
-    if ( showGUI ) this.buildGUI();
+    // if ( showGUI ) this.buildGUI();
+
+    this.getObjectKeys();
 
   }
 
@@ -67,6 +69,11 @@ export default class LightHelperExtended {
   }
 
   buildGUI() {
+    if ( typeof dat.GUI !== 'function' ) {
+      console.warn( 'LightHelperExtended: can\'t find dat.GUI!' );
+      return;
+    }
+
     if ( !window.THREEHelperExtendedGUI ) window.THREEHelperExtendedGUI = new dat.GUI();
 
     this.guiFolder = window.THREEHelperExtendedGUI.addFolder( this.type + 'Light' );
@@ -191,14 +198,38 @@ export default class LightHelperExtended {
 
     const lightParams = this.guiFolder.addFolder( 'Light Params' );
     lightParams.open();
-    // color
+
+// ALL 
+// color
 // intensity
+
+// SPOT 
 // target
 // distance
 // angle
 // penumbra
 // decay
 // shadow
+
+// HEMI
+
+
+// AMBIENT
+
+
+// DIRECTIONAL
+// target
+// shadow
+
+// POINT
+// distance
+// decay
+// shadow
+
+// RECTAREA
+// width
+// height
+
     const params = {
       color: object.color.getHex(),
       intensity: object.intensity,

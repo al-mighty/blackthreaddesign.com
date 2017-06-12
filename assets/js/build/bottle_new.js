@@ -52651,7 +52651,9 @@ var LightHelperExtended = function () {
 
         if (showHelper && this.type !== 'Ambient') this.initHelper();
 
-        if (showGUI) this.buildGUI();
+        // if ( showGUI ) this.buildGUI();
+
+        this.getObjectKeys();
     }
 
     LightHelperExtended.prototype.initHelper = function initHelper() {
@@ -52684,6 +52686,11 @@ var LightHelperExtended = function () {
     };
 
     LightHelperExtended.prototype.buildGUI = function buildGUI() {
+        if (typeof dat.GUI !== 'function') {
+            console.warn('LightHelperExtended: can\'t find dat.GUI!');
+            return;
+        }
+
         if (!window.THREEHelperExtendedGUI) window.THREEHelperExtendedGUI = new dat.GUI();
 
         this.guiFolder = window.THREEHelperExtendedGUI.addFolder(this.type + 'Light');
@@ -52829,14 +52836,38 @@ var LightHelperExtended = function () {
 
         var lightParams = this.guiFolder.addFolder('Light Params');
         lightParams.open();
+
+        // ALL 
         // color
         // intensity
+
+        // SPOT 
         // target
         // distance
         // angle
         // penumbra
         // decay
         // shadow
+
+        // HEMI
+
+
+        // AMBIENT
+
+
+        // DIRECTIONAL
+        // target
+        // shadow
+
+        // POINT
+        // distance
+        // decay
+        // shadow
+
+        // RECTAREA
+        // width
+        // height
+
         var params = {
             color: object.color.getHex(),
             intensity: object.intensity,
@@ -52986,13 +53017,25 @@ var BottleCanvas = function () {
     var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
     spot.position.set(-15, 130, -180);
     this.app.scene.add(spot, spot.target);
-    var lh = new LightHelperExtended(spot, true, true);
+    // const lhSpot = new LightHelperExtended( spot, true, true );
 
     this.spot = spot;
 
     var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
     this.app.scene.add(hemi);
-    // const lh2 = new LightHelperExtended( hemi, true, true );
+    // const lhHemi = new LightHelperExtended( hemi, true, true );
+
+    // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    // const lhAmbient = new LightHelperExtended( ambient, true, true );
+
+    // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // const lhHemi = new LightHelperExtended( directional, true, true );
+
+    // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
+    // const lhPoint = new LightHelperExtended( point, true, true );
+
+    var RectArea = new RectAreaLight(0xffffff, 1.0, 2, 10);
+    var lhPoint = new LightHelperExtended(RectArea, true, true);
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
