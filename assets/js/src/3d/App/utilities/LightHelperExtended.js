@@ -25,9 +25,9 @@ export default class LightHelperExtended {
 
     if ( showHelper && this.type !== 'Ambient' ) this.initHelper();
 
-    // if ( showGUI ) this.buildGUI();
+    if ( showGUI ) this.buildGUI();
 
-    this.getObjectKeys();
+    // this.getObjectKeys();
 
   }
 
@@ -56,6 +56,7 @@ export default class LightHelperExtended {
 
   }
 
+  // Helper function to check that all parameter are covered.
   getObjectKeys() {
     Object.keys( this.light ).forEach( ( key ) => {
 
@@ -122,7 +123,7 @@ export default class LightHelperExtended {
 
   }
 
-  iniTransformGUI ( object) {
+  iniTransformGUI( object ) {
     const transform = this.guiFolder.addFolder( 'Transform' );
     transform.open();
 
@@ -135,8 +136,7 @@ export default class LightHelperExtended {
       'scale.z': object.scale.z,
     };
 
-    const euler = new THREE.Euler();
-    const quaternion = new THREE.Quaternion();
+
 
     const setRotationParams = () => {
       params[ 'rotation.x' ] = object.rotation.x;
@@ -147,132 +147,182 @@ export default class LightHelperExtended {
       params[ 'quaternion.z' ] = object.quaternion.z;
       params[ 'quaternion.w' ] = object.quaternion.w;
     };
+
     setRotationParams();
 
-    const setObjectRotationFromEuler = () => {
-
-      euler.set(
-        params[ 'rotation.x' ],
-        params[ 'rotation.y' ],
-        params[ 'rotation.z' ]
-      );
-
-      object.setRotationFromEuler( euler );
-
-      setRotationParams();
-
-    };
-
-    const setObjectRotationFromQuaternion = () => {
-      quaternion.set(
-        params[ 'quaternion.x' ],
-        params[ 'quaternion.y' ],
-        params[ 'quaternion.z' ],
-        params[ 'quaternion.w' ]
-      );
-
-      object.setRotationFromQuaternion( quaternion );
-
-      setRotationParams();
-
-    };
-
+    const updateQuaternionParams = () => {
+      params[ 'quaternion.x' ] = object.quaternion.x;
+      params[ 'quaternion.y' ] = object.quaternion.y;
+      params[ 'quaternion.z' ] = object.quaternion.z;
+      params[ 'quaternion.w' ] = object.quaternion.w;
+    }
 
     transform.add( params, 'position.x' ).step( 0.1 ).onChange( ( val ) => { object.position.x = val; } );
     transform.add( params, 'position.y' ).step( 0.1 ).onChange( ( val ) => { object.position.y = val; } );
     transform.add( params, 'position.z' ).step( 0.1 ).onChange( ( val ) => { object.position.z = val; } );
-    transform.add( params, 'rotation.x' ).step( 0.1 ).onChange( () => { setObjectRotationFromEuler(); } );
-    transform.add( params, 'rotation.y' ).step( 0.1 ).onChange( () => { setObjectRotationFromEuler(); } );
-    transform.add( params, 'rotation.z' ).step( 0.1 ).onChange( () => { setObjectRotationFromEuler(); } );
-    transform.add( params, 'quaternion.x' ).step( 0.1 ).onChange( () => { setObjectRotationFromQuaternion(); } );
-    transform.add( params, 'quaternion.y' ).step( 0.1 ).onChange( () => { setObjectRotationFromQuaternion(); } );
-    transform.add( params, 'quaternion.z' ).step( 0.1 ).onChange( () => { setObjectRotationFromQuaternion(); } );
-    transform.add( params, 'quaternion.w' ).step( 0.1 ).onChange( () => { setObjectRotationFromQuaternion(); } );
+
+    transform.add( params, 'rotation.x', -Math.PI, Math.PI )
+      .step( 0.05 )
+      .listen()
+      .onChange( ( val ) => { object.rotation.x = val; } );
+
+    transform.add( params, 'rotation.y', -Math.PI, Math.PI )
+      .step( 0.05 )
+      .listen()
+      .onChange( ( val ) => { object.rotation.y = val; } );
+
+    transform.add( params, 'rotation.z', -Math.PI, Math.PI )
+      .step( 0.05 )
+      .listen()
+      .onChange( ( val ) => { object.rotation.z = val; } );
+
+    transform.add( params, 'quaternion.x' ).listen().step( 0.05 )
+      // .onChange( ( val ) => { object.quaternion.x = val; } );
+
+    transform.add( params, 'quaternion.y' )
+      .step( 0.05 )
+      .listen()
+      // .onChange( ( val ) => { object.quaternion.y = val; } );
+
+    transform.add( params, 'quaternion.z' )
+      .step( 0.05 )
+      .listen()
+      // .onChange( ( val ) => { object.quaternion.z = val; } );
+
+    transform.add( params, 'quaternion.w' )
+      .step( 0.05 )
+      .listen()
+      // .onChange( ( val ) => { object.quaternion.w = val; } );
+
     transform.add( params, 'scale.x' ).step( 0.1 ).onChange( ( val ) => { object.scale.x = val; } );
     transform.add( params, 'scale.y' ).step( 0.1 ).onChange( ( val ) => { object.scale.y = val; } );
     transform.add( params, 'scale.z' ).step( 0.1 ).onChange( ( val ) => { object.scale.z = val; } );
 
   }
 
-  initLightGUI( object ) {
+  initLightGUI( light ) {
 
     const lightParams = this.guiFolder.addFolder( 'Light Params' );
     lightParams.open();
 
-// ALL 
-// color
-// intensity
-
-// SPOT 
-// target
-// distance
-// angle
-// penumbra
-// decay
-// shadow
-
-// HEMI
-
-
-// AMBIENT
-
-
-// DIRECTIONAL
-// target
-// shadow
-
-// POINT
-// distance
-// decay
-// shadow
-
-// RECTAREA
-// width
-// height
-
+    // ALL LIGHTS
     const params = {
-      color: object.color.getHex(),
-      intensity: object.intensity,
-      distance: object.distance,
-      angle: object.angle,
-      penumbra: object.penumbra,
-      decay: object.decay
+
+      color: light.color.getHex(),
+      intensity: light.intensity,
+
+    };
+
+    lightParams.addColor( params, 'color' ).onChange( ( val ) => { light.color.setHex( val ); } );
+    lightParams.add( params, 'intensity', 0 ).step( 0.1 ).onChange( ( val ) => { light.intensity = val; } );
+
+    // Properties shared by multiple lights will be added with Object.prototype.hasOwnProperty.call( light, key )
+    // - this will allow for forward compatibility of properties get added to light ( e.g. decay to RectAreaLight)
+
+    if ( Object.prototype.hasOwnProperty.call( light, 'decay' ) ) {
+
+      params.decay = light.decay;
+
+      lightParams.add( params, 'decay', 0 ).step( 0.1 ).onChange( ( val ) => { light.decay = val; } );
+
     }
 
-    lightParams.add( params, 'angle', 0, Math.PI / 2 ).step( 0.1 ).onChange( ( val ) => { 
-      object.angle = val;
-      if ( this.helper ) this.helper.update();
-    } );
-    lightParams.addColor( params, 'color' ).onChange( ( val ) => { object.color.setHex( val ); } );
-    lightParams.add( params, 'decay', 0 ).step( 0.1 ).onChange( ( val ) => { object.decay = val; } );
-    lightParams.add( params, 'distance', 0 ).step( 0.1 ).onChange( ( val ) => { 
-      object.distance = val;
-      if ( this.helper ) this.helper.update();
-    } );
-    lightParams.add( params, 'intensity', 0 ).step( 0.1 ).onChange( ( val ) => { object.intensity = val; } );
-    lightParams.add( params, 'penumbra', 0, 5 ).step( 0.1 ).onChange( ( val ) => { object.penumbra = val; } );
+    if ( Object.prototype.hasOwnProperty.call( light, 'distance' ) ) {
 
-    if ( object.target ) {
-      if ( !object.target.parent ) {
-        console.warn( 'LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).' )
+      params.distance = light.distance;
+
+      lightParams.add( params, 'distance', 0 ).step( 0.1 ).onChange( ( val ) => {
+        light.distance = val;
+        if ( this.helper ) this.helper.update();
+      } );
+
+    }
+
+    if ( Object.prototype.hasOwnProperty.call( light, 'shadow' ) ) {
+
+      // params.shadow = light.shadow;
+
+      console.log( light.shadow );
+
+    }
+
+    if ( Object.prototype.hasOwnProperty.call( light, 'target' ) ) {
+
+      if ( !light.target.parent ) {
+
+        console.warn( 'LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).' );
+
       }
-      params[ 'target.position.x' ] = object.target.position.x;
-      params[ 'target.position.y' ] = object.target.position.y;
-      params[ 'target.position.z' ] = object.target.position.z;
 
-      lightParams.add( params, 'target.position.x' ).step( 0.1 ).onChange( ( val ) => { 
-        object.target.position.x = val;
+      params[ 'target.position.x' ] = light.target.position.x;
+      params[ 'target.position.y' ] = light.target.position.y;
+      params[ 'target.position.z' ] = light.target.position.z;
+
+      lightParams.add( params, 'target.position.x' ).step( 0.1 ).onChange( ( val ) => {
+
+        light.target.position.x = val;
+        if ( this.helper ) this.helper.update();
+
+      } );
+
+      lightParams.add( params, 'target.position.y' ).step( 0.1 ).onChange( ( val ) => {
+
+        light.target.position.y = val;
+        if ( this.helper ) this.helper.update();
+
+      } );
+
+      lightParams.add( params, 'target.position.z' ).step( 0.1 ).onChange( ( val ) => {
+
+        light.target.position.z = val;
+        if ( this.helper ) this.helper.update();
+
+      } );
+
+    }
+
+    if ( this.type === 'Spot' ) {
+
+      params.angle = light.angle;
+      params.penumbra = light.penumbra;
+
+      lightParams.add( params, 'angle', 0, Math.PI / 2 ).step( 0.1 ).onChange( ( val ) => {
+        light.angle = val;
         if ( this.helper ) this.helper.update();
       } );
-      lightParams.add( params, 'target.position.y' ).step( 0.1 ).onChange( ( val ) => { 
-        object.target.position.y = val;
+
+      lightParams.add( params, 'penumbra', 0, 5 ).step( 0.1 ).onChange( ( val ) => { light.penumbra = val; } );
+
+    }
+
+    if ( this.type === 'Hemi' ) {
+
+      params.groundColor = light.groundColor;
+
+      lightParams.addColor( params, 'groundColor' ).onChange( ( val ) => { light.groundColor.setHex( val ); } );
+
+    }
+
+
+    if ( this.type === 'RectArea' ) {
+
+      params.width = light.width;
+      params.height = light.height;
+
+      lightParams.add( params, 'width', 0 ).step( 0.1 ).onChange( ( val ) => {
+
+        light.width = val;
         if ( this.helper ) this.helper.update();
+
       } );
-      lightParams.add( params, 'target.position.z' ).step( 0.1 ).onChange( ( val ) => { 
-        object.target.position.z = val;
+
+      lightParams.add( params, 'height', 0 ).step( 0.1 ).onChange( ( val ) => {
+
+        light.height = val;
         if ( this.helper ) this.helper.update();
+
       } );
-   
+
     }
   }
 

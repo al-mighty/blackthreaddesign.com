@@ -107,23 +107,27 @@ export default class BottleCanvas {
     this.app.scene.add( spot, spot.target );
     // const lhSpot = new LightHelperExtended( spot, true, true );
 
-    this.spot = spot;
+    // this.spot = spot;
 
     const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
     this.app.scene.add( hemi );
     // const lhHemi = new LightHelperExtended( hemi, true, true );
 
     // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    // this.app.scene.add( ambient );
     // const lhAmbient = new LightHelperExtended( ambient, true, true );
 
     // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // this.app.scene.add( directional );
     // const lhHemi = new LightHelperExtended( directional, true, true );
 
     // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
+    // this.app.scene.add( point );
     // const lhPoint = new LightHelperExtended( point, true, true );
 
-    const RectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 2, 10 );
-    const lhPoint = new LightHelperExtended( RectArea, true, true );
+    const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
+    this.app.scene.add( rectArea );
+    const lhPoint = new LightHelperExtended( rectArea, true, true );
   }
 
   initTextures() {
@@ -209,8 +213,8 @@ export default class BottleCanvas {
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    controls.minAzimuthAngle = 0; // radians
-    controls.maxAzimuthAngle = 0; // radians
+    // controls.minAzimuthAngle = 0; // radians
+    // controls.maxAzimuthAngle = 0; // radians
 
     controls.maxPolarAngle = Math.PI * 0.75;
 

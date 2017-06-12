@@ -52651,9 +52651,9 @@ var LightHelperExtended = function () {
 
         if (showHelper && this.type !== 'Ambient') this.initHelper();
 
-        // if ( showGUI ) this.buildGUI();
+        if (showGUI) this.buildGUI();
 
-        this.getObjectKeys();
+        // this.getObjectKeys();
     }
 
     LightHelperExtended.prototype.initHelper = function initHelper() {
@@ -52672,6 +52672,9 @@ var LightHelperExtended = function () {
         if (this.light.isAmbientLight) return 'Ambient';else if (this.light.isDirectionalLight) return 'Directional';else if (this.light.isHemisphereLight) return 'Hemisphere';else if (this.light.isPointLight) return 'Point';else if (this.light.isRectAreaLight) return 'RectArea';else if (this.light.isSpotLight) return 'Spot';
         return ''; // unsupported light
     };
+
+    // Helper function to check that all parameter are covered.
+
 
     LightHelperExtended.prototype.getObjectKeys = function getObjectKeys() {
         var _this = this;
@@ -52759,9 +52762,6 @@ var LightHelperExtended = function () {
             'scale.z': object.scale.z
         };
 
-        var euler = new Euler();
-        var quaternion = new Quaternion();
-
         var setRotationParams = function () {
             params['rotation.x'] = object.rotation.x;
             params['rotation.y'] = object.rotation.y;
@@ -52771,23 +52771,14 @@ var LightHelperExtended = function () {
             params['quaternion.z'] = object.quaternion.z;
             params['quaternion.w'] = object.quaternion.w;
         };
+
         setRotationParams();
 
-        var setObjectRotationFromEuler = function () {
-
-            euler.set(params['rotation.x'], params['rotation.y'], params['rotation.z']);
-
-            object.setRotationFromEuler(euler);
-
-            setRotationParams();
-        };
-
-        var setObjectRotationFromQuaternion = function () {
-            quaternion.set(params['quaternion.x'], params['quaternion.y'], params['quaternion.z'], params['quaternion.w']);
-
-            object.setRotationFromQuaternion(quaternion);
-
-            setRotationParams();
+        var updateQuaternionParams = function () {
+            params['quaternion.x'] = object.quaternion.x;
+            params['quaternion.y'] = object.quaternion.y;
+            params['quaternion.z'] = object.quaternion.z;
+            params['quaternion.w'] = object.quaternion.w;
         };
 
         transform.add(params, 'position.x').step(0.1).onChange(function (val) {
@@ -52799,27 +52790,31 @@ var LightHelperExtended = function () {
         transform.add(params, 'position.z').step(0.1).onChange(function (val) {
             object.position.z = val;
         });
-        transform.add(params, 'rotation.x').step(0.1).onChange(function () {
-            setObjectRotationFromEuler();
+
+        transform.add(params, 'rotation.x', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
+            object.rotation.x = val;
         });
-        transform.add(params, 'rotation.y').step(0.1).onChange(function () {
-            setObjectRotationFromEuler();
+
+        transform.add(params, 'rotation.y', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
+            object.rotation.y = val;
         });
-        transform.add(params, 'rotation.z').step(0.1).onChange(function () {
-            setObjectRotationFromEuler();
+
+        transform.add(params, 'rotation.z', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
+            object.rotation.z = val;
         });
-        transform.add(params, 'quaternion.x').step(0.1).onChange(function () {
-            setObjectRotationFromQuaternion();
-        });
-        transform.add(params, 'quaternion.y').step(0.1).onChange(function () {
-            setObjectRotationFromQuaternion();
-        });
-        transform.add(params, 'quaternion.z').step(0.1).onChange(function () {
-            setObjectRotationFromQuaternion();
-        });
-        transform.add(params, 'quaternion.w').step(0.1).onChange(function () {
-            setObjectRotationFromQuaternion();
-        });
+
+        transform.add(params, 'quaternion.x').listen().step(0.05);
+        // .onChange( ( val ) => { object.quaternion.x = val; } );
+
+        transform.add(params, 'quaternion.y').step(0.05).listen();
+        // .onChange( ( val ) => { object.quaternion.y = val; } );
+
+        transform.add(params, 'quaternion.z').step(0.05).listen();
+        // .onChange( ( val ) => { object.quaternion.z = val; } );
+
+        transform.add(params, 'quaternion.w').step(0.05).listen();
+        // .onChange( ( val ) => { object.quaternion.w = val; } );
+
         transform.add(params, 'scale.x').step(0.1).onChange(function (val) {
             object.scale.x = val;
         });
@@ -52831,91 +52826,124 @@ var LightHelperExtended = function () {
         });
     };
 
-    LightHelperExtended.prototype.initLightGUI = function initLightGUI(object) {
+    LightHelperExtended.prototype.initLightGUI = function initLightGUI(light) {
         var _this2 = this;
 
         var lightParams = this.guiFolder.addFolder('Light Params');
         lightParams.open();
 
-        // ALL 
-        // color
-        // intensity
-
-        // SPOT 
-        // target
-        // distance
-        // angle
-        // penumbra
-        // decay
-        // shadow
-
-        // HEMI
-
-
-        // AMBIENT
-
-
-        // DIRECTIONAL
-        // target
-        // shadow
-
-        // POINT
-        // distance
-        // decay
-        // shadow
-
-        // RECTAREA
-        // width
-        // height
-
+        // ALL LIGHTS
         var params = {
-            color: object.color.getHex(),
-            intensity: object.intensity,
-            distance: object.distance,
-            angle: object.angle,
-            penumbra: object.penumbra,
-            decay: object.decay
+
+            color: light.color.getHex(),
+            intensity: light.intensity
+
         };
 
-        lightParams.add(params, 'angle', 0, Math.PI / 2).step(0.1).onChange(function (val) {
-            object.angle = val;
-            if (_this2.helper) _this2.helper.update();
-        });
         lightParams.addColor(params, 'color').onChange(function (val) {
-            object.color.setHex(val);
-        });
-        lightParams.add(params, 'decay', 0).step(0.1).onChange(function (val) {
-            object.decay = val;
-        });
-        lightParams.add(params, 'distance', 0).step(0.1).onChange(function (val) {
-            object.distance = val;
-            if (_this2.helper) _this2.helper.update();
+            light.color.setHex(val);
         });
         lightParams.add(params, 'intensity', 0).step(0.1).onChange(function (val) {
-            object.intensity = val;
-        });
-        lightParams.add(params, 'penumbra', 0, 5).step(0.1).onChange(function (val) {
-            object.penumbra = val;
+            light.intensity = val;
         });
 
-        if (object.target) {
-            if (!object.target.parent) {
+        // Properties shared by multiple lights will be added with Object.prototype.hasOwnProperty.call( light, key )
+        // - this will allow for forward compatibility of properties get added to light ( e.g. decay to RectAreaLight)
+
+        if (Object.prototype.hasOwnProperty.call(light, 'decay')) {
+
+            params.decay = light.decay;
+
+            lightParams.add(params, 'decay', 0).step(0.1).onChange(function (val) {
+                light.decay = val;
+            });
+        }
+
+        if (Object.prototype.hasOwnProperty.call(light, 'distance')) {
+
+            params.distance = light.distance;
+
+            lightParams.add(params, 'distance', 0).step(0.1).onChange(function (val) {
+                light.distance = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+        }
+
+        if (Object.prototype.hasOwnProperty.call(light, 'shadow')) {
+
+            // params.shadow = light.shadow;
+
+            console.log(light.shadow);
+        }
+
+        if (Object.prototype.hasOwnProperty.call(light, 'target')) {
+
+            if (!light.target.parent) {
+
                 console.warn('LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).');
             }
-            params['target.position.x'] = object.target.position.x;
-            params['target.position.y'] = object.target.position.y;
-            params['target.position.z'] = object.target.position.z;
+
+            params['target.position.x'] = light.target.position.x;
+            params['target.position.y'] = light.target.position.y;
+            params['target.position.z'] = light.target.position.z;
 
             lightParams.add(params, 'target.position.x').step(0.1).onChange(function (val) {
-                object.target.position.x = val;
+
+                light.target.position.x = val;
                 if (_this2.helper) _this2.helper.update();
             });
+
             lightParams.add(params, 'target.position.y').step(0.1).onChange(function (val) {
-                object.target.position.y = val;
+
+                light.target.position.y = val;
                 if (_this2.helper) _this2.helper.update();
             });
+
             lightParams.add(params, 'target.position.z').step(0.1).onChange(function (val) {
-                object.target.position.z = val;
+
+                light.target.position.z = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+        }
+
+        if (this.type === 'Spot') {
+
+            params.angle = light.angle;
+            params.penumbra = light.penumbra;
+
+            lightParams.add(params, 'angle', 0, Math.PI / 2).step(0.1).onChange(function (val) {
+                light.angle = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+
+            lightParams.add(params, 'penumbra', 0, 5).step(0.1).onChange(function (val) {
+                light.penumbra = val;
+            });
+        }
+
+        if (this.type === 'Hemi') {
+
+            params.groundColor = light.groundColor;
+
+            lightParams.addColor(params, 'groundColor').onChange(function (val) {
+                light.groundColor.setHex(val);
+            });
+        }
+
+        if (this.type === 'RectArea') {
+
+            params.width = light.width;
+            params.height = light.height;
+
+            lightParams.add(params, 'width', 0).step(0.1).onChange(function (val) {
+
+                light.width = val;
+                if (_this2.helper) _this2.helper.update();
+            });
+
+            lightParams.add(params, 'height', 0).step(0.1).onChange(function (val) {
+
+                light.height = val;
                 if (_this2.helper) _this2.helper.update();
             });
         }
@@ -53019,23 +53047,27 @@ var BottleCanvas = function () {
     this.app.scene.add(spot, spot.target);
     // const lhSpot = new LightHelperExtended( spot, true, true );
 
-    this.spot = spot;
+    // this.spot = spot;
 
     var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
     this.app.scene.add(hemi);
     // const lhHemi = new LightHelperExtended( hemi, true, true );
 
     // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    // this.app.scene.add( ambient );
     // const lhAmbient = new LightHelperExtended( ambient, true, true );
 
     // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // this.app.scene.add( directional );
     // const lhHemi = new LightHelperExtended( directional, true, true );
 
     // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
+    // this.app.scene.add( point );
     // const lhPoint = new LightHelperExtended( point, true, true );
 
-    var RectArea = new RectAreaLight(0xffffff, 1.0, 2, 10);
-    var lhPoint = new LightHelperExtended(RectArea, true, true);
+    var rectArea = new RectAreaLight(0xffffff, 1.0, 100, 200);
+    this.app.scene.add(rectArea);
+    var lhPoint = new LightHelperExtended(rectArea, true, true);
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
@@ -53116,8 +53148,8 @@ var BottleCanvas = function () {
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    controls.minAzimuthAngle = 0; // radians
-    controls.maxAzimuthAngle = 0; // radians
+    // controls.minAzimuthAngle = 0; // radians
+    // controls.maxAzimuthAngle = 0; // radians
 
     controls.maxPolarAngle = Math.PI * 0.75;
 
