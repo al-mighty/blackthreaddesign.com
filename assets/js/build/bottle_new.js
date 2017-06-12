@@ -52505,7 +52505,7 @@ var dat_gui = createCommonjsModule(function (module, exports) {
 	;
 	});
 
-interopDefault(dat_gui);
+var dat = interopDefault(dat_gui);
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -52627,36 +52627,244 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var LightHelperExtended = function () {
-  function LightHelperExtended(light) {
-    var showHelper = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-    classCallCheck(this, LightHelperExtended);
+    function LightHelperExtended(light) {
+        var showHelper = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+        var showGUI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+        classCallCheck(this, LightHelperExtended);
 
-    if (!light.isLight) {
-      console.error('LightHelperExtended: object is not a light!');
-      return;
+
+        if (!light.isLight) {
+
+            console.error('LightHelperExtended: object is not a light!');
+            return;
+        }
+
+        this.light = light;
+
+        this.type = this.getType();
+
+        if (this.type === '') {
+
+            console.error('LightHelperExtended: unsupported light type!');
+            return;
+        }
+
+        if (showHelper && this.type !== 'Ambient') this.initHelper();
+
+        if (showGUI) this.buildGUI();
     }
 
-    this.light = light;
+    LightHelperExtended.prototype.initHelper = function initHelper() {
+        if (!this.light.parent) {
 
-    this.type = this.getType();
-    if (this.type === '') {
-      console.error('LightHelperExtended: unsupported light type!');
-      return;
-    }
+            console.warn('LightHelperExtended: to show light helper add the light to the scene first.');
+        } else {
 
-    if (showHelper && !light.parent && this.type !== 'Ambient') {
-      console.warn('LightHelperExtended: to show light helper add the light to the scene first.');
-    } else if (showHelper) {
-      light.parent.add(new THREE[this.type + 'LightHelper'](this.light));
-    }
-  }
+            this.light.parent.add(new THREE[this.type + 'LightHelper'](this.light));
+        }
+    };
 
-  LightHelperExtended.prototype.getType = function getType() {
-    if (this.light.isAmbientLight) return 'Ambient';else if (this.light.isDirectionalLight) return 'Directional';else if (this.light.isHemisphereLight) return 'Hemisphere';else if (this.light.isPointLight) return 'Point';else if (this.light.isRectAreaLight) return 'RectArea';else if (this.light.isSpotLight) return 'Spot';
-    return ''; // unsupported light
-  };
+    LightHelperExtended.prototype.getType = function getType() {
 
-  return LightHelperExtended;
+        if (this.light.isAmbientLight) return 'Ambient';else if (this.light.isDirectionalLight) return 'Directional';else if (this.light.isHemisphereLight) return 'Hemisphere';else if (this.light.isPointLight) return 'Point';else if (this.light.isRectAreaLight) return 'RectArea';else if (this.light.isSpotLight) return 'Spot';
+        return ''; // unsupported light
+    };
+
+    LightHelperExtended.prototype.getObjectKeys = function getObjectKeys() {
+        var _this = this;
+
+        Object.keys(this.light).forEach(function (key) {
+
+            if (Object.prototype.hasOwnProperty.call(_this.light, key)) {
+
+                console.log(key);
+            }
+        });
+    };
+
+    LightHelperExtended.prototype.buildGUI = function buildGUI() {
+        if (!window.THREEHelperExtendedGUI) window.THREEHelperExtendedGUI = new dat.GUI();
+
+        this.guiFolder = window.THREEHelperExtendedGUI.addFolder(this.type + 'Light');
+        this.guiFolder.open();
+
+        this.initInfoGUI(this.light);
+        this.iniTransformGUI(this.light);
+        this.initLightGUI(this.light);
+    };
+
+    LightHelperExtended.prototype.initInfoGUI = function initInfoGUI(object) {
+        var info = this.guiFolder.addFolder('Info');
+        info.open();
+
+        var params = {
+            uuid: object.uuid,
+            name: object.name,
+            frustumCulled: object.frustumCulled,
+            layers: object.layers,
+            matrixAutoUpdate: object.matrixAutoUpdate,
+            matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
+            visible: object.visible,
+            castShadow: object.castShadow,
+            receiveShadow: object.receiveShadow,
+            renderOrder: object.renderOrder
+        };
+
+        info.add(params, 'uuid');
+        info.add(params, 'name');
+        info.add(params, 'frustumCulled').onChange(function (val) {
+            object.frustumCulled = val;
+        });
+
+        // info.add( params, 'layers' ).onChange( ( val ) => { object.layers = val; } );
+
+        info.add(params, 'matrixAutoUpdate').onChange(function (val) {
+            object.matrixAutoUpdate = val;
+        });
+
+        info.add(params, 'matrixWorldNeedsUpdate').onChange(function (val) {
+            object.matrixWorldNeedsUpdate = val;
+            params.matrixWorldNeedsUpdate = false; // resets to false after use
+        });
+        info.add(params, 'visible').onChange(function (val) {
+            object.visible = val;
+        });
+        info.add(params, 'castShadow').onChange(function (val) {
+            object.castShadow = val;
+        });
+        // info.add( params, 'receiveShadow' ).onChange( ( val ) => { object.receiveShadow = val; } );
+        info.add(params, 'renderOrder').onChange(function (val) {
+            object.renderOrder = val;
+        });
+    };
+
+    LightHelperExtended.prototype.iniTransformGUI = function iniTransformGUI(object) {
+        var transform = this.guiFolder.addFolder('Transform');
+        transform.open();
+
+        var params = {
+            'position.x': object.position.x,
+            'position.y': object.position.y,
+            'position.z': object.position.z,
+            'scale.x': object.scale.x,
+            'scale.y': object.scale.y,
+            'scale.z': object.scale.z
+        };
+
+        var euler = new Euler();
+        var quaternion = new Quaternion();
+
+        var setRotationParams = function () {
+            params['rotation.x'] = object.rotation.x;
+            params['rotation.y'] = object.rotation.y;
+            params['rotation.z'] = object.rotation.z;
+            params['quaternion.x'] = object.quaternion.x;
+            params['quaternion.y'] = object.quaternion.y;
+            params['quaternion.z'] = object.quaternion.z;
+            params['quaternion.w'] = object.quaternion.w;
+        };
+        setRotationParams();
+
+        var setObjectRotationFromEuler = function () {
+
+            euler.set(params['rotation.x'], params['rotation.y'], params['rotation.z']);
+
+            object.setRotationFromEuler(euler);
+
+            setRotationParams();
+        };
+
+        var setObjectRotationFromQuaternion = function () {
+            quaternion.set(params['quaternion.x'], params['quaternion.y'], params['quaternion.z'], params['quaternion.w']);
+
+            object.setRotationFromQuaternion(quaternion);
+
+            setRotationParams();
+        };
+
+        transform.add(params, 'position.x').step(0.1).onChange(function (val) {
+            object.position.x = val;
+        });
+        transform.add(params, 'position.y').step(0.1).onChange(function (val) {
+            object.position.y = val;
+        });
+        transform.add(params, 'position.z').step(0.1).onChange(function (val) {
+            object.position.z = val;
+        });
+        transform.add(params, 'rotation.x').step(0.1).onChange(function () {
+            setObjectRotationFromEuler();
+        });
+        transform.add(params, 'rotation.y').step(0.1).onChange(function () {
+            setObjectRotationFromEuler();
+        });
+        transform.add(params, 'rotation.z').step(0.1).onChange(function () {
+            setObjectRotationFromEuler();
+        });
+        transform.add(params, 'quaternion.x').step(0.1).onChange(function () {
+            setObjectRotationFromQuaternion();
+        });
+        transform.add(params, 'quaternion.y').step(0.1).onChange(function () {
+            setObjectRotationFromQuaternion();
+        });
+        transform.add(params, 'quaternion.z').step(0.1).onChange(function () {
+            setObjectRotationFromQuaternion();
+        });
+        transform.add(params, 'quaternion.w').step(0.1).onChange(function () {
+            setObjectRotationFromQuaternion();
+        });
+        transform.add(params, 'scale.x').step(0.1).onChange(function (val) {
+            object.scale.x = val;
+        });
+        transform.add(params, 'scale.y').step(0.1).onChange(function (val) {
+            object.scale.y = val;
+        });
+        transform.add(params, 'scale.z').step(0.1).onChange(function (val) {
+            object.scale.z = val;
+        });
+    };
+
+    LightHelperExtended.prototype.initLightGUI = function initLightGUI(object) {
+
+        var lightParams = this.guiFolder.addFolder('Light Params');
+        lightParams.open();
+        // color
+        // intensity
+        // target
+        // distance
+        // angle
+        // penumbra
+        // decay
+        // shadow
+        var params = {
+            color: object.color.getHex(),
+            intensity: object.intensity,
+            distance: object.distance,
+            angle: object.angle,
+            penumbra: object.penumbra,
+            decay: object.decay
+        };
+
+        lightParams.add(params, 'angle', 0, Math.PI / 2).step(0.1).onChange(function (val) {
+            object.angle = val;
+        });
+        lightParams.addColor(params, 'color').onChange(function (val) {
+            object.color.setHex(val);
+        });
+        lightParams.add(params, 'decay', 0).step(0.1).onChange(function (val) {
+            object.decay = val;
+        });
+        lightParams.add(params, 'distance', 0).step(0.1).onChange(function (val) {
+            object.distance = val;
+        });
+        lightParams.add(params, 'intensity', 0).step(0.1).onChange(function (val) {
+            object.intensity = val;
+        });
+        lightParams.add(params, 'penumbra', 0, 5).step(0.1).onChange(function (val) {
+            object.penumbra = val;
+        });
+    };
+
+    return LightHelperExtended;
 }();
 
 var jsonLoader = new JSONLoader();
@@ -52714,6 +52922,9 @@ var BottleCanvas = function () {
       if (stats) stats.update();
 
       if (this.labelMap) this.labelMap.needsUpdate = true;
+
+      // Helper Extened test
+      // console.log( self.spot.name );
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
@@ -52749,10 +52960,13 @@ var BottleCanvas = function () {
     var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
     spot.position.set(-15, 130, -180);
     this.app.scene.add(spot);
-    var lh = new LightHelperExtended(spot, true);
+    var lh = new LightHelperExtended(spot, true, true);
+
+    this.spot = spot;
 
     var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
     this.app.scene.add(hemi);
+    // const lh2 = new LightHelperExtended( hemi, true, true );
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {

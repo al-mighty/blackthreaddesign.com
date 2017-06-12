@@ -68,6 +68,9 @@ export default class BottleCanvas {
 
       if ( this.labelMap ) this.labelMap.needsUpdate = true;
 
+      // Helper Extened test
+      // console.log( self.spot.name );
+
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
@@ -102,10 +105,14 @@ export default class BottleCanvas {
     const spot = new THREE.SpotLight( 0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5 );
     spot.position.set( -15, 130, -180 );
     this.app.scene.add( spot );
-    const lh = new LightHelperExtended( spot, true );
+    const lh = new LightHelperExtended( spot, true, true );
+
+    this.spot = spot;
 
     const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
     this.app.scene.add( hemi );
+    // const lh2 = new LightHelperExtended( hemi, true, true );
+
   }
 
   initTextures() {
