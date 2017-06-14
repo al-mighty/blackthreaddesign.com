@@ -57,7 +57,6 @@ export default class WavelinesCanvas {
 
     this.app.camera.position.y = pointerY / window.innerHeight;
 
-    // this.circle.position.y = pointerY / window.innerHeight;
   }
 
 }

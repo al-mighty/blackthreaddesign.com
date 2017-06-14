@@ -45951,8 +45951,6 @@ var WavelinesCanvas = function () {
         var pointerY = utils.pointerPos.y;
 
         this.app.camera.position.y = pointerY / window.innerHeight;
-
-        // this.circle.position.y = pointerY / window.innerHeight;
     };
 
     return WavelinesCanvas;

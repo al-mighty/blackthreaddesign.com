@@ -5,7 +5,7 @@ import App from '../../../App/App.js';
 
 import OrbitControls from '../../../App/modules/OrbitControls.module.js';
 
-import LightHelperExtended from '../../../App/utilities/LightHelperExtended.js';
+// import LightHelperExtended from '../../../App/utilities/LightHelperExtended.js';
 
 // Set up THREE
 THREE.Cache.enabled = true;
@@ -206,15 +206,15 @@ export default class BottleCanvas {
     const controls = new OrbitControls( this.app.camera, this.canvas );
 
     // controls.enableZoom = false;
-    // controls.enablePan = false;
+    controls.enablePan = false;
 
     // controls.autoRotate = true;
     // controls.autoRotateSpeed = -1.0;
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    // controls.minAzimuthAngle = 0; // radians
-    // controls.maxAzimuthAngle = 0; // radians
+    controls.minAzimuthAngle = 0; // radians
+    controls.maxAzimuthAngle = 0; // radians
 
     controls.maxPolarAngle = Math.PI * 0.75;
 
