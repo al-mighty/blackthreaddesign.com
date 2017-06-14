@@ -2415,10 +2415,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12479,6 +12476,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12508,10 +12507,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -24459,7 +24454,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24488,7 +24483,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36158,7 +36152,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function ArrayCamera( array ) {
@@ -40111,9 +40108,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40454,7 +40450,6 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40527,8 +40522,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41121,26 +41115,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -41297,10 +41274,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41338,7 +41311,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41386,7 +41361,6 @@ Object.assign( Spline.prototype, {
 } );
 
 //
-
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -42435,6 +42409,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42482,6 +42458,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 var hammer = createCommonjsModule(function (module) {
 /*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -45131,7 +45109,6 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
-// Set up any globals
 var Hammer = hammer$1;
 
 /* ****************************************
@@ -47511,7 +47488,6 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
-//Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
   var pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts(points) {
@@ -47535,7 +47511,7 @@ Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePix
 v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 });
 
-var Stats = interopDefault(stats_min);
+interopDefault(stats_min);
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -47655,124 +47631,6 @@ var classCallCheck = function (instance, Constructor) {
     throw new TypeError("Cannot call a class as a function");
   }
 };
-
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: white;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -47895,11 +47753,6 @@ function Time() {
         this.paused = true;
     };
 }
-
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
 
 function App(canvas) {
 
@@ -48157,21 +48010,23 @@ var SplashCanvas = function () {
 
         var self = this;
 
-        self.container = document.querySelector('#splash-hero-container');
+        this.container = document.querySelector('#splash-hero-container');
 
-        self.app = new App(document.querySelector('#splash-hero-canvas'));
+        this.app = new App(document.querySelector('#splash-hero-canvas'));
 
-        self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
+        this.app.camera.fov = 75;
+        this.app.camera.position.set(0, 0, cameraZPos(this.app.camera.aspect));
+        this.app.camera.updateProjectionMatrix();
 
         // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+        // let statisticsOverlay;
+        // if ( showStats ) statisticsOverlay = new StatisticsOverlay( this.app, this.container );
 
-        self.initMaterials();
+        this.initMaterials();
 
-        self.addBackground();
+        this.addBackground();
 
-        self.addText();
+        this.addText();
 
         this.pauseWhenOffscreen();
 
@@ -48216,10 +48071,11 @@ var SplashCanvas = function () {
 
             updateAnimation();
 
-            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+            // if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
         };
 
         self.app.onWindowResize = function () {
+
             self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
             mastHeadHeight = document.querySelector('.masthead').clientHeight;
         };

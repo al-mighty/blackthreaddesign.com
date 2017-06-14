@@ -2423,10 +2423,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12487,6 +12484,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12516,10 +12515,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -24467,7 +24462,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24496,7 +24491,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36166,7 +36160,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function ArrayCamera( array ) {
@@ -40119,9 +40116,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40462,7 +40458,6 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40535,8 +40530,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41129,26 +41123,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -41305,10 +41282,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41346,7 +41319,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41394,7 +41369,6 @@ Object.assign( Spline.prototype, {
 } );
 
 //
-
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -42443,6 +42417,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42490,6 +42466,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 var hammer = createCommonjsModule(function (module) {
 /*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -45139,7 +45117,6 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
-// Set up any globals
 var Hammer = hammer$1;
 
 /* ****************************************
@@ -45178,253 +45155,6 @@ var utils = {
 // Set up event listeners for touch and mouse
 window.addEventListener('mousemove', utils.moveHandler);
 new Hammer(document.querySelector('body')).on('pan', utils.moveHandler);
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: white;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -45547,11 +45277,6 @@ function Time() {
         this.paused = true;
     };
 }
-
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
 
 function App(canvas) {
 
@@ -45747,11 +45472,124 @@ function App(canvas) {
   };
 }
 
-// * ***********************************************************************
-// *
-// *  WAVE LINE CLASS
-// *
-// *************************************************************************
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
 
 var WaveLine = function () {
     function WaveLine(spec) {
@@ -46071,16 +45909,14 @@ var WavelinesCanvas = function () {
 
         var self = this;
 
-        self.container = document.querySelector('.canvas-container');
+        this.container = document.querySelector('.canvas-container');
 
-        self.app = new App(document.querySelector('#wavelines-canvas'));
+        this.app = new App(document.querySelector('#wavelines-canvas'));
 
-        self.app.renderer.setClearColor(0xffffff);
-        self.app.camera.position.set(0, 0, 1);
-
-        // TODO: not working in Edge
-        var statisticsOverlay = void 0;
-        if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
+        this.app.renderer.setClearColor(0xffffff);
+        this.app.camera.position.set(0, 0, 1);
+        this.app.camera.fov = 75;
+        this.app.camera.updateProjectionMatrix();
 
         self.mixers = [];
 
@@ -46091,38 +45927,14 @@ var WavelinesCanvas = function () {
             self.mixers.forEach(function (mixer) {
                 return mixer.update(self.app.delta * 0.001);
             });
-
-            if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
         };
 
         self.app.onWindowResize = function () {};
 
         self.initLines();
 
-        // self.centreCircle();
-
         self.app.play();
     }
-
-    // For testing
-
-
-    WavelinesCanvas.prototype.centreCircle = function centreCircle() {
-        // const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
-        var geom = new SphereBufferGeometry(0.5, 32, 32);
-
-        var mat = new MeshBasicMaterial({
-            color: 0x51D7F2
-        });
-
-        var mesh = new Mesh(geom, mat);
-
-        mesh.position.set(0, 0, -1);
-
-        this.circle = mesh;
-
-        this.app.scene.add(mesh);
-    };
 
     WavelinesCanvas.prototype.initLines = function initLines() {
         var _this = this;

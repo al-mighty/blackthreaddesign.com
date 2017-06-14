@@ -125,9 +125,9 @@ export default class BottleCanvas {
     // this.app.scene.add( point );
     // const lhPoint = new LightHelperExtended( point, true, true );
 
-    const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
-    this.app.scene.add( rectArea );
-    const lhPoint = new LightHelperExtended( rectArea, true, true );
+    // const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
+    // this.app.scene.add( rectArea );
+    // const lhPoint = new LightHelperExtended( rectArea, true, true );
   }
 
   initTextures() {

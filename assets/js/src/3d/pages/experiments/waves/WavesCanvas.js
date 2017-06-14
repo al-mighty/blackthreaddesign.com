@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import utils from '../../../../utilities.js';
-import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 import App from '../../../App/App.js';
 
 import { createGroup1, createGroup2, createGroup3 } from './objects/lines.js';
@@ -12,16 +11,14 @@ export default class WavelinesCanvas {
 
     const self = this;
 
-    self.container = document.querySelector( '.canvas-container' );
+    this.container = document.querySelector( '.canvas-container' );
 
-    self.app = new App( document.querySelector( '#wavelines-canvas' ) );
+    this.app = new App( document.querySelector( '#wavelines-canvas' ) );
 
-    self.app.renderer.setClearColor( 0xffffff );
-    self.app.camera.position.set( 0, 0, 1 );
-
-    // TODO: not working in Edge
-    let statisticsOverlay;
-    if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
+    this.app.renderer.setClearColor( 0xffffff );
+    this.app.camera.position.set( 0, 0, 1 );
+    this.app.camera.fov = 75;
+    this.app.camera.updateProjectionMatrix();
 
     self.mixers = [];
 
@@ -31,8 +28,6 @@ export default class WavelinesCanvas {
 
       self.mixers.forEach( mixer => mixer.update( self.app.delta * 0.001 ) );
 
-      if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
-
     };
 
     self.app.onWindowResize = function () {
@@ -41,29 +36,7 @@ export default class WavelinesCanvas {
 
     self.initLines();
 
-    // self.centreCircle();
-
     self.app.play();
-  }
-
-  // For testing
-  centreCircle() {
-    // const map = new THREE.TextureLoader().load( '/assets/images/work/wavelines/blueball-trans.png' );
-    const geom = new THREE.SphereBufferGeometry( 0.5, 32, 32 );
-
-    const mat = new THREE.MeshBasicMaterial( {
-      color: 0x51D7F2,
-      // map,
-      // transparent: true,
-    } );
-
-    const mesh = new THREE.Mesh( geom, mat );
-
-    mesh.position.set( 0, 0, -1 );
-
-    this.circle = mesh;
-
-    this.app.scene.add( mesh );
   }
 
   initLines() {

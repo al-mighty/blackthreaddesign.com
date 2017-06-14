@@ -3320,10 +3320,7 @@ var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
 var CullFaceNone = 0;
 var CullFaceBack = 1;
 var CullFaceFront = 2;
-var CullFaceFrontBack = 3;
 var FrontFaceDirectionCW = 0;
-var FrontFaceDirectionCCW = 1;
-var BasicShadowMap = 0;
 var PCFShadowMap = 1;
 var PCFSoftShadowMap = 2;
 var FrontSide = 0;
@@ -3434,7 +3431,6 @@ var LinearEncoding = 3000;
 var sRGBEncoding = 3001;
 var GammaEncoding = 3007;
 var RGBEEncoding = 3002;
-var LogLuvEncoding = 3003;
 var RGBM7Encoding = 3004;
 var RGBM16Encoding = 3005;
 var RGBDEncoding = 3006;
@@ -5070,24 +5066,6 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 	}
 
 } );
-
-/**
- * @author alteredq / http://alteredqualia.com
- */
-
-function WebGLRenderTargetCube( width, height, options ) {
-
-	WebGLRenderTarget.call( this, width, height, options );
-
-	this.activeCubeFace = 0; // PX 0, NX 1, PY 2, NY 3, PZ 4, NZ 5
-	this.activeMipMapLevel = 0;
-
-}
-
-WebGLRenderTargetCube.prototype = Object.create( WebGLRenderTarget.prototype );
-WebGLRenderTargetCube.prototype.constructor = WebGLRenderTargetCube;
-
-WebGLRenderTargetCube.prototype.isWebGLRenderTargetCube = true;
 
 /**
  * @author mikael emtinger / http://gomo.se/
@@ -15154,48 +15132,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
-function Int8BufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Int8Array( array ), itemSize );
-
-}
-
-Int8BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Int8BufferAttribute.prototype.constructor = Int8BufferAttribute;
-
-
-function Uint8BufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Uint8Array( array ), itemSize );
-
-}
-
-Uint8BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Uint8BufferAttribute.prototype.constructor = Uint8BufferAttribute;
-
-
-function Uint8ClampedBufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Uint8ClampedArray( array ), itemSize );
-
-}
-
-Uint8ClampedBufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Uint8ClampedBufferAttribute.prototype.constructor = Uint8ClampedBufferAttribute;
-
-
-function Int16BufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Int16Array( array ), itemSize );
-
-}
-
-Int16BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Int16BufferAttribute.prototype.constructor = Int16BufferAttribute;
-
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -15204,16 +15140,6 @@ function Uint16BufferAttribute( array, itemSize ) {
 
 Uint16BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Uint16BufferAttribute.prototype.constructor = Uint16BufferAttribute;
-
-
-function Int32BufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Int32Array( array ), itemSize );
-
-}
-
-Int32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Int32BufferAttribute.prototype.constructor = Int32BufferAttribute;
 
 
 function Uint32BufferAttribute( array, itemSize ) {
@@ -15235,15 +15161,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-function Float64BufferAttribute( array, itemSize ) {
-
-	BufferAttribute.call( this, new Float64Array( array ), itemSize );
-
-}
-
-Float64BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
-Float64BufferAttribute.prototype.constructor = Float64BufferAttribute;
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -27195,37 +27112,6 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- */
-
-function VideoTexture( video, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy ) {
-
-	Texture.call( this, video, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
-
-	this.generateMipmaps = false;
-
-	var scope = this;
-
-	function update() {
-
-		requestAnimationFrame( update );
-
-		if ( video.readyState >= video.HAVE_CURRENT_DATA ) {
-
-			scope.needsUpdate = true;
-
-		}
-
-	}
-
-	update();
-
-}
-
-VideoTexture.prototype = Object.create( Texture.prototype );
-VideoTexture.prototype.constructor = VideoTexture;
-
-/**
  * @author alteredq / http://alteredqualia.com/
  */
 
@@ -27267,40 +27153,6 @@ function CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, for
 
 CanvasTexture.prototype = Object.create( Texture.prototype );
 CanvasTexture.prototype.constructor = CanvasTexture;
-
-/**
- * @author Matt DesLauriers / @mattdesl
- * @author atix / arthursilber.de
- */
-
-function DepthTexture( width, height, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, format ) {
-
-	format = format !== undefined ? format : DepthFormat;
-
-	if ( format !== DepthFormat && format !== DepthStencilFormat ) {
-
-		throw new Error( 'DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat' )
-
-	}
-
-	if ( type === undefined && format === DepthFormat ) type = UnsignedShortType;
-	if ( type === undefined && format === DepthStencilFormat ) type = UnsignedInt248Type;
-
-	Texture.call( this, null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
-
-	this.image = { width: width, height: height };
-
-	this.magFilter = magFilter !== undefined ? magFilter : NearestFilter;
-	this.minFilter = minFilter !== undefined ? minFilter : NearestFilter;
-
-	this.flipY = false;
-	this.generateMipmaps	= false;
-
-}
-
-DepthTexture.prototype = Object.create( Texture.prototype );
-DepthTexture.prototype.constructor = DepthTexture;
-DepthTexture.prototype.isDepthTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -38974,94 +38826,6 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
- */
-
-function CubeCamera( near, far, cubeResolution ) {
-
-	Object3D.call( this );
-
-	this.type = 'CubeCamera';
-
-	var fov = 90, aspect = 1;
-
-	var cameraPX = new PerspectiveCamera( fov, aspect, near, far );
-	cameraPX.up.set( 0, - 1, 0 );
-	cameraPX.lookAt( new Vector3( 1, 0, 0 ) );
-	this.add( cameraPX );
-
-	var cameraNX = new PerspectiveCamera( fov, aspect, near, far );
-	cameraNX.up.set( 0, - 1, 0 );
-	cameraNX.lookAt( new Vector3( - 1, 0, 0 ) );
-	this.add( cameraNX );
-
-	var cameraPY = new PerspectiveCamera( fov, aspect, near, far );
-	cameraPY.up.set( 0, 0, 1 );
-	cameraPY.lookAt( new Vector3( 0, 1, 0 ) );
-	this.add( cameraPY );
-
-	var cameraNY = new PerspectiveCamera( fov, aspect, near, far );
-	cameraNY.up.set( 0, 0, - 1 );
-	cameraNY.lookAt( new Vector3( 0, - 1, 0 ) );
-	this.add( cameraNY );
-
-	var cameraPZ = new PerspectiveCamera( fov, aspect, near, far );
-	cameraPZ.up.set( 0, - 1, 0 );
-	cameraPZ.lookAt( new Vector3( 0, 0, 1 ) );
-	this.add( cameraPZ );
-
-	var cameraNZ = new PerspectiveCamera( fov, aspect, near, far );
-	cameraNZ.up.set( 0, - 1, 0 );
-	cameraNZ.lookAt( new Vector3( 0, 0, - 1 ) );
-	this.add( cameraNZ );
-
-	var options = { format: RGBFormat, magFilter: LinearFilter, minFilter: LinearFilter };
-
-	this.renderTarget = new WebGLRenderTargetCube( cubeResolution, cubeResolution, options );
-	this.renderTarget.texture.name = "CubeCamera";
-
-	this.updateCubeMap = function ( renderer, scene ) {
-
-		if ( this.parent === null ) this.updateMatrixWorld();
-
-		var renderTarget = this.renderTarget;
-		var generateMipmaps = renderTarget.texture.generateMipmaps;
-
-		renderTarget.texture.generateMipmaps = false;
-
-		renderTarget.activeCubeFace = 0;
-		renderer.render( scene, cameraPX, renderTarget );
-
-		renderTarget.activeCubeFace = 1;
-		renderer.render( scene, cameraNX, renderTarget );
-
-		renderTarget.activeCubeFace = 2;
-		renderer.render( scene, cameraPY, renderTarget );
-
-		renderTarget.activeCubeFace = 3;
-		renderer.render( scene, cameraNY, renderTarget );
-
-		renderTarget.activeCubeFace = 4;
-		renderer.render( scene, cameraPZ, renderTarget );
-
-		renderTarget.texture.generateMipmaps = generateMipmaps;
-
-		renderTarget.activeCubeFace = 5;
-		renderer.render( scene, cameraNZ, renderTarget );
-
-		renderer.setRenderTarget( null );
-
-	};
-
-}
-
-CubeCamera.prototype = Object.create( Object3D.prototype );
-CubeCamera.prototype.constructor = CubeCamera;
-
-/**
  * @author mrdoob / http://mrdoob.com/
  */
 
@@ -43015,340 +42779,6 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
-
-function MorphBlendMesh( geometry, material ) {
-
-	Mesh.call( this, geometry, material );
-
-	this.animationsMap = {};
-	this.animationsList = [];
-
-	// prepare default animation
-	// (all frames played together in 1 second)
-
-	var numFrames = this.geometry.morphTargets.length;
-
-	var name = "__default";
-
-	var startFrame = 0;
-	var endFrame = numFrames - 1;
-
-	var fps = numFrames / 1;
-
-	this.createAnimation( name, startFrame, endFrame, fps );
-	this.setAnimationWeight( name, 1 );
-
-}
-
-MorphBlendMesh.prototype = Object.create( Mesh.prototype );
-MorphBlendMesh.prototype.constructor = MorphBlendMesh;
-
-MorphBlendMesh.prototype.createAnimation = function ( name, start, end, fps ) {
-
-	var animation = {
-
-		start: start,
-		end: end,
-
-		length: end - start + 1,
-
-		fps: fps,
-		duration: ( end - start ) / fps,
-
-		lastFrame: 0,
-		currentFrame: 0,
-
-		active: false,
-
-		time: 0,
-		direction: 1,
-		weight: 1,
-
-		directionBackwards: false,
-		mirroredLoop: false
-
-	};
-
-	this.animationsMap[ name ] = animation;
-	this.animationsList.push( animation );
-
-};
-
-MorphBlendMesh.prototype.autoCreateAnimations = function ( fps ) {
-
-	var pattern = /([a-z]+)_?(\d+)/i;
-
-	var firstAnimation, frameRanges = {};
-
-	var geometry = this.geometry;
-
-	for ( var i = 0, il = geometry.morphTargets.length; i < il; i ++ ) {
-
-		var morph = geometry.morphTargets[ i ];
-		var chunks = morph.name.match( pattern );
-
-		if ( chunks && chunks.length > 1 ) {
-
-			var name = chunks[ 1 ];
-
-			if ( ! frameRanges[ name ] ) frameRanges[ name ] = { start: Infinity, end: - Infinity };
-
-			var range = frameRanges[ name ];
-
-			if ( i < range.start ) range.start = i;
-			if ( i > range.end ) range.end = i;
-
-			if ( ! firstAnimation ) firstAnimation = name;
-
-		}
-
-	}
-
-	for ( var name in frameRanges ) {
-
-		var range = frameRanges[ name ];
-		this.createAnimation( name, range.start, range.end, fps );
-
-	}
-
-	this.firstAnimation = firstAnimation;
-
-};
-
-MorphBlendMesh.prototype.setAnimationDirectionForward = function ( name ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.direction = 1;
-		animation.directionBackwards = false;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.setAnimationDirectionBackward = function ( name ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.direction = - 1;
-		animation.directionBackwards = true;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.setAnimationFPS = function ( name, fps ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.fps = fps;
-		animation.duration = ( animation.end - animation.start ) / animation.fps;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.setAnimationDuration = function ( name, duration ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.duration = duration;
-		animation.fps = ( animation.end - animation.start ) / animation.duration;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.setAnimationWeight = function ( name, weight ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.weight = weight;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.setAnimationTime = function ( name, time ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.time = time;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.getAnimationTime = function ( name ) {
-
-	var time = 0;
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		time = animation.time;
-
-	}
-
-	return time;
-
-};
-
-MorphBlendMesh.prototype.getAnimationDuration = function ( name ) {
-
-	var duration = - 1;
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		duration = animation.duration;
-
-	}
-
-	return duration;
-
-};
-
-MorphBlendMesh.prototype.playAnimation = function ( name ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.time = 0;
-		animation.active = true;
-
-	} else {
-
-		console.warn( "THREE.MorphBlendMesh: animation[" + name + "] undefined in .playAnimation()" );
-
-	}
-
-};
-
-MorphBlendMesh.prototype.stopAnimation = function ( name ) {
-
-	var animation = this.animationsMap[ name ];
-
-	if ( animation ) {
-
-		animation.active = false;
-
-	}
-
-};
-
-MorphBlendMesh.prototype.update = function ( delta ) {
-
-	for ( var i = 0, il = this.animationsList.length; i < il; i ++ ) {
-
-		var animation = this.animationsList[ i ];
-
-		if ( ! animation.active ) continue;
-
-		var frameTime = animation.duration / animation.length;
-
-		animation.time += animation.direction * delta;
-
-		if ( animation.mirroredLoop ) {
-
-			if ( animation.time > animation.duration || animation.time < 0 ) {
-
-				animation.direction *= - 1;
-
-				if ( animation.time > animation.duration ) {
-
-					animation.time = animation.duration;
-					animation.directionBackwards = true;
-
-				}
-
-				if ( animation.time < 0 ) {
-
-					animation.time = 0;
-					animation.directionBackwards = false;
-
-				}
-
-			}
-
-		} else {
-
-			animation.time = animation.time % animation.duration;
-
-			if ( animation.time < 0 ) animation.time += animation.duration;
-
-		}
-
-		var keyframe = animation.start + _Math.clamp( Math.floor( animation.time / frameTime ), 0, animation.length - 1 );
-		var weight = animation.weight;
-
-		if ( keyframe !== animation.currentFrame ) {
-
-			this.morphTargetInfluences[ animation.lastFrame ] = 0;
-			this.morphTargetInfluences[ animation.currentFrame ] = 1 * weight;
-
-			this.morphTargetInfluences[ keyframe ] = 0;
-
-			animation.lastFrame = animation.currentFrame;
-			animation.currentFrame = keyframe;
-
-		}
-
-		var mix = ( animation.time % frameTime ) / frameTime;
-
-		if ( animation.directionBackwards ) mix = 1 - mix;
-
-		if ( animation.currentFrame !== animation.lastFrame ) {
-
-			this.morphTargetInfluences[ animation.currentFrame ] = mix * weight;
-			this.morphTargetInfluences[ animation.lastFrame ] = ( 1 - mix ) * weight;
-
-		} else {
-
-			this.morphTargetInfluences[ animation.currentFrame ] = weight;
-
-		}
-
-	}
-
-};
-
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
-function ImmediateRenderObject( material ) {
-
-	Object3D.call( this );
-
-	this.material = material;
-	this.render = function ( renderCallback ) {};
-
-}
-
-ImmediateRenderObject.prototype = Object.create( Object3D.prototype );
-ImmediateRenderObject.prototype.constructor = ImmediateRenderObject;
-
-ImmediateRenderObject.prototype.isImmediateRenderObject = true;
-
-/**
  * @author mrdoob / http://mrdoob.com/
  * @author WestLangley / http://github.com/WestLangley
 */
@@ -43692,146 +43122,6 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- */
-
-function PointLightHelper( light, sphereSize ) {
-
-	this.light = light;
-	this.light.updateMatrixWorld();
-
-	var geometry = new SphereBufferGeometry( sphereSize, 4, 2 );
-	var material = new MeshBasicMaterial( { wireframe: true, fog: false } );
-	material.color.copy( this.light.color );
-
-	Mesh.call( this, geometry, material );
-
-	this.matrix = this.light.matrixWorld;
-	this.matrixAutoUpdate = false;
-
-	/*
-	var distanceGeometry = new THREE.IcosahedronGeometry( 1, 2 );
-	var distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
-
-	this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
-	this.lightDistance = new THREE.Mesh( distanceGeometry, distanceMaterial );
-
-	var d = light.distance;
-
-	if ( d === 0.0 ) {
-
-		this.lightDistance.visible = false;
-
-	} else {
-
-		this.lightDistance.scale.set( d, d, d );
-
-	}
-
-	this.add( this.lightDistance );
-	*/
-
-}
-
-PointLightHelper.prototype = Object.create( Mesh.prototype );
-PointLightHelper.prototype.constructor = PointLightHelper;
-
-PointLightHelper.prototype.dispose = function () {
-
-	this.geometry.dispose();
-	this.material.dispose();
-
-};
-
-PointLightHelper.prototype.update = function () {
-
-	this.material.color.copy( this.light.color );
-
-	/*
-	var d = this.light.distance;
-
-	if ( d === 0.0 ) {
-
-		this.lightDistance.visible = false;
-
-	} else {
-
-		this.lightDistance.visible = true;
-		this.lightDistance.scale.set( d, d, d );
-
-	}
-	*/
-
-};
-
-/**
- * @author abelnation / http://github.com/abelnation
- * @author Mugen87 / http://github.com/Mugen87
- * @author WestLangley / http://github.com/WestLangley
- */
-
-function RectAreaLightHelper( light ) {
-
-	Object3D.call( this );
-
-	this.light = light;
-	this.light.updateMatrixWorld();
-
-	this.matrix = light.matrixWorld;
-	this.matrixAutoUpdate = false;
-
-	var material = new LineBasicMaterial( { color: light.color } );
-
-	var geometry = new BufferGeometry();
-
-	geometry.addAttribute( 'position', new BufferAttribute( new Float32Array( 5 * 3 ), 3 ) );
-
-	this.add( new Line( geometry, material ) );
-
-	this.update();
-
-}
-
-RectAreaLightHelper.prototype = Object.create( Object3D.prototype );
-RectAreaLightHelper.prototype.constructor = RectAreaLightHelper;
-
-RectAreaLightHelper.prototype.dispose = function () {
-
-	this.children[ 0 ].geometry.dispose();
-	this.children[ 0 ].material.dispose();
-
-};
-
-RectAreaLightHelper.prototype.update = function () {
-
-	var line = this.children[ 0 ];
-
-	// update material
-
-	line.material.color.copy( this.light.color );
-
-	// calculate new dimensions of the helper
-
-	var hx = this.light.width * 0.5;
-	var hy = this.light.height * 0.5;
-
-	var position = line.geometry.attributes.position;
-	var array = position.array;
-
-	// update vertices
-
-	array[  0 ] =   hx; array[  1 ] = - hy; array[  2 ] = 0;
-	array[  3 ] =   hx; array[  4 ] =   hy; array[  5 ] = 0;
-	array[  6 ] = - hx; array[  7 ] =   hy; array[  8 ] = 0;
-	array[  9 ] = - hx; array[ 10 ] = - hy; array[ 11 ] = 0;
-	array[ 12 ] =   hx; array[ 13 ] = - hy; array[ 14 ] = 0;
-
-	position.needsUpdate = true;
-
-};
-
-/**
- * @author alteredq / http://alteredqualia.com/
- * @author mrdoob / http://mrdoob.com/
  * @author Mugen87 / https://github.com/Mugen87
  */
 
@@ -43902,137 +43192,6 @@ HemisphereLightHelper.prototype.update = function () {
 	};
 
 }();
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
-function GridHelper( size, divisions, color1, color2 ) {
-
-	size = size || 10;
-	divisions = divisions || 10;
-	color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
-	color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
-
-	var center = divisions / 2;
-	var step = size / divisions;
-	var halfSize = size / 2;
-
-	var vertices = [], colors = [];
-
-	for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
-
-		vertices.push( - halfSize, 0, k, halfSize, 0, k );
-		vertices.push( k, 0, - halfSize, k, 0, halfSize );
-
-		var color = i === center ? color1 : color2;
-
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-
-	}
-
-	var geometry = new BufferGeometry();
-	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
-
-	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
-
-	LineSegments.call( this, geometry, material );
-
-}
-
-GridHelper.prototype = Object.create( LineSegments.prototype );
-GridHelper.prototype.constructor = GridHelper;
-
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / http://github.com/Mugen87
- * @author Hectate / http://www.github.com/Hectate
- */
-
-function PolarGridHelper( radius, radials, circles, divisions, color1, color2 ) {
-
-	radius = radius || 10;
-	radials = radials || 16;
-	circles = circles || 8;
-	divisions = divisions || 64;
-	color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
-	color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
-
-	var vertices = [];
-	var colors = [];
-
-	var x, z;
-	var v, i, j, r, color;
-
-	// create the radials
-
-	for ( i = 0; i <= radials; i ++ ) {
-
-		v = ( i / radials ) * ( Math.PI * 2 );
-
-		x = Math.sin( v ) * radius;
-		z = Math.cos( v ) * radius;
-
-		vertices.push( 0, 0, 0 );
-		vertices.push( x, 0, z );
-
-		color = ( i & 1 ) ? color1 : color2;
-
-		colors.push( color.r, color.g, color.b );
-		colors.push( color.r, color.g, color.b );
-
-	}
-
-	// create the circles
-
-	for ( i = 0; i <= circles; i ++ ) {
-
-		color = ( i & 1 ) ? color1 : color2;
-
-		r = radius - ( radius / circles * i );
-
-		for ( j = 0; j < divisions; j ++ ) {
-
-			// first vertex
-
-			v = ( j / divisions ) * ( Math.PI * 2 );
-
-			x = Math.sin( v ) * r;
-			z = Math.cos( v ) * r;
-
-			vertices.push( x, 0, z );
-			colors.push( color.r, color.g, color.b );
-
-			// second vertex
-
-			v = ( ( j + 1 ) / divisions ) * ( Math.PI * 2 );
-
-			x = Math.sin( v ) * r;
-			z = Math.cos( v ) * r;
-
-			vertices.push( x, 0, z );
-			colors.push( color.r, color.g, color.b );
-
-		}
-
-	}
-
-	var geometry = new BufferGeometry();
-	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
-
-	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
-
-	LineSegments.call( this, geometry, material );
-
-}
-
-PolarGridHelper.prototype = Object.create( LineSegments.prototype );
-PolarGridHelper.prototype.constructor = PolarGridHelper;
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -44630,40 +43789,6 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
- */
-
-function AxisHelper( size ) {
-
-	size = size || 1;
-
-	var vertices = [
-		0, 0, 0,  size, 0, 0,
-		0, 0, 0,  0, size, 0,
-		0, 0, 0,  0, 0, size
-	];
-
-	var colors = [
-		1, 0, 0,  1, 0.6, 0,
-		0, 1, 0,  0.6, 1, 0,
-		0, 0, 1,  0, 0.6, 1
-	];
-
-	var geometry = new BufferGeometry();
-	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
-
-	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
-
-	LineSegments.call( this, geometry, material );
-
-}
-
-AxisHelper.prototype = Object.create( LineSegments.prototype );
-AxisHelper.prototype.constructor = AxisHelper;
-
-/**
  * @author zz85 https://github.com/zz85
  *
  * Centripetal CatmullRom Curve - which is useful for avoiding
@@ -44840,96 +43965,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-function CubicBezierCurve3( v0, v1, v2, v3 ) {
-
-	Curve.call( this );
-
-	this.v0 = v0;
-	this.v1 = v1;
-	this.v2 = v2;
-	this.v3 = v3;
-
-}
-
-CubicBezierCurve3.prototype = Object.create( Curve.prototype );
-CubicBezierCurve3.prototype.constructor = CubicBezierCurve3;
-
-CubicBezierCurve3.prototype.getPoint = function ( t ) {
-
-	var v0 = this.v0, v1 = this.v1, v2 = this.v2, v3 = this.v3;
-
-	return new Vector3(
-		CubicBezier( t, v0.x, v1.x, v2.x, v3.x ),
-		CubicBezier( t, v0.y, v1.y, v2.y, v3.y ),
-		CubicBezier( t, v0.z, v1.z, v2.z, v3.z )
-	);
-
-};
-
-function QuadraticBezierCurve3( v0, v1, v2 ) {
-
-	Curve.call( this );
-
-	this.v0 = v0;
-	this.v1 = v1;
-	this.v2 = v2;
-
-}
-
-QuadraticBezierCurve3.prototype = Object.create( Curve.prototype );
-QuadraticBezierCurve3.prototype.constructor = QuadraticBezierCurve3;
-
-QuadraticBezierCurve3.prototype.getPoint = function ( t ) {
-
-	var v0 = this.v0, v1 = this.v1, v2 = this.v2;
-
-	return new Vector3(
-		QuadraticBezier( t, v0.x, v1.x, v2.x ),
-		QuadraticBezier( t, v0.y, v1.y, v2.y ),
-		QuadraticBezier( t, v0.z, v1.z, v2.z )
-	);
-
-};
-
-function LineCurve3( v1, v2 ) {
-
-	Curve.call( this );
-
-	this.v1 = v1;
-	this.v2 = v2;
-
-}
-
-LineCurve3.prototype = Object.create( Curve.prototype );
-LineCurve3.prototype.constructor = LineCurve3;
-
-LineCurve3.prototype.getPoint = function ( t ) {
-
-	if ( t === 1 ) {
-
-		return this.v2.clone();
-
-	}
-
-	var vector = new Vector3();
-
-	vector.subVectors( this.v2, this.v1 ); // diff
-	vector.multiplyScalar( t );
-	vector.add( this.v1 );
-
-	return vector;
-
-};
-
-function ArcCurve( aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise ) {
-
-	EllipseCurve.call( this, aX, aY, aRadius, aRadius, aStartAngle, aEndAngle, aClockwise );
-
-}
-
-ArcCurve.prototype = Object.create( EllipseCurve.prototype );
-ArcCurve.prototype.constructor = ArcCurve;
-
 /**
  * @author alteredq / http://alteredqualia.com/
  */
@@ -44971,165 +44006,6 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
-function Face4( a, b, c, d, normal, color, materialIndex ) {
-
-	console.warn( 'THREE.Face4 has been removed. A THREE.Face3 will be created instead.' );
-	return new Face3( a, b, c, normal, color, materialIndex );
-
-}
-
-var LineStrip = 0;
-
-var LinePieces = 1;
-
-function MeshFaceMaterial( materials ) {
-
-	console.warn( 'THREE.MeshFaceMaterial has been removed. Use an Array instead.' );
-	return materials;
-
-}
-
-function MultiMaterial( materials ) {
-
-	if ( materials === undefined ) materials = [];
-
-	console.warn( 'THREE.MultiMaterial has been removed. Use an Array instead.' );
-	materials.isMultiMaterial = true;
-	materials.materials = materials;
-	materials.clone = function () {
-
-		return materials.slice();
-
-	};
-	return materials;
-
-}
-
-function PointCloud( geometry, material ) {
-
-	console.warn( 'THREE.PointCloud has been renamed to THREE.Points.' );
-	return new Points( geometry, material );
-
-}
-
-function Particle( material ) {
-
-	console.warn( 'THREE.Particle has been renamed to THREE.Sprite.' );
-	return new Sprite( material );
-
-}
-
-function ParticleSystem( geometry, material ) {
-
-	console.warn( 'THREE.ParticleSystem has been renamed to THREE.Points.' );
-	return new Points( geometry, material );
-
-}
-
-function PointCloudMaterial( parameters ) {
-
-	console.warn( 'THREE.PointCloudMaterial has been renamed to THREE.PointsMaterial.' );
-	return new PointsMaterial( parameters );
-
-}
-
-function ParticleBasicMaterial( parameters ) {
-
-	console.warn( 'THREE.ParticleBasicMaterial has been renamed to THREE.PointsMaterial.' );
-	return new PointsMaterial( parameters );
-
-}
-
-function ParticleSystemMaterial( parameters ) {
-
-	console.warn( 'THREE.ParticleSystemMaterial has been renamed to THREE.PointsMaterial.' );
-	return new PointsMaterial( parameters );
-
-}
-
-function Vertex( x, y, z ) {
-
-	console.warn( 'THREE.Vertex has been removed. Use THREE.Vector3 instead.' );
-	return new Vector3( x, y, z );
-
-}
-
-//
-
-function DynamicBufferAttribute( array, itemSize ) {
-
-	console.warn( 'THREE.DynamicBufferAttribute has been removed. Use new THREE.BufferAttribute().setDynamic( true ) instead.' );
-	return new BufferAttribute( array, itemSize ).setDynamic( true );
-
-}
-
-function Int8Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Int8Attribute has been removed. Use new THREE.Int8BufferAttribute() instead.' );
-	return new Int8BufferAttribute( array, itemSize );
-
-}
-
-function Uint8Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Uint8Attribute has been removed. Use new THREE.Uint8BufferAttribute() instead.' );
-	return new Uint8BufferAttribute( array, itemSize );
-
-}
-
-function Uint8ClampedAttribute( array, itemSize ) {
-
-	console.warn( 'THREE.Uint8ClampedAttribute has been removed. Use new THREE.Uint8ClampedBufferAttribute() instead.' );
-	return new Uint8ClampedBufferAttribute( array, itemSize );
-
-}
-
-function Int16Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Int16Attribute has been removed. Use new THREE.Int16BufferAttribute() instead.' );
-	return new Int16BufferAttribute( array, itemSize );
-
-}
-
-function Uint16Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Uint16Attribute has been removed. Use new THREE.Uint16BufferAttribute() instead.' );
-	return new Uint16BufferAttribute( array, itemSize );
-
-}
-
-function Int32Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Int32Attribute has been removed. Use new THREE.Int32BufferAttribute() instead.' );
-	return new Int32BufferAttribute( array, itemSize );
-
-}
-
-function Uint32Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Uint32Attribute has been removed. Use new THREE.Uint32BufferAttribute() instead.' );
-	return new Uint32BufferAttribute( array, itemSize );
-
-}
-
-function Float32Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Float32Attribute has been removed. Use new THREE.Float32BufferAttribute() instead.' );
-	return new Float32BufferAttribute( array, itemSize );
-
-}
-
-function Float64Attribute( array, itemSize ) {
-
-	console.warn( 'THREE.Float64Attribute has been removed. Use new THREE.Float64BufferAttribute() instead.' );
-	return new Float64BufferAttribute( array, itemSize );
-
-}
-
 //
 
 Curve.create = function ( construct, getPoint ) {
@@ -45143,33 +44019,6 @@ Curve.create = function ( construct, getPoint ) {
 	return construct;
 
 };
-
-//
-
-function ClosedSplineCurve3( points ) {
-
-	console.warn( 'THREE.ClosedSplineCurve3 has been deprecated. Use THREE.CatmullRomCurve3 instead.' );
-
-	CatmullRomCurve3.call( this, points );
-	this.type = 'catmullrom';
-	this.closed = true;
-
-}
-
-ClosedSplineCurve3.prototype = Object.create( CatmullRomCurve3.prototype );
-
-//
-
-function SplineCurve3( points ) {
-
-	console.warn( 'THREE.SplineCurve3 has been deprecated. Use THREE.CatmullRomCurve3 instead.' );
-
-	CatmullRomCurve3.call( this, points );
-	this.type = 'catmullrom';
-
-}
-
-SplineCurve3.prototype = Object.create( CatmullRomCurve3.prototype );
 
 //
 
@@ -45203,50 +44052,6 @@ Object.assign( Spline.prototype, {
 	}
 
 } );
-
-//
-function BoundingBoxHelper( object, color ) {
-
-	console.warn( 'THREE.BoundingBoxHelper has been deprecated. Creating a THREE.BoxHelper instead.' );
-	return new BoxHelper( object, color );
-
-}
-
-function EdgesHelper( object, hex ) {
-
-	console.warn( 'THREE.EdgesHelper has been removed. Use THREE.EdgesGeometry instead.' );
-	return new LineSegments( new EdgesGeometry( object.geometry ), new LineBasicMaterial( { color: hex !== undefined ? hex : 0xffffff } ) );
-
-}
-
-GridHelper.prototype.setColors = function () {
-
-	console.error( 'THREE.GridHelper: setColors() has been deprecated, pass them in the constructor instead.' );
-
-};
-
-function WireframeHelper( object, hex ) {
-
-	console.warn( 'THREE.WireframeHelper has been removed. Use THREE.WireframeGeometry instead.' );
-	return new LineSegments( new WireframeGeometry( object.geometry ), new LineBasicMaterial( { color: hex !== undefined ? hex : 0xffffff } ) );
-
-}
-
-//
-
-function XHRLoader( manager ) {
-
-	console.warn( 'THREE.XHRLoader has been renamed to THREE.FileLoader.' );
-	return new FileLoader( manager );
-
-}
-
-function BinaryTextureLoader( manager ) {
-
-	console.warn( 'THREE.BinaryTextureLoader has been renamed to THREE.DataTextureLoader.' );
-	return new DataTextureLoader( manager );
-
-}
 
 //
 
@@ -46298,37 +45103,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
-var GeometryUtils = {
-
-	merge: function ( geometry1, geometry2, materialIndexOffset ) {
-
-		console.warn( 'THREE.GeometryUtils: .merge() has been moved to Geometry. Use geometry.merge( geometry2, matrix, materialIndexOffset ) instead.' );
-		var matrix;
-
-		if ( geometry2.isMesh ) {
-
-			geometry2.matrixAutoUpdate && geometry2.updateMatrix();
-
-			matrix = geometry2.matrix;
-			geometry2 = geometry2.geometry;
-
-		}
-
-		geometry1.merge( geometry2, matrix, materialIndexOffset );
-
-	},
-
-	center: function ( geometry ) {
-
-		console.warn( 'THREE.GeometryUtils: .center() has been moved to Geometry. Use geometry.center() instead.' );
-		return geometry.center();
-
-	}
-
-};
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -46376,48 +45150,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
-
-function Projector() {
-
-	console.error( 'THREE.Projector has been moved to /examples/js/renderers/Projector.js.' );
-
-	this.projectVector = function ( vector, camera ) {
-
-		console.warn( 'THREE.Projector: .projectVector() is now vector.project().' );
-		vector.project( camera );
-
-	};
-
-	this.unprojectVector = function ( vector, camera ) {
-
-		console.warn( 'THREE.Projector: .unprojectVector() is now vector.unproject().' );
-		vector.unproject( camera );
-
-	};
-
-	this.pickingRay = function () {
-
-		console.error( 'THREE.Projector: .pickingRay() is now raycaster.setFromCamera().' );
-
-	};
-
-}
-
-//
-
-function CanvasRenderer() {
-
-	console.error( 'THREE.CanvasRenderer has been moved to /examples/js/renderers/CanvasRenderer.js' );
-
-	this.domElement = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
-	this.clear = function () {};
-	this.render = function () {};
-	this.setClearColor = function () {};
-	this.setSize = function () {};
-
-}
 
 
 
@@ -46936,6 +45668,11 @@ function Time() {
     };
 }
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -47129,6 +45866,21 @@ function App(canvas) {
     }
   };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -52505,7 +51257,7 @@ var dat_gui = createCommonjsModule(function (module, exports) {
 	;
 	});
 
-var dat = interopDefault(dat_gui);
+interopDefault(dat_gui);
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -52626,332 +51378,6 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-var LightHelperExtended = function () {
-    function LightHelperExtended(light) {
-        var showHelper = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-        var showGUI = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-        classCallCheck(this, LightHelperExtended);
-
-
-        if (!light.isLight) {
-
-            console.error('LightHelperExtended: object is not a light!');
-            return;
-        }
-
-        this.light = light;
-
-        this.type = this.getType();
-
-        if (this.type === '') {
-
-            console.error('LightHelperExtended: unsupported light type!');
-            return;
-        }
-
-        if (showHelper && this.type !== 'Ambient') this.initHelper();
-
-        if (showGUI) this.buildGUI();
-
-        // this.getObjectKeys();
-    }
-
-    LightHelperExtended.prototype.initHelper = function initHelper() {
-        if (!this.light.parent) {
-
-            console.warn('LightHelperExtended: to show light helper add the light to the scene first.');
-        } else {
-
-            this.helper = new THREE[this.type + 'LightHelper'](this.light);
-            this.light.parent.add(this.helper);
-        }
-    };
-
-    LightHelperExtended.prototype.getType = function getType() {
-
-        if (this.light.isAmbientLight) return 'Ambient';else if (this.light.isDirectionalLight) return 'Directional';else if (this.light.isHemisphereLight) return 'Hemisphere';else if (this.light.isPointLight) return 'Point';else if (this.light.isRectAreaLight) return 'RectArea';else if (this.light.isSpotLight) return 'Spot';
-        return ''; // unsupported light
-    };
-
-    // Helper function to check that all parameter are covered.
-
-
-    LightHelperExtended.prototype.getObjectKeys = function getObjectKeys() {
-        var _this = this;
-
-        Object.keys(this.light).forEach(function (key) {
-
-            if (Object.prototype.hasOwnProperty.call(_this.light, key)) {
-
-                console.log(key);
-            }
-        });
-    };
-
-    LightHelperExtended.prototype.buildGUI = function buildGUI() {
-        if (typeof dat.GUI !== 'function') {
-            console.warn('LightHelperExtended: can\'t find dat.GUI!');
-            return;
-        }
-
-        if (!window.THREEHelperExtendedGUI) window.THREEHelperExtendedGUI = new dat.GUI();
-
-        this.guiFolder = window.THREEHelperExtendedGUI.addFolder(this.type + 'Light');
-        this.guiFolder.open();
-
-        this.initInfoGUI(this.light);
-        this.iniTransformGUI(this.light);
-        this.initLightGUI(this.light);
-    };
-
-    LightHelperExtended.prototype.initInfoGUI = function initInfoGUI(object) {
-        var info = this.guiFolder.addFolder('Info');
-        info.open();
-
-        var params = {
-            uuid: object.uuid,
-            name: object.name,
-            frustumCulled: object.frustumCulled,
-            layers: object.layers,
-            matrixAutoUpdate: object.matrixAutoUpdate,
-            matrixWorldNeedsUpdate: object.matrixWorldNeedsUpdate,
-            visible: object.visible,
-            castShadow: object.castShadow,
-            receiveShadow: object.receiveShadow,
-            renderOrder: object.renderOrder
-        };
-
-        info.add(params, 'uuid');
-        info.add(params, 'name');
-        info.add(params, 'frustumCulled').onChange(function (val) {
-            object.frustumCulled = val;
-        });
-
-        // info.add( params, 'layers' ).onChange( ( val ) => { object.layers = val; } );
-
-        info.add(params, 'matrixAutoUpdate').onChange(function (val) {
-            object.matrixAutoUpdate = val;
-        });
-
-        info.add(params, 'matrixWorldNeedsUpdate').onChange(function (val) {
-            object.matrixWorldNeedsUpdate = val;
-            params.matrixWorldNeedsUpdate = false; // resets to false after use
-        });
-        info.add(params, 'visible').onChange(function (val) {
-            object.visible = val;
-        });
-        info.add(params, 'castShadow').onChange(function (val) {
-            object.castShadow = val;
-        });
-        // info.add( params, 'receiveShadow' ).onChange( ( val ) => { object.receiveShadow = val; } );
-        info.add(params, 'renderOrder').onChange(function (val) {
-            object.renderOrder = val;
-        });
-    };
-
-    LightHelperExtended.prototype.iniTransformGUI = function iniTransformGUI(object) {
-        var transform = this.guiFolder.addFolder('Transform');
-        transform.open();
-
-        var params = {
-            'position.x': object.position.x,
-            'position.y': object.position.y,
-            'position.z': object.position.z,
-            'scale.x': object.scale.x,
-            'scale.y': object.scale.y,
-            'scale.z': object.scale.z
-        };
-
-        var setRotationParams = function () {
-            params['rotation.x'] = object.rotation.x;
-            params['rotation.y'] = object.rotation.y;
-            params['rotation.z'] = object.rotation.z;
-            params['quaternion.x'] = object.quaternion.x;
-            params['quaternion.y'] = object.quaternion.y;
-            params['quaternion.z'] = object.quaternion.z;
-            params['quaternion.w'] = object.quaternion.w;
-        };
-
-        setRotationParams();
-
-        var updateQuaternionParams = function () {
-            params['quaternion.x'] = object.quaternion.x;
-            params['quaternion.y'] = object.quaternion.y;
-            params['quaternion.z'] = object.quaternion.z;
-            params['quaternion.w'] = object.quaternion.w;
-        };
-
-        transform.add(params, 'position.x').step(0.1).onChange(function (val) {
-            object.position.x = val;
-        });
-        transform.add(params, 'position.y').step(0.1).onChange(function (val) {
-            object.position.y = val;
-        });
-        transform.add(params, 'position.z').step(0.1).onChange(function (val) {
-            object.position.z = val;
-        });
-
-        transform.add(params, 'rotation.x', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
-            object.rotation.x = val;
-        });
-
-        transform.add(params, 'rotation.y', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
-            object.rotation.y = val;
-        });
-
-        transform.add(params, 'rotation.z', -Math.PI, Math.PI).step(0.05).listen().onChange(function (val) {
-            object.rotation.z = val;
-        });
-
-        transform.add(params, 'quaternion.x').listen().step(0.05);
-        // .onChange( ( val ) => { object.quaternion.x = val; } );
-
-        transform.add(params, 'quaternion.y').step(0.05).listen();
-        // .onChange( ( val ) => { object.quaternion.y = val; } );
-
-        transform.add(params, 'quaternion.z').step(0.05).listen();
-        // .onChange( ( val ) => { object.quaternion.z = val; } );
-
-        transform.add(params, 'quaternion.w').step(0.05).listen();
-        // .onChange( ( val ) => { object.quaternion.w = val; } );
-
-        transform.add(params, 'scale.x').step(0.1).onChange(function (val) {
-            object.scale.x = val;
-        });
-        transform.add(params, 'scale.y').step(0.1).onChange(function (val) {
-            object.scale.y = val;
-        });
-        transform.add(params, 'scale.z').step(0.1).onChange(function (val) {
-            object.scale.z = val;
-        });
-    };
-
-    LightHelperExtended.prototype.initLightGUI = function initLightGUI(light) {
-        var _this2 = this;
-
-        var lightParams = this.guiFolder.addFolder('Light Params');
-        lightParams.open();
-
-        // ALL LIGHTS
-        var params = {
-
-            color: light.color.getHex(),
-            intensity: light.intensity
-
-        };
-
-        lightParams.addColor(params, 'color').onChange(function (val) {
-            light.color.setHex(val);
-        });
-        lightParams.add(params, 'intensity', 0).step(0.1).onChange(function (val) {
-            light.intensity = val;
-        });
-
-        // Properties shared by multiple lights will be added with Object.prototype.hasOwnProperty.call( light, key )
-        // - this will allow for forward compatibility of properties get added to light ( e.g. decay to RectAreaLight)
-
-        if (Object.prototype.hasOwnProperty.call(light, 'decay')) {
-
-            params.decay = light.decay;
-
-            lightParams.add(params, 'decay', 0).step(0.1).onChange(function (val) {
-                light.decay = val;
-            });
-        }
-
-        if (Object.prototype.hasOwnProperty.call(light, 'distance')) {
-
-            params.distance = light.distance;
-
-            lightParams.add(params, 'distance', 0).step(0.1).onChange(function (val) {
-                light.distance = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-        }
-
-        if (Object.prototype.hasOwnProperty.call(light, 'shadow')) {
-
-            // params.shadow = light.shadow;
-
-            console.log(light.shadow);
-        }
-
-        if (Object.prototype.hasOwnProperty.call(light, 'target')) {
-
-            if (!light.target.parent) {
-
-                console.warn('LightHelperExtended: Light.target must be added to the scene if moved from default position (0, 0, 0).');
-            }
-
-            params['target.position.x'] = light.target.position.x;
-            params['target.position.y'] = light.target.position.y;
-            params['target.position.z'] = light.target.position.z;
-
-            lightParams.add(params, 'target.position.x').step(0.1).onChange(function (val) {
-
-                light.target.position.x = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-
-            lightParams.add(params, 'target.position.y').step(0.1).onChange(function (val) {
-
-                light.target.position.y = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-
-            lightParams.add(params, 'target.position.z').step(0.1).onChange(function (val) {
-
-                light.target.position.z = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-        }
-
-        if (this.type === 'Spot') {
-
-            params.angle = light.angle;
-            params.penumbra = light.penumbra;
-
-            lightParams.add(params, 'angle', 0, Math.PI / 2).step(0.1).onChange(function (val) {
-                light.angle = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-
-            lightParams.add(params, 'penumbra', 0, 5).step(0.1).onChange(function (val) {
-                light.penumbra = val;
-            });
-        }
-
-        if (this.type === 'Hemi') {
-
-            params.groundColor = light.groundColor;
-
-            lightParams.addColor(params, 'groundColor').onChange(function (val) {
-                light.groundColor.setHex(val);
-            });
-        }
-
-        if (this.type === 'RectArea') {
-
-            params.width = light.width;
-            params.height = light.height;
-
-            lightParams.add(params, 'width', 0).step(0.1).onChange(function (val) {
-
-                light.width = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-
-            lightParams.add(params, 'height', 0).step(0.1).onChange(function (val) {
-
-                light.height = val;
-                if (_this2.helper) _this2.helper.update();
-            });
-        }
-    };
-
-    return LightHelperExtended;
-}();
-
 var jsonLoader = new JSONLoader();
 var textureLoader = new TextureLoader();
 var fileLoader = new FileLoader();
@@ -53065,9 +51491,9 @@ var BottleCanvas = function () {
     // this.app.scene.add( point );
     // const lhPoint = new LightHelperExtended( point, true, true );
 
-    var rectArea = new RectAreaLight(0xffffff, 1.0, 100, 200);
-    this.app.scene.add(rectArea);
-    var lhPoint = new LightHelperExtended(rectArea, true, true);
+    // const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
+    // this.app.scene.add( rectArea );
+    // const lhPoint = new LightHelperExtended( rectArea, true, true );
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {

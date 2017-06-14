@@ -15,31 +15,29 @@ import textFrag from './shaders/text.frag';
 
 import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './splashCanvasHelpers.js';
 
-
-
-
-
 export default class SplashCanvas {
 
   constructor( showStats ) {
 
     const self = this;
 
-    self.container = document.querySelector( '#splash-hero-container' );
+    this.container = document.querySelector( '#splash-hero-container' );
 
-    self.app = new App( document.querySelector( '#splash-hero-canvas' ) );
+    this.app = new App( document.querySelector( '#splash-hero-canvas' ) );
 
-    self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
+    this.app.camera.fov = 75;
+    this.app.camera.position.set( 0, 0, cameraZPos( this.app.camera.aspect ) );
+    this.app.camera.updateProjectionMatrix();
 
     // TODO: not working in Edge
-    let statisticsOverlay;
-    if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
+    // let statisticsOverlay;
+    // if ( showStats ) statisticsOverlay = new StatisticsOverlay( this.app, this.container );
 
-    self.initMaterials();
+    this.initMaterials();
 
-    self.addBackground();
+    this.addBackground();
 
-    self.addText();
+    this.addText();
 
     this.pauseWhenOffscreen();
 
@@ -84,14 +82,16 @@ export default class SplashCanvas {
 
       updateAnimation();
 
-      if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
+      // if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 
 
-    self.app.onWindowResize = function () { 
+    self.app.onWindowResize = function () {
+
       self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
       mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
+
     };
 
     self.app.play();
