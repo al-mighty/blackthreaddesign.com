@@ -34,13 +34,11 @@ export default class SplashCanvas {
 
     this.pauseWhenOffscreen();
 
-    let mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
-
     const updateMaterials = function () {
         // Pan events on mobile sometimes register as (0,0); ignore these
       if ( utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0 ) {
         const offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-        let offsetY = 1 - ( utils.pointerPos.y - mastHeadHeight ) / self.app.canvas.clientHeight;
+        let offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
 
         // make the line well defined when moving the pointer off the top of the canvas
         offsetY = ( offsetY > 0.99 ) ? 0.999 : offsetY;
@@ -48,7 +46,7 @@ export default class SplashCanvas {
         self.offset.set( offsetX, offsetY );
         self.smooth.set( 1.0, offsetY );
 
-        const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, mastHeadHeight );
+        const pointer = threeUtils.pointerPosToCanvasCentre( self.app.canvas, 0 );
         self.pointer.set( pointer.x, pointer.y );
       }
     };
@@ -81,7 +79,6 @@ export default class SplashCanvas {
     self.app.onWindowResize = function () {
 
       self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
-      mastHeadHeight = document.querySelector( '.masthead' ).clientHeight;
 
     };
 
