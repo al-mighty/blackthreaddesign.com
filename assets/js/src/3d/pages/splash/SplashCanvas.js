@@ -4,7 +4,6 @@ import threeUtils from '../../App/threeUtils.js';
 import utils from '../../../utilities.js';
 import './splashCanvasSetup.js';
 
-import StatisticsOverlay from '../../App/StatisticsOverlay.js';
 import App from '../../App/App.js';
 // import OrbitControls from '../../modules/OrbitControls.module.js';
 
@@ -17,21 +16,15 @@ import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry 
 
 export default class SplashCanvas {
 
-  constructor( showStats ) {
+  constructor() {
 
     const self = this;
 
-    this.container = document.querySelector( '#splash-hero-container' );
-
-    this.app = new App( document.querySelector( '#splash-hero-canvas' ) );
+    this.app = new App( document.querySelector( '#splash-canvas' ) );
 
     this.app.camera.fov = 75;
     this.app.camera.position.set( 0, 0, cameraZPos( this.app.camera.aspect ) );
     this.app.camera.updateProjectionMatrix();
-
-    // TODO: not working in Edge
-    // let statisticsOverlay;
-    // if ( showStats ) statisticsOverlay = new StatisticsOverlay( this.app, this.container );
 
     this.initMaterials();
 
@@ -81,8 +74,6 @@ export default class SplashCanvas {
       updateMaterials();
 
       updateAnimation();
-
-      // if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 

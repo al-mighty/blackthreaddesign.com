@@ -1,21 +1,35 @@
 ---
-layout: default
+
 ---
-<div id="splash-hero-container"><canvas id="splash-hero-canvas"></canvas></div>
 
-<!--<div id="splash-under-hero-row">
-<h2 style="text-align: center"></h2>
-</div>-->
+<!doctype html>
+<html lang="{{ site.locale | slice: 0,2 | default: " en " }}" class="no-js">
 
-<div id="splash-main" role="main">
-  <article class="splash" itemscope itemtype="http://schema.org/CreativeWork">
-    {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
-    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
-    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date: "%B %d, %Y" }}">{% endif %}
-    {% if page.modified %}<meta itemprop="dateModified" content="{{ page.modified | date: "%B %d, %Y" }}">{% endif %}
+<head>
+	{% include head.html %}
+</head>
 
-    <section class="page__content" itemprop="text">
-      {{ content }}
-    </section>
-  </article>
-</div>
+	<body id="splash-body">
+		<!--<div id="breakpoint">
+				
+			</div>-->
+
+		{% if page.loadingOverlay %}
+			{% include loading_overlay %}{% endif %} 
+			
+		{% include browser-upgrade.html %} 
+		
+		{% include masthead.html%} 
+		
+		<div id="splash-canvas-container">
+			<canvas id="splash-canvas"></canvas>
+		</div>
+
+
+		{% include scripts.html %}
+
+	</body>
+
+</html>
+
+
