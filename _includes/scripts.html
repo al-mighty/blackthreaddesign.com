@@ -6,7 +6,9 @@
   <script async src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 {% endif %}
 
-<script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
+{% unless page.layout == 'splash' %}
+	<script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
+{% endunless %}
 
 {% if page.js %}
   {% for file in page.js %}
