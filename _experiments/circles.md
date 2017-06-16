@@ -4,6 +4,7 @@ title: "Circles"
 excerpt: "Pure CSS animation experiment"
 categories: experiments
 permalink: /experiments/circles/
+comments: true
 css:
   circles
 ---

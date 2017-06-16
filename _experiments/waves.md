@@ -4,6 +4,7 @@ title: "Wave Lines"
 excerpt: "Rendering lines of any thickness with three.js"
 categories: experiments
 permalink: /experiments/waves/
+comments: true
 js:
   - waves
 ---
