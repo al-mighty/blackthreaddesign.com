@@ -1,7 +1,7 @@
 
 import 'babel-polyfill';
 
-import utils from '../utilities.js';
+// import utils from '../utilities.js';
 
 // TODO: refactor as functions to allow these to be run after initLoader
 import initLightBox from '../init/initLightBox.js';
