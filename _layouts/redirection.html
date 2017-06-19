@@ -1,0 +1,26 @@
+---
+---
+
+
+<!doctype html>
+<html>
+  <head>
+    
+  </head>
+
+  <body>
+    <!--<div id="breakpoint">
+      
+    </div>-->
+    
+    {% if page.redirection %}
+			<script>
+				window.location.assign( '{{page.redirection}}');
+			</script>
+		{% endif %}
+
+		Redirecting you to {{page.redirection}}. Please click <a href="{{page.redirection}}">here</a>
+		if it doesn't work for some reason.
+
+  </body>
+</html>

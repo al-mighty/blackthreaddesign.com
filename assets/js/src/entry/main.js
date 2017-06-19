@@ -1,7 +1,8 @@
 
 import 'babel-polyfill';
 
-// import utils from '../utilities.js';
+//TODO: this sets up globals such as Hammer object. Do this elsewhere
+import utils from '../utilities.js';
 
 // TODO: refactor as functions to allow these to be run after initLoader
 import initLightBox from '../init/initLightBox.js';

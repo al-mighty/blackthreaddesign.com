@@ -5,7 +5,6 @@ date:   2017-03-31 13:00:35 +0700
 categories: work
 comments: true
 excerpt: "Automatic hyperbolic art generation prototype"
-tags: [work]
 header:
   teaser: /assets/images/work/escherSketch/hyperbolic-tiling-main-256.jpg
 js:
