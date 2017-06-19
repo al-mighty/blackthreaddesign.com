@@ -1944,7 +1944,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12005,8 +12008,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -12036,6 +12037,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -23983,7 +23988,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24012,6 +24017,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -35681,10 +35687,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function ArrayCamera( array ) {
@@ -39637,8 +39640,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -39979,6 +39983,7 @@ SkeletonHelper.prototype.update = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40051,7 +40056,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40644,9 +40650,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -40803,6 +40826,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -40840,9 +40867,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -40890,6 +40915,7 @@ Object.assign( Spline.prototype, {
 } );
 
 //
+
 Object.assign( Box2.prototype, {
 
 	center: function ( optionalTarget ) {
@@ -41938,8 +41964,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -41987,8 +42011,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 function interopDefault(ex) {
 	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
@@ -44646,6 +44668,7 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
+// Set up any globals
 var Hammer = hammer$1;
 
 /* ****************************************
@@ -47025,6 +47048,7 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
+//Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
   var pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts(points) {
@@ -47039,135 +47063,6 @@ ShapeUtils.triangulateShape = function () {
     return pnlTriangulator.triangulate_polygon([contour].concat(holes));
   };
 }();
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-interopDefault(stats_min);
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -47290,6 +47185,11 @@ function Time() {
         this.paused = true;
     };
 }
+
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
 
 function App(canvas) {
 
@@ -47538,24 +47438,139 @@ var createTextGeometry = function (font) {
   return textGeometry;
 };
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+// import OrbitControls from '../../modules/OrbitControls.module.js';
+
 var SplashCanvas = function () {
-    function SplashCanvas(showStats) {
+    function SplashCanvas() {
         classCallCheck(this, SplashCanvas);
 
 
         var self = this;
 
-        this.container = document.querySelector('#splash-hero-container');
-
-        this.app = new App(document.querySelector('#splash-hero-canvas'));
+        this.app = new App(document.querySelector('#splash-canvas'));
 
         this.app.camera.fov = 75;
         this.app.camera.position.set(0, 0, cameraZPos(this.app.camera.aspect));
         this.app.camera.updateProjectionMatrix();
-
-        // TODO: not working in Edge
-        // let statisticsOverlay;
-        // if ( showStats ) statisticsOverlay = new StatisticsOverlay( this.app, this.container );
 
         this.initMaterials();
 
@@ -47565,13 +47580,11 @@ var SplashCanvas = function () {
 
         this.pauseWhenOffscreen();
 
-        var mastHeadHeight = document.querySelector('.masthead').clientHeight;
-
         var updateMaterials = function () {
             // Pan events on mobile sometimes register as (0,0); ignore these
             if (utils.pointerPos.x !== 0 && utils.pointerPos.y !== 0) {
                 var offsetX = utils.pointerPos.x / self.app.canvas.clientWidth;
-                var offsetY = 1 - (utils.pointerPos.y - mastHeadHeight) / self.app.canvas.clientHeight;
+                var offsetY = 1 - utils.pointerPos.y / self.app.canvas.clientHeight;
 
                 // make the line well defined when moving the pointer off the top of the canvas
                 offsetY = offsetY > 0.99 ? 0.999 : offsetY;
@@ -47579,7 +47592,7 @@ var SplashCanvas = function () {
                 self.offset.set(offsetX, offsetY);
                 self.smooth.set(1.0, offsetY);
 
-                var pointer = threeUtils.pointerPosToCanvasCentre(self.app.canvas, mastHeadHeight);
+                var pointer = threeUtils.pointerPosToCanvasCentre(self.app.canvas, 0);
                 self.pointer.set(pointer.x, pointer.y);
             }
         };
@@ -47605,14 +47618,11 @@ var SplashCanvas = function () {
             updateMaterials();
 
             updateAnimation();
-
-            // if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
         };
 
         self.app.onWindowResize = function () {
 
             self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
-            mastHeadHeight = document.querySelector('.masthead').clientHeight;
         };
 
         self.app.play();
@@ -47754,13 +47764,48 @@ var SplashCanvas = function () {
     return SplashCanvas;
 }();
 
+var useLoadingManager = true;
+
+var fadeLoader = function () {
+  var loadingOverlay = document.querySelector('#loadingOverlay');
+
+  if (!loadingOverlay) return;
+
+  loadingOverlay.classList.add('fadeOut');
+  window.setTimeout(function () {
+    loadingOverlay.classList.add('hidden');
+  }, 1500);
+};
+
+function initLoader() {
+  // show for at least a few seconds
+  window.setTimeout(function () {
+    // If THREE is not being used, fade out straightaway
+    if (typeof THREE !== 'object') {
+      fadeLoader();
+      return;
+    }
+
+    // if we are using the loadingManager, wait for it to finish before
+    // fading out the loader
+    if (useLoadingManager) {
+      THREE.DefaultLoadingManager.onLoad = function () {
+        fadeLoader();
+      };
+    }
+    // otherwise fade it out straightaway
+    else {
+        fadeLoader();
+      }
+  }, 3000);
+}
+
 function initSplash(showStats) {
 
   var splashHero = new SplashCanvas(showStats);
 }
 
-// Set up Splash scene
-var showStats = false;
-initSplash(showStats);
+initLoader();
+initSplash();
 
 }());
