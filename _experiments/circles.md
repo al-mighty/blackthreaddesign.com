@@ -4,6 +4,8 @@ title: "Circles"
 excerpt: "Pure CSS animation experiment"
 categories: experiments
 permalink: /experiments/circles/
+header:
+  teaser: /assets/images/experiments/circles/teaser.jpg
 comments: true
 css:
   circles
