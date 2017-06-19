@@ -9,44 +9,26 @@ css:
   circles
 ---
 
-These were originally intended for the front page of my site. I've since simplified, but I still think they look nice! They're fully responsive too, so go ahead and resize the browser window. 
+These use a pure CSS animation hover effect. They were originally intended for the front page of the site. I decided not to use them, but I still think they look nice! They're fully responsive too, so go ahead and resize the browser window. 
 
-<div class="splash-row">
-  <div class="splash-row-left">
-    <div id="splash-circle-work" class="splash-row-canvas-container circle">
-      <a href="{{ site.url }}/work/" class="splash-row-title-link">
-        <h2 class="splash-row-title">Work</h2>
-      </a>
+<div class="circles">
+  <div class="circle-left">
+    <div id="circle-1" class="circle-canvas-container circle">
+    </div>
+  </div>
+	<div class="circle-right">
+    <div id="circle-2" class="circle-canvas-container circle">
+    </div>
+  </div>
+
+  <div class="circle-left">
+    <div id="circle-3" class="circle-canvas-container circle">  
+    </div>
+  </div>
+
+	<div class="circle-right">
+    <div id="circle-4" class="circle-canvas-container circle">
     </div>
   </div>
 </div>
 
-<div class="splash-row">
-  <div class="splash-row-right">
-    <div id="splash-circle-experiments" class="splash-row-canvas-container circle">
-      <a href="{{ site.url }}/experiments/" class="splash-row-title-link">
-        <h2 class="splash-row-title">Experiments</h2>
-      </a>
-    </div>
-  </div>
-</div>
-
-<div class="splash-row">
-  <div class="splash-row-left">
-    <div id="splash-circle-tutorials" class="splash-row-canvas-container circle">
-      <a href="{{ site.url }}/tutorials/" class="splash-row-title-link">
-        <h2 class="splash-row-title">Tutorials</h2>
-      </a>    
-    </div>
-  </div>
-</div>
-
-<div class="splash-row">
-  <div class="splash-row-right">
-    <div id="splash-circle-blog" class="splash-row-canvas-container circle">
-      <a href="{{ site.url }}/contact/" class="splash-row-title-link">
-        <h2 class="splash-row-title">Contact</h2>
-      </a>
-    </div>
-  </div>
-</div>
