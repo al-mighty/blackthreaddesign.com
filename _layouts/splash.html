@@ -19,11 +19,25 @@
 			
 		{% include browser-upgrade.html %} 
 		
-		<div id="about-link"></div>
-		<div id="contact-link"></div>
-		<div id="tutorials-link"></div>
-		<div id="work-link"></div>
-		<div id="experiments-link"></div>
+		<div id="about" class="splash-link">
+			 <a href="{{ domain }}/about">About</a>
+		</div>
+
+		<div id="contact" class="splash-link">
+			<a href="{{ domain }}/contact">Contact</a>
+		</div>
+
+		<div id="tutorials" class="splash-link">
+			<a href="{{ domain }}/tutorials">Tutorials</a>
+		</div>
+
+		<div id="work" class="splash-link">
+			<a href="{{ domain }}/work">Work</a>
+		</div>
+
+		<div id="experiments" class="splash-link">
+			<a href="{{ domain }}/experiments">Experiments</a>
+		</div>
 		
 		<div id="splash-canvas-container">
 			<canvas id="splash-canvas"></canvas>
