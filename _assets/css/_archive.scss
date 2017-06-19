@@ -5,14 +5,7 @@
 .archive {
   margin-bottom: 2em;
 
-  @include breakpoint($medium) {
-    @include span(12 of 12);
-  }
-
-  @include breakpoint($large) {
-    @include span(10 of 12 last);
-    @include prefix(0.5 of 12);
-  }
+	width: 100%;
 
   a {
     color: inherit;
@@ -117,10 +110,6 @@
     font-size: $type-size-5;
   }
 
-  .archive__item-excerpt {
-    display: none;
-  }
-
   @include breakpoint($small) {
     @include gallery(5 of 10);
     .archive__item-teaser {
@@ -131,10 +120,10 @@
   @include breakpoint($medium) {
     margin-left: 0; /* reset before mixin does its thing*/
     margin-right: 0; /* reset before mixin does its thing*/
-    @include gallery(2.5 of 10);
+    @include gallery(5 of 10);
 
     .archive__item-teaser {
-      max-height: 120px;
+      max-height: 300px;
     }
 
     .archive__item-excerpt {
