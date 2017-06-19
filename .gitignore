@@ -45,3 +45,4 @@ jspm_packages
 
 #jekyll assets
 /.asset-cache
+assets/js/build
