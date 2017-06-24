@@ -5,7 +5,7 @@ import utils from '../../../utilities.js';
 import './splashCanvasSetup.js';
 
 import App from '../../App/App.js';
-// import OrbitControls from '../../modules/OrbitControls.module.js';
+import OrbitControls from '../../modules/OrbitControls.module.js';
 
 import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';
@@ -32,7 +32,9 @@ export default class SplashCanvas {
 
     this.addText();
 
-    this.pauseWhenOffscreen();
+    this.initControls();
+
+    // this.pauseWhenOffscreen();
 
     const updateMaterials = function () {
         // Pan events on mobile sometimes register as (0,0); ignore these
@@ -53,7 +55,7 @@ export default class SplashCanvas {
 
     let uTime = 1.0;
     const minTime = 0.1;
-    const animSpeed = 8000;
+    let animSpeed = 8000;
 
     const updateAnimation = function () {
 
@@ -62,27 +64,32 @@ export default class SplashCanvas {
 
       // Ignore large values of delta (caused by window not be being focused for a while)
       if ( uTime >= minTime && self.app.delta < 100 ) {
-        uTime += ( -self.app.delta / animSpeed );
+        uTime -= self.app.delta / animSpeed;
       }
 
       self.textMat.uniforms.uTime.value = uTime;
+
+      // speed up the animation as it progresses
+      animSpeed -= 15;
+
     };
 
-    self.app.onUpdate = function () {
+    this.app.onUpdate = function () {
       updateMaterials();
 
       updateAnimation();
 
+      if ( self.controls && self.controls.enableDamping === true ) self.controls.update();
     };
 
 
-    self.app.onWindowResize = function () {
+    this.app.onWindowResize = function () {
 
       self.app.camera.position.set( 0, 0, cameraZPos( self.app.camera.aspect ) );
 
     };
 
-    self.app.play();
+    this.app.play();
 
   }
 
@@ -148,7 +155,7 @@ export default class SplashCanvas {
       }
 
       // end position
-      const point = randomPointInSphere( 300 );
+      const point = randomPointInSphere( 1200 );
 
       for ( v = 0; v < 9; v += 3 ) {
         aEndPosition.array[i3 + v] = point.x;
@@ -208,14 +215,43 @@ export default class SplashCanvas {
   // Pause if the canvas is not onscreen
   // TODO: Make this a part of App
   // TODO: Currently only works when scrolling down
-  pauseWhenOffscreen() {
-    window.addEventListener( 'scroll', () => {
-      if ( !this.app.isPaused && window.scrollY > ( this.app.canvas.offsetTop + this.app.canvas.clientHeight ) ) {
-        this.app.pause();
-      } else if ( this.app.isPaused ) {
-        this.app.play();
-      }
-    } );
+  // pauseWhenOffscreen() {
+  //   window.addEventListener( 'scroll', () => {
+  //     if ( !this.app.isPaused && window.scrollY > ( this.app.canvas.offsetTop + this.app.canvas.clientHeight ) ) {
+  //       this.app.pause();
+  //     } else if ( this.app.isPaused ) {
+  //       this.app.play();
+  //     }
+  //   } );
+  // }
+
+  initControls() {
+    const controls = new OrbitControls( this.app.camera, this.canvas );
+
+    controls.enableZoom = false;
+    controls.enablePan = false;
+
+    // controls.autoRotate = true;
+    // controls.autoRotateSpeed = -1.0;
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    controls.minAzimuthAngle = -Math.PI / 12; // radians
+    controls.maxAzimuthAngle = Math.PI / 12; // radians
+
+    // How far you can orbit vertically, upper and lower limits.
+	  // Range is 0 to Math.PI radians.
+    controls.minPolarAngle = Math.PI * 0.25;
+    controls.maxPolarAngle = Math.PI * 0.5;
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+
+    controls.enableKeys = false;
+
+    controls.rotateSpeed = 0.01;
+
+    this.controls = controls;
   }
 
 }
