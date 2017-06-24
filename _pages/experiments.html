@@ -2,6 +2,8 @@
 layout: archive
 permalink: /experiments/
 title: ""
+css:
+  circles
 ---
 
 {% include group-by-array collection=site.experiments field="categories" %}
@@ -9,10 +11,57 @@ title: ""
 {% for category in group_names %}
 
 	  {% assign posts = group_items[forloop.index0] %}
-		<div class="grid__wrapper">
+
 	  {% for post in posts %}
-	    {% include archive-single.html type="grid" %}
+			{% if post.header.teaser %}
+				{% capture teaser %}{{ post.header.teaser }}{% endcapture %}
+			{% else %}
+				{% assign teaser = site.teaser %}
+			{% endif %}
+
+			{% if post.id %}
+				{% assign title = post.title | markdownify | remove: "<p>" | remove: "</p>" %}
+			{% else %}
+				{% assign title = post.title %}
+			{% endif %}
+			{% assign id = post.url %}
+			<div class="circle-container">
+				<div class="circle-canvas-container circle" style="background-position: center; background-image: url('{{ teaser }}');">
+					<h2 class="circle-title" itemprop="headline">
+						{% if post.link %}
+							<a href="{{ post.link }}">{{ title }}</a> <a href="{{ post.url | absolute_url }}" rel="permalink"><i class="fa fa-link" aria-hidden="true" title="permalink"></i><span class="sr-only">Permalink</span></a>
+						{% else %}
+							<a href="{{ post.url | absolute_url }}" rel="permalink">{{ title }}</a>
+						{% endif %}
+					</h2>
+				</div>
+			</div>
 	  {% endfor %}
-		</div>
+
 
 {% endfor %}
+
+
+
+
+
+<div class="{{ include.type | default: "list" }}__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+
+
+    {% if post.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify | strip_html | truncate: 160 }}</p>{% endif %}
+    {% if include.type == "grid" and teaser %}
+      <div class="archive__item-teaser">
+        <img src=
+          {% if teaser contains "://" %}
+            "{{ teaser }}"
+          {% else %}
+            "{{ teaser | absolute_url }}"
+          {% endif %}
+          alt="">
+      </div>
+    {% endif %}
+
+    
+  </article>
+</div>

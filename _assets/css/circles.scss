@@ -7,13 +7,74 @@
 @import "vendor/breakpoint/breakpoint";
 @include breakpoint-set("to ems", true);
 
-.circles {
-    // position: relative;
-    // height: auto;
-    // border-bottom: 1px solid $border-color;
-    // border-top: 1px solid $border-color;
+.circle-container {
+	  position: relative;
+    height: 50%;
+    top: 0;
+
+		&:nth-child( odd ) {
+			width: 50%;
+			left: 0;
+		}
+
+		&:nth-child( even ) {
+			width: 100%;
+			right: 0;
+		}
 }
 
+.circle-left {
+    position: relative;
+    width: 50%;
+    height: 50%;
+    left: 0;
+    top: 0;
+}
+
+.circle-right {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    right: 0;
+    top: 0;
+}
+
+
+
+.circle-canvas {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.circle-title{
+	position: absolute;
+	left: 50%;
+	top: 25%;
+	transform: translate( -50%, -50% );
+	text-align: center;
+	color: black;
+	font-size: 200%;
+	line-height: 1em;
+
+	text-shadow: 5px 1px 4px #ffffff;
+}
+
+
+/* ********************************************************** 
+
+				CIRCLE ANIMATIONS
+*/
+$circle-width: 12em;
+$shadow-depth: $circle-width * .1;
+$y-offset: $shadow-depth * 0.5;
+$x-offset: $y-offset * 1.73205081;
+$gray1: rgba(180, 180, 180, .6);
+$gray2: rgba(150, 150, 150, .6);
+$gray3: rgba(120, 120, 120, .6);
+$gray4: rgba(90, 90, 90, .6);
+$gray5: rgba(60, 60, 60, .6);
+$gray6: rgba(30, 30, 30, .6);
 
 .circle-canvas-container {
     position: relative;
@@ -37,114 +98,63 @@
         top: 25%;
         left: 25%;
     }
+
+		background-size: 200%;
+		transition: all 2s ease-in-out;
+
+		&:hover { 
+			background-size: 100%;
+			transition: all 0.5s ease-in-out;
+		}
+
+		&:nth-child( 4n - 3 ) {		
+			box-shadow: inset 0.2em -0.1em 0 0 $dark-blue, inset -0.1em 0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
+			&:hover {
+					box-shadow: inset -0.2em 0.1em 0 0 $dark-blue, inset 0.1em -0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset 0 ($shadow-depth) 0 0 $gray3, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
+    	}
+		}
+
+		&:nth-child( 4n - 2 ) {
+			box-shadow: inset 0.1em -0.1em 0 0 $medium-red, inset -0.2em 0.1em 0 0 $dark-blue, inset $x-offset (-$y-offset) 0 0 $gray1, inset 0 ($shadow-depth) 0 0 $gray3, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
+			&:hover {
+					box-shadow: inset -0.1em 0.1em 0 0 $medium-red, inset 0.2em -0.1em 0 0 $dark-blue, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
+			}
+		}
+
+		&:nth-child( 4n - 1 ) { 
+			box-shadow: inset 0.1em -0.1em 0 0 $dark-blue, inset -0.2em 0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ; // animation: spin 120s linear infinite;
+			&:hover {
+					box-shadow: inset -0.1em 0.1em 0 0 $dark-blue, inset 0.2em -0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
+			}
+		}
+
+		&:nth-child( 4n  ) { 
+			box-shadow: inset 0.1em -0.1em 0 0 $medium-red, inset -0.2em 0.1em 0 0 $dark-blue, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
+			&:hover {
+					box-shadow: inset -0.1em 0.1em 0 0 $medium-red, inset 0.2em -0.1em 0 0 $dark-blue, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ;
+			}
+		}
 }
 
-.circle-left {
-    position: relative;
-    width: 50%;
-    height: 50%;
-    left: 0;
-    top: 0;
-    // @include breakpoint($medium-wide) {
-    //     position: relative;
-    //     width: 50%;
-    //     height: 100%;
-    // }
-}
-
-.circle-right {
-    position: relative;
-    width: 100%;
-    height: 50%;
-    right: 0;
-    top: 0;
-    // @include breakpoint($medium-wide) {
-    //     position: relative;
-    //     width: 50%;
-    //     height: 100%;
-    // }
-}
 
 
 
-.circle-canvas {
-    position: relative;
-    height: 100%;
-    width: 100%;
-}
-
-
-/* ********************************************************** 
-
-				CIRCLE ANIMATIONS
-*/
-
-$circle-width: 12em;
-$shadow-depth: $circle-width * .1;
-$y-offset: $shadow-depth * 0.5;
-$x-offset: $y-offset * 1.73205081;
-$gray1: rgba(180, 180, 180, .6);
-$gray2: rgba(150, 150, 150, .6);
-$gray3: rgba(120, 120, 120, .6);
-$gray4: rgba(90, 90, 90, .6);
-$gray5: rgba(60, 60, 60, .6);
-$gray6: rgba(30, 30, 30, .6);
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
 
 #circle-1 {
-    background-image: url('/assets/images/experiments/circles/hyper_3_512.jpg');
-    background-size: 200%;
-    transition: all 2s ease-in-out;
-    box-shadow: inset 0.2em -0.1em 0 0 $dark-blue, inset -0.1em 0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
-    &:hover {
-        box-shadow: inset -0.2em 0.1em 0 0 $dark-blue, inset 0.1em -0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset 0 ($shadow-depth) 0 0 $gray3, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
-        background-size: 100%;
-        transition: all 0.5s ease-in-out;
-    }
+	background-image: url('/assets/images/experiments/circles/hyper_4_512.jpg');
 }
 
 #circle-2 {
-    background-image: url('/assets/images/experiments/circles/hyper_4_512.jpg');
-    background-size: 200%;
-    background-position: top right;
-    transition: all 2s ease-in-out;
-    box-shadow: inset 0.1em -0.1em 0 0 $medium-red, inset -0.2em 0.1em 0 0 $dark-blue, inset $x-offset (-$y-offset) 0 0 $gray1, inset 0 ($shadow-depth) 0 0 $gray3, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
-    &:hover {
-        background-size: 100%;
-        transition: all 0.5s ease-in-out;
-        box-shadow: inset -0.1em 0.1em 0 0 $medium-red, inset 0.2em -0.1em 0 0 $dark-blue, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
-    }
+	background-position: top right;
+  background-image: url('/assets/images/experiments/circles/hyper_3_512.jpg');
 }
 
 #circle-3 {
-    background-image: url('/assets/images/experiments/circles/hyper_1_512.jpg');
-    background-size: 200%;
-    background-position: center;
-    transition: all 2s ease-in-out;
-    box-shadow: inset 0.1em -0.1em 0 0 $dark-blue, inset -0.2em 0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ; // animation: spin 120s linear infinite;
-    &:hover {
-        background-size: 100%;
-        transition: all 0.5s ease-in-out;
-        box-shadow: inset -0.1em 0.1em 0 0 $dark-blue, inset 0.2em -0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
-    }
+	background-position: center;
+	background-image: url('/assets/images/experiments/circles/hyper_1_512.jpg');
 }
 
 #circle-4 {
-    background-image: url('/assets/images/experiments/circles/hyper_2_512.jpg');
-    background-size: 200%;
-    background-position: bottom;
-    transition: all 2s ease-in-out;
-    box-shadow: inset 0.1em -0.1em 0 0 $medium-red, inset -0.2em 0.1em 0 0 $dark-blue, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
-    &:hover {
-        background-size: 100%;
-        transition: all 0.5s ease-in-out;
-        box-shadow: inset -0.1em 0.1em 0 0 $medium-red, inset 0.2em -0.1em 0 0 $dark-blue, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ;
-    }
+	background-position: bottom;
+	background-image: url('/assets/images/experiments/circles/hyper_2_512.jpg');
 }
