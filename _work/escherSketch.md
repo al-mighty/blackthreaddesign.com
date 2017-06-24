@@ -6,12 +6,13 @@ categories: work
 comments: true
 excerpt: "Automatic hyperbolic art generation prototype"
 header:
-  teaser: /assets/images/work/escherSketch/hyperbolic-tiling-main-256.jpg
+  teaser: /assets/images/work/escherSketch/teaser.jpg
 js:
-  'escherSketch'
+  escherSketch
 css:
   escherSketch
 ---
+
 
 This is a prototype of an automatic art generator / mathematical education tool. 
 

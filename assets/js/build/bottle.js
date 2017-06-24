@@ -27138,6 +27138,22 @@ CompressedTexture.prototype.isCompressedTexture = true;
  * @author mrdoob / http://mrdoob.com/
  */
 
+function CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy ) {
+
+	Texture.call( this, canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
+
+	this.needsUpdate = true;
+
+}
+
+CanvasTexture.prototype = Object.create( Texture.prototype );
+CanvasTexture.prototype.constructor = CanvasTexture;
+
+/**
+ * @author Matt DesLauriers / @mattdesl
+ * @author atix / arthursilber.de
+ */
+
 function WireframeGeometry( geometry ) {
 
 	BufferGeometry.call( this );
@@ -45114,6 +45130,16 @@ var ImageUtils = {
 
 //
 
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
 /**
  * @author Lewy Blue / https://github.com/looeee
  */
@@ -45317,7 +45343,7 @@ function App(canvas) {
 
         if (_camera === undefined) {
 
-          _camera = new PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
         }
 
         return _camera;
@@ -45418,244 +45444,17 @@ function App(canvas) {
   };
 
   this.onUpdate = function () {};
+
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
 }
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: black;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      color: black;  \n    ';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
 
 function OrbitControls(object, domElement) {
 
@@ -46585,37 +46384,186 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
 var jsonLoader = new JSONLoader();
 var textureLoader = new TextureLoader();
+var fileLoader = new FileLoader();
+fileLoader.setResponseType('json');
+
+var stats = new Stats();
+stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
+
+document.body.appendChild(stats.dom);
 
 var BottleCanvas = function () {
-  function BottleCanvas(showStats) {
+  function BottleCanvas(canvas) {
+    var labelCanvas = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var backgroundColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0xffffff;
+    var quality = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'high';
     classCallCheck(this, BottleCanvas);
 
 
     var self = this;
 
-    this.container = document.querySelector('.canvas-container');
-
-    this.canvas = document.querySelector('#bottle-canvas');
+    this.canvas = canvas;
+    this.labelCanvas = labelCanvas;
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, 0, 35);
+    this.app.camera.position.set(0, 20, 320);
+    this.app.camera.near = 100;
+    this.app.camera.far = 500;
+    this.app.camera.updateProjectionMatrix();
 
-    this.app.renderer.setClearColor(0xF9F9F9, 1.0);
+    this.app.renderer.setClearColor(backgroundColor, 1.0);
 
-    var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(this.app, this.container);
+    // NOTE: uncomment these lines to render a transparent background - i.e. to draw
+    // again the background color of the containing element
+    // this.app.renderer.setClearColor( backgroundColor, 0.0 );
+    // this.app.renderer.alpha = true;
 
+    // NOTE: this means that the order in which the objects are added determines the render
+    // order (for transparency), since the built in method was failing (does not render liquid)
+    // *may* also marginally improve performance
+    this.app.renderer.sortObjects = false;
+
+    // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
 
-      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
+      self.bottleGroup.rotateY(-self.app.delta * 0.001);
 
+      // required if using 'damping' in controls
       self.controls.update();
+
+      // remove if no longer using stats
+      if (stats) stats.update();
+
+      if (this.labelMap) this.labelMap.needsUpdate = true;
+
+      // Helper Extended test
+      // console.log( self.spot.name );
     };
 
+    // put any per resize calculations here (throttled to once per 250ms)
     this.app.onWindowResize = function () {
       // NB: use self inside this function
     };
@@ -46623,114 +46571,119 @@ var BottleCanvas = function () {
     this.initLights();
 
     this.initTextures();
-    this.initMaterials();
+
+    switch (quality) {
+      case 'high':
+        this.initMaterialsHigh();
+        break;
+      default:
+        // "low""
+        this.initMaterialsLow();
+    }
 
     this.initBottle();
-    this.initSmiley();
-    this.initLabel();
+
+    // this.initSmiley();
+    // this.initLabel();
 
     this.initControls();
 
+    // App has play / pause / stop functions
     this.app.play();
   }
 
   BottleCanvas.prototype.initLights = function initLights() {
-    var ambient = new AmbientLight(0x404040, 1.0);
+    var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
+    spot.position.set(-15, 130, -180);
+    this.app.scene.add(spot, spot.target);
+    // const lhSpot = new LightHelperExtended( spot, true, true );
 
-    var directionalLight1 = new DirectionalLight(0xffffff, 1.0);
-    directionalLight1.position.set(20, 20, 30);
+    // this.spot = spot;
 
-    var directionalLight2 = new DirectionalLight(0xffffff, 1.0);
-    directionalLight2.position.set(-10, 0, 10);
+    var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
+    this.app.scene.add(hemi);
+    // const lhHemi = new LightHelperExtended( hemi, true, true );
 
-    this.app.scene.add(ambient, directionalLight1, directionalLight2);
+    // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
+    // this.app.scene.add( ambient );
+    // const lhAmbient = new LightHelperExtended( ambient, true, true );
+
+    // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    // this.app.scene.add( directional );
+    // const lhHemi = new LightHelperExtended( directional, true, true );
+
+    // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
+    // this.app.scene.add( point );
+    // const lhPoint = new LightHelperExtended( point, true, true );
+
+    // const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
+    // this.app.scene.add( rectArea );
+    // const lhPoint = new LightHelperExtended( rectArea, true, true );
   };
 
   BottleCanvas.prototype.initTextures = function initTextures() {
-    this.envMap = textureLoader.load('/assets/images/textures/env_maps/test_env_map.jpg');
+    this.envMap = textureLoader.load('/assets/images/textures/env_maps/grey_room.jpg');
     this.envMap.mapping = EquirectangularRefractionMapping;
 
-    this.smileyTexture = textureLoader.load('/assets/images/textures/hidden/bottle/carlsberg-smiley-dark.png');
+    this.smileyTexture = textureLoader.load('/assets/images/textures/work/bottle/carlsberg-smiley-dark.png');
 
-    this.labelMap = new Texture();
-  };
-
-  BottleCanvas.prototype.initMaterials = function initMaterials() {
-    this.bottleCapMat = new MeshStandardMaterial({
-      color: 0xffffff,
-      envMap: this.envMap,
-      metalness: 0.75,
-      roughness: 0.8,
-      side: DoubleSide
-    });
-
-    this.bottleGlassMat = new MeshStandardMaterial({
-      color: 0x541e00,
-      envMap: this.envMap,
-      metalness: 0.9,
-      opacity: 0.8,
-      refractionRatio: 1.9,
-      roughness: 0.1,
-      transparent: true
-    });
-
-    this.smileyMat = new MeshBasicMaterial({
-      map: this.smileyTexture,
-      transparent: true
-    });
-
-    this.labelmat = new MeshStandardMaterial({
-      color: 0x7279a5,
-      envMap: this.envMap,
-      metalness: 0.2,
-      roughness: 0.8
-    });
-
-    this.labelBackMat = new MeshBasicMaterial({
-      color: 0x7279a5,
-      side: BackSide
-    });
+    this.labelMap = this.labelCanvas ? new CanvasTexture(this.labelCanvas) : null;
   };
 
   BottleCanvas.prototype.initBottle = function initBottle() {
     var _this = this;
 
     this.bottleGroup = new Group();
+    this.bottleGroup.position.set(0, -1, 0);
+    this.bottleGroup.scale.set(20, 20, 20);
     this.app.scene.add(this.bottleGroup);
 
-    jsonLoader.load('/assets/models/hidden/bottle/bottle-real-applied.model.old.json', function (geometry) {
-      geometry.computeVertexNormals();
-      var bottleGlassMesh = new Mesh(geometry, _this.bottleGlassMat);
-      _this.bottleGroup.add(bottleGlassMesh);
-    });
+    fileLoader.load('/assets/models/work/bottle/bottle.json', function (json) {
+      var geometries = {};
 
-    jsonLoader.load('/assets/models/hidden/bottle/bottle-cap.model.old.json', function (geometry) {
-      var bottleCapMesh = new Mesh(geometry, _this.bottleCapMat);
-      bottleCapMesh.scale.set(2.15, 2.5, 2.15);
-      bottleCapMesh.position.y = 19;
-      _this.bottleGroup.add(bottleCapMesh);
+      json.geometries.forEach(function (obj) {
+        var name = obj.data.name;
+        var geometry = jsonLoader.parse(obj).geometry;
+        geometry.scale(1, -1, 1);
+        geometries[name] = geometry;
+      });
+
+      geometries.cap.translate(0, 6.5, 0);
+
+      var cap = new Mesh(geometries.cap, _this.capMat);
+      var capBack = new Mesh(geometries.cap, _this.capBackMat);
+
+      var bottle = new Mesh(geometries.bottle, _this.bottleMat);
+      var bottleInterior = new Mesh(geometries.bottle_interior, _this.bottleMatInterior);
+
+      var liquid = new Mesh(geometries.liquid, _this.liquidMat);
+      var liquidTop = new Mesh(geometries.liquidTop, _this.liquidMat);
+
+      _this.bottleGroup.add(cap, capBack, liquidTop, liquid, bottle, bottleInterior);
     });
   };
 
   BottleCanvas.prototype.initSmiley = function initSmiley() {
-    var geometry = new PlaneBufferGeometry(3.8, 3.8, 1, 1);
+    var geometry = new PlaneBufferGeometry(1.1, 1.1);
 
     var smiley = new Mesh(geometry, this.smileyMat);
     smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set(-0.1, 18.95, 0);
-    smiley.scale.set(0.9, 0.9, 1);
+    smiley.position.set(-0.025, 6.7, 0.1);
 
     this.bottleGroup.add(smiley);
   };
 
   BottleCanvas.prototype.initLabel = function initLabel() {
-    var geometry = new CylinderBufferGeometry(4.93, 4.93, 18, 64, 1, true);
+    var geometry = new CylinderBufferGeometry(1.71, 1.71, 5.5, 64, 1, true);
 
     var label = new Mesh(geometry, this.labelmat);
+
     var labelBack = new Mesh(geometry, this.labelBackMat);
 
-    label.position.y = labelBack.position.y = -8;
-    label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
+    label.position.y = labelBack.position.y = -2.6;
+
+    // this rotation was in the old scene - leaving it here in case it is needed for some reason
+    // label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
 
     this.bottleGroup.add(label, labelBack);
   };
@@ -46741,8 +46694,13 @@ var BottleCanvas = function () {
     controls.enableZoom = false;
     controls.enablePan = false;
 
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = -1.0;
+    // controls.autoRotate = true;
+    // controls.autoRotateSpeed = -1.0;
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    controls.minAzimuthAngle = 0; // radians
+    controls.maxAzimuthAngle = 0; // radians
 
     controls.maxPolarAngle = Math.PI * 0.75;
 
@@ -46752,16 +46710,97 @@ var BottleCanvas = function () {
     this.controls = controls;
   };
 
+  BottleCanvas.prototype.initMaterialsHigh = function initMaterialsHigh() {
+    var glassColor = 0x371805;
+
+    this.capMat = new MeshLambertMaterial({
+      color: 0xffffff,
+      emissive: 0x606060,
+      envMap: this.envMap,
+      side: BackSide,
+
+      // Lambert
+      reflectivity: 0.15
+    });
+
+    this.capBackMat = new MeshBasicMaterial({
+      color: 0x505050
+    });
+
+    this.bottleMat = new MeshLambertMaterial({
+      color: glassColor,
+      opacity: 0.85,
+      transparent: true
+    });
+
+    this.bottleMatInterior = new MeshStandardMaterial({
+      color: glassColor,
+      envMap: this.envMap,
+      envMapIntensity: 0.1,
+      opacity: 0.7,
+      refractionRatio: 1.9,
+      transparent: true,
+
+      // STANDARD
+      metalness: 0.4,
+      roughness: 0.15
+    });
+
+    this.liquidMat = new MeshLambertMaterial({
+      color: 0x8c3e13, // 0x8c3e13 0x58360d 0xd15c1a
+      opacity: 0.8,
+      transparent: true
+    });
+  };
+
+  BottleCanvas.prototype.initMaterialsLow = function initMaterialsLow() {
+    var glassColor = 0x371805;
+
+    this.capMat = new MeshLambertMaterial({
+      color: 0xffffff,
+      emissive: 0x808080,
+      envMap: this.envMap,
+      side: BackSide,
+
+      // Lambert
+      reflectivity: 0.15
+    });
+
+    this.capBackMat = new MeshBasicMaterial({
+      color: 0x505050
+    });
+
+    this.bottleMat = new MeshLambertMaterial({
+      color: glassColor,
+      opacity: 0.85,
+      transparent: true
+    });
+
+    this.bottleMatInterior = new MeshLambertMaterial({
+      color: glassColor,
+      envMap: this.envMap,
+      opacity: 0.7,
+
+      transparent: true,
+
+      // LAMBERT
+      reflectivity: 0.3
+    });
+
+    this.liquidMat = new MeshLambertMaterial({
+      color: 0x8c3e13,
+      opacity: 0.8,
+      transparent: true
+    });
+  };
+
   return BottleCanvas;
 }();
 
-function initBottle(showStats) {
-  escherSketchLayout();
+var canvas = document.querySelector('#bottle-canvas');
 
-  var bottleCanvas = new BottleCanvas(showStats);
-}
+escherSketchLayout();
 
-var showStats = true;
-initBottle(showStats);
+var bottleCanvas = new BottleCanvas(canvas, null, 0x020000);
 
 }());
