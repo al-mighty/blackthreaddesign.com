@@ -9,17 +9,18 @@ function outerHeight( el ) {
   return height;
 }
 
+const footer = document.querySelector( '.page__footer' );
 
 // Sticky footer
 const setBodyMargin = function setBodyMargin() {
-  const height = outerHeight( document.querySelector( '.page__footer' ) );
+  const height = outerHeight( footer );
   document.querySelector( 'body' ).style.marginBottom = height + 'px';
 };
 
-
-
 export default function () {
+  if ( footer ) {
     setBodyMargin();
 
     window.addEventListener( 'resize', throttle( setBodyMargin, 250 ) );
+  }
 }
