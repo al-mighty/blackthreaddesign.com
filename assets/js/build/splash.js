@@ -48476,7 +48476,7 @@ var SplashCanvas = function () {
 
         this.addText();
 
-        this.initControls();
+        // this.initControls();
 
         // this.pauseWhenOffscreen();
 
@@ -48515,6 +48515,10 @@ var SplashCanvas = function () {
 
             // speed up the animation as it progresses
             animSpeed -= 15;
+
+            // console.log( self.app.delta )
+            // console.log( uTime )
+            // console.log( self.app.frameCount );
         };
 
         this.app.onUpdate = function () {

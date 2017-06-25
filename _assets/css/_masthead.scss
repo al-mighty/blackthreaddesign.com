@@ -28,7 +28,7 @@
 .masthead__menu {
   position: relative;
   min-width: 250px;
-  background: $background-color;
+  background: transparent; //$background-color;
 
   a {
     display: block;

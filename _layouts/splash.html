@@ -15,11 +15,13 @@
 			</div>-->
 
 		{% if page.loadingOverlay %}
-			{% include loading_overlay %}{% endif %} 
-			
+			{% include loading_overlay %}
+		{% endif %} 
+	
 		{% include browser-upgrade.html %} 
+		{% include masthead.html %}
 		
-		<div id="about" class="splash-link">
+		<!--<div id="about" class="splash-link">
 			 <a href="{{ domain }}/about">About</a>
 		</div>
 
@@ -37,7 +39,7 @@
 
 		<div id="experiments" class="splash-link">
 			<a href="{{ domain }}/experiments">Experiments</a>
-		</div>
+		</div>-->
 		
 		<div id="splash-canvas-container">
 			<canvas id="splash-canvas"></canvas>
