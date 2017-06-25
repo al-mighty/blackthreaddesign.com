@@ -12,7 +12,7 @@ import backgroundFrag from './shaders/background.frag';
 import textVert from './shaders/text.vert';
 import textFrag from './shaders/text.frag';
 
-import { randomPointInDisk, randomPointInSphere, cameraZPos, createTextGeometry } from './splashCanvasHelpers.js';
+import { randomPointInSphere, cameraZPos, createTextGeometry } from './splashCanvasHelpers.js';
 
 export default class SplashCanvas {
 
@@ -72,9 +72,9 @@ export default class SplashCanvas {
       // speed up the animation as it progresses
       animSpeed -= 15;
 
-			// console.log( self.app.delta )
-			// console.log( uTime )
-			// console.log( self.app.frameCount );
+      // console.log( self.app.delta )
+      // console.log( uTime )
+      // console.log( self.app.frameCount );
 
     };
 
@@ -112,7 +112,7 @@ export default class SplashCanvas {
       const textMesh = new THREE.Mesh( bufferGeometry, self.textMat );
 
       self.app.scene.add( textMesh );
-    });
+    } );
 
   }
 
@@ -129,7 +129,7 @@ export default class SplashCanvas {
     let i;
     let i2;
     let i3;
-    let i4;
+    // let i4;
     let v;
 
     const maxDelay = 0.0;
@@ -144,7 +144,7 @@ export default class SplashCanvas {
     this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
     this._animationProgress = 0;
 
-    for ( i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9 ) {
+    for ( i = 0, i2 = 0, i3 = 0; i < faceCount; i++, i2 += 6, i3 += 9 ) {
       const face = geometry.faces[i];
 
       const centroid = threeUtils.computeCentroid( geometry, face );
@@ -189,28 +189,28 @@ export default class SplashCanvas {
     const colB = new THREE.Color( 0x283844 );
 
     const uniforms = {
-        noiseTexture: { value: noiseTexture },
-        offset: { value: this.offset },
-        smooth: { value: this.smooth },  
+      noiseTexture: { value: noiseTexture },
+      offset: { value: this.offset },
+      smooth: { value: this.smooth },
     };
 
     this.textMat = new THREE.ShaderMaterial( {
-        uniforms: Object.assign( { 
-          color1: { value: colB },
-          color2: { value: colA },
-          uTime: { value: 0.0 },
-          pointer:{ value: this.pointer },
-        }, uniforms ),
-        vertexShader: textVert,
-        fragmentShader: textFrag,
-        side: THREE.DoubleSide,
+      uniforms: Object.assign( {
+        color1: { value: colB },
+        color2: { value: colA },
+        uTime: { value: 0.0 },
+        pointer: { value: this.pointer },
+      }, uniforms ),
+      vertexShader: textVert,
+      fragmentShader: textFrag,
+      side: THREE.DoubleSide,
     } );
 
     this.backgroundMat = new THREE.RawShaderMaterial( {
-      uniforms: Object.assign( { 
-          color1: { value: colA },
-          color2: { value: colB },
-        }, uniforms ),
+      uniforms: Object.assign( {
+        color1: { value: colA },
+        color2: { value: colB },
+      }, uniforms ),
       vertexShader: backgroundVert,
       fragmentShader: backgroundFrag,
     } );
@@ -244,7 +244,7 @@ export default class SplashCanvas {
     controls.maxAzimuthAngle = Math.PI / 12; // radians
 
     // How far you can orbit vertically, upper and lower limits.
-	  // Range is 0 to Math.PI radians.
+    // Range is 0 to Math.PI radians.
     controls.minPolarAngle = Math.PI * 0.25;
     controls.maxPolarAngle = Math.PI * 0.5;
 

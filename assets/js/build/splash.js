@@ -48611,7 +48611,7 @@ var SplashCanvas = function () {
         var i = void 0;
         var i2 = void 0;
         var i3 = void 0;
-        var i4 = void 0;
+        // let i4;
         var v = void 0;
 
         var maxDelay = 0.0;
@@ -48626,7 +48626,7 @@ var SplashCanvas = function () {
         this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
         this._animationProgress = 0;
 
-        for (i = 0, i2 = 0, i3 = 0, i4 = 0; i < faceCount; i++, i2 += 6, i3 += 9) {
+        for (i = 0, i2 = 0, i3 = 0; i < faceCount; i++, i2 += 6, i3 += 9) {
             var face = geometry.faces[i];
 
             var centroid = threeUtils.computeCentroid(geometry, face);

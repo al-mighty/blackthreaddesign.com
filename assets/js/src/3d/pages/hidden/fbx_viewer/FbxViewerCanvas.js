@@ -4,7 +4,9 @@ import Stats from 'three/examples/js/libs/stats.min';
 import App from './App/App.js';
 import OrbitControls from './App/modules/OrbitControls.module.js';
 
-import loadFBX from './loadFBX.js';
+import FBXLoader from './App/modules/FBXLoader.module.js';
+
+import reader from './fileReader.js';
 
 // import LightHelperExtended from './App/utilities/LightHelperExtended.js';
 
@@ -32,10 +34,10 @@ export default class FbxViewerCanvas {
 
     this.app = new App( this.canvas );
 
-    this.app.camera.position.set( 0, -80, 40 );
+    // this.app.camera.position.set( 0, -80, 40 );
     // this.app.camera.near = 100;
     // this.app.camera.far = 500;
-    this.app.camera.updateProjectionMatrix();
+    // this.app.camera.updateProjectionMatrix();
 
     this.app.renderer.setClearColor( 0xffffff, 1.0 );
 
@@ -72,7 +74,11 @@ export default class FbxViewerCanvas {
 
     this.initSaveImageButton();
 
-    this.loadModel( '/assets/models/fbx/xsi_man_skinning.fbx' );
+    this.initFBXLoader();
+
+    // this.initFileUploadForm();
+
+    // this.loadModel( '/assets/models/fbx/xsi_man_skinning.fbx' );
 
     // App has play / pause / stop functions
     // this.app.play();
@@ -114,11 +120,6 @@ export default class FbxViewerCanvas {
     this.controls = controls;
   }
 
-  loadModel( url ) {
-    const self = this;
-    loadFBX( url, this.mixers, this.app );
-  }
-
   initSaveImageButton() {
     document.querySelector( '#screenshot-button' ).addEventListener( 'click', () => {
       const w = window.open( '', '' );
@@ -136,7 +137,6 @@ export default class FbxViewerCanvas {
     const controlLinks = document.querySelector( '#controls' ).getElementsByTagName( 'a' );
 
     document.querySelector( '#toggle-background' ).onchange = ( e ) => {
-      console.log( e )
       if ( e.returnValue === true ) {
 
         this.app.renderer.setClearColor( 0x000000, 1.0 );
@@ -158,4 +158,64 @@ export default class FbxViewerCanvas {
     };
   }
 
+  initFBXLoader() {
+    const vertices = document.querySelector( '#vertices' );
+    const faces = document.querySelector( '#faces' );
+    const addModelInfo = () => {
+      faces.innerHTML = this.app.renderer.info.render.faces;
+      vertices.innerHTML = this.app.renderer.info.render.vertices;
+    };
+
+    const fbxLoader = new FBXLoader();
+
+
+    reader.onload = ( e ) => {
+      const object = fbxLoader.parse( e.target.result );
+
+      this.fitCameraToObject( object );
+
+      if ( object.animations[ 0 ] !== undefined ) {
+        object.mixer = new THREE.AnimationMixer( object );
+        this.mixers.push( object.mixer );
+
+        const action = object.mixer.clipAction( object.animations[ 0 ] );
+        action.play();
+      }
+
+      this.app.scene.add( object );
+
+      this.app.play();
+
+      addModelInfo();
+
+      document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
+    }
+
+  }
+
+  fitCameraToObject( object ) {
+
+    const boundingBox = new THREE.Box3();
+
+    // get bounding box of object - this will be used to setup controls and camera
+    boundingBox.setFromObject( object );
+
+    // set camera to rotate around center of loaded object
+    const center = boundingBox.getCenter();
+
+    this.controls.target = center;
+
+    const size = boundingBox.getSize();
+
+    const maxDim = Math.max( size.x, size.y );
+
+    const fov = this.app.camera.fov * ( Math.PI / 180 );
+
+    const cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
+    this.app.camera.position.set( center.x, center.y, cameraZ );
+
+  }
+
 }
+

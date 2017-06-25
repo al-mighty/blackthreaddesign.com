@@ -12311,16 +12311,20 @@ function outerHeight(el) {
   return height;
 }
 
+var footer = document.querySelector('.page__footer');
+
 // Sticky footer
 var setBodyMargin = function setBodyMargin() {
-  var height = outerHeight(document.querySelector('.page__footer'));
+  var height = outerHeight(footer);
   document.querySelector('body').style.marginBottom = height + 'px';
 };
 
 function initFooter () {
-  setBodyMargin();
+  if (footer) {
+    setBodyMargin();
 
-  window.addEventListener('resize', throttle(setBodyMargin, 250));
+    window.addEventListener('resize', throttle(setBodyMargin, 250));
+  }
 }
 
 var fluidVids = createCommonjsModule(function (module) {

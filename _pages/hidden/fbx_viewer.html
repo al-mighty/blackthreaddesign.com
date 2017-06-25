@@ -43,11 +43,19 @@ css:
 	</div>
 
 	<div id="loading-overlay">
-		<div id="loading-bar">
+
+    <form id="file-upload-form">
+      Upload an FBX file here.
+      <input id="file-upload-input" type="file" name="FBX">
+    </form>
+
+
+		<div id="loading-bar" class="hide">
 			<span id="bar">
 				<span id="progress"></span>
 			</span>
 		</div>
+
 	</div>
 
 </div>
