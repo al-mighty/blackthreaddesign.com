@@ -1,0 +1,59 @@
+---
+layout: minimal
+title: "FBX Viewer"
+excerpt: "Load and display FBX files"
+categories: work
+permalink: hidden/fbx_viewer
+js:
+  fbx_viewer
+css:
+  fbxViewer
+---
+
+<script src='https://threejs.org/examples/js/libs/inflate.min.js'></script>
+
+<div id="view-container">
+	<canvas id="viewer-canvas"></canvas>
+
+	<div id="loading-error-message" class="hide"></div>
+
+	<div id="help-overlay" class="hide fullscreen-controls">
+		<h1>HELP OVERLAY</h1>
+	</div>
+
+	<div id="settings-overlay" class="hide fullscreen-controls">
+		<input id="toggle-background" type="checkbox">Black Background</input>
+	</div>
+
+	<div id="controls">
+		<button id="screenshot-button">
+      Screenshot
+    </button>
+		<a href="#" id="help-button">
+      <i class="fa fa-question-circle" aria-hidden="true"></i>
+    </a>
+
+		<a href="#" id="settings-button">
+      <i class="fa fa-cog" aria-hidden="true"></i>
+    </a>
+
+		<a href="#" id="fullscreen-button">
+      <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+    </a>
+	</div>
+
+	<div id="loading-overlay">
+		<div id="loading-bar">
+			<span id="bar">
+				<span id="progress"></span>
+			</span>
+		</div>
+	</div>
+
+</div>
+
+<div id="model-info">
+	<h2>Model Info</h2>
+	<p>Faces: <span id="faces"></span></p>
+	<p>Vertices: <span id="vertices"></span></p>
+</div>
