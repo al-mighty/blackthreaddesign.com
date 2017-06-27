@@ -136,8 +136,10 @@ export default class FbxViewerCanvas {
   initBackgroundColorChanger() {
     const controlLinks = document.querySelector( '#controls' ).getElementsByTagName( 'a' );
 
-    document.querySelector( '#toggle-background' ).onchange = ( e ) => {
-      if ( e.returnValue === true ) {
+    const toggle =document.querySelector( '#toggle-background' );
+
+    toggle.addEventListener( 'change', () => {
+      if ( toggle.checked ) {
 
         this.app.renderer.setClearColor( 0x000000, 1.0 );
         for ( let i = 0; i < controlLinks.length; i++ ) {
@@ -146,7 +148,7 @@ export default class FbxViewerCanvas {
 
         }
 
-      } else if ( e.returnValue === false ) {
+      } else {
 
         this.app.renderer.setClearColor( 0xffffff, 1.0 );
         for ( let i = 0; i < controlLinks.length; i++ ) {
@@ -155,7 +157,8 @@ export default class FbxViewerCanvas {
 
         }
       }
-    };
+    } );
+
   }
 
   initFBXLoader() {
