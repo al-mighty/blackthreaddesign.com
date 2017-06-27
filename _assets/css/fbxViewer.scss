@@ -93,15 +93,13 @@
 	display: none !important;
 } 
 
-// #model-info{
-// 	position: absolute;
-// 	top: 90%;
-// 	width: 80%;
-// 	margin-left: 10%;
-// 	// height: auto;
-// 	background-color: darkgray;
-// 	color: black;
-// }
+#model-info{
+	position: absolute;
+	top: 90%;
+	width: 100%;
+	background-color: white;
+	color: black;
+}
 
 #file-upload-form{
   position: absolute; 
