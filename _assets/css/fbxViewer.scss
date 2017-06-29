@@ -7,19 +7,13 @@
 	// margin-top: 5%;
 }
 
-#view-container:-webkit-full-screen {
+#view-container:fullscreen {
   width: 100%;
   height: 100%;
-}
-
-#controls {
-	position: absolute;
-	bottom: 0;
-	right: 0.5em;
-
-	a {
-		color: black;
-	}
+  margin: 0;
+  padding: 0;
+  left: 0;
+  top: 0;
 }
 
 #viewer-canvas {
@@ -108,4 +102,99 @@
  	width: 50vw;
 	transform: translate3d( -50%,-50%,0 );
   text-align: center;
+}
+
+#screenshot {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 1140px;
+  height: 800px;
+  background-color: white;
+}
+
+#logo {
+  position: absolute;
+	bottom: 0;
+	left: 1%;;
+  width: 8%;
+  color: black;
+}
+
+#controls {
+	position: absolute;
+	bottom: 0;
+	right: 0.5em;
+  width: 90%;
+  left: 9%;
+
+	a {
+		color: black;
+	}
+}
+
+
+#animation-controls {
+  position: absolute;
+  width: 86%;
+  left: 0;
+  bottom: 0;
+  // display: none;
+}
+
+#right-buttons{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+#animation-slider{
+  position: absolute;
+  left: 10%;
+  width: 80%;
+}
+
+#animation-controls:input[type=range] {
+    //margin: auto;
+    //outline: none;
+    //padding: 0;
+    height: 3px;
+    background-color: rgb(66, 66, 66);
+    background-image: linear-gradient(rgb(66, 66, 66), #cfcfcf);
+    background-size: 0 100%;
+    //background-repeat: no-repeat;
+    //border-radius: 50%;
+    //cursor: pointer;
+    -webkit-appearance: none;
+}
+#animation-controls:input[type=range]::-webkit-slider-runnable-track {
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    -webkit-appearance: none;
+}
+#animation-controls:input[type=range]::-moz-range-track {
+    box-shadow: none;
+    border: none;
+    background: transparent;
+}
+#animation-controls:input[type=range]::-moz-focus-outer {
+    border: 0;
+}
+#animation-controls:input[type=range]::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    border: 0;
+    background: #fff;
+    border-radius: 100%;
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.1);
+    -webkit-appearance: none;
+}
+#animation-controls:input[type=range]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 0;
+    background: #fff;
+    border-radius: 100%;
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.1);
 }

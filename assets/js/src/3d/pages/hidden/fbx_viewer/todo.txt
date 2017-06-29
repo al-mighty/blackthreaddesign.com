@@ -1,0 +1,4 @@
+- testing more models 
+- animation controls
+- correct faces / vertices count 
+- correctly import zlib

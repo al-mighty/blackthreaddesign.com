@@ -26,21 +26,30 @@ css:
   </div>
 
   <div id="controls">
-    <button id="screenshot-button">
-      Screenshot
-    </button>
-    <a href="#" id="help-button">
-      <i class="fa fa-question-circle" aria-hidden="true"></i>
-    </a>
+    <div id="animation-controls" class="hide">
+      <a href="#" id="pause-button">
+        <i class="fa fa-play-circle" aria-hidden="true"></i>
+        <i class="fa fa-pause-circle hide" aria-hidden="true"></i>
+      </a>
+      <input id="animation-slider" type="range" min="0" max="100" value="0" />
+    </div>
 
-    <a href="#" id="settings-button">
-      <i class="fa fa-cog" aria-hidden="true"></i>
-    </a>
+    <div id="right-buttons">
+      <a href="#" id="help-button">
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+      </a>
 
-    <a href="#" id="fullscreen-button">
-      <i class="fa fa-arrows-alt" aria-hidden="true"></i>
-    </a>
+      <a href="#" id="settings-button">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+      </a>
+
+      <a href="#" id="fullscreen-button">
+        <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+      </a>
+    </div>
   </div>
+
+  <div id="logo">Logo</div>
 
   <div id="loading-overlay">
 
@@ -64,3 +73,5 @@ css:
   <h3>Model Info</h3>
   <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
 </div>
+
+<div id="screenshot"></div>

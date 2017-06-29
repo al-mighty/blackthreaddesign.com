@@ -42041,24 +42041,6 @@ var ImageUtils = {
 
 //
 
-function interopDefault(ex) {
-	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
 /**
  * @author Lewy Blue / https://github.com/looeee
  */
@@ -42179,200 +42161,6 @@ function Time() {
 
         this.paused = true;
     };
-}
-
-function App(canvas) {
-
-  var self = this;
-
-  var _canvas = void 0;
-  var _scene = void 0;
-  var _camera = void 0;
-  var _renderer = void 0;
-
-  var _currentAnimationFrameID = void 0;
-
-  if (canvas !== undefined) _canvas = canvas;
-
-  this.autoRender = true;
-
-  this.autoResize = true;
-
-  this.frameCount = 0;
-
-  this.delta = 0;
-
-  this.isPlaying = false;
-  this.isPaused = false;
-
-  this.time = new Time();
-
-  var setRendererSize = function () {
-    _renderer.setSize(_canvas.clientWidth, _canvas.clientHeight, false);
-  };
-
-  var setCameraAspect = function () {
-    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
-    _camera.updateProjectionMatrix();
-  };
-
-  this.onWindowResize = function () {};
-
-  var onWindowResize = function () {
-
-    if (!self.autoResize) return;
-
-    if (_camera.type !== 'PerspectiveCamera') {
-
-      console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
-      return;
-    }
-
-    setCameraAspect();
-
-    setRendererSize();
-
-    self.onWindowResize();
-  };
-
-  window.addEventListener('resize', onWindowResize, false);
-
-  Object.defineProperties(this, {
-
-    canvas: {
-      get: function () {
-
-        if (_canvas === undefined) {
-
-          _canvas = document.body.appendChild(document.createElement('canvas'));
-          _canvas.style.position = 'absolute';
-          _canvas.style.width = _canvas.style.height = '100%';
-        }
-
-        return _canvas;
-      },
-      set: function (newCanvas) {
-
-        _canvas = newCanvas;
-      }
-    },
-
-    camera: {
-      get: function () {
-
-        if (_camera === undefined) {
-
-          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
-        }
-
-        return _camera;
-      },
-      set: function (camera) {
-
-        _camera = camera;
-        setCameraAspect();
-      }
-    },
-
-    scene: {
-      get: function () {
-
-        if (_scene === undefined) {
-
-          _scene = new Scene();
-        }
-
-        return _scene;
-      },
-      set: function (scene) {
-
-        _scene = scene;
-      }
-    },
-
-    renderer: {
-      get: function () {
-
-        if (_renderer === undefined) {
-
-          _renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true });
-          _renderer.setPixelRatio(window.devicePixelRatio);
-          _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-        }
-
-        return _renderer;
-      },
-      set: function (renderer) {
-
-        _renderer = renderer;
-        setRendererSize();
-      }
-    },
-
-    averageFrameTime: {
-      get: function () {
-
-        return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
-      }
-    }
-
-  });
-
-  this.play = function () {
-
-    this.time.start();
-
-    this.isPlaying = true;
-    this.isPaused = false;
-
-    function animationHandler() {
-
-      self.frameCount++;
-      self.delta = self.time.delta;
-
-      self.onUpdate();
-
-      if (self.autoRender) self.renderer.render(self.scene, self.camera);
-
-      _currentAnimationFrameID = requestAnimationFrame(function () {
-        animationHandler();
-      });
-    }
-
-    animationHandler();
-  };
-
-  this.pause = function () {
-
-    this.isPaused = true;
-
-    this.time.pause();
-
-    cancelAnimationFrame(_currentAnimationFrameID);
-  };
-
-  this.stop = function () {
-
-    this.isPlaying = false;
-    this.isPaused = false;
-
-    this.time.stop();
-    this.frameCount = 0;
-
-    cancelAnimationFrame(_currentAnimationFrameID);
-  };
-
-  this.onUpdate = function () {};
-
-  this.toJSON = function (object) {
-    if (typeof object.toJSON === 'function') {
-      var json = object.toJSON();
-
-      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
-    } else {
-      console.error('App.toJSON error: object does not have a toJSON function.');
-    }
-  };
 }
 
 function OrbitControls(object, domElement) {
@@ -43303,6 +43091,235 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
+function App(canvas) {
+
+  var self = this;
+
+  var _canvas = void 0;
+  var _scene = void 0;
+  var _camera = void 0;
+  var _renderer = void 0;
+
+  var _currentAnimationFrameID = void 0;
+
+  if (canvas !== undefined) _canvas = canvas;
+
+  this.autoRender = true;
+
+  this.autoResize = true;
+
+  this.frameCount = 0;
+
+  this.delta = 0;
+
+  this.isPlaying = false;
+  this.isPaused = false;
+
+  this.time = new Time();
+
+  var setRendererSize = function () {
+    _renderer.setSize(_canvas.clientWidth, _canvas.clientHeight, false);
+  };
+
+  var setCameraAspect = function () {
+    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
+    _camera.updateProjectionMatrix();
+  };
+
+  this.onWindowResize = function () {};
+
+  var onWindowResize = function () {
+
+    if (!self.autoResize) return;
+
+    if (_camera.type !== 'PerspectiveCamera') {
+
+      console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
+      return;
+    }
+
+    setCameraAspect();
+
+    setRendererSize();
+
+    self.onWindowResize();
+  };
+
+  window.addEventListener('resize', onWindowResize, false);
+
+  Object.defineProperties(this, {
+
+    canvas: {
+      get: function () {
+
+        if (_canvas === undefined) {
+
+          _canvas = document.body.appendChild(document.createElement('canvas'));
+          _canvas.style.position = 'absolute';
+          _canvas.style.width = _canvas.style.height = '100%';
+        }
+
+        return _canvas;
+      },
+      set: function (newCanvas) {
+
+        _canvas = newCanvas;
+      }
+    },
+
+    camera: {
+      get: function () {
+
+        if (_camera === undefined) {
+
+          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+        }
+
+        return _camera;
+      },
+      set: function (camera) {
+
+        _camera = camera;
+        setCameraAspect();
+      }
+    },
+
+    scene: {
+      get: function () {
+
+        if (_scene === undefined) {
+
+          _scene = new Scene();
+        }
+
+        return _scene;
+      },
+      set: function (scene) {
+
+        _scene = scene;
+      }
+    },
+
+    renderer: {
+      get: function () {
+
+        if (_renderer === undefined) {
+
+          _renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true });
+          _renderer.setPixelRatio(window.devicePixelRatio);
+          _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
+        }
+
+        return _renderer;
+      },
+      set: function (renderer) {
+
+        _renderer = renderer;
+        setRendererSize();
+      }
+    },
+
+    averageFrameTime: {
+      get: function () {
+
+        return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
+      }
+    }
+
+  });
+
+  this.play = function () {
+
+    this.time.start();
+
+    this.isPlaying = true;
+    this.isPaused = false;
+
+    function animationHandler() {
+
+      self.frameCount++;
+      self.delta = self.time.delta;
+
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
+      self.onUpdate();
+
+      if (self.autoRender) self.renderer.render(self.scene, self.camera);
+
+      _currentAnimationFrameID = requestAnimationFrame(function () {
+        animationHandler();
+      });
+    }
+
+    animationHandler();
+  };
+
+  this.pause = function () {
+
+    this.isPaused = true;
+
+    this.time.pause();
+
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
+
+  this.stop = function () {
+
+    this.isPlaying = false;
+    this.isPaused = false;
+
+    this.time.stop();
+    this.frameCount = 0;
+
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
+
+  this.onUpdate = function () {};
+
+  // convert object to JSON format
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
+
+  this.initControls = function () {
+    var controls = new OrbitControls(this.camera, this.canvas);
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
+
+    this.controls = controls;
+  };
+
+  this.fitCameraToObject = function (object) {
+
+    var boundingBox = new Box3();
+
+    // get bounding box of object - this will be used to setup controls and camera
+    boundingBox.setFromObject(object);
+
+    // set camera to rotate around center of loaded object
+    var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
+
+    var size = boundingBox.getSize();
+
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
+    var fov = this.camera.fov * (Math.PI / 180);
+
+    var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+    this.camera.position.set(center.x, center.y, cameraZ);
+  };
+}
+
 var NURBSUtils = {
 
 	/*
@@ -43743,6 +43760,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
 	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -43822,7 +43866,7 @@ Object.assign(FBXLoader.prototype, {
 			FBXTree = new TextParser().parse(FBXText);
 		}
 
-		// console.log( FBXTree );
+		// console.l og( FBXTree );
 
 		var connections = parseConnections(FBXTree);
 		var images = parseImages(FBXTree);
@@ -48416,6 +48460,24 @@ fileInput.addEventListener('change', function (e) {
   reader.readAsArrayBuffer(file);
 }, false);
 
+function interopDefault(ex) {
+	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var stats_min = createCommonjsModule(function (module) {
+// stats.js - http://github.com/mrdoob/stats.js
+var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
+if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
+Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
+v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
+});
+
+var Stats = interopDefault(stats_min);
+
 var asyncGenerator = function () {
   function AwaitValue(value) {
     this.value = value;
@@ -48540,6 +48602,9 @@ stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointe
 
 document.body.appendChild(stats.dom);
 
+/* ******************************************************** */
+
+// Set up THREE caching
 var FbxViewerCanvas = function () {
   function FbxViewerCanvas(canvas) {
     classCallCheck(this, FbxViewerCanvas);
@@ -48551,21 +48616,13 @@ var FbxViewerCanvas = function () {
 
     this.app = new App(this.canvas);
 
-    // this.app.camera.position.set( 0, -80, 40 );
-    // this.app.camera.near = 100;
-    // this.app.camera.far = 500;
-    // this.app.camera.updateProjectionMatrix();
-
-    this.app.renderer.setClearColor(0xffffff, 1.0);
+    this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
     this.mixers = [];
 
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
-
-      // required if using 'damping' in controls
-      self.controls.update();
 
       // remove if no longer using stats
       if (stats) stats.update();
@@ -48584,74 +48641,52 @@ var FbxViewerCanvas = function () {
 
     this.initLights();
 
-    this.initControls();
+    this.app.initControls();
 
     this.initBackgroundColorChanger();
 
-    this.initSaveImageButton();
-
     this.initFBXLoader();
-
-    // this.initFileUploadForm();
-
-    // this.loadModel( '/assets/models/fbx/xsi_man_skinning.fbx' );
-
-    // App has play / pause / stop functions
-    // this.app.play();
   }
 
   FbxViewerCanvas.prototype.initLights = function initLights() {
-    var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
-    spot.position.set(-15, 130, 180);
-    this.app.scene.add(spot, spot.target);
-    // const lhSpot = new LightHelperExtended( spot, true, true );
 
-    // this.spot = spot;
+    var ambientLight = new AmbientLight(0x333333);
 
-    var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
-    this.app.scene.add(hemi);
-    // const lhHemi = new LightHelperExtended( hemi, true, true );
+    var backLight = new DirectionalLight(0xffffff, 0.325);
+    backLight.position.set(2.6, 1, 3);
+
+    var keyLight = new DirectionalLight(0xffffff, 0.475);
+    keyLight.position.set(-2, -1, 0);
+
+    var fillLight = new DirectionalLight(0xffffff, 0.65);
+    fillLight.position.set(3, 3, 2);
+
+    this.app.scene.add(ambientLight, backLight, keyLight, fillLight);
   };
 
-  FbxViewerCanvas.prototype.initControls = function initControls() {
-    var controls = new OrbitControls(this.app.camera, this.canvas);
+  FbxViewerCanvas.prototype.takeScreenShot = function takeScreenShot(width, height) {
 
-    // controls.enableZoom = false;
-    // controls.enablePan = false;
+    // set camera and renderer to screenshot size
+    this.app.camera.aspect = width / height;
+    this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setSize(width, height, false);
 
-    // controls.autoRotate = true;
-    // controls.autoRotateSpeed = -1.0;
+    var img = new Image();
 
-    // How far you can orbit horizontally, upper and lower limits.
-    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    // controls.minAzimuthAngle = 0; // radians
-    // controls.maxAzimuthAngle = 0; // radians
+    this.app.renderer.render(this.app.scene, this.app.camera, null, false);
 
-    // controls.maxPolarAngle = Math.PI * 0.75;
+    img.src = this.app.renderer.domElement.toDataURL();
 
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
+    document.querySelector('#screenshot').appendChild(img);
 
-    this.controls = controls;
-  };
-
-  FbxViewerCanvas.prototype.initSaveImageButton = function initSaveImageButton() {
-    var _this = this;
-
-    document.querySelector('#screenshot-button').addEventListener('click', function () {
-      var w = window.open('', '');
-      w.document.title = 'FBX Viewer Screenshot';
-
-      var img = new Image();
-
-      _this.app.renderer.render(_this.app.scene, _this.app.camera);
-      img.src = _this.app.renderer.domElement.toDataURL();
-      w.document.body.appendChild(img);
-    });
+    // reset the renderer and camera to original size
+    this.app.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+    this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
   };
 
   FbxViewerCanvas.prototype.initBackgroundColorChanger = function initBackgroundColorChanger() {
-    var _this2 = this;
+    var _this = this;
 
     var controlLinks = document.querySelector('#controls').getElementsByTagName('a');
 
@@ -48660,14 +48695,14 @@ var FbxViewerCanvas = function () {
     toggle.addEventListener('change', function () {
       if (toggle.checked) {
 
-        _this2.app.renderer.setClearColor(0x000000, 1.0);
+        _this.app.renderer.setClearColor(0x000000, 1.0);
         for (var i = 0; i < controlLinks.length; i++) {
 
           controlLinks[i].style.color = 'white';
         }
       } else {
 
-        _this2.app.renderer.setClearColor(0xffffff, 1.0);
+        _this.app.renderer.setClearColor(0xf7f7f7, 1.0);
         for (var _i = 0; _i < controlLinks.length; _i++) {
 
           controlLinks[_i].style.color = 'black';
@@ -48677,13 +48712,13 @@ var FbxViewerCanvas = function () {
   };
 
   FbxViewerCanvas.prototype.initFBXLoader = function initFBXLoader() {
-    var _this3 = this;
+    var _this2 = this;
 
     var vertices = document.querySelector('#vertices');
     var faces = document.querySelector('#faces');
     var addModelInfo = function () {
-      faces.innerHTML = _this3.app.renderer.info.render.faces;
-      vertices.innerHTML = _this3.app.renderer.info.render.vertices;
+      faces.innerHTML = _this2.app.renderer.info.render.faces;
+      vertices.innerHTML = _this2.app.renderer.info.render.vertices;
     };
 
     var fbxLoader = new FBXLoader();
@@ -48691,46 +48726,26 @@ var FbxViewerCanvas = function () {
     reader.onload = function (e) {
       var object = fbxLoader.parse(e.target.result);
 
-      _this3.fitCameraToObject(object);
+      _this2.app.fitCameraToObject(object);
 
       if (object.animations[0] !== undefined) {
         object.mixer = new AnimationMixer(object);
-        _this3.mixers.push(object.mixer);
+        _this2.mixers.push(object.mixer);
 
         var action = object.mixer.clipAction(object.animations[0]);
         action.play();
       }
 
-      _this3.app.scene.add(object);
+      _this2.app.scene.add(object);
 
-      _this3.app.play();
+      _this2.takeScreenShot(1440, 800);
+
+      _this2.app.play();
 
       addModelInfo();
 
       document.querySelector('#loading-overlay').classList.add('hide');
     };
-  };
-
-  FbxViewerCanvas.prototype.fitCameraToObject = function fitCameraToObject(object) {
-
-    var boundingBox = new Box3();
-
-    // get bounding box of object - this will be used to setup controls and camera
-    boundingBox.setFromObject(object);
-
-    // set camera to rotate around center of loaded object
-    var center = boundingBox.getCenter();
-
-    this.controls.target = center;
-
-    var size = boundingBox.getSize();
-
-    var maxDim = Math.max(size.x, size.y);
-
-    var fov = this.app.camera.fov * (Math.PI / 180);
-
-    var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
-    this.app.camera.position.set(center.x, center.y, cameraZ);
   };
 
   return FbxViewerCanvas;

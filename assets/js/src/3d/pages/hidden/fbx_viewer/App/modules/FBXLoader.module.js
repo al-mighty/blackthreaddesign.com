@@ -119,7 +119,7 @@ Object.assign( FBXLoader.prototype, {
 
 		}
 
-		// console.log( FBXTree );
+		// console.l og( FBXTree );
 
 		var connections = parseConnections( FBXTree );
 		var images = parseImages( FBXTree );

@@ -1,8 +1,6 @@
 import * as THREE from 'three';
-import Stats from 'three/examples/js/libs/stats.min';
 
 import App from './App/App.js';
-import OrbitControls from './App/modules/OrbitControls.module.js';
 
 import FBXLoader from './App/modules/FBXLoader.module.js';
 
@@ -10,8 +8,10 @@ import reader from './fileReader.js';
 
 // import LightHelperExtended from './App/utilities/LightHelperExtended.js';
 
-// Set up THREE
-THREE.Cache.enabled = true;
+/* ******************************************************** */
+// STATS overlay. Don't use this in production as it
+// causes issues in some browsers!
+import Stats from 'three/examples/js/libs/stats.min';
 
 const stats = new Stats();
 stats.dom.style = `position: absolute;
@@ -24,6 +24,11 @@ stats.dom.style = `position: absolute;
 
 document.body.appendChild( stats.dom );
 
+/* ******************************************************** */
+
+// Set up THREE caching
+THREE.Cache.enabled = true;
+
 export default class FbxViewerCanvas {
 
   constructor( canvas ) {
@@ -34,21 +39,13 @@ export default class FbxViewerCanvas {
 
     this.app = new App( this.canvas );
 
-    // this.app.camera.position.set( 0, -80, 40 );
-    // this.app.camera.near = 100;
-    // this.app.camera.far = 500;
-    // this.app.camera.updateProjectionMatrix();
-
-    this.app.renderer.setClearColor( 0xffffff, 1.0 );
+    this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
 
     this.mixers = [];
 
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
-
-      // required if using 'damping' in controls
-      self.controls.update();
 
       // remove if no longer using stats
       if ( stats ) stats.update();
@@ -68,75 +65,55 @@ export default class FbxViewerCanvas {
 
     this.initLights();
 
-    this.initControls();
+    this.app.initControls();
 
     this.initBackgroundColorChanger();
 
-    this.initSaveImageButton();
-
     this.initFBXLoader();
 
-    // this.initFileUploadForm();
-
-    // this.loadModel( '/assets/models/fbx/xsi_man_skinning.fbx' );
-
-    // App has play / pause / stop functions
-    // this.app.play();
   }
 
   initLights() {
-    const spot = new THREE.SpotLight( 0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5 );
-    spot.position.set( -15, 130, 180 );
-    this.app.scene.add( spot, spot.target );
-    // const lhSpot = new LightHelperExtended( spot, true, true );
 
-    // this.spot = spot;
+    const ambientLight = new THREE.AmbientLight( 0x333333 );
 
-    const hemi = new THREE.HemisphereLight( 0x000000, 0xffffff, 0.75 );
-    this.app.scene.add( hemi );
-    // const lhHemi = new LightHelperExtended( hemi, true, true );
+    const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
+    backLight.position.set( 2.6, 1, 3 );
 
+    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+    keyLight.position.set( -2, -1, 0 );
+
+    const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
+    fillLight.position.set( 3, 3, 2 );
+
+    this.app.scene.add( ambientLight, backLight, keyLight, fillLight );
   }
 
-  initControls() {
-    const controls = new OrbitControls( this.app.camera, this.canvas );
+  takeScreenShot( width, height ) {
 
-    // controls.enableZoom = false;
-    // controls.enablePan = false;
+    // set camera and renderer to screenshot size
+    this.app.camera.aspect = width / height;
+    this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setSize( width, height, false );
 
-    // controls.autoRotate = true;
-    // controls.autoRotateSpeed = -1.0;
+    const img = new Image();
 
-    // How far you can orbit horizontally, upper and lower limits.
-    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    // controls.minAzimuthAngle = 0; // radians
-    // controls.maxAzimuthAngle = 0; // radians
+    this.app.renderer.render( this.app.scene, this.app.camera, null, false );
 
-    // controls.maxPolarAngle = Math.PI * 0.75;
+    img.src = this.app.renderer.domElement.toDataURL();
 
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
+    document.querySelector( '#screenshot' ).appendChild( img );
 
-    this.controls = controls;
-  }
-
-  initSaveImageButton() {
-    document.querySelector( '#screenshot-button' ).addEventListener( 'click', () => {
-      const w = window.open( '', '' );
-      w.document.title = 'FBX Viewer Screenshot';
-
-      const img = new Image();
-
-      this.app.renderer.render( this.app.scene, this.app.camera );
-      img.src = this.app.renderer.domElement.toDataURL();
-      w.document.body.appendChild( img );
-    } );
+    // reset the renderer and camera to original size
+    this.app.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+    this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setSize( this.canvas.clientWidth, this.canvas.clientHeight, false );
   }
 
   initBackgroundColorChanger() {
     const controlLinks = document.querySelector( '#controls' ).getElementsByTagName( 'a' );
 
-    const toggle =document.querySelector( '#toggle-background' );
+    const toggle = document.querySelector( '#toggle-background' );
 
     toggle.addEventListener( 'change', () => {
       if ( toggle.checked ) {
@@ -150,7 +127,7 @@ export default class FbxViewerCanvas {
 
       } else {
 
-        this.app.renderer.setClearColor( 0xffffff, 1.0 );
+        this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
         for ( let i = 0; i < controlLinks.length; i++ ) {
 
           controlLinks[ i ].style.color = 'black';
@@ -171,11 +148,10 @@ export default class FbxViewerCanvas {
 
     const fbxLoader = new FBXLoader();
 
-
     reader.onload = ( e ) => {
       const object = fbxLoader.parse( e.target.result );
 
-      this.fitCameraToObject( object );
+      this.app.fitCameraToObject( object );
 
       if ( object.animations[ 0 ] !== undefined ) {
         object.mixer = new THREE.AnimationMixer( object );
@@ -187,36 +163,15 @@ export default class FbxViewerCanvas {
 
       this.app.scene.add( object );
 
+      this.takeScreenShot( 1440, 800 );
+
       this.app.play();
 
       addModelInfo();
 
       document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
 
-    }
-
-  }
-
-  fitCameraToObject( object ) {
-
-    const boundingBox = new THREE.Box3();
-
-    // get bounding box of object - this will be used to setup controls and camera
-    boundingBox.setFromObject( object );
-
-    // set camera to rotate around center of loaded object
-    const center = boundingBox.getCenter();
-
-    this.controls.target = center;
-
-    const size = boundingBox.getSize();
-
-    const maxDim = Math.max( size.x, size.y );
-
-    const fov = this.app.camera.fov * ( Math.PI / 180 );
-
-    const cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
-    this.app.camera.position.set( center.x, center.y, cameraZ );
+    };
 
   }
 
