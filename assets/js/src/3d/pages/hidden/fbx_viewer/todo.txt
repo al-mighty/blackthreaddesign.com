@@ -2,3 +2,4 @@
 - animation controls
 - correct faces / vertices count 
 - correctly import zlib
+- fix error message

@@ -1,3 +1,5 @@
+import throttle from 'lodash.throttle';
+
 import * as THREE from 'three';
 
 import App from './App/App.js';
@@ -6,7 +8,7 @@ import FBXLoader from './App/modules/FBXLoader.module.js';
 
 import reader from './fileReader.js';
 
-// import LightHelperExtended from './App/utilities/LightHelperExtended.js';
+import zipReader from './zipReader.js';
 
 /* ******************************************************** */
 // STATS overlay. Don't use this in production as it
@@ -43,6 +45,7 @@ export default class FbxViewerCanvas {
 
     this.mixers = [];
 
+    const animationSlider = document.querySelector( '#animation-slider' );
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -51,9 +54,14 @@ export default class FbxViewerCanvas {
       if ( stats ) stats.update();
 
       if ( self.mixers.length > 0 ) {
+
         for ( let i = 0; i < self.mixers.length; i++ ) {
+
           self.mixers[ i ].update( self.app.delta / 1000 );
+          animationSlider.value = String( self.mixers[ i ].action.time );
+
         }
+
       }
 
     };
@@ -96,12 +104,11 @@ export default class FbxViewerCanvas {
     this.app.camera.updateProjectionMatrix();
     this.app.renderer.setSize( width, height, false );
 
-    const img = new Image();
-
+    // render scene at new size
     this.app.renderer.render( this.app.scene, this.app.camera, null, false );
 
+    const img = new Image();
     img.src = this.app.renderer.domElement.toDataURL();
-
     document.querySelector( '#screenshot' ).appendChild( img );
 
     // reset the renderer and camera to original size
@@ -139,37 +146,125 @@ export default class FbxViewerCanvas {
   }
 
   initFBXLoader() {
+    const animationSlider = document.querySelector( '#animation-slider' );
+    const animationControls = document.querySelector( '#animation-controls' );
+    const playbackControl = document.querySelector( '#playback-control' );
+    const playBtn = document.querySelector( '#play-button' );
+    const pauseBtn = document.querySelector( '#pause-button' );
     const vertices = document.querySelector( '#vertices' );
     const faces = document.querySelector( '#faces' );
+
     const addModelInfo = () => {
+
       faces.innerHTML = this.app.renderer.info.render.faces;
       vertices.innerHTML = this.app.renderer.info.render.vertices;
+
     };
 
     const fbxLoader = new FBXLoader();
 
-    reader.onload = ( e ) => {
-      const object = fbxLoader.parse( e.target.result );
+    const initAnimation = ( object ) => {
+      animationControls.classList.remove( 'hide' );
+
+      object.mixer = new THREE.AnimationMixer( object );
+      this.mixers.push( object.mixer );
+
+      const animation = object.animations[ 0 ];
+
+      // set animation slider max to length of animation
+      animationSlider.max = String( animation.duration );
+
+      // update the slider at ~ 60fps
+      animationSlider.step = String( animation.duration / 150 );
+
+      const action = object.mixer.clipAction( animation );
+      object.mixer.action = action;
+      action.play();
+
+      playbackControl.addEventListener( 'click', () => {
+
+        if ( action.paused ) {
+
+          action.paused = false;
+          playBtn.classList.add( 'hide' );
+          pauseBtn.classList.remove( 'hide' );
+
+        } else {
+
+          action.paused = true;
+          playBtn.classList.remove( 'hide' );
+          pauseBtn.classList.add( 'hide' );
+
+        }
+
+      } );
+
+      animationSlider.addEventListener( 'mousedown', () => {
+
+        action.paused = true;
+
+      } );
+
+      animationSlider.addEventListener( 'input', throttle( () => {
+
+        const newPos = animationSlider.value;
+
+        action.time = newPos;
+
+        animationSlider.value = String( newPos );
+
+      }, 17 ) ); // throttled at ~17 ms will give approx 60fps while sliding the controls
+
+      animationSlider.addEventListener( 'mouseup', () => {
+
+        action.paused = false;
+
+      } );
+    };
+
+    const addObjectToScene = ( result ) => {
+      const object = fbxLoader.parse( result );
 
       this.app.fitCameraToObject( object );
 
-      if ( object.animations[ 0 ] !== undefined ) {
-        object.mixer = new THREE.AnimationMixer( object );
-        this.mixers.push( object.mixer );
+      if ( object.animations.length !== 0 ) {
 
-        const action = object.mixer.clipAction( object.animations[ 0 ] );
-        action.play();
+        initAnimation( object );
+
       }
 
       this.app.scene.add( object );
 
-      this.takeScreenShot( 1440, 800 );
+      // this needs to be called a little while after loading, otherwise the model may
+      // not be fully rendered yet
+      setTimeout( () => this.takeScreenShot( 1440, 800 ), 1000 );
 
       this.app.play();
 
       addModelInfo();
 
       document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+    };
+
+    const readZipFile = ( result ) => {
+
+      zipReader( result );
+
+    };
+
+    reader.onload = ( e ) => {
+
+      switch ( reader.extension ) {
+        case 'fbx':
+          addObjectToScene( e.target.result );
+          break;
+        case 'zip':
+          readZipFile( e.target.result );
+          break;
+        default:
+          console.error( 'Unsupported file type!' );
+          break;
+      }
 
     };
 

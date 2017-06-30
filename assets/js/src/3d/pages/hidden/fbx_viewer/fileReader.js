@@ -29,7 +29,23 @@ const fileInput = document.querySelector( '#file-upload-input' );
 fileInput.addEventListener( 'change', ( e ) => {
   const file = e.target.files[0];
 
+  reader.extension = file.name.split( '.' ).pop().toLowerCase();
+
+  // switch ( extension) {
+  //   case 'fbx':
   reader.readAsArrayBuffer( file );
+  //     break;
+  //   case 'zip':
+  //     const inflate = new Zlib.Inflate( reader.readAsArrayBuffer( file ) );
+  //     console.log( inflate );
+	// 			// const reader2 = new BinaryReader( inflate.decompress().buffer );
+  //     break;
+  //   default:
+  //     console.error( 'Unsupported file type!' );
+  //     break;
+  // }
+
+  
 
 }, false );
 

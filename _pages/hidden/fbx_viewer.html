@@ -10,7 +10,10 @@ css:
   fbxViewer
 ---
 
-<script src='https://threejs.org/examples/js/libs/inflate.min.js'></script>
+<script src='/assets/js/build/vendor/inflate.min.js'></script>
+<script src='/assets/js/build/vendor/zip/zip.js'></script>
+<script src='/assets/js/build/vendor/zip/zip-ext.js'></script>
+<script src='/assets/js/build/vendor/zip/z-worker.js'></script>
 
 <div id="view-container">
   <canvas id="viewer-canvas"></canvas>
@@ -27,9 +30,9 @@ css:
 
   <div id="controls">
     <div id="animation-controls" class="hide">
-      <a href="#" id="pause-button">
-        <i class="fa fa-play-circle" aria-hidden="true"></i>
-        <i class="fa fa-pause-circle hide" aria-hidden="true"></i>
+      <a href="#" id="playback-control">
+        <i id="play-button" class="fa fa-play-circle hide" aria-hidden="true"></i>
+        <i id="pause-button" class="fa fa-pause-circle" aria-hidden="true"></i>
       </a>
       <input id="animation-slider" type="range" min="0" max="100" value="0" />
     </div>
