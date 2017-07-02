@@ -1,31 +1,57 @@
-zip.workerScriptsPath = '/assets/js/build/vendor/zip/';
+// const writer = new zip.Data64URIWriter( 'application/octet-stream' );
+// const writer = new zip.TextWriter();
+// const writer = new zip.BlobWriter();
 
-export default ( blob ) => {
+export default ( entries, callback ) => {
 
-  zip.createReader( new zip.BlobReader( blob ), ( reader ) => {
+  // get all entries from the zip
+  reader.getEntries( ( entries ) => {
 
-    // get all entries from the zip
-    reader.getEntries( ( entries ) => {
-      console.log( 'ss' )
-      if ( entries.length ) {
 
-        // get first entry content as text
-        entries[0].getData( new zip.TextWriter(), ( text ) => {
-          // text contains the entry data as a String
-          console.log( text );
+    entries.forEach( ( entry, idx ) => {
 
-          // close the zip reader
-          reader.close( () => {
-            // onclose callback
-          } );
+      const checkForDirectory = entry.filename.indexOf( '/' ) > -1;
 
-        }, ( current, total ) => {
-          // onprogress callback
-        } );
+      if ( checkForDirectory ) {
+        console.warn( `
+          Warning: The zip file contains directories.
+          These are currently not supported and your model may display incorrectly.
+          To fix any issues put all texture files at the top level in the zip file.
+        ` );
+        return;
       }
+
+      const extension = entry.filename.split( '.' ).pop().toLowerCase();
+
+      if ( extension === 'fbx' ) {
+
+        if ( fbxFile ) {
+
+          console.error( 'Error: more than one FBX file found in archive!' );
+
+        } else {
+
+          entry.getData( writer, ( data ) => {
+
+            const buffer = window.btoa( data );
+
+            console.log( buffer )
+
+            // fbxFile = URL.createObjectURL( data );
+
+            callback( buffer, resourcesURL );
+
+          }, () => { /* onprogress callback */ } );
+
+          // console.log( entry );
+
+        }
+
+      }
+
     } );
-  }, ( error ) => {
-    // onerror callback
+
   } );
-  }
+
+};
 

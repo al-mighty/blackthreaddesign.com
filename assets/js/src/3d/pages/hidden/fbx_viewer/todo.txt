@@ -1,5 +1,5 @@
 - testing more models 
-- animation controls
+- fix animation controls
+- zip with textures
 - correct faces / vertices count 
-- correctly import zlib
 - fix error message

@@ -6,9 +6,7 @@ import App from './App/App.js';
 
 import FBXLoader from './App/modules/FBXLoader.module.js';
 
-import reader from './fileReader.js';
-
-import zipReader from './zipReader.js';
+import fileModel from './fileReader.js';
 
 /* ******************************************************** */
 // STATS overlay. Don't use this in production as it
@@ -222,9 +220,8 @@ export default class FbxViewerCanvas {
       } );
     };
 
-    const addObjectToScene = ( result ) => {
-      const object = fbxLoader.parse( result );
-
+    const addObjectToScene = ( object ) => {
+      
       this.app.fitCameraToObject( object );
 
       if ( object.animations.length !== 0 ) {
@@ -246,27 +243,21 @@ export default class FbxViewerCanvas {
       document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
     };
 
-    const readZipFile = ( result ) => {
+    // onload callback when loading .fbx file
+    fileModel.fileReader.onload = ( e ) => {
 
-      zipReader( result );
+      const object = fbxLoader.parse( e.target.result );
+      addObjectToScene( object );
 
-    };
+    }
 
-    reader.onload = ( e ) => {
+    // onload callback when loading .zip file
+    fileModel.onZipLoad = ( data ) => {
 
-      switch ( reader.extension ) {
-        case 'fbx':
-          addObjectToScene( e.target.result );
-          break;
-        case 'zip':
-          readZipFile( e.target.result );
-          break;
-        default:
-          console.error( 'Unsupported file type!' );
-          break;
-      }
+      const object = fbxLoader.parse( data );
+      addObjectToScene( object );
 
-    };
+    }
 
   }
 

@@ -11,14 +11,17 @@ css:
 ---
 
 <script src='/assets/js/build/vendor/inflate.min.js'></script>
-<script src='/assets/js/build/vendor/zip/zip.js'></script>
-<script src='/assets/js/build/vendor/zip/zip-ext.js'></script>
-<script src='/assets/js/build/vendor/zip/z-worker.js'></script>
+<script src='/assets/js/build/vendor/zip/jszip.min.js'></script>
 
 <div id="view-container">
   <canvas id="viewer-canvas"></canvas>
 
-  <div id="loading-error-message" class="hide"></div>
+  <div id="error-overlay" class="hide">
+    <h2>The following error occured:</h1>
+    <p id="error-message"></p>
+  </div>
+
+  
 
   <div id="help-overlay" class="hide fullscreen-controls">
     <h1>HELP OVERLAY</h1>
