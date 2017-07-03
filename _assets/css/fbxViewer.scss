@@ -38,9 +38,9 @@
 
 #error-overlay {
 	position: absolute;
-	top: 0;
+	top: 93%;
 	left: 0;
-	height: 100%;
+	// height: 100%;
   width: 100%; 
   background-color: #000000; 
   text-align:center;
@@ -75,10 +75,6 @@
 	width: 5px;
 }
 
-.reveal{
-	transition: opacity 1s ease-in-out;
-}
-
 .fullscreen-controls{
 	position: absolute;
 	top: 0;
@@ -100,11 +96,8 @@
 } 
 
 #model-info{
-	position: absolute;
-	top: 90%;
 	width: 100%;
-	background-color: white;
-	color: black;
+  margin-left: 5%;
 }
 
 #file-upload-form{

@@ -118,7 +118,10 @@ Object.assign( FBXLoader.prototype, {
 
     }
 
-		// console.l og( FBXTree );
+		console.log( FBXTree );
+    // if ( resourceDirectory.isArray() ) {
+
+    // }
 
     const connections = parseConnections( FBXTree );
     const images = parseImages( FBXTree );

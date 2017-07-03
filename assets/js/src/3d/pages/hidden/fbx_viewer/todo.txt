@@ -2,4 +2,4 @@
 - fix animation controls
 - zip with textures
 - correct faces / vertices count 
-- fix error message
+- test error message

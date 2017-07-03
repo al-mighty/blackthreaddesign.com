@@ -1,3 +1,4 @@
+const promise = require( 'babel-polyfill' );
 const rollup = require( 'rollup' );
 const watch = require( 'rollup-watch' );
 const babel = require( 'rollup-plugin-babel' );
@@ -57,6 +58,7 @@ const config = ( entry, dest, moduleName, plugins ) => {
     dest,
     format: 'iife',
     // sourceMap: true,
+    // intro: promise,
     moduleName,
     plugins,
   }

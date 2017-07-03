@@ -1,10 +1,3 @@
-// zip.workerScriptsPath = '/assets/js/build/vendor/zip/';
-
-const progress = document.querySelector( '#progress' );
-const overlay = document.querySelector( '#loading-overlay' );
-const errorOverlay = document.querySelector( '#error-overlay' );
-const errorMessage = document.querySelector( '#error-message' );
-
 // hide the upload form when loading starts so that the progress bar can be shown
 const onloadstart = () => {
 
@@ -15,8 +8,8 @@ const onloadstart = () => {
 
 const onError = ( msg ) => {
 
-  errorOverlay.classList.remove( 'hide' );
-  errorMessage.innerHTML = msg;
+  document.querySelector( '#error-overlay' ).classList.remove( 'hide' );
+  document.querySelector( '#error-message' ).innerHTML = msg;
 
 };
 
@@ -65,10 +58,93 @@ const fileModel = {
 
 };
 
+/*  *******************************************************************
+   Zip file processing
+*******************************************************************   */
+const processZip = ( file ) => {
+  JSZip.loadAsync( file ).then( ( zip ) => {
 
+        // First loop over the zip's contents and extract the FBX file and any images
+    const imagesZipped = [];
+
+    let fbxFileZipped = false;
+
+    for ( const entry in zip.files ) {
+
+      const zippedFile = zip.files[ entry ];
+
+      /*
+      const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
+
+      if ( checkForDirectory ) {
+        console.warn( `
+          Warning: The zip file contains directories.
+          These are currently not supported and your model may display incorrectly.
+          To fix any issues put all texture files at the top level in the zip file.
+        ` );
+        return;
+      }
+
+      */
+
+      const extension = zippedFile.name.split( '.' ).pop().toLowerCase();
+
+      if ( extension === 'fbx' ) {
+
+        if ( fbxFileZipped ) {
+
+          console.error( 'Error: more than one FBX file found in archive!' );
+
+        } else {
+
+          fbxFileZipped = zippedFile;
+
+        }
+
+      } else {
+
+        imagesZipped.push( zippedFile );
+      }
+    }
+
+        // At this point the FBX file should be contained in fbxFileZipped and images are in
+        // imagesZipped - these are still compressed, so we'll need to set up a Promise and
+        // uncompress them all before calling the FBXParser
+
+    const promises = imagesZipped.map( ( zippedFile ) => {
+
+      const URL = window.webkitURL || window.mozURL || window.URL;
+      return zippedFile.async( 'arrayBuffer' )
+            .then( ( image ) => {
+
+              const buffer = new Uint8Array( image );
+              const blob = new Blob( [ buffer.buffer ] );
+              const url = URL.createObjectURL( blob );
+              return url;
+
+            } );
+
+    } );
+
+    const fbxFilePromise = fbxFileZipped.async( 'arrayBuffer' )
+          .then( ( data ) => { return data; } );
+
+    promises.push( fbxFilePromise );
+
+    Promise.all( promises ).then( ( resultsArray ) => {
+
+      const fbxFile = resultsArray.pop();
+
+      fileModel.onZipLoad( fbxFile, resultsArray );
+
+    } );
+
+  } );
+};
 /*  *******************************************************************
               Set up eventlistener for file input
 *******************************************************************   */
+
 const fileInput = document.querySelector( '#file-upload-input' );
 
 fileInput.addEventListener( 'change', ( e ) => {
@@ -84,49 +160,7 @@ fileInput.addEventListener( 'change', ( e ) => {
       break;
     case 'zip':
       onloadstart();
-      JSZip.loadAsync( file ).then( ( zip ) => {
-
-        let fbxFile = false;
-
-        for ( const entry in zip.files ) {
-
-          const zippedFile = zip.files[ entry ];
-
-          const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
-
-          if ( checkForDirectory ) {
-            console.warn( `
-              Warning: The zip file contains directories.
-              These are currently not supported and your model may display incorrectly.
-              To fix any issues put all texture files at the top level in the zip file.
-            ` );
-            return;
-          }
-
-          const extension = zippedFile.name.split( '.' ).pop().toLowerCase();
-
-          if ( extension === 'fbx' ) {
-
-            if ( fbxFile ) {
-
-              console.error( 'Error: more than one FBX file found in archive!' );
-
-            } else {
-
-              zippedFile.async( 'uint8array' ).then( ( data ) => {
-                
-                fbxFile = data;
-
-                fileModel.onZipLoad( fbxFile );
-
-              } );
-
-            }
-
-          }
-        }
-
-      } );
+      processZip( file );
       break;
     default:
       onError( 'Unsupported file type!' );

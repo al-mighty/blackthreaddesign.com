@@ -13,22 +13,20 @@ css:
 <script src='/assets/js/build/vendor/inflate.min.js'></script>
 <script src='/assets/js/build/vendor/zip/jszip.min.js'></script>
 
+<div id="model-info">
+  <h3>Model Info</h3>
+  <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
+</div>
+
 <div id="view-container">
   <canvas id="viewer-canvas"></canvas>
-
-  <div id="error-overlay" class="hide">
-    <h2>The following error occured:</h1>
-    <p id="error-message"></p>
-  </div>
-
-  
 
   <div id="help-overlay" class="hide fullscreen-controls">
     <h1>HELP OVERLAY</h1>
   </div>
 
   <div id="settings-overlay" class="hide fullscreen-controls">
-    <input id="toggle-background" type="checkbox">Black Background</input>
+    <input id="toggle-background" type="checkbox">Black Background
   </div>
 
   <div id="controls">
@@ -75,9 +73,9 @@ css:
 
 </div>
 
-<div id="model-info">
-  <h3>Model Info</h3>
-  <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
+<div id="error-overlay" class="hide">
+  <h2>The following error occured:</h2>
+  <p id="error-message"></p>
 </div>
 
 <div id="screenshot"></div>

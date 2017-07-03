@@ -1,5 +1,3 @@
-import throttle from 'lodash.throttle';
-
 import * as THREE from 'three';
 
 import App from './App/App.js';
@@ -7,6 +5,10 @@ import App from './App/App.js';
 import FBXLoader from './App/modules/FBXLoader.module.js';
 
 import fileModel from './fileReader.js';
+
+import manager from './loadingManager.js';
+
+import AnimationControls from './AnimationControls.js';
 
 /* ******************************************************** */
 // STATS overlay. Don't use this in production as it
@@ -43,7 +45,6 @@ export default class FbxViewerCanvas {
 
     this.mixers = [];
 
-    const animationSlider = document.querySelector( '#animation-slider' );
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -56,7 +57,7 @@ export default class FbxViewerCanvas {
         for ( let i = 0; i < self.mixers.length; i++ ) {
 
           self.mixers[ i ].update( self.app.delta / 1000 );
-          animationSlider.value = String( self.mixers[ i ].action.time );
+          if ( self.animationControls ) self.animationControls.setSliderValue( self.mixers[ i ].action.time );
 
         }
 
@@ -144,11 +145,6 @@ export default class FbxViewerCanvas {
   }
 
   initFBXLoader() {
-    const animationSlider = document.querySelector( '#animation-slider' );
-    const animationControls = document.querySelector( '#animation-controls' );
-    const playbackControl = document.querySelector( '#playback-control' );
-    const playBtn = document.querySelector( '#play-button' );
-    const pauseBtn = document.querySelector( '#pause-button' );
     const vertices = document.querySelector( '#vertices' );
     const faces = document.querySelector( '#faces' );
 
@@ -159,65 +155,23 @@ export default class FbxViewerCanvas {
 
     };
 
-    const fbxLoader = new FBXLoader();
+    const fbxLoader = new FBXLoader( manager );
 
     const initAnimation = ( object ) => {
-      animationControls.classList.remove( 'hide' );
 
       object.mixer = new THREE.AnimationMixer( object );
       this.mixers.push( object.mixer );
 
       const animation = object.animations[ 0 ];
 
-      // set animation slider max to length of animation
-      animationSlider.max = String( animation.duration );
-
-      // update the slider at ~ 60fps
-      animationSlider.step = String( animation.duration / 150 );
-
       const action = object.mixer.clipAction( animation );
-      object.mixer.action = action;
+
       action.play();
 
-      playbackControl.addEventListener( 'click', () => {
+      object.mixer.action = action;
 
-        if ( action.paused ) {
+      this.animationControls = new AnimationControls( animation, action, object.mixer );
 
-          action.paused = false;
-          playBtn.classList.add( 'hide' );
-          pauseBtn.classList.remove( 'hide' );
-
-        } else {
-
-          action.paused = true;
-          playBtn.classList.remove( 'hide' );
-          pauseBtn.classList.add( 'hide' );
-
-        }
-
-      } );
-
-      animationSlider.addEventListener( 'mousedown', () => {
-
-        action.paused = true;
-
-      } );
-
-      animationSlider.addEventListener( 'input', throttle( () => {
-
-        const newPos = animationSlider.value;
-
-        action.time = newPos;
-
-        animationSlider.value = String( newPos );
-
-      }, 17 ) ); // throttled at ~17 ms will give approx 60fps while sliding the controls
-
-      animationSlider.addEventListener( 'mouseup', () => {
-
-        action.paused = false;
-
-      } );
     };
 
     const addObjectToScene = ( object ) => {
@@ -241,23 +195,25 @@ export default class FbxViewerCanvas {
       addModelInfo();
 
       document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
     };
 
-    // onload callback when loading .fbx file
     fileModel.fileReader.onload = ( e ) => {
 
       const object = fbxLoader.parse( e.target.result );
       addObjectToScene( object );
 
-    }
+    };
 
     // onload callback when loading .zip file
-    fileModel.onZipLoad = ( data ) => {
+    fileModel.onZipLoad = ( fbxFile, resources ) => {
 
-      const object = fbxLoader.parse( data );
-      addObjectToScene( object );
+      console.log( fbxFile, resources );
 
-    }
+      // const object = fbxLoader.parse( data, resources );
+      // addObjectToScene( object );
+
+    };
 
   }
 
