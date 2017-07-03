@@ -1,14 +1,12 @@
 import * as THREE from 'three';
 
 import App from './App/App.js';
-
 import FBXLoader from './App/modules/FBXLoader.module.js';
 
-import fileModel from './fileReader.js';
-
-import manager from './loadingManager.js';
-
-import AnimationControls from './AnimationControls.js';
+import fileModel from './utilities/fileReader.js';
+import manager from './utilities/loadingManager.js';
+import AnimationControls from './utilities/AnimationControls.js';
+import addModelInfo from './utilities/addModelInfo.js';
 
 /* ******************************************************** */
 // STATS overlay. Don't use this in production as it
@@ -145,15 +143,6 @@ export default class FbxViewerCanvas {
   }
 
   initFBXLoader() {
-    const vertices = document.querySelector( '#vertices' );
-    const faces = document.querySelector( '#faces' );
-
-    const addModelInfo = () => {
-
-      faces.innerHTML = this.app.renderer.info.render.faces;
-      vertices.innerHTML = this.app.renderer.info.render.vertices;
-
-    };
 
     const fbxLoader = new FBXLoader( manager );
 
@@ -170,7 +159,7 @@ export default class FbxViewerCanvas {
 
       object.mixer.action = action;
 
-      this.animationControls = new AnimationControls( animation, action, object.mixer );
+      this.animationControls = new AnimationControls( animation, action );
 
     };
 
@@ -192,7 +181,7 @@ export default class FbxViewerCanvas {
 
       this.app.play();
 
-      addModelInfo();
+      addModelInfo( this.app.renderer );
 
       document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
 
@@ -210,8 +199,8 @@ export default class FbxViewerCanvas {
 
       console.log( fbxFile, resources );
 
-      // const object = fbxLoader.parse( data, resources );
-      // addObjectToScene( object );
+      const object = fbxLoader.parse( fbxFile, resources );
+      addObjectToScene( object );
 
     };
 

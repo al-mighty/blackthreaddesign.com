@@ -2,11 +2,9 @@ import throttle from 'lodash.throttle';
 
 export default class AnimationControls {
 
-  constructor( animation, action, mixer ) {
+  constructor( animation, action ) {
 
-    this.animation = animation;
     this.action = action;
-    this.mixer = mixer;
 
     this.slider = document.querySelector( '#animation-slider' );
     this.playButton = document.querySelector( '#play-button' );

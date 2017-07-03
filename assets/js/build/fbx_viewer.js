@@ -43840,14 +43840,36 @@ Object.assign(FBXLoader.prototype, {
       FBXTree = new TextParser().parse(FBXText);
     }
 
-    console.log(FBXTree);
-    // if ( resourceDirectory.isArray() ) {
+    // console.log( FBXTree );
 
-    // }
 
     var connections = parseConnections(FBXTree);
     var images = parseImages(FBXTree);
+
+    // if ( resourceDirectory.isArray() ) {
+
+    // }
     var textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
+
+    console.log(textures);
+    for (var _iterator = textures, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
+      var _ref;
+
+      if (_isArray) {
+        if (_i >= _iterator.length) break;
+        _ref = _iterator[_i++];
+      } else {
+        _i = _iterator.next();
+        if (_i.done) break;
+        _ref = _i.value;
+      }
+
+      var _ref2 = _ref,
+          key = _ref2[0],
+          value = _ref2[1];
+      console.log(key, value);
+    }
+
     var materials = parseMaterials(FBXTree, textures, connections);
     var deformers = parseDeformers(FBXTree, connections);
     var geometryMap = parseGeometries(FBXTree, connections, deformers);
@@ -48343,170 +48365,96 @@ function slice(a, b, from, to) {
   return a;
 }
 
-// hide the upload form when loading starts so that the progress bar can be shown
-var onloadstart = function () {
+// Simple error handling function - customize as necessary
 
-  document.querySelector('#file-upload-form').classList.add('hide');
-  document.querySelector('#loading-bar').classList.remove('hide');
-};
-
-var onError = function (msg) {
+var errorHandler = function (msg) {
 
   document.querySelector('#error-overlay').classList.remove('hide');
-  document.querySelector('#error-message').innerHTML = msg;
+  var p = document.createElement('p');
+  p.innerHTML = msg;
+
+  document.querySelector('#error-message').appendChild(p);
 };
 
-// Check support for the File API support
-var checkForFileAPI = function () {
-
-  if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
-
-    onError('This loader requires the File API. Please upgrade your browser');
-  }
-};
-
-checkForFileAPI();
-
-/*  *******************************************************************
-              Set up FileReader
-*******************************************************************   */
-var fileReader = new FileReader();
-
-fileReader.onprogress = function (e) {
-
-  if (e.lengthComputable) {
-
-    var percentComplete = e.loaded / e.total * 100;
-    progress.style.width = percentComplete + '%';
-  }
-};
-
-fileReader.onerror = onError;
-
-/*  *******************************************************************
-   Set up File Model
-   This is imported in the FbxViewerCanvas, where onload callbacks are set up
-*******************************************************************   */
-
-var fileModel = {
-
-  extension: '',
-  fileReader: fileReader,
-  onZipLoad: function () {}
-
-};
-
-/*  *******************************************************************
-   Zip file processing
-*******************************************************************   */
 var processZip = function (file) {
-  JSZip.loadAsync(file).then(function (zip) {
+      JSZip.loadAsync(file).then(function (zip) {
 
-    // First loop over the zip's contents and extract the FBX file and any images
-    var imagesZipped = [];
+            // First loop over the zip's contents and extract the FBX file and any images
+            var imagesZipped = [];
 
-    var fbxFileZipped = false;
+            var fbxFileZipped = false;
 
-    for (var entry in zip.files) {
+            for (var entry in zip.files) {
 
-      var zippedFile = zip.files[entry];
+                  var zippedFile = zip.files[entry];
 
-      /*
-      const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
-        if ( checkForDirectory ) {
-        console.warn( `
-          Warning: The zip file contains directories.
-          These are currently not supported and your model may display incorrectly.
-          To fix any issues put all texture files at the top level in the zip file.
-        ` );
-        return;
-      }
-        */
+                  /*
+                  const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
+                    if ( checkForDirectory ) {
+                    console.warn(
+                      `Warning: The zip file contains directories.
+                      These are currently not supported and your model may display incorrectly.
+                      To fix any issues put all texture files at the top level in the zip file.`
+                    );
+                    return;
+                  }
+                    */
 
-      var extension = zippedFile.name.split('.').pop().toLowerCase();
+                  var extension = zippedFile.name.split('.').pop().toLowerCase();
 
-      if (extension === 'fbx') {
+                  if (extension === 'fbx') {
 
-        if (fbxFileZipped) {
+                        if (fbxFileZipped) {
 
-          console.error('Error: more than one FBX file found in archive!');
-        } else {
+                              errorHandler('Warning: more than one FBX file found in archive,\n            skipping subsequent files.');
+                        } else {
 
-          fbxFileZipped = zippedFile;
-        }
-      } else {
+                              fbxFileZipped = zippedFile;
+                        }
+                  } else {
 
-        imagesZipped.push(zippedFile);
-      }
-    }
+                        imagesZipped.push(zippedFile);
+                  }
+            }
 
-    // At this point the FBX file should be contained in fbxFileZipped and images are in
-    // imagesZipped - these are still compressed, so we'll need to set up a Promise and
-    // uncompress them all before calling the FBXParser
+            // At this point the FBX file should be contained in fbxFileZipped and images are in
+            // imagesZipped - these are still compressed, so we'll need to set up a Promise and
+            // uncompress them all before calling the FBXParser
 
-    var promises = imagesZipped.map(function (zippedFile) {
+            var promises = imagesZipped.map(function (zippedFile) {
 
-      var URL = window.webkitURL || window.mozURL || window.URL;
-      return zippedFile.async('arrayBuffer').then(function (image) {
+                  var URL = window.webkitURL || window.mozURL || window.URL;
+                  return zippedFile.async('arrayBuffer').then(function (image) {
 
-        var buffer = new Uint8Array(image);
-        var blob = new Blob([buffer.buffer]);
-        var url = URL.createObjectURL(blob);
-        return url;
+                        var buffer = new Uint8Array(image);
+                        var blob = new Blob([buffer.buffer]);
+                        var url = URL.createObjectURL(blob);
+                        return url;
+                  });
+            });
+
+            var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
+                  return data;
+            });
+
+            promises.push(fbxFilePromise);
+
+            Promise.all(promises).then(function (resultsArray) {
+
+                  var fbxFile = resultsArray.pop();
+
+                  fileModel.onZipLoad(fbxFile, resultsArray);
+            });
       });
-    });
-
-    var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
-      return data;
-    });
-
-    promises.push(fbxFilePromise);
-
-    Promise.all(promises).then(function (resultsArray) {
-
-      var fbxFile = resultsArray.pop();
-
-      fileModel.onZipLoad(fbxFile, resultsArray);
-    });
-  });
 };
-/*  *******************************************************************
-              Set up eventlistener for file input
-*******************************************************************   */
-
-var fileInput = document.querySelector('#file-upload-input');
-
-fileInput.addEventListener('change', function (e) {
-  var file = e.target.files[0];
-
-  fileModel.extension = file.name.split('.').pop().toLowerCase();
-
-  switch (fileModel.extension) {
-
-    case 'fbx':
-      onloadstart();
-      fileReader.readAsArrayBuffer(file);
-      break;
-    case 'zip':
-      onloadstart();
-      processZip(file);
-      break;
-    default:
-      onError('Unsupported file type!');
-      break;
-
-  }
-}, false);
 
 var manager = new LoadingManager();
 
+// hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = function () {
 
-  // needs to be called earlier
-
-  // document.querySelector( '#file-upload-form' ).classList.add( 'hide' );
-  // document.querySelector( '#loading-bar' ).classList.remove( 'hide' );
-
+  document.querySelector('#file-upload-form').classList.add('hide');
+  document.querySelector('#loading-bar').classList.remove('hide');
 };
 
 manager.onLoad = function () {
@@ -48517,18 +48465,79 @@ manager.onLoad = function () {
 
 };
 
-var progress$1 = document.querySelector('#progress');
+var progress = document.querySelector('#progress');
 manager.onProgress = function (url, currentFile, totalFiles) {
 
   var percentComplete = currentFile / totalFiles * 100;
-  progress$1.style.width = percentComplete + '%';
+  progress.style.width = percentComplete + '%';
 };
 
 manager.onError = function (msg) {
-
-  document.querySelector('#error-overlay').classList.remove('hide');
-  document.querySelector('#error-message').innerHTML = msg;
+  errorHandler('THREE.LoadingManager error: ' + msg);
 };
+
+var checkForFileAPI = function () {
+
+  if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+
+    errorHandler('This loader requires the File API. Please upgrade your browser');
+  }
+};
+
+checkForFileAPI();
+
+/*  *******************************************************************
+              Set up FileReader
+*******************************************************************   */
+var fileReader = new FileReader();
+
+fileReader.onerror = function (msg) {
+  errorHandler('FileReader error: ' + msg);
+};
+
+/*  *******************************************************************
+   Set up File Model
+   This is imported in the FbxViewerCanvas, where onload callbacks are set up
+*******************************************************************   */
+
+var fileModel = {
+
+  fileReader: fileReader,
+  onZipLoad: function () {}
+
+};
+
+/*  *******************************************************************
+   Zip file processing
+*******************************************************************   */
+
+/*  *******************************************************************
+              Set up eventlistener for file input
+*******************************************************************   */
+
+var fileInput = document.querySelector('#file-upload-input');
+
+fileInput.addEventListener('change', function (e) {
+  var file = e.target.files[0];
+
+  var extension = file.name.split('.').pop().toLowerCase();
+
+  switch (extension) {
+
+    case 'fbx':
+      manager.onStart();
+      fileReader.readAsArrayBuffer(file);
+      break;
+    case 'zip':
+      manager.onStart();
+      processZip(file);
+      break;
+    default:
+      errorHandler('Unsupported file type - please load an FBX file or a zip archive.');
+      break;
+
+  }
+}, false);
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
 
@@ -49104,13 +49113,11 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var AnimationControls = function () {
-    function AnimationControls(animation, action, mixer) {
+    function AnimationControls(animation, action) {
         classCallCheck(this, AnimationControls);
 
 
-        this.animation = animation;
         this.action = action;
-        this.mixer = mixer;
 
         this.slider = document.querySelector('#animation-slider');
         this.playButton = document.querySelector('#play-button');
@@ -49208,6 +49215,15 @@ var AnimationControls = function () {
     return AnimationControls;
 }();
 
+var vertices = document.querySelector('#vertices');
+var faces = document.querySelector('#faces');
+
+var addModelInfo = function (renderer) {
+
+  faces.innerHTML = renderer.info.render.faces;
+  vertices.innerHTML = renderer.info.render.vertices;
+};
+
 var stats_min = createCommonjsModule(function (module) {
 // stats.js - http://github.com/mrdoob/stats.js
 var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
@@ -49218,14 +49234,14 @@ v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,
 
 var Stats = interopDefault(stats_min);
 
-/* ******************************************************** */
-// STATS overlay. Don't use this in production as it
-// causes issues in some browsers!
 var stats = new Stats();
 stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
 
 document.body.appendChild(stats.dom);
 
+/* ******************************************************** */
+
+// Set up THREE caching
 var FbxViewerCanvas = function () {
   function FbxViewerCanvas(canvas) {
     classCallCheck(this, FbxViewerCanvas);
@@ -49337,15 +49353,6 @@ var FbxViewerCanvas = function () {
   FbxViewerCanvas.prototype.initFBXLoader = function initFBXLoader() {
     var _this2 = this;
 
-    var vertices = document.querySelector('#vertices');
-    var faces = document.querySelector('#faces');
-
-    var addModelInfo = function () {
-
-      faces.innerHTML = _this2.app.renderer.info.render.faces;
-      vertices.innerHTML = _this2.app.renderer.info.render.vertices;
-    };
-
     var fbxLoader = new FBXLoader(manager);
 
     var initAnimation = function (object) {
@@ -49361,7 +49368,7 @@ var FbxViewerCanvas = function () {
 
       object.mixer.action = action;
 
-      _this2.animationControls = new AnimationControls(animation, action, object.mixer);
+      _this2.animationControls = new AnimationControls(animation, action);
     };
 
     var addObjectToScene = function (object) {
@@ -49383,16 +49390,9 @@ var FbxViewerCanvas = function () {
 
       _this2.app.play();
 
-      addModelInfo();
+      addModelInfo(_this2.app.renderer);
 
       document.querySelector('#loading-overlay').classList.add('hide');
-    };
-
-    // onload callback when loading .fbx file
-    fileModel.onload = function (e) {
-
-      var object = fbxLoader.parse(e.target.result);
-      addObjectToScene(object);
     };
 
     fileModel.fileReader.onload = function (e) {
@@ -49406,8 +49406,8 @@ var FbxViewerCanvas = function () {
 
       console.log(fbxFile, resources);
 
-      // const object = fbxLoader.parse( data, resources );
-      // addObjectToScene( object );
+      var object = fbxLoader.parse(fbxFile, resources);
+      addObjectToScene(object);
     };
   };
 

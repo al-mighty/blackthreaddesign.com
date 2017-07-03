@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import NURBSCurve from '../utilities/curves/NURBSCurve.js';
+import NURBSCurve from './curves/NURBSCurve.js';
 
 /**
  * @author Kyle-Larson https://github.com/Kyle-Larson
@@ -118,14 +118,20 @@ Object.assign( FBXLoader.prototype, {
 
     }
 
-		console.log( FBXTree );
-    // if ( resourceDirectory.isArray() ) {
+		// console.log( FBXTree );
 
-    // }
 
     const connections = parseConnections( FBXTree );
     const images = parseImages( FBXTree );
+
+        // if ( resourceDirectory.isArray() ) {
+
+    // }
     const textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections );
+
+    console.log( textures )
+    for( let [key, value] of textures ) { console.log( key, value ) }
+
     const materials = parseMaterials( FBXTree, textures, connections );
     const deformers = parseDeformers( FBXTree, connections );
     const geometryMap = parseGeometries( FBXTree, connections, deformers );

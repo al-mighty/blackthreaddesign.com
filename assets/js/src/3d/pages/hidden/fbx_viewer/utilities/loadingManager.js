@@ -1,13 +1,13 @@
 import * as THREE from 'three';
+import errorHandler from './errorHandler.js';
 
 const manager = new THREE.LoadingManager();
 
+// hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = () => {
 
-  // needs to be called earlier
-
-  // document.querySelector( '#file-upload-form' ).classList.add( 'hide' );
-  // document.querySelector( '#loading-bar' ).classList.remove( 'hide' );
+  document.querySelector( '#file-upload-form' ).classList.add( 'hide' );
+  document.querySelector( '#loading-bar' ).classList.remove( 'hide' );
 
 };
 
@@ -28,10 +28,7 @@ manager.onProgress = ( url, currentFile, totalFiles ) => {
 };
 
 manager.onError = ( msg ) => {
-
-  document.querySelector( '#error-overlay' ).classList.remove( 'hide' );
-  document.querySelector( '#error-message' ).innerHTML = msg;
-
+  errorHandler( 'THREE.LoadingManager error: ' + msg );
 };
 
 export default manager;
