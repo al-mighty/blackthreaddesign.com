@@ -1,4 +1,10 @@
 - fix animation controls
-- zip with textures
-- correct faces / vertices count 
+  -- dragging slider unpauses animation
+  -- dragging slider animation does not start from correct place
 - test on mobile
+
+- not supported:
+ -- directories in zip files
+ -- multiple animations per model
+ -- multiple models per zip
+ -- correct faces / vertices count 

@@ -13,19 +13,16 @@ const processZip = ( file ) => {
 
       const zippedFile = zip.files[ entry ];
 
-      /*
       const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
 
       if ( checkForDirectory ) {
         console.warn(
           `Warning: The zip file contains directories.
           These are currently not supported and your model may display incorrectly.
-          To fix any issues put all texture files at the top level in the zip file.`
+          To fix this issue reference all textures from the root level in the FBX file.`
         );
         return;
       }
-
-      */
 
       const extension = zippedFile.name.split( '.' ).pop().toLowerCase();
 
