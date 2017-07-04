@@ -90,6 +90,8 @@ Object.assign( FBXLoader.prototype, {
 	 */
   parse( FBXBuffer, resourceDirectory ) {
 
+    console.log( 'resourceDirectory', resourceDirectory );
+
     let FBXTree;
 
     if ( isFbxFormatBinary( FBXBuffer ) ) {
@@ -118,19 +120,33 @@ Object.assign( FBXLoader.prototype, {
 
     }
 
-		// console.log( FBXTree );
-
+		// console.log( 'FBXTree', FBXTree );
 
     const connections = parseConnections( FBXTree );
+
+    // console.log( 'connection', connections );
+
+    // parse embedded images
     const images = parseImages( FBXTree );
 
-        // if ( resourceDirectory.isArray() ) {
+    // console.log( images )
 
-    // }
-    const textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections );
+    let textures;
+    if ( typeof resourceDirectory === 'string'  ) {
 
-    console.log( textures )
-    for( let [key, value] of textures ) { console.log( key, value ) }
+      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections );
+   
+    } else {
+
+      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections, resourceDirectory );
+    
+    }
+
+    // turn embedded images into textures, and load any seperate textures from resourceDirectory
+   
+
+    // console.log( ' textures', textures )
+    // for( let [key, value] of textures ) { console.log( '[key, value]', key, value ) }
 
     const materials = parseMaterials( FBXTree, textures, connections );
     const deformers = parseDeformers( FBXTree, connections );
@@ -287,7 +303,7 @@ function parseImage( videoNode ) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {Map<number, THREE.Texture>}
  */
-function parseTextures( FBXTree, loader, imageMap, connections ) {
+function parseTextures( FBXTree, loader, imageMap, connections, texturesFromZip = false ) {
 
 	/**
 	 * @type {Map<number, THREE.Texture>}
@@ -299,7 +315,7 @@ function parseTextures( FBXTree, loader, imageMap, connections ) {
     const textureNodes = FBXTree.Objects.subNodes.Texture;
     for ( const nodeID in textureNodes ) {
 
-      const texture = parseTexture( textureNodes[ nodeID ], loader, imageMap, connections );
+      const texture = parseTexture( textureNodes[ nodeID ], loader, imageMap, connections, texturesFromZip );
       textureMap.set( parseInt( nodeID ), texture );
 
     }
@@ -317,7 +333,7 @@ function parseTextures( FBXTree, loader, imageMap, connections ) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {THREE.Texture}
  */
-function parseTexture( textureNode, loader, imageMap, connections ) {
+function parseTexture( textureNode, loader, imageMap, connections, texturesFromZip ) {
 
   const FBX_ID = textureNode.id;
 
@@ -326,6 +342,7 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
   let fileName;
 
   const filePath = textureNode.properties.FileName;
+
   const relativeFilePath = textureNode.properties.RelativeFilename;
 
   const children = connections.get( FBX_ID ).children;
@@ -366,9 +383,17 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
   }
 
+  if ( texturesFromZip ) {
+
+    loader.setPath( undefined );
+    fileName = texturesFromZip[fileName];
+  }
+
 	/**
 	 * @type {THREE.Texture}
 	 */
+
+
   const texture = loader.load( fileName );
   texture.name = name;
   texture.FBX_ID = FBX_ID;

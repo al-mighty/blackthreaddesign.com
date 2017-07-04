@@ -5,7 +5,6 @@ import manager from './loadingManager.js';
 // Check support for the File API support
 const checkForFileAPI = () => {
 
-
   if ( !( window.File && window.FileReader && window.FileList && window.Blob ) ) {
 
     errorHandler( 'This loader requires the File API. Please upgrade your browser' );
@@ -36,10 +35,6 @@ const fileModel = {
   onZipLoad: () => {},
 
 };
-
-/*  *******************************************************************
-   Zip file processing
-*******************************************************************   */
 
 /*  *******************************************************************
               Set up eventlistener for file input

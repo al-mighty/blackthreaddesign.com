@@ -1,5 +1,4 @@
-- testing more models 
 - fix animation controls
 - zip with textures
 - correct faces / vertices count 
-- test error message
+- test on mobile

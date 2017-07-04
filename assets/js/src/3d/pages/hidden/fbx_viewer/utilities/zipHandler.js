@@ -54,6 +54,8 @@ const processZip = ( file ) => {
     // imagesZipped - these are still compressed, so we'll need to set up a Promise and
     // uncompress them all before calling the FBXParser
 
+    const images = {};
+
     const promises = imagesZipped.map( ( zippedFile ) => {
 
       const URL = window.webkitURL || window.mozURL || window.URL;
@@ -63,7 +65,7 @@ const processZip = ( file ) => {
               const buffer = new Uint8Array( image );
               const blob = new Blob( [ buffer.buffer ] );
               const url = URL.createObjectURL( blob );
-              return url;
+              images[ zippedFile.name ] = url;
 
             } );
 
@@ -78,7 +80,7 @@ const processZip = ( file ) => {
 
       const fbxFile = resultsArray.pop();
 
-      fileModel.onZipLoad( fbxFile, resultsArray );
+      fileModel.onZipLoad( fbxFile, images );
 
     } );
 

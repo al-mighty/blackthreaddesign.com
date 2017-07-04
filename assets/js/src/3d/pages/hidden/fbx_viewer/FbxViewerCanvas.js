@@ -197,7 +197,7 @@ export default class FbxViewerCanvas {
     // onload callback when loading .zip file
     fileModel.onZipLoad = ( fbxFile, resources ) => {
 
-      console.log( fbxFile, resources );
+      console.log( fbxFile, resources )
 
       const object = fbxLoader.parse( fbxFile, resources );
       addObjectToScene( object );

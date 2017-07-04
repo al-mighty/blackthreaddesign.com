@@ -43816,6 +43816,8 @@ Object.assign(FBXLoader.prototype, {
    */
   parse: function (FBXBuffer, resourceDirectory) {
 
+    console.log('resourceDirectory', resourceDirectory);
+
     var FBXTree = void 0;
 
     if (isFbxFormatBinary(FBXBuffer)) {
@@ -43840,35 +43842,31 @@ Object.assign(FBXLoader.prototype, {
       FBXTree = new TextParser().parse(FBXText);
     }
 
-    // console.log( FBXTree );
-
+    // console.log( 'FBXTree', FBXTree );
 
     var connections = parseConnections(FBXTree);
+
+    // console.log( 'connection', connections );
+
+    // parse embedded images
     var images = parseImages(FBXTree);
 
-    // if ( resourceDirectory.isArray() ) {
+    // console.log( images )
 
-    // }
-    var textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
+    var textures = void 0;
+    if (typeof resourceDirectory === 'string') {
 
-    console.log(textures);
-    for (var _iterator = textures, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-      var _ref;
+      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
+    } else {
 
-      if (_isArray) {
-        if (_i >= _iterator.length) break;
-        _ref = _iterator[_i++];
-      } else {
-        _i = _iterator.next();
-        if (_i.done) break;
-        _ref = _i.value;
-      }
-
-      var _ref2 = _ref,
-          key = _ref2[0],
-          value = _ref2[1];
-      console.log(key, value);
+      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections, resourceDirectory);
     }
+
+    // turn embedded images into textures, and load any seperate textures from resourceDirectory
+
+
+    // console.log( ' textures', textures )
+    // for( let [key, value] of textures ) { console.log( '[key, value]', key, value ) }
 
     var materials = parseMaterials(FBXTree, textures, connections);
     var deformers = parseDeformers(FBXTree, connections);
@@ -44014,6 +44012,8 @@ function parseImage(videoNode) {
  * @returns {Map<number, THREE.Texture>}
  */
 function parseTextures(FBXTree, loader, imageMap, connections) {
+  var texturesFromZip = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+
 
   /**
    * @type {Map<number, THREE.Texture>}
@@ -44025,7 +44025,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
     var textureNodes = FBXTree.Objects.subNodes.Texture;
     for (var nodeID in textureNodes) {
 
-      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections);
+      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections, texturesFromZip);
       textureMap.set(parseInt(nodeID), texture);
     }
   }
@@ -44040,7 +44040,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {THREE.Texture}
  */
-function parseTexture(textureNode, loader, imageMap, connections) {
+function parseTexture(textureNode, loader, imageMap, connections, texturesFromZip) {
 
   var FBX_ID = textureNode.id;
 
@@ -44049,6 +44049,7 @@ function parseTexture(textureNode, loader, imageMap, connections) {
   var fileName = void 0;
 
   var filePath = textureNode.properties.FileName;
+
   var relativeFilePath = textureNode.properties.RelativeFilename;
 
   var children = connections.get(FBX_ID).children;
@@ -44082,9 +44083,16 @@ function parseTexture(textureNode, loader, imageMap, connections) {
     loader.setPath(undefined);
   }
 
+  if (texturesFromZip) {
+
+    loader.setPath(undefined);
+    fileName = texturesFromZip[fileName];
+  }
+
   /**
    * @type {THREE.Texture}
    */
+
   var texture = loader.load(fileName);
   texture.name = name;
   texture.FBX_ID = FBX_ID;
@@ -48377,75 +48385,77 @@ var errorHandler = function (msg) {
 };
 
 var processZip = function (file) {
-      JSZip.loadAsync(file).then(function (zip) {
+    JSZip.loadAsync(file).then(function (zip) {
 
-            // First loop over the zip's contents and extract the FBX file and any images
-            var imagesZipped = [];
+        // First loop over the zip's contents and extract the FBX file and any images
+        var imagesZipped = [];
 
-            var fbxFileZipped = false;
+        var fbxFileZipped = false;
 
-            for (var entry in zip.files) {
+        for (var entry in zip.files) {
 
-                  var zippedFile = zip.files[entry];
+            var zippedFile = zip.files[entry];
 
-                  /*
-                  const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
-                    if ( checkForDirectory ) {
-                    console.warn(
-                      `Warning: The zip file contains directories.
-                      These are currently not supported and your model may display incorrectly.
-                      To fix any issues put all texture files at the top level in the zip file.`
-                    );
-                    return;
-                  }
-                    */
-
-                  var extension = zippedFile.name.split('.').pop().toLowerCase();
-
-                  if (extension === 'fbx') {
-
-                        if (fbxFileZipped) {
-
-                              errorHandler('Warning: more than one FBX file found in archive,\n            skipping subsequent files.');
-                        } else {
-
-                              fbxFileZipped = zippedFile;
-                        }
-                  } else {
-
-                        imagesZipped.push(zippedFile);
-                  }
+            /*
+            const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
+              if ( checkForDirectory ) {
+              console.warn(
+                `Warning: The zip file contains directories.
+                These are currently not supported and your model may display incorrectly.
+                To fix any issues put all texture files at the top level in the zip file.`
+              );
+              return;
             }
+              */
 
-            // At this point the FBX file should be contained in fbxFileZipped and images are in
-            // imagesZipped - these are still compressed, so we'll need to set up a Promise and
-            // uncompress them all before calling the FBXParser
+            var extension = zippedFile.name.split('.').pop().toLowerCase();
 
-            var promises = imagesZipped.map(function (zippedFile) {
+            if (extension === 'fbx') {
 
-                  var URL = window.webkitURL || window.mozURL || window.URL;
-                  return zippedFile.async('arrayBuffer').then(function (image) {
+                if (fbxFileZipped) {
 
-                        var buffer = new Uint8Array(image);
-                        var blob = new Blob([buffer.buffer]);
-                        var url = URL.createObjectURL(blob);
-                        return url;
-                  });
+                    errorHandler('Warning: more than one FBX file found in archive,\n            skipping subsequent files.');
+                } else {
+
+                    fbxFileZipped = zippedFile;
+                }
+            } else {
+
+                imagesZipped.push(zippedFile);
+            }
+        }
+
+        // At this point the FBX file should be contained in fbxFileZipped and images are in
+        // imagesZipped - these are still compressed, so we'll need to set up a Promise and
+        // uncompress them all before calling the FBXParser
+
+        var images = {};
+
+        var promises = imagesZipped.map(function (zippedFile) {
+
+            var URL = window.webkitURL || window.mozURL || window.URL;
+            return zippedFile.async('arrayBuffer').then(function (image) {
+
+                var buffer = new Uint8Array(image);
+                var blob = new Blob([buffer.buffer]);
+                var url = URL.createObjectURL(blob);
+                images[zippedFile.name] = url;
             });
+        });
 
-            var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
-                  return data;
-            });
+        var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
+            return data;
+        });
 
-            promises.push(fbxFilePromise);
+        promises.push(fbxFilePromise);
 
-            Promise.all(promises).then(function (resultsArray) {
+        Promise.all(promises).then(function (resultsArray) {
 
-                  var fbxFile = resultsArray.pop();
+            var fbxFile = resultsArray.pop();
 
-                  fileModel.onZipLoad(fbxFile, resultsArray);
-            });
-      });
+            fileModel.onZipLoad(fbxFile, images);
+        });
+    });
 };
 
 var manager = new LoadingManager();
@@ -48506,10 +48516,6 @@ var fileModel = {
   onZipLoad: function () {}
 
 };
-
-/*  *******************************************************************
-   Zip file processing
-*******************************************************************   */
 
 /*  *******************************************************************
               Set up eventlistener for file input
@@ -49214,6 +49220,11 @@ var AnimationControls = function () {
 
     return AnimationControls;
 }();
+
+// Note - this currently get the info from the three.js renderer rather than the model.
+// The number of faces / vertices that aare rendered by three.js may be different than the
+// number in the original model, since quads (4-sided polygons) are not supported in WebGL
+// - these are subdivided into tris 
 
 var vertices = document.querySelector('#vertices');
 var faces = document.querySelector('#faces');
