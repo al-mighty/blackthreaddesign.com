@@ -41,6 +41,8 @@ export default class FbxViewerCanvas {
 
     this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
 
+    this.animationControls = new AnimationControls();
+
     this.mixers = [];
 
     // Put any per frame calculation here
@@ -50,16 +52,7 @@ export default class FbxViewerCanvas {
       // remove if no longer using stats
       if ( stats ) stats.update();
 
-      if ( self.mixers.length > 0 ) {
-
-        for ( let i = 0; i < self.mixers.length; i++ ) {
-
-          self.mixers[ i ].update( self.app.delta / 1000 );
-          if ( self.animationControls ) self.animationControls.setSliderValue( self.mixers[ i ].action.time );
-
-        }
-
-      }
+      self.animationControls.update( self.app.delta / 1000 );
 
     };
 
@@ -80,18 +73,33 @@ export default class FbxViewerCanvas {
 
   initLights() {
 
-    const ambientLight = new THREE.AmbientLight( 0x333333 );
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
+    this.app.scene.add( ambientLight );
 
-    const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
-    backLight.position.set( 2.6, 1, 3 );
+    // ****  METHOD 1:   3 POINT LIGHTING ***************************
+    // Traditional 3 point light setup - slightly more expensive due to
+    // two extra lights
 
-    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
-    keyLight.position.set( -2, -1, 0 );
+    // const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
+    // backLight.position.set( 2.6, 1, 3 );
 
-    const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
-    fillLight.position.set( 3, 3, 2 );
+    // const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+    // keyLight.position.set( -2, -1, 0 );
 
-    this.app.scene.add( ambientLight, backLight, keyLight, fillLight );
+    // const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
+    // fillLight.position.set( 3, 3, 2 );
+
+    // this.app.scene.add( backLight, keyLight, fillLight );
+
+
+    // ****  METHOD 2:   CAMERA LIGHT ***********************************
+    // Visually similar to 3 point lighting, but cheaper as only two lights
+    // are needed
+
+    const pointLight = new THREE.PointLight( 0xffffff, 0.7, 0, 0 );
+    this.app.camera.add( pointLight );
+    this.app.scene.add( this.app.camera );
+
   }
 
   takeScreenShot( width, height ) {
@@ -142,65 +150,42 @@ export default class FbxViewerCanvas {
 
   }
 
+  addObjectToScene( object ) {
+
+    this.app.fitCameraToObject( object );
+
+    this.animationControls.initAnimation( object );
+
+    this.app.scene.add( object );
+
+    // this needs to be called a little while after loading, otherwise
+    // otherwise textures may not have fully loaded
+    setTimeout( () => this.takeScreenShot( 1440, 800 ), 1000 );
+
+    this.app.play();
+
+    addModelInfo( this.app.renderer );
+
+    document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
+  }
+
   initFBXLoader() {
 
     const fbxLoader = new FBXLoader( manager );
 
-    const initAnimation = ( object ) => {
-
-      object.mixer = new THREE.AnimationMixer( object );
-      this.mixers.push( object.mixer );
-
-      const animation = object.animations[ 0 ];
-
-      const action = object.mixer.clipAction( animation );
-
-      action.play();
-
-      object.mixer.action = action;
-
-      this.animationControls = new AnimationControls( animation, action );
-
-    };
-
-    const addObjectToScene = ( object ) => {
-      
-      this.app.fitCameraToObject( object );
-
-      if ( object.animations.length !== 0 ) {
-
-        initAnimation( object );
-
-      }
-
-      this.app.scene.add( object );
-
-      // this needs to be called a little while after loading, otherwise the model may
-      // not be fully rendered yet
-      setTimeout( () => this.takeScreenShot( 1440, 800 ), 1000 );
-
-      this.app.play();
-
-      addModelInfo( this.app.renderer );
-
-      document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-
-    };
-
     fileModel.fileReader.onload = ( e ) => {
 
       const object = fbxLoader.parse( e.target.result );
-      addObjectToScene( object );
+      this.addObjectToScene( object );
 
     };
 
     // onload callback when loading .zip file
     fileModel.onZipLoad = ( fbxFile, resources ) => {
 
-      console.log( fbxFile, resources )
-
       const object = fbxLoader.parse( fbxFile, resources );
-      addObjectToScene( object );
+      this.addObjectToScene( object );
 
     };
 

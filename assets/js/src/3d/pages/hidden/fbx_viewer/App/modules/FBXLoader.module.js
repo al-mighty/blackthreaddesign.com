@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import NURBSCurve from './curves/NURBSCurve.js';
 
+import errorHandler from '../../utilities/errorHandler.js';
+
 /**
  * @author Kyle-Larson https://github.com/Kyle-Larson
  * @author Takahiro https://github.com/takahirox
@@ -90,8 +92,6 @@ Object.assign( FBXLoader.prototype, {
 	 */
   parse( FBXBuffer, resourceDirectory ) {
 
-    console.log( 'resourceDirectory', resourceDirectory );
-
     let FBXTree;
 
     if ( isFbxFormatBinary( FBXBuffer ) ) {
@@ -124,12 +124,8 @@ Object.assign( FBXLoader.prototype, {
 
     const connections = parseConnections( FBXTree );
 
-    // console.log( 'connection', connections );
-
     // parse embedded images
     const images = parseImages( FBXTree );
-
-    // console.log( images )
 
     let textures;
     if ( typeof resourceDirectory === 'string'  ) {
@@ -138,15 +134,9 @@ Object.assign( FBXLoader.prototype, {
    
     } else {
 
-      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections, resourceDirectory );
+      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ), images, connections, resourceDirectory );
     
     }
-
-    // turn embedded images into textures, and load any seperate textures from resourceDirectory
-   
-
-    // console.log( ' textures', textures )
-    // for( let [key, value] of textures ) { console.log( '[key, value]', key, value ) }
 
     const materials = parseMaterials( FBXTree, textures, connections );
     const deformers = parseDeformers( FBXTree, connections );
@@ -313,7 +303,7 @@ function parseTextures( FBXTree, loader, imageMap, connections, texturesFromZip 
   if ( 'Texture' in FBXTree.Objects.subNodes ) {
 
     const textureNodes = FBXTree.Objects.subNodes.Texture;
-    for ( const nodeID in textureNodes ) {
+    for ( const nodeID in textureNodes ) {  
 
       const texture = parseTexture( textureNodes[ nodeID ], loader, imageMap, connections, texturesFromZip );
       textureMap.set( parseInt( nodeID ), texture );
@@ -344,22 +334,12 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
   const filePath = textureNode.properties.FileName;
 
   const relativeFilePath = textureNode.properties.RelativeFilename;
-
+  
   const children = connections.get( FBX_ID ).children;
 
-  if ( children !== undefined && children.length > 0 && imageMap.has( children[ 0 ].ID ) ) {
+  const currentPath = loader.path;
 
-    fileName = imageMap.get( children[ 0 ].ID );
-
-  } else if ( relativeFilePath !== undefined && relativeFilePath[ 0 ] !== '/' &&
-			relativeFilePath.match( /^[a-zA-Z]:/ ) === null ) {
-
-		// use textureNode.properties.RelativeFilename
-		// if it exists and it doesn't seem an absolute path
-
-    fileName = relativeFilePath;
-
-  } else {
+  if ( texturesFromZip ) {
 
     const split = filePath.split( /[\\\/]/ );
 
@@ -373,9 +353,51 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
 
     }
 
-  }
+    loader.setPath( undefined );
+ 
+    if ( texturesFromZip[ fileName ] === undefined ) {
 
-  const currentPath = loader.path;
+      errorHandler( 'Texture missing from archive: ' + fileName );
+
+      fileName = '/assets/images/textures/default.jpg';
+
+    } else { 
+
+      fileName = texturesFromZip[ fileName ];
+
+    }
+ 
+  } else {
+
+    if ( children !== undefined && children.length > 0 && imageMap.has( children[ 0 ].ID ) ) {
+
+      fileName = imageMap.get( children[ 0 ].ID );
+
+    } else if ( relativeFilePath !== undefined && relativeFilePath[ 0 ] !== '/' &&
+        relativeFilePath.match( /^[a-zA-Z]:/ ) === null ) {
+
+      // use textureNode.properties.RelativeFilename
+      // if it exists and it doesn't seem an absolute path
+
+      fileName = relativeFilePath;
+
+    } else {
+
+      const split = filePath.split( /[\\\/]/ );
+
+      if ( split.length > 0 ) {
+
+        fileName = split[ split.length - 1 ];
+
+      } else {
+
+        fileName = filePath;
+
+      }
+
+    }
+
+  }
 
   if ( fileName.indexOf( 'blob:' ) === 0 ) {
 
@@ -383,17 +405,9 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
 
   }
 
-  if ( texturesFromZip ) {
-
-    loader.setPath( undefined );
-    fileName = texturesFromZip[fileName];
-  }
-
 	/**
 	 * @type {THREE.Texture}
 	 */
-
-
   const texture = loader.load( fileName );
   texture.name = name;
   texture.FBX_ID = FBX_ID;
@@ -404,8 +418,8 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
   const valueU = wrapModeU !== undefined ? wrapModeU.value : 0;
   const valueV = wrapModeV !== undefined ? wrapModeV.value : 0;
 
-	// http://download.autodesk.com/us/fbx/SDKdocs/FBX_SDK_Help/files/fbxsdkref/class_k_fbx_texture.html#889640e63e2e681259ea81061b85143a
-	// 0: repeat(default), 1: clamp
+  // http://download.autodesk.com/us/fbx/SDKdocs/FBX_SDK_Help/files/fbxsdkref/class_k_fbx_texture.html#889640e63e2e681259ea81061b85143a
+  // 0: repeat(default), 1: clamp
 
   texture.wrapS = valueU === 0 ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
   texture.wrapT = valueV === 0 ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;

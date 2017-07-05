@@ -43760,6 +43760,17 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+// Simple error handling function - customize as necessary
+
+var errorHandler = function (msg) {
+
+  document.querySelector('#error-overlay').classList.remove('hide');
+  var p = document.createElement('p');
+  p.innerHTML = msg;
+
+  document.querySelector('#error-message').appendChild(p);
+};
+
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -43816,8 +43827,6 @@ Object.assign(FBXLoader.prototype, {
    */
   parse: function (FBXBuffer, resourceDirectory) {
 
-    console.log('resourceDirectory', resourceDirectory);
-
     var FBXTree = void 0;
 
     if (isFbxFormatBinary(FBXBuffer)) {
@@ -43846,12 +43855,8 @@ Object.assign(FBXLoader.prototype, {
 
     var connections = parseConnections(FBXTree);
 
-    // console.log( 'connection', connections );
-
     // parse embedded images
     var images = parseImages(FBXTree);
-
-    // console.log( images )
 
     var textures = void 0;
     if (typeof resourceDirectory === 'string') {
@@ -43859,14 +43864,8 @@ Object.assign(FBXLoader.prototype, {
       textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
     } else {
 
-      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections, resourceDirectory);
+      textures = parseTextures(FBXTree, new TextureLoader(this.manager), images, connections, resourceDirectory);
     }
-
-    // turn embedded images into textures, and load any seperate textures from resourceDirectory
-
-
-    // console.log( ' textures', textures )
-    // for( let [key, value] of textures ) { console.log( '[key, value]', key, value ) }
 
     var materials = parseMaterials(FBXTree, textures, connections);
     var deformers = parseDeformers(FBXTree, connections);
@@ -44054,16 +44053,9 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
   var children = connections.get(FBX_ID).children;
 
-  if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
+  var currentPath = loader.path;
 
-    fileName = imageMap.get(children[0].ID);
-  } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
-
-    // use textureNode.properties.RelativeFilename
-    // if it exists and it doesn't seem an absolute path
-
-    fileName = relativeFilePath;
-  } else {
+  if (texturesFromZip) {
 
     var split = filePath.split(/[\\\/]/);
 
@@ -44074,25 +44066,51 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
       fileName = filePath;
     }
-  }
 
-  var currentPath = loader.path;
+    loader.setPath(undefined);
+
+    if (texturesFromZip[fileName] === undefined) {
+
+      errorHandler('Texture missing from archive: ' + fileName);
+
+      fileName = '/assets/images/textures/default.jpg';
+    } else {
+
+      fileName = texturesFromZip[fileName];
+    }
+  } else {
+
+    if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
+
+      fileName = imageMap.get(children[0].ID);
+    } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
+
+      // use textureNode.properties.RelativeFilename
+      // if it exists and it doesn't seem an absolute path
+
+      fileName = relativeFilePath;
+    } else {
+
+      var _split = filePath.split(/[\\\/]/);
+
+      if (_split.length > 0) {
+
+        fileName = _split[_split.length - 1];
+      } else {
+
+        fileName = filePath;
+      }
+    }
+  }
 
   if (fileName.indexOf('blob:') === 0) {
 
     loader.setPath(undefined);
   }
 
-  if (texturesFromZip) {
-
-    loader.setPath(undefined);
-    fileName = texturesFromZip[fileName];
-  }
-
   /**
    * @type {THREE.Texture}
    */
-
   var texture = loader.load(fileName);
   texture.name = name;
   texture.FBX_ID = FBX_ID;
@@ -48373,17 +48391,6 @@ function slice(a, b, from, to) {
   return a;
 }
 
-// Simple error handling function - customize as necessary
-
-var errorHandler = function (msg) {
-
-  document.querySelector('#error-overlay').classList.remove('hide');
-  var p = document.createElement('p');
-  p.innerHTML = msg;
-
-  document.querySelector('#error-message').appendChild(p);
-};
-
 var processZip = function (file) {
     JSZip.loadAsync(file).then(function (zip) {
 
@@ -48396,28 +48403,34 @@ var processZip = function (file) {
 
             var zippedFile = zip.files[entry];
 
-            var checkForDirectory = zippedFile.name.indexOf('/') > -1;
+            // skip if the entry is a directory
+            if (zippedFile.dir === false) {
 
-            if (checkForDirectory) {
-                console.warn('Warning: The zip file contains directories.\n          These are currently not supported and your model may display incorrectly.\n          To fix this issue reference all textures from the root level in the FBX file.');
-                return;
-            }
+                var extension = zippedFile.name.split('.').pop().toLowerCase();
 
-            var extension = zippedFile.name.split('.').pop().toLowerCase();
+                if (extension === 'fbx') {
 
-            if (extension === 'fbx') {
+                    if (fbxFileZipped) {
 
-                if (fbxFileZipped) {
+                        errorHandler('Warning: more than one FBX file found in archive,\n              skipping subsequent files.');
+                    } else {
 
-                    errorHandler('Warning: more than one FBX file found in archive,\n            skipping subsequent files.');
+                        fbxFileZipped = zippedFile;
+                    }
                 } else {
 
-                    fbxFileZipped = zippedFile;
+                    // should check if it's an image here - not completely neccessary as it will
+                    // work anyway, but maybe more efficient
+                    imagesZipped.push(zippedFile);
                 }
-            } else {
-
-                imagesZipped.push(zippedFile);
             }
+        }
+
+        // if there was no FBX file found exit with an error here
+        if (!fbxFileZipped) {
+
+            errorHandler('No FBX file found in archive.');
+            return;
         }
 
         // At this point the FBX file should be contained in fbxFileZipped and images are in
@@ -48426,27 +48439,46 @@ var processZip = function (file) {
 
         var images = {};
 
+        var URL = window.webkitURL || window.mozURL || window.URL;
+
         var promises = imagesZipped.map(function (zippedFile) {
 
-            var URL = window.webkitURL || window.mozURL || window.URL;
             return zippedFile.async('arrayBuffer').then(function (image) {
 
                 var buffer = new Uint8Array(image);
                 var blob = new Blob([buffer.buffer]);
                 var url = URL.createObjectURL(blob);
-                images[zippedFile.name] = url;
+
+                // drop any directories from the name
+                var split = zippedFile.name.split(/[\\\/]/);
+                var fileName = void 0;
+
+                if (split.length > 0) {
+
+                    fileName = split[split.length - 1];
+                } else {
+
+                    fileName = zippedFile.name;
+                }
+
+                if (images[fileName] !== undefined) {
+
+                    errorHandler('Warning: the archive contains multiple images with the same name:' + fileName);
+                } else {
+
+                    images[fileName] = url;
+                }
             });
         });
 
+        var fbxFile = null;
         var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
-            return data;
+            fbxFile = data;
         });
 
         promises.push(fbxFilePromise);
 
-        Promise.all(promises).then(function (resultsArray) {
-
-            var fbxFile = resultsArray.pop();
+        Promise.all(promises).then(function () {
 
             fileModel.onZipLoad(fbxFile, images);
         });
@@ -48477,8 +48509,11 @@ manager.onProgress = function (url, currentFile, totalFiles) {
   progress.style.width = percentComplete + '%';
 };
 
+// NOTE: A lot of unimportant errors tend to come from here,
+// so these are just output as warnings to the console instead of
+// using the errorHandler
 manager.onError = function (msg) {
-  errorHandler('THREE.LoadingManager error: ' + msg);
+  console.warn('THREE.LoadingManager error: ' + msg);
 };
 
 var checkForFileAPI = function () {
@@ -49114,29 +49149,55 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var AnimationControls = function () {
-    function AnimationControls(animation, action) {
+    function AnimationControls() {
         classCallCheck(this, AnimationControls);
 
-
-        this.action = action;
 
         this.slider = document.querySelector('#animation-slider');
         this.playButton = document.querySelector('#play-button');
         this.pauseButton = document.querySelector('#pause-button');
         this.playbackControl = document.querySelector('#playback-control');
 
-        document.querySelector('#animation-controls').classList.remove('hide');
+        this.controls = document.querySelector('#animation-controls');
+    }
+
+    AnimationControls.prototype.update = function update(delta) {
+
+        if (this.mixer) this.mixer.update(delta);
+
+        if (this.action) this.setSliderValue(this.action.time);
+    };
+
+    AnimationControls.prototype.initAnimation = function initAnimation(object) {
+
+        // don't do anything if the object has no animations
+        if (object.animations.length === 0) return;
+
+        var animation = object.animations[0];
+
+        // lots of models have tiny < .1 second animations that cause
+        // flickering / stuttering - ignore these
+        if (animation.duration < 0.1) return;
+
+        console.log(animation);
 
         // set animation slider max to length of animation
         this.slider.max = String(animation.duration);
 
-        // update the slider at ~ 60fps
         this.slider.step = String(animation.duration / 150);
+
+        this.mixer = new AnimationMixer(object);
+
+        this.action = this.mixer.clipAction(animation);
+
+        this.action.play();
+
+        document.querySelector('#animation-controls').classList.remove('hide');
 
         this.initPlaybackControls();
 
         this.initSlider();
-    }
+    };
 
     AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
 
@@ -49261,6 +49322,8 @@ var FbxViewerCanvas = function () {
 
     this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
+    this.animationControls = new AnimationControls();
+
     this.mixers = [];
 
     // Put any per frame calculation here
@@ -49270,14 +49333,7 @@ var FbxViewerCanvas = function () {
       // remove if no longer using stats
       if (stats) stats.update();
 
-      if (self.mixers.length > 0) {
-
-        for (var i = 0; i < self.mixers.length; i++) {
-
-          self.mixers[i].update(self.app.delta / 1000);
-          if (self.animationControls) self.animationControls.setSliderValue(self.mixers[i].action.time);
-        }
-      }
+      self.animationControls.update(self.app.delta / 1000);
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
@@ -49296,18 +49352,32 @@ var FbxViewerCanvas = function () {
 
   FbxViewerCanvas.prototype.initLights = function initLights() {
 
-    var ambientLight = new AmbientLight(0x333333);
+    var ambientLight = new AmbientLight(0xffffff, 0.2);
+    this.app.scene.add(ambientLight);
 
-    var backLight = new DirectionalLight(0xffffff, 0.325);
-    backLight.position.set(2.6, 1, 3);
+    // ****  METHOD 1:   3 POINT LIGHTING ***************************
+    // Traditional 3 point light setup - slightly more expensive due to
+    // two extra lights
 
-    var keyLight = new DirectionalLight(0xffffff, 0.475);
-    keyLight.position.set(-2, -1, 0);
+    // const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
+    // backLight.position.set( 2.6, 1, 3 );
 
-    var fillLight = new DirectionalLight(0xffffff, 0.65);
-    fillLight.position.set(3, 3, 2);
+    // const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+    // keyLight.position.set( -2, -1, 0 );
 
-    this.app.scene.add(ambientLight, backLight, keyLight, fillLight);
+    // const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
+    // fillLight.position.set( 3, 3, 2 );
+
+    // this.app.scene.add( backLight, keyLight, fillLight );
+
+
+    // ****  METHOD 2:   CAMERA LIGHT ***********************************
+    // Visually similar to 3 point lighting, but cheaper as only two lights
+    // are needed
+
+    var pointLight = new PointLight(0xffffff, 0.7, 0, 0);
+    this.app.camera.add(pointLight);
+    this.app.scene.add(this.app.camera);
   };
 
   FbxViewerCanvas.prototype.takeScreenShot = function takeScreenShot(width, height) {
@@ -49356,64 +49426,44 @@ var FbxViewerCanvas = function () {
     });
   };
 
-  FbxViewerCanvas.prototype.initFBXLoader = function initFBXLoader() {
+  FbxViewerCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
     var _this2 = this;
 
+    this.app.fitCameraToObject(object);
+
+    this.animationControls.initAnimation(object);
+
+    this.app.scene.add(object);
+
+    // this needs to be called a little while after loading, otherwise
+    // otherwise textures may not have fully loaded
+    setTimeout(function () {
+      return _this2.takeScreenShot(1440, 800);
+    }, 1000);
+
+    this.app.play();
+
+    addModelInfo(this.app.renderer);
+
+    document.querySelector('#loading-overlay').classList.add('hide');
+  };
+
+  FbxViewerCanvas.prototype.initFBXLoader = function initFBXLoader() {
+    var _this3 = this;
+
     var fbxLoader = new FBXLoader(manager);
-
-    var initAnimation = function (object) {
-
-      object.mixer = new AnimationMixer(object);
-      _this2.mixers.push(object.mixer);
-
-      var animation = object.animations[0];
-
-      var action = object.mixer.clipAction(animation);
-
-      action.play();
-
-      object.mixer.action = action;
-
-      _this2.animationControls = new AnimationControls(animation, action);
-    };
-
-    var addObjectToScene = function (object) {
-
-      _this2.app.fitCameraToObject(object);
-
-      if (object.animations.length !== 0) {
-
-        initAnimation(object);
-      }
-
-      _this2.app.scene.add(object);
-
-      // this needs to be called a little while after loading, otherwise the model may
-      // not be fully rendered yet
-      setTimeout(function () {
-        return _this2.takeScreenShot(1440, 800);
-      }, 1000);
-
-      _this2.app.play();
-
-      addModelInfo(_this2.app.renderer);
-
-      document.querySelector('#loading-overlay').classList.add('hide');
-    };
 
     fileModel.fileReader.onload = function (e) {
 
       var object = fbxLoader.parse(e.target.result);
-      addObjectToScene(object);
+      _this3.addObjectToScene(object);
     };
 
     // onload callback when loading .zip file
     fileModel.onZipLoad = function (fbxFile, resources) {
 
-      console.log(fbxFile, resources);
-
       var object = fbxLoader.parse(fbxFile, resources);
-      addObjectToScene(object);
+      _this3.addObjectToScene(object);
     };
   };
 

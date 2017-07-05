@@ -4,7 +4,7 @@
 - test on mobile
 
 - not supported:
- -- directories in zip files
  -- multiple animations per model
  -- multiple models per zip
- -- correct faces / vertices count 
+ -- correct faces / vertices count (three.js limitation)
+ -- more than 4 vertex skinning weights (three.js limitation)

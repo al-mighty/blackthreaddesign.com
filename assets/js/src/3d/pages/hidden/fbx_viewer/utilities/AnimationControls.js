@@ -1,28 +1,60 @@
 import throttle from 'lodash.throttle';
 
+import * as THREE from 'three';
+
 export default class AnimationControls {
 
-  constructor( animation, action ) {
-
-    this.action = action;
+  constructor( ) {
 
     this.slider = document.querySelector( '#animation-slider' );
     this.playButton = document.querySelector( '#play-button' );
     this.pauseButton = document.querySelector( '#pause-button' );
     this.playbackControl = document.querySelector( '#playback-control' );
 
-    document.querySelector( '#animation-controls' ).classList.remove( 'hide' );
+    this.controls = document.querySelector( '#animation-controls' )
+
+  }
+
+  update( delta ) {
+
+    if ( this.mixer ) this.mixer.update( delta );
+
+    if ( this.action ) this.setSliderValue( this.action.time );
+
+  }
+
+  initAnimation( object ) {
+
+    // don't do anything if the object has no animations
+    if ( object.animations.length === 0 ) return;
+
+    const animation = object.animations[ 0 ];
+
+    // lots of models have tiny < .1 second animations that cause
+    // flickering / stuttering - ignore these
+    if ( animation.duration < 0.1 ) {
+
+      console.warn( 'Skipping animation with duration < 0.1 seconds.' );
+      return;
+    
+  }
 
     // set animation slider max to length of animation
     this.slider.max = String( animation.duration );
 
-    // update the slider at ~ 60fps
     this.slider.step = String( animation.duration / 150 );
+
+    this.mixer = new THREE.AnimationMixer( object );
+
+    this.action = this.mixer.clipAction( animation );
+
+    this.action.play();
+
+    document.querySelector( '#animation-controls' ).classList.remove( 'hide' );
 
     this.initPlaybackControls();
 
     this.initSlider();
-
 
   }
 

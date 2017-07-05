@@ -13,38 +13,43 @@ const processZip = ( file ) => {
 
       const zippedFile = zip.files[ entry ];
 
-      const checkForDirectory = zippedFile.name.indexOf( '/' ) > -1;
+      // skip if the entry is a directory
+      if ( zippedFile.dir === false ) {
 
-      if ( checkForDirectory ) {
-        console.warn(
-          `Warning: The zip file contains directories.
-          These are currently not supported and your model may display incorrectly.
-          To fix this issue reference all textures from the root level in the FBX file.`
-        );
-        return;
-      }
+        const extension = zippedFile.name.split( '.' ).pop().toLowerCase();
 
-      const extension = zippedFile.name.split( '.' ).pop().toLowerCase();
+        if ( extension === 'fbx' ) {
 
-      if ( extension === 'fbx' ) {
+          if ( fbxFileZipped ) {
 
-        if ( fbxFileZipped ) {
+            errorHandler( 
+              `Warning: more than one FBX file found in archive,
+              skipping subsequent files.`
+            );
 
-          errorHandler( 
-            `Warning: more than one FBX file found in archive,
-            skipping subsequent files.`
-          );
+          } else {
+
+            fbxFileZipped = zippedFile;
+
+          }
 
         } else {
 
-          fbxFileZipped = zippedFile;
-
+          // should check if it's an image here - not completely neccessary as it will
+          // work anyway, but maybe more efficient
+          imagesZipped.push( zippedFile );
         }
 
-      } else {
-
-        imagesZipped.push( zippedFile );
       }
+
+    }
+
+    // if there was no FBX file found exit with an error here
+    if( !fbxFileZipped ) {
+
+      errorHandler( 'No FBX file found in archive.' );
+      return;
+
     }
 
     // At this point the FBX file should be contained in fbxFileZipped and images are in
@@ -53,29 +58,54 @@ const processZip = ( file ) => {
 
     const images = {};
 
+    const URL = window.webkitURL || window.mozURL || window.URL;
+
     const promises = imagesZipped.map( ( zippedFile ) => {
 
-      const URL = window.webkitURL || window.mozURL || window.URL;
       return zippedFile.async( 'arrayBuffer' )
-            .then( ( image ) => {
+        .then( ( image ) => {
 
-              const buffer = new Uint8Array( image );
-              const blob = new Blob( [ buffer.buffer ] );
-              const url = URL.createObjectURL( blob );
-              images[ zippedFile.name ] = url;
+          const buffer = new Uint8Array( image );
+          const blob = new Blob( [ buffer.buffer ] );
+          const url = URL.createObjectURL( blob );
 
-            } );
+          // drop any directories from the name
+          const split = zippedFile.name.split( /[\\\/]/ );
+          let fileName;
+
+          if ( split.length > 0 ) {
+
+            fileName = split[ split.length - 1 ];
+
+          } else {
+
+            fileName = zippedFile.name;
+
+          }
+
+
+          if ( images[ fileName ] !== undefined ) {
+
+            errorHandler( 'Warning: the archive contains multiple images with the same name:'  + fileName );
+
+          } else {
+
+            images[ fileName ] = url;
+
+          }
+          
+
+        } );
 
     } );
 
+    let fbxFile = null;
     const fbxFilePromise = fbxFileZipped.async( 'arrayBuffer' )
-          .then( ( data ) => { return data; } );
+      .then( ( data ) => { fbxFile =  data; } );
 
     promises.push( fbxFilePromise );
 
-    Promise.all( promises ).then( ( resultsArray ) => {
-
-      const fbxFile = resultsArray.pop();
+    Promise.all( promises ).then( () => {
 
       fileModel.onZipLoad( fbxFile, images );
 
