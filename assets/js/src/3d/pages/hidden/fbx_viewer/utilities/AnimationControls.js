@@ -11,15 +11,25 @@ export default class AnimationControls {
     this.pauseButton = document.querySelector( '#pause-button' );
     this.playbackControl = document.querySelector( '#playback-control' );
 
-    this.controls = document.querySelector( '#animation-controls' )
+    this.controls = document.querySelector( '#animation-controls' );
+
+    this.isPaused = false;
+    this.pauseButtonActive = false;
 
   }
 
   update( delta ) {
 
-    if ( this.mixer ) this.mixer.update( delta );
+    // delta is in seconds while fbx animations are in milliseconds so convert here
+    if ( this.mixer && this.action && !this.isPaused ) {
 
-    if ( this.action ) this.setSliderValue( this.action.time );
+      this.mixer.update( delta / 1000 );
+
+      // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
+      // the animation duration, so set the slider value from that
+      this.setSliderValue( this.action.time );
+
+    }
 
   }
 
@@ -36,8 +46,8 @@ export default class AnimationControls {
 
       console.warn( 'Skipping animation with duration < 0.1 seconds.' );
       return;
-    
-  }
+
+    }
 
     // set animation slider max to length of animation
     this.slider.max = String( animation.duration );
@@ -66,11 +76,19 @@ export default class AnimationControls {
 
   initPlaybackControls() {
 
-    const self = this;
-
     this.playbackControl.addEventListener( 'click', () => {
 
-      self.togglePause();
+      if ( !this.isPaused ) {
+
+        this.pauseButtonActive = true;
+
+      } else {
+
+        this.pauseButtonActive = false;
+
+      }
+
+      this.togglePause();
 
     } );
 
@@ -78,7 +96,7 @@ export default class AnimationControls {
 
   togglePause() {
 
-    if ( !this.action.paused ) {
+    if ( !this.isPaused ) {
 
       this.pause();
 
@@ -92,7 +110,7 @@ export default class AnimationControls {
 
   pause() {
 
-    this.action.paused = true;
+    this.isPaused = true;
     this.playButton.classList.remove( 'hide' );
     this.pauseButton.classList.add( 'hide' );
 
@@ -100,48 +118,34 @@ export default class AnimationControls {
 
   play() {
 
+    this.isPaused = false;
     this.playButton.classList.add( 'hide' );
     this.pauseButton.classList.remove( 'hide' );
 
-    this.action.reset();
-
-    this.action.startAt( this.slider.value ).play();
-
-    // const startTime = this.slider.value;
-    // this.action.time = this.slider.value;
-    // this.action.play();
-    // this.action.paused = false;
   }
 
   initSlider() {
 
     this.slider.addEventListener( 'mousedown', () => {
 
-      this.pause();
+      if ( !this.pauseButtonActive ) this.pause();
 
     } );
 
     this.slider.addEventListener( 'input', throttle( () => {
 
+      const oldTime = this.mixer.time;
+      const newTime = this.slider.value;
 
-      const newPos = this.slider.value;
-
-      this.action.time = newPos;
-
-      this.slider.value = String( newPos );
+      this.mixer.update( newTime - oldTime );
 
     }, 17 ) ); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
     this.slider.addEventListener( 'mouseup', () => {
 
-      // console.log( this.action.time, this.slider.value );
-
-      this.play();
-
-      // console.log( this.action.time, this.slider.value );
+      if ( !this.pauseButtonActive ) this.play();
 
     } );
 
   }
 }
-

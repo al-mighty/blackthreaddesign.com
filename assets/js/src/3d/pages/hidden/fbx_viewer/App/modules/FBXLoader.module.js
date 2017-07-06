@@ -104,15 +104,19 @@ Object.assign( FBXLoader.prototype, {
 
       if ( !isFbxFormatASCII( FBXText ) ) {
 
-        // self.manager.itemError( url );
-        throw new Error( 'FBXLoader: Unknown format.' );
+        errorHandler( 'Unknown FBX format.');
+        return;
 
       }
 
-      if ( getFbxVersion( FBXText ) < 7000 ) {
+      const version = getFbxVersion( FBXText );
 
-        // self.manager.itemError( url );
-        throw new Error( 'FBXLoader: FBX version not supported for file at ' + url + ', FileVersion: ' + getFbxVersion( FBXText ) );
+      if ( version < 7000 ) {
+
+        errorHandler( 'FBX version too low. Current version: ' + version + '. Required at least version 7000' );
+        return;
+        // this.manager.itemError( FBXText );
+        // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
 
       }
 
@@ -4407,8 +4411,8 @@ Object.assign( BinaryParser.prototype, {
         return reader.getArrayBuffer( length );
 
       default:
-        throw new Error( 'FBXLoader: Unknown property type ' + type );
-
+        errorHandler( 'FBX contains an unknown property type ' + type );
+        return;
     }
 
   },

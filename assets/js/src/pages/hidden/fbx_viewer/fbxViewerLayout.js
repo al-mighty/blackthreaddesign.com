@@ -48,8 +48,8 @@ fullscreenButton.addEventListener( 'click', () => {
   goFullscreen( viewer );
 } );
 
-export default function fbxViewerLayout() {
+// export default function fbxViewerLayout() {
 
   // window.addEventListener( 'resize', throttle( () => { } ), 250 );
 
-}
+// }

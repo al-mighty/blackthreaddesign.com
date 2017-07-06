@@ -58,7 +58,7 @@ const processZip = ( file ) => {
 
     const images = {};
 
-    const URL = window.webkitURL || window.mozURL || window.URL;
+    const URL = window.URL || window.webkitURL || window.mozURL;
 
     const promises = imagesZipped.map( ( zippedFile ) => {
 
@@ -92,16 +92,18 @@ const processZip = ( file ) => {
 
             images[ fileName ] = url;
 
-          }
-          
+          }     
 
-        } );
+        }, ( err ) => { console.log( 'JSZip error unpacking image: ' + err ); } );
 
     } );
 
     let fbxFile = null;
     const fbxFilePromise = fbxFileZipped.async( 'arrayBuffer' )
-      .then( ( data ) => { fbxFile =  data; } );
+      .then(
+        ( data ) => { fbxFile = data; },
+        ( err ) => { console.log( 'JSZip error unpacking FBX: ' + err ); } 
+      );
 
     promises.push( fbxFilePromise );
 

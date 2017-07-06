@@ -5,5 +5,5 @@ const canvas = document.querySelector( '#viewer-canvas' );
 
 fbxViewerLayout();
 
-const fbxViewerCanvas = new FbxViewerCanvas( canvas, null, 0x707070 );
+const fbxViewerCanvas = new FbxViewerCanvas( canvas );
 

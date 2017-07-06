@@ -52,7 +52,7 @@ export default class FbxViewerCanvas {
       // remove if no longer using stats
       if ( stats ) stats.update();
 
-      self.animationControls.update( self.app.delta / 1000 );
+      self.animationControls.update( self.app.delta );
 
     };
 
@@ -177,7 +177,7 @@ export default class FbxViewerCanvas {
     fileModel.fileReader.onload = ( e ) => {
 
       const object = fbxLoader.parse( e.target.result );
-      this.addObjectToScene( object );
+      if( object !== undefined ) this.addObjectToScene( object );
 
     };
 
@@ -185,7 +185,8 @@ export default class FbxViewerCanvas {
     fileModel.onZipLoad = ( fbxFile, resources ) => {
 
       const object = fbxLoader.parse( fbxFile, resources );
-      this.addObjectToScene( object );
+      if( object !== undefined ) this.addObjectToScene( object );
+
 
     };
 
