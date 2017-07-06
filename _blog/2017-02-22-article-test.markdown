@@ -83,7 +83,7 @@ This paragraph of text has been emphasized with the `{: .notice--danger}` class.
 
 # Links, references and abbreviations
 
-[External Link](http://www.fiftythree.com/paper/)
+[External Link](https://www.fiftythree.com/paper/)
 
 [Repeated link][repeated-link]
 
@@ -151,6 +151,6 @@ This is a vimeo video
 [//]: # (References and links)
 [This is an internal link]({{ site.url }}/tutorials/)
 
-[repeated-link]: http://jekyllrb.com/docs/home
+[repeated-link]: https://jekyllrb.com/docs/home
 
 [^reference]: Test reference
