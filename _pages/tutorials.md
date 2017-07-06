@@ -10,7 +10,7 @@ sidebar:
 
 Welcome to the Black Thread series of tutorials on [three.js](https://threejs.org/)! Here we'll focus on getting to know three.js in depth - all the amazing features that make this beautiful library so great to work with, but also all how to deal with all the quirks and annoyances that you will undoubtedly come across, so that you can quickly become familiar enough to start building your own projects.
 
-These tutorials are intended to be supplementary to the [official documentation](threejs.org/docs/) and you'll be referred there regularly (*author disclaimer:* I wrote quite a bit of that documentation, so if you find a mistake there it is probably my fault. Please let me know here or raise an issue on [github](https://github.com/mrdoob/three.js/issues/) and I'll fix it ASAP!). Also, the best resources for understanding what three.js is capable of, once you are a little familiar with the library, are the [official examples](https://threejs.org/examples/). Go through them and get to know the source code in depth, you won't regret it.
+These tutorials are intended to be supplementary to the [official documentation](https://threejs.org/docs/) and you'll be referred there regularly (*author disclaimer:* I wrote quite a bit of that documentation, so if you find a mistake there it is probably my fault. Please let me know here or raise an issue on [github](https://github.com/mrdoob/three.js/issues/) and I'll fix it ASAP!). Also, the best resources for understanding what three.js is capable of, once you are a little familiar with the library, are the [official examples](https://threejs.org/examples/). Go through them and get to know the source code in depth, you won't regret it.
 
 You are expected to have a basic grasp of JavaScript and know how to get your code running in a web browser, although we will be covering everything that you need to know to get going. 
 
@@ -43,7 +43,7 @@ We'll finish off with an example of how to enhance some built in functionality -
 ## Section 4 (Materials)
 Three.js ships with lots of different material types. We'll start by looking at the base [Material](https://threejs.org/docs/#api/materials/Material) class, then some of the older materials available - the [MeshBasicMaterial](https://threejs.org/docs/#api/materials/MeshBasicMaterial), [MeshLambertMaterial](https://threejs.org/docs/#api/materials/MeshLambertMaterial) and [MeshPhongMaterial](https://threejs.org/docs/#api/materials/MeshPhongMaterial) (as well as the new [MeshToonMaterial](https://threejs.org/docs/#api/materials/MeshToonMaterial) which is based on the Phong material), before moving onto the newer physically based rendering work flow in the form of the [MeshStandardMaterial](https://threejs.org/docs/#api/materials/MeshStandardMaterial) and [MeshPhysicalMaterial](https://threejs.org/docs/#api/materials/MeshPhysicalMaterial). 
 
-We'll also take a quick look at the less commonly used [MeshDepthMaterial](http://threejs.dev/docs/#api/materials/MeshDepthMaterial) and the [ShadowMaterial](http://threejs.dev/docs/#api/materials/ShadowMaterial) (which is transparent but can receive shadows), before looking at using multiple materials with a single mesh.
+We'll also take a quick look at the less commonly used [MeshDepthMaterial](http://threejs.org/docs/#api/materials/MeshDepthMaterial) and the [ShadowMaterial](http://threejs.org/docs/#api/materials/ShadowMaterial) (which is transparent but can receive shadows), before looking at using multiple materials with a single mesh.
 
 Finally we'll see how to create materials for lines and curves in the form of the [LineBasicMaterial](https://threejs.org/docs/#api/materials/LineBasicMaterial) and [LineDashedMaterial](https://threejs.org/docs/#api/materials/LineDashedMaterial).
 
@@ -95,7 +95,7 @@ This chapter will serve as a very quick introduction to writing your own shaders
 Here we'll go over anything that doesn't quite fit in the previous sections. We'll take a look at draw calls (and the importance of reducing them), how to clear objects from a scene and free up memory, as well as some useful code snippets that you can reuse in your work. 
 
 ## Code examples
-You can find any of the codepens used in the tutorials [here]((https://codepen.io/collection/DKNVdO/)), and all the gists [here](https://gist.github.com/looeee/). 
+You can find any of the codepens used in the tutorials [here](https://codepen.io/collection/DKNVdO/), and all the gists [here](https://gist.github.com/looeee/). 
 
 
 Happy coding! 
