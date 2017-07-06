@@ -15,3 +15,4 @@ js:
 <div class="canvas-container">
   <canvas id="bottle-canvas" class="fullpage-canvas"></canvas>
 </div>
+
