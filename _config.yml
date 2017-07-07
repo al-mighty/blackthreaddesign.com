@@ -19,6 +19,7 @@ repository               : "looeee/blackthreaddesign.com" # GitHub username/repo
 teaser                   : "/assets/images/default-teaser.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 200
+default_keywords         : "WebGL, three.js, JavaScript, ES6"
 comments:
   provider               : "disqus" # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
   disqus:

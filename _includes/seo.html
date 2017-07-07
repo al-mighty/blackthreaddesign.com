@@ -29,6 +29,14 @@
 
 <meta name="description" content="{{ seo_description }}">
 
+{% if page.keywords %} 
+  {% assign seo_keywords = page.keywords | append: " " | append: site.default_keywords %}
+{% else if site.default_keywords %}
+  {% assign seo_keywords = site.default_keywords %}
+{% endif %}
+
+<meta name="keywords" content="{{ seo_keywords }}">
+
 {% assign seo_author = page.author | default: page.author[0] | default: site.author[0] %}
 {% if seo_author %}
   {% if seo_author.twitter %}

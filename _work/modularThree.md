@@ -1,7 +1,7 @@
 ---
 layout: redirection
 title: "ModularTHREE"
-excerpt: "An NPM module that simplifies the creation of THREE.js based WebGL scenes written in ES2015."
+excerpt: "An NPM module that simplifies the creation of THREE.js based WebGL scenes written in ES2015"
 categories: work
 permalink: work/modular-three
 header:

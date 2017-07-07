@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "CSS Circles Animation"
-excerpt: "An experiment in pure CSS animation."
+excerpt: "An experiment in pure CSS animation, using art created with the EscherSketch hyperbolic art generator."
 categories: experiments
 permalink: /experiments/circles/
 header:

@@ -2,7 +2,7 @@
 layout: single
 title: About Me
 permalink: /about/
-excerpt: "Everything you could possibly want to know about the face behind the Black Thread Design agency."
+excerpt: "Everything you could possibly want to know about the face behind the Black Thread Design agency"
 canvas-id: 'about-canvas'
 #js:
 #  - about

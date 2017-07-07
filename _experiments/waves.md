@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Wave Lines"
-excerpt: "Rendering lines of any thickness with three.js."
+excerpt: "Three.js lines have a drawback - their thickness cannot be changed in most browsers. This is an experiment in creating ribbons - lines of any thickness"
 categories: experiments
 permalink: /experiments/waves/
 header:
