@@ -1,7 +1,7 @@
 ---
 layout: single
-title: "Circles"
-excerpt: "Pure CSS animation experiment"
+title: "CSS Circles Animation"
+excerpt: "An experiment in pure CSS animation."
 categories: experiments
 permalink: /experiments/circles/
 header:

@@ -16,7 +16,7 @@ description              : "Articles and tutorials on WebGL, three.js, web devel
 url                      : "https://www.blackthreaddesign.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # "/"
 repository               : "looeee/blackthreaddesign.com" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
-teaser                   : "/assets/images/teaser-800x450.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
+teaser                   : "/assets/images/default-teaser.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 200
 comments:
@@ -60,8 +60,8 @@ yandex_site_verification :
 # - https://developers.google.com/structured-data/customize/social-profiles
 social:
   type                   : # Person or Organization (defaults to Person)
-  name                   : # If the user or organization name differs from the site's name
-  links: # An array of links to social media profiles
+  name                   : Lewy Blue # If the user or organization name differs from the site's name
+  links: [ facebook, twitter, linkin, github ]# An array of links to social media profiles
 
 # Analytics
 analytics:
@@ -73,33 +73,33 @@ analytics:
 # Site Author
 author:
   name             : "Lewy Blue"
-  avatar           : "/assets/images/test1.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Forthcoming"
-  location         : "Ireland, mainly."
-  email            :
+  avatar           : "/assets/images/about/portrait-512.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  bio              : "WebGL and JavaScript expert from the west coast of Ireland."
+  location         : "South east Asia, currently."
+  email            : "looeee@gmail.com"
   uri              :
   bitbucket        :
-  codepen          :
+  codepen          : "looeee"
   dribbble         :
   flickr           :
-  facebook         :
+  facebook         : "lewy.blue"
   foursquare       :
   github           : "looeee"
   google_plus      :
   keybase          :
-  instagram        :
+  instagram        : "lewy.blue"
   lastfm           :
-  linkedin         :
+  linkedin         : "lewy-blue-30b9b193"
   pinterest        :
   soundcloud       :
-  stackoverflow    : # "123456/username" (the last part of your profile url, e.g. https://stackoverflow.com/users/123456/username)
+  stackoverflow    : "1401930/looeee" # "123456/username" (the last part of your profile url, e.g. https://stackoverflow.com/users/123456/username)
   steam            :
   tumblr           :
-  twitter          :
+  twitter          : "@looeeeb"
   vine             :
   weibo            :
   xing             :
-  youtube          :
+  youtube          : 
 
 
 # Reading Files

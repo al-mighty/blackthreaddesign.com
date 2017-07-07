@@ -2,6 +2,7 @@
 layout: single
 title: About Me
 permalink: /about/
+excerpt: "Everything you could possibly want to know about the face behind the Black Thread Design agency."
 canvas-id: 'about-canvas'
 #js:
 #  - about
@@ -9,7 +10,7 @@ canvas-id: 'about-canvas'
 #  about
 ---
 
-![image-left]({{ site.url }}/assets/images/about/portrait-512.png)
+![image-left]({{ site.url }}/assets/images/about/portrait-512.jpg)
 {: .align-left}
 Hello, and welcome to my website! My name's Lewy, I'm a Irish front end JavaScript expert specializing in WebGL with three.js. Have a look around the site for examples of my recent [work](/work/), [experiments](/experiments/) and my series of tutorials on [getting up and running with three.js](/tutorials/). 
 

@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Wave Lines"
-excerpt: "Rendering lines of any thickness with three.js"
+excerpt: "Rendering lines of any thickness with three.js."
 categories: experiments
 permalink: /experiments/waves/
 header:

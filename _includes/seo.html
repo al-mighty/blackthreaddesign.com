@@ -6,6 +6,10 @@
 
 {% if page.title %}
   {% assign seo_title = page.title | append: " " | append: site.title_separator | append: " " | append: site.title %}
+{% else if page.seo_title %}
+  {% assign seo_title = page.seo_title | append: " " | append: site.title_separator | append: " " | append: site.title %}
+{% else %}
+  {% assign seo_title = site.title %}
 {% endif %}
 
 {% if seo_title %}

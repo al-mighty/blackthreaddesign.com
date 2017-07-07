@@ -5,7 +5,7 @@ permalink: /work/bottle
 categories: work
 date:   2017-06-24 13:00:35 +0700
 comments: true
-excerpt: ""
+excerpt: "A viewer for an online bottle model."
 header:
   teaser: /assets/images/work/product_viewer/teaser.jpg
 js:

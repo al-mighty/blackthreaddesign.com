@@ -1,7 +1,7 @@
 ---
 layout: redirection
 title: "Codepen"
-excerpt: "A collection of my older experiments, mainly using SVG and GSAP"
+excerpt: "A collection of older experiments, mainly using SVG and GSAP"
 categories: experiments
 permalink: experiments/codepen
 header:

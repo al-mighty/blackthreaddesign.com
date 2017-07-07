@@ -1,0 +1,14 @@
+meta keywords
+titles on every page
+check site.description
+check site.author
+link twitter
+link facebook
+update date on each page
+bing_site_verification
+alexa_site_verification
+yandex_site_verification
+every relevant page at least 500 words
+fix redirection layout to include seo
+All excerpts at least 70 characters
+Double check redirects from http to https and www.b.. to .b..

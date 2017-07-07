@@ -4,9 +4,9 @@ title:  "Escher Sketch"
 date:   2017-03-31 13:00:35 +0700
 categories: work
 comments: true
-excerpt: "Automatic hyperbolic art generation prototype"
+excerpt: "Automatic Escher inspired hyperbolic art generation prototype."
 header:
-  teaser: /assets/images/work/escherSketch/teaser.jpg
+  teaser: /assets/images/work/escher-sketch/teaser.jpg
 js:
   escherSketch
 css:
