@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Wave Lines"
-excerpt: "Three.js lines have a drawback - their thickness cannot be changed in most browsers. This is an experiment in creating ribbons - lines of any thickness"
+excerpt: "This is an experiment in creating ribbons - lines of any thickness - which is not possible by default in thee.js"
 categories: experiments
 permalink: /experiments/waves/
 header:
