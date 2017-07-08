@@ -113,7 +113,7 @@ export default class EscherSketchCanvas {
   }
 
   initSpec() {
-    const imagesPath = '/assets/images/work/escherSketch/tiles/';
+    const imagesPath = '/assets/images/work/escher-sketch/tiles/';
 
     this.spec = {
       wireframe: false,
