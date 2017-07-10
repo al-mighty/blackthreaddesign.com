@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import Time from './Time.js';
 
+import OrbitControls from './modules/OrbitControls.module.js';
+
 /**
  * @author Lewy Blue / https://github.com/looeee
  *
@@ -227,6 +229,39 @@ function App( canvas ) {
     } else {
       console.error( 'App.toJSON error: object does not have a toJSON function.' );
     }
+  };
+
+  this.initControls = function () {
+    const controls = new OrbitControls( this.camera, this.canvas );
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
+
+    this.controls = controls;
+  };
+
+  this.fitCameraToObject = function ( object ) {
+
+    const boundingBox = new THREE.Box3();
+
+    // get bounding box of object - this will be used to setup controls and camera
+    boundingBox.setFromObject( object );
+
+    // set camera to rotate around center of loaded object
+    const center = boundingBox.getCenter();
+
+    if ( this.controls ) this.controls.target = center;
+
+    const size = boundingBox.getSize();
+
+    // get the max edge of the bounding box
+    const maxDim = Math.max( size.x, size.y );
+
+    const fov = this.camera.fov * ( Math.PI / 180 );
+
+    const cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
+    this.camera.position.set( center.x, center.y, cameraZ );
+
   };
 
 }

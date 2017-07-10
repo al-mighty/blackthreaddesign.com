@@ -5,8 +5,8 @@ import WaveLine from '../objects/WaveLine.js';
 import morphLineVert from '../shaders/morphLine.vert';
 import morphLineFrag from '../shaders/morphLine.frag';
 
-import visibleHeightAtZDepth from '../../../../../utilities/three/visibleHeightAtZDepth.js';
-import visibleWidthAtZDepth from '../../../../../utilities/three/visibleWidthAtZDepth.js';
+import visibleHeightAtZDepth from '../../../../utilities/three/visibleHeightAtZDepth.js';
+import visibleWidthAtZDepth from '../../../../utilities/three/visibleWidthAtZDepth.js';
 
 function initMaterial( opacity ) {
   // return new THREE.MeshBasicMaterial( {

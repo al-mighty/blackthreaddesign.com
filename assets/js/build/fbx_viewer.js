@@ -2,11 +2,6 @@ this.fbx_viewer = this.fbx_viewer || {};
 (function () {
 'use strict';
 
-// import throttle from 'lodash.throttle';
-// import * as Ham from 'hammerjs';
-
-// const Hammer = Ham.default;
-
 var goFullscreen = function (elem) {
   if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
     if (elem.requestFullscreen) {
@@ -51,12 +46,6 @@ settingsButton.addEventListener('click', function () {
 fullscreenButton.addEventListener('click', function () {
   goFullscreen(viewer);
 });
-
-// export default function fbxViewerLayout() {
-
-//   window.addEventListener( 'resize', throttle( () => { } ), 250 );
-
-// }
 
 // Polyfills
 
@@ -2008,10 +1997,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13070,6 +13056,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13099,10 +13087,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -24444,7 +24428,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24473,7 +24457,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36147,7 +36130,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -40117,9 +40103,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40464,7 +40449,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40537,8 +40521,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41131,26 +41114,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -41307,10 +41273,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41346,7 +41308,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41393,13 +41357,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -42447,6 +42410,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42494,6 +42459,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -42616,21 +42583,6 @@ function Time() {
         this.paused = true;
     };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43560,11 +43512,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -43714,8 +43661,6 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
-      if (self.controls && self.controls.enableDamping) self.controls.update();
-
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43750,7 +43695,6 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
-  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43793,18 +43737,6 @@ function App(canvas) {
     this.camera.position.set(center.x, center.y, cameraZ);
   };
 }
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -44199,20 +44131,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -44260,44 +44178,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-// Simple error handling function - customize as necessary
-
-var errorHandler = function (msg) {
-
-  document.querySelector('#error-overlay').classList.remove('hide');
-  var p = document.createElement('p');
-  p.innerHTML = msg;
-
-  document.querySelector('#error-message').appendChild(p);
-};
-
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -44365,7 +44245,7 @@ Object.assign(FBXLoader.prototype, {
 
       if (!isFbxFormatASCII(FBXText)) {
 
-        errorHandler('Unknown FBX format.');
+        console.error('Unknown FBX format.');
         return;
       }
 
@@ -44373,7 +44253,7 @@ Object.assign(FBXLoader.prototype, {
 
       if (version < 7000) {
 
-        errorHandler('FBX version too low. Current version: ' + version + '. Required at least version 7000');
+        console.error('FBX version too low. Current version: ' + version + '. Required at least version 7000');
         return;
         // this.manager.itemError( FBXText );
         // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
@@ -44602,7 +44482,7 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
     if (texturesFromZip[fileName] === undefined) {
 
-      errorHandler('Texture missing from archive: ' + fileName);
+      console.error('Texture missing from archive: ' + fileName);
 
       fileName = '/assets/images/textures/default.jpg';
     } else {
@@ -48320,7 +48200,7 @@ Object.assign(BinaryParser.prototype, {
         return reader.getArrayBuffer(length);
 
       default:
-        errorHandler('FBX contains an unknown property type ' + type);
+        console.error('FBX contains an unknown property type ' + type);
         return;
     }
   }
@@ -48922,6 +48802,17 @@ function slice(a, b, from, to) {
   return a;
 }
 
+// Simple error handling function - customize as necessary
+
+var errorHandler = function (msg) {
+
+  document.querySelector('#error-overlay').classList.remove('hide');
+  var p = document.createElement('p');
+  p.innerHTML = msg;
+
+  document.querySelector('#error-message').appendChild(p);
+};
+
 var processZip = function (file) {
     JSZip.loadAsync(file).then(function (zip) {
 
@@ -49051,7 +48942,6 @@ manager.onError = function (msg) {
   console.warn('THREE.LoadingManager error: ' + msg);
 };
 
-// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -49832,23 +49722,10 @@ var addModelInfo = function (renderer) {
   vertices.innerHTML = renderer.info.render.vertices;
 };
 
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
 /* ******************************************************** */
 // STATS overlay. Don't use this in production as it
 // causes issues in some browsers!
-var stats = new Stats();
-stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
-
-document.body.appendChild(stats.dom);
+// import Stats from 'three/examples/js/libs/stats.min';
 
 var FbxViewerCanvas = function () {
   function FbxViewerCanvas(canvas) {
@@ -49872,7 +49749,7 @@ var FbxViewerCanvas = function () {
       // NB: use self inside this function
 
       // remove if no longer using stats
-      if (stats) stats.update();
+      // if ( stats ) stats.update();
 
       self.animationControls.update(self.app.delta);
     };
@@ -50012,8 +49889,6 @@ var FbxViewerCanvas = function () {
 }();
 
 var canvas = document.querySelector('#viewer-canvas');
-
-fbxViewerLayout();
 
 var fbxViewerCanvas = new FbxViewerCanvas(canvas);
 

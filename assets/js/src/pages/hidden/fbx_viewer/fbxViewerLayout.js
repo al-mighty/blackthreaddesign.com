@@ -1,8 +1,3 @@
-// import throttle from 'lodash.throttle';
-// import * as Ham from 'hammerjs';
-
-// const Hammer = Ham.default;
-
 const goFullscreen = ( elem ) => {
   if ( !document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
     if ( elem.requestFullscreen ) {
@@ -47,9 +42,3 @@ settingsButton.addEventListener( 'click', () => {
 fullscreenButton.addEventListener( 'click', () => {
   goFullscreen( viewer );
 } );
-
-// export default function fbxViewerLayout() {
-
-//   window.addEventListener( 'resize', throttle( () => { } ), 250 );
-
-// }

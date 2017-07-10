@@ -44605,200 +44605,6 @@ function Time() {
     };
 }
 
-function App(canvas) {
-
-  var self = this;
-
-  var _canvas = void 0;
-  var _scene = void 0;
-  var _camera = void 0;
-  var _renderer = void 0;
-
-  var _currentAnimationFrameID = void 0;
-
-  if (canvas !== undefined) _canvas = canvas;
-
-  this.autoRender = true;
-
-  this.autoResize = true;
-
-  this.frameCount = 0;
-
-  this.delta = 0;
-
-  this.isPlaying = false;
-  this.isPaused = false;
-
-  this.time = new Time();
-
-  var setRendererSize = function () {
-    _renderer.setSize(_canvas.clientWidth, _canvas.clientHeight, false);
-  };
-
-  var setCameraAspect = function () {
-    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
-    _camera.updateProjectionMatrix();
-  };
-
-  this.onWindowResize = function () {};
-
-  var onWindowResize = function () {
-
-    if (!self.autoResize) return;
-
-    if (_camera.type !== 'PerspectiveCamera') {
-
-      console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
-      return;
-    }
-
-    setCameraAspect();
-
-    setRendererSize();
-
-    self.onWindowResize();
-  };
-
-  window.addEventListener('resize', onWindowResize, false);
-
-  Object.defineProperties(this, {
-
-    canvas: {
-      get: function () {
-
-        if (_canvas === undefined) {
-
-          _canvas = document.body.appendChild(document.createElement('canvas'));
-          _canvas.style.position = 'absolute';
-          _canvas.style.width = _canvas.style.height = '100%';
-        }
-
-        return _canvas;
-      },
-      set: function (newCanvas) {
-
-        _canvas = newCanvas;
-      }
-    },
-
-    camera: {
-      get: function () {
-
-        if (_camera === undefined) {
-
-          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
-        }
-
-        return _camera;
-      },
-      set: function (camera) {
-
-        _camera = camera;
-        setCameraAspect();
-      }
-    },
-
-    scene: {
-      get: function () {
-
-        if (_scene === undefined) {
-
-          _scene = new Scene();
-        }
-
-        return _scene;
-      },
-      set: function (scene) {
-
-        _scene = scene;
-      }
-    },
-
-    renderer: {
-      get: function () {
-
-        if (_renderer === undefined) {
-
-          _renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true });
-          _renderer.setPixelRatio(window.devicePixelRatio);
-          _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-        }
-
-        return _renderer;
-      },
-      set: function (renderer) {
-
-        _renderer = renderer;
-        setRendererSize();
-      }
-    },
-
-    averageFrameTime: {
-      get: function () {
-
-        return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
-      }
-    }
-
-  });
-
-  this.play = function () {
-
-    this.time.start();
-
-    this.isPlaying = true;
-    this.isPaused = false;
-
-    function animationHandler() {
-
-      self.frameCount++;
-      self.delta = self.time.delta;
-
-      self.onUpdate();
-
-      if (self.autoRender) self.renderer.render(self.scene, self.camera);
-
-      _currentAnimationFrameID = requestAnimationFrame(function () {
-        animationHandler();
-      });
-    }
-
-    animationHandler();
-  };
-
-  this.pause = function () {
-
-    this.isPaused = true;
-
-    this.time.pause();
-
-    cancelAnimationFrame(_currentAnimationFrameID);
-  };
-
-  this.stop = function () {
-
-    this.isPlaying = false;
-    this.isPaused = false;
-
-    this.time.stop();
-    this.frameCount = 0;
-
-    cancelAnimationFrame(_currentAnimationFrameID);
-  };
-
-  this.onUpdate = function () {};
-
-  this.toJSON = function (object) {
-    if (typeof object.toJSON === 'function') {
-      var json = object.toJSON();
-
-      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
-    } else {
-      console.error('App.toJSON error: object does not have a toJSON function.');
-    }
-  };
-}
-
 function OrbitControls(object, domElement) {
 
 	this.object = object;
@@ -45726,6 +45532,237 @@ Object.defineProperties(OrbitControls.prototype, {
 	}
 
 });
+
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
+function App(canvas) {
+
+  var self = this;
+
+  var _canvas = void 0;
+  var _scene = void 0;
+  var _camera = void 0;
+  var _renderer = void 0;
+
+  var _currentAnimationFrameID = void 0;
+
+  if (canvas !== undefined) _canvas = canvas;
+
+  this.autoRender = true;
+
+  this.autoResize = true;
+
+  this.frameCount = 0;
+
+  this.delta = 0;
+
+  this.isPlaying = false;
+  this.isPaused = false;
+
+  this.time = new Time();
+
+  var setRendererSize = function () {
+    _renderer.setSize(_canvas.clientWidth, _canvas.clientHeight, false);
+  };
+
+  var setCameraAspect = function () {
+    _camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
+    _camera.updateProjectionMatrix();
+  };
+
+  this.onWindowResize = function () {};
+
+  var onWindowResize = function () {
+
+    if (!self.autoResize) return;
+
+    if (_camera.type !== 'PerspectiveCamera') {
+
+      console.warn('THREE.APP: AutoResize only works with PerspectiveCamera');
+      return;
+    }
+
+    setCameraAspect();
+
+    setRendererSize();
+
+    self.onWindowResize();
+  };
+
+  window.addEventListener('resize', onWindowResize, false);
+
+  Object.defineProperties(this, {
+
+    canvas: {
+      get: function () {
+
+        if (_canvas === undefined) {
+
+          _canvas = document.body.appendChild(document.createElement('canvas'));
+          _canvas.style.position = 'absolute';
+          _canvas.style.width = _canvas.style.height = '100%';
+        }
+
+        return _canvas;
+      },
+      set: function (newCanvas) {
+
+        _canvas = newCanvas;
+      }
+    },
+
+    camera: {
+      get: function () {
+
+        if (_camera === undefined) {
+
+          _camera = new PerspectiveCamera(50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000);
+        }
+
+        return _camera;
+      },
+      set: function (camera) {
+
+        _camera = camera;
+        setCameraAspect();
+      }
+    },
+
+    scene: {
+      get: function () {
+
+        if (_scene === undefined) {
+
+          _scene = new Scene();
+        }
+
+        return _scene;
+      },
+      set: function (scene) {
+
+        _scene = scene;
+      }
+    },
+
+    renderer: {
+      get: function () {
+
+        if (_renderer === undefined) {
+
+          _renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true });
+          _renderer.setPixelRatio(window.devicePixelRatio);
+          _renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
+        }
+
+        return _renderer;
+      },
+      set: function (renderer) {
+
+        _renderer = renderer;
+        setRendererSize();
+      }
+    },
+
+    averageFrameTime: {
+      get: function () {
+
+        return this.frameCount !== 0 ? this.time.unscaledTotalTime / this.frameCount : 0;
+      }
+    }
+
+  });
+
+  this.play = function () {
+
+    this.time.start();
+
+    this.isPlaying = true;
+    this.isPaused = false;
+
+    function animationHandler() {
+
+      self.frameCount++;
+      self.delta = self.time.delta;
+
+      self.onUpdate();
+
+      if (self.autoRender) self.renderer.render(self.scene, self.camera);
+
+      _currentAnimationFrameID = requestAnimationFrame(function () {
+        animationHandler();
+      });
+    }
+
+    animationHandler();
+  };
+
+  this.pause = function () {
+
+    this.isPaused = true;
+
+    this.time.pause();
+
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
+
+  this.stop = function () {
+
+    this.isPlaying = false;
+    this.isPaused = false;
+
+    this.time.stop();
+    this.frameCount = 0;
+
+    cancelAnimationFrame(_currentAnimationFrameID);
+  };
+
+  this.onUpdate = function () {};
+
+  this.toJSON = function (object) {
+    if (typeof object.toJSON === 'function') {
+      var json = object.toJSON();
+
+      window.open('data:application/json;' + (window.btoa ? 'base64,' + btoa(JSON.stringify(json)) : JSON.stringify(json)));
+    } else {
+      console.error('App.toJSON error: object does not have a toJSON function.');
+    }
+  };
+
+  this.initControls = function () {
+    var controls = new OrbitControls(this.camera, this.canvas);
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
+
+    this.controls = controls;
+  };
+
+  this.fitCameraToObject = function (object) {
+
+    var boundingBox = new Box3();
+
+    // get bounding box of object - this will be used to setup controls and camera
+    boundingBox.setFromObject(object);
+
+    // set camera to rotate around center of loaded object
+    var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
+
+    var size = boundingBox.getSize();
+
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
+    var fov = this.camera.fov * (Math.PI / 180);
+
+    var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+    this.camera.position.set(center.x, center.y, cameraZ);
+  };
+}
 
 var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";
 

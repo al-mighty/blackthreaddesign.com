@@ -1,28 +1,28 @@
+/* ******************************************************** */
+// STATS overlay. Don't use this in production as it
+// causes issues in some browsers!
+// import Stats from 'three/examples/js/libs/stats.min';
+
 import * as THREE from 'three';
 
-import App from './App/App.js';
-import FBXLoader from './App/modules/FBXLoader.module.js';
+import App from '../../../App/App.js';
+import FBXLoader from '../../../App/modules/FBXLoader.module.js';
 
 import fileModel from './utilities/fileReader.js';
 import manager from './utilities/loadingManager.js';
 import AnimationControls from './utilities/AnimationControls.js';
 import addModelInfo from './utilities/addModelInfo.js';
 
-/* ******************************************************** */
-// STATS overlay. Don't use this in production as it
-// causes issues in some browsers!
-import Stats from 'three/examples/js/libs/stats.min';
+// const stats = new Stats();
+// stats.dom.style = `position: absolute;
+//   top: 0;
+//   right: 0;
+//   cursor: pointer;
+//   opacity: 0.9;
+//   z-index: 1;
+//   width: 100px;`;
 
-const stats = new Stats();
-stats.dom.style = `position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
-  opacity: 0.9;
-  z-index: 1;
-  width: 100px;`;
-
-document.body.appendChild( stats.dom );
+// document.body.appendChild( stats.dom );
 
 /* ******************************************************** */
 
@@ -50,7 +50,7 @@ export default class FbxViewerCanvas {
       // NB: use self inside this function
 
       // remove if no longer using stats
-      if ( stats ) stats.update();
+      // if ( stats ) stats.update();
 
       self.animationControls.update( self.app.delta );
 
