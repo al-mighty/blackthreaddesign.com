@@ -6,9 +6,9 @@ loadingOverlay: true
 categories: experiments
 comments: true
 excerpt: "testing..."
-teaser: "assets/images/teaser-800x450.jpg"
+teaser: "assets/images/default-teaser.jpg"
 image:
-  path: &image /assets/images/test1.png
+  path: &image /assets/images/default-teaser.jpg
   feature: *image
 #  teaser: /assets/images/madewithpaper-guide-teaser.jpg
 #  thumb: /assets/images/madewithpaper-guide-thumb.jpg
