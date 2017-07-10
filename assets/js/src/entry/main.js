@@ -2,19 +2,19 @@
 import 'babel-polyfill';
 
 //TODO: this sets up globals such as Hammer object. Do this elsewhere
-import utils from '../utilities.js';
 
-// TODO: refactor as functions to allow these to be run after initLoader
-import initLightBox from '../init/initLightBox.js';
-import initNav from '../init/initNav.js';
-import initSmoothScroll from '../init/initSmoothScroll.js';
-import initFooter from '../init/initFooter.js';
-import initVideos from '../init/initVideos.js';
+// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
+import '../utilities/init/initHammer.js';
 
-import initLoader from '../loadingOverlay.js';
+import initLightBox from '../utilities/init/initLightBox.js';
+import initNav from '../utilities/init/initNav.js';
+import initSmoothScroll from '../utilities/init/initSmoothScroll.js';
+import initFooter from '../utilities/init/initFooter.js';
+import initVideos from '../utilities/init/initVideos.js';
+import initLoadingOverlay from '../utilities/init/initLoadingOverlay.js';
 
 // Set up loading overlay
-initLoader();
+initLoadingOverlay();
 
 // Initialise layout and other things
 initNav();

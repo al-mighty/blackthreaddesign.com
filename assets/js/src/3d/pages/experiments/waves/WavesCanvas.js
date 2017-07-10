@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import utils from '../../../../utilities.js';
+import pointerPos from '../../../../utilities/pointerPos.js';
 import App from '../../../App/App.js';
 
 import { createGroup1, createGroup2, createGroup3 } from './objects/lines.js';
@@ -53,7 +53,7 @@ export default class WavelinesCanvas {
   }
 
   animateCamera() {
-    const pointerY = utils.pointerPos.y;
+    const pointerY = pointerPos.y;
 
     this.app.camera.position.y = pointerY / window.innerHeight;
 

@@ -1,12 +1,7 @@
-import SplashHero from '../3d/pages/splash/SplashCanvas.js';
-import initLoader from '../loadingOverlay.js';
+import SplashHero from '../pages/splash/SplashCanvas.js';
+import initLoadingOverlay from '../utilities/init/initLoadingOverlay.js';
 
-function initSplash( showStats ) {
+// Set up loading overlay
+initLoadingOverlay();
 
-  const splashHero = new SplashHero( showStats );
-
-}
-
-initLoader();
-initSplash();
-
+const splashHero = new SplashHero( false );
