@@ -1,6 +1,6 @@
 import fileModel from './fileReader.js';
 
-const processZip = ( file ) => {
+const zipHandler = ( file ) => {
   JSZip.loadAsync( file ).then( ( zip ) => {
 
     // First loop over the zip's contents and extract the FBX file and any images
@@ -82,7 +82,6 @@ const processZip = ( file ) => {
 
           }
 
-
           if ( images[ fileName ] !== undefined ) {
 
             console.error( 'Warning: the archive contains multiple images with the same name:'  + fileName );
@@ -91,7 +90,7 @@ const processZip = ( file ) => {
 
             images[ fileName ] = url;
 
-          }     
+          }   
 
         }, ( err ) => { console.error( 'JSZip error unpacking image: ' + err ); } );
 
@@ -101,7 +100,7 @@ const processZip = ( file ) => {
     const fbxFilePromise = fbxFileZipped.async( 'arrayBuffer' )
       .then(
         ( data ) => { fbxFile = data; },
-        ( err ) => { console.error( 'JSZip error unpacking FBX: ' + err ); } 
+        ( err ) => { console.error( 'JSZip error unpacking FBX: ' + err ); }
       );
 
     promises.push( fbxFilePromise );
@@ -116,5 +115,4 @@ const processZip = ( file ) => {
 
 };
 
-
-export default processZip;
+export default zipHandler;

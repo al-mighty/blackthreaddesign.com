@@ -3,10 +3,11 @@ import * as THREE from 'three';
 import App from 'App/App.js';
 import FBXLoader from 'modules/loaders/FBXLoader.module.js';
 
-import fileModel from './utilities/fileReader.js';
+import fileOnloadCallbacks from './utilities/fileReader.js';
 import manager from './utilities/loadingManager.js';
 import AnimationControls from './utilities/AnimationControls.js';
 import addModelInfo from './utilities/addModelInfo.js';
+import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 
 /* ******************************************************** */
 
@@ -27,8 +28,6 @@ export default class LoaderCanvas {
 
     this.animationControls = new AnimationControls();
 
-    this.mixers = [];
-
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
@@ -46,9 +45,9 @@ export default class LoaderCanvas {
 
     this.app.initControls();
 
-    this.initBackgroundColorChanger();
+    backgroundColorChanger( this.app );
 
-    this.initFBXLoader();
+    this.initFormatLoaders();
 
   }
 
@@ -83,53 +82,7 @@ export default class LoaderCanvas {
 
   }
 
-  takeScreenShot( width, height ) {
 
-    // set camera and renderer to screenshot size
-    this.app.camera.aspect = width / height;
-    this.app.camera.updateProjectionMatrix();
-    this.app.renderer.setSize( width, height, false );
-
-    // render scene at new size
-    this.app.renderer.render( this.app.scene, this.app.camera, null, false );
-
-    const img = new Image();
-    img.src = this.app.renderer.domElement.toDataURL();
-    document.querySelector( '#screenshot' ).appendChild( img );
-
-    // reset the renderer and camera to original size
-    this.app.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-    this.app.camera.updateProjectionMatrix();
-    this.app.renderer.setSize( this.canvas.clientWidth, this.canvas.clientHeight, false );
-  }
-
-  initBackgroundColorChanger() {
-    const controlLinks = document.querySelector( '#controls' ).getElementsByTagName( 'a' );
-
-    const toggle = document.querySelector( '#toggle-background' );
-
-    toggle.addEventListener( 'change', () => {
-      if ( toggle.checked ) {
-
-        this.app.renderer.setClearColor( 0x000000, 1.0 );
-        for ( let i = 0; i < controlLinks.length; i++ ) {
-
-          controlLinks[ i ].style.color = 'white';
-
-        }
-
-      } else {
-
-        this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
-        for ( let i = 0; i < controlLinks.length; i++ ) {
-
-          controlLinks[ i ].style.color = 'black';
-
-        }
-      }
-    } );
-
-  }
 
   addObjectToScene( object ) {
 
@@ -139,10 +92,6 @@ export default class LoaderCanvas {
 
     this.app.scene.add( object );
 
-    // this needs to be called a little while after loading, otherwise
-    // otherwise textures may not have fully loaded
-    // setTimeout( () => this.takeScreenShot( 1440, 800 ), 1000 );
-
     this.app.play();
 
     addModelInfo( this.app.renderer );
@@ -151,22 +100,36 @@ export default class LoaderCanvas {
 
   }
 
-  initFBXLoader() {
+  initFormatLoaders() {
+    const processObject = ( object ) => {
 
-    const fbxLoader = new FBXLoader( manager );
-
-    fileModel.fileReader.onload = ( e ) => {
-
-      const object = fbxLoader.parse( e.target.result );
       if ( object !== undefined ) this.addObjectToScene( object );
+      else console.error( 'Oops! An unspecified error occured :(' );
+
+    };
+
+    fileOnloadCallbacks.onJSONLoad = ( e ) => {
+
+      const loader = new THREE.ObjectLoader( manager );
+      const object = loader.parse( e.target.result );
+      processObject( object );
+
+    };
+
+    fileOnloadCallbacks.onFBXLoad = ( e ) => {
+
+      const loader = new FBXLoader( manager );
+      const object = loader.parse( e.target.result );
+      processObject( object );
 
     };
 
     // onload callback when loading .zip file
-    fileModel.onZipLoad = ( fbxFile, resources ) => {
+    fileOnloadCallbacks.onZipLoad = ( fbxFile, resources ) => {
 
-      const object = fbxLoader.parse( fbxFile, resources );
-      if ( object !== undefined ) this.addObjectToScene( object );
+      const loader = new FBXLoader( manager );
+      const object = loader.parse( fbxFile, resources );
+      processObject( object );
 
     };
 

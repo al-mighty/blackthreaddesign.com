@@ -1,4 +1,4 @@
-import processZip from './zipHandler.js';
+import zipHandler from './zipHandler.js';
 import manager from './loadingManager.js';
 
 // Check support for the File API support
@@ -28,40 +28,48 @@ fileReader.onerror = ( msg ) => {
    This is imported in the FbxViewerCanvas, where onload callbacks are set up
 *******************************************************************   */
 
-const fileModel = {
+const fileOnloadCallbacks = {
 
-  fileReader,
+  onJSONLoad: () => {},
+  onFBXLoad: () => {},
   onZipLoad: () => {},
 
 };
 
 /*  *******************************************************************
-              Set up eventlistener for file input
+              Set up eventListener for file input
 *******************************************************************   */
 
 const fileInput = document.querySelector( '#file-upload-input' );
 
 fileInput.addEventListener( 'change', ( e ) => {
+
   const file = e.target.files[0];
 
   const extension = file.name.split( '.' ).pop().toLowerCase();
 
   switch ( extension ) {
 
+    case 'json':
+    case 'js':
+      manager.onStart();
+      fileReader.onload = fileOnloadCallbacks.onJSONLoad();
+      fileReader.readAsText( file );
+      break;
     case 'fbx':
       manager.onStart();
+      fileReader.onload = fileOnloadCallbacks.onFBXLoad;
       fileReader.readAsArrayBuffer( file );
       break;
     case 'zip':
       manager.onStart();
-      processZip( file );
+      zipHandler( file );
       break;
     default:
       console.error( 'Unsupported file type - please load an FBX file or a zip archive.' );
-      break;
 
   }
 
 }, false );
 
-export default fileModel;
+export default fileOnloadCallbacks;

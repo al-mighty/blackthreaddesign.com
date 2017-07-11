@@ -34,10 +34,10 @@
 	left: 0;
 	height: 100%;
   width: 100%; 
-  background-color: #000000; 
-
-  
   text-align:center;
+  border: 1px solid #062f4f; // rgba( 255, 255, 255, 0.35);
+  background: rgb( 240,183,161 ); 
+  background: radial-gradient(ellipse at center, rgba(84,84,84,1) 1%,rgba(38,37,33,1) 100%,rgba(191,110,78,1) 100%);
 }
 
 #error-overlay {
@@ -105,7 +105,7 @@
 #file-upload-form{
   position: absolute; 
   left: 50%;
-	top: 50%;
+	top: 40%;
  	width: 50vw;
 	transform: translate3d( -50%,-50%,0 );
   text-align: center;

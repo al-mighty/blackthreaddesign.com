@@ -14,6 +14,7 @@ var errorHandler = function (msg) {
 };
 
 var goFullscreen = function (elem) {
+
   if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
@@ -35,7 +36,7 @@ var goFullscreen = function (elem) {
   }
 };
 
-var viewer = document.querySelector('#view-container');
+var viewer = document.querySelector('#viewer-canvas');
 
 var settingsButton = document.querySelector('#settings-button');
 var fullscreenButton = document.querySelector('#fullscreen-button');
@@ -43,11 +44,12 @@ var fullscreenButton = document.querySelector('#fullscreen-button');
 var settingsOverlay = document.querySelector('#settings-overlay');
 
 settingsButton.addEventListener('click', function () {
-  helpOverLay.classList.add('hide');
+
   settingsOverlay.classList.toggle('hide');
 });
 
 fullscreenButton.addEventListener('click', function () {
+
   goFullscreen(viewer);
 });
 
@@ -2005,10 +2007,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13067,6 +13066,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13096,10 +13097,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -24441,7 +24438,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24470,7 +24467,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36144,7 +36140,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -40114,9 +40113,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40461,7 +40459,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40534,8 +40531,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41128,26 +41124,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -41304,10 +41283,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41343,7 +41318,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41390,13 +41367,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -42444,6 +42420,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42491,6 +42469,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -42613,21 +42593,6 @@ function Time() {
         this.paused = true;
     };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43557,11 +43522,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -43790,18 +43750,6 @@ function App(canvas) {
     this.camera.position.set(center.x, center.y, cameraZ);
   };
 }
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -44196,20 +44144,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -44257,33 +44191,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -48908,7 +48815,7 @@ function slice(a, b, from, to) {
   return a;
 }
 
-var processZip = function (file) {
+var zipHandler = function (file) {
     JSZip.loadAsync(file).then(function (zip) {
 
         // First loop over the zip's contents and extract the FBX file and any images
@@ -49001,7 +48908,7 @@ var processZip = function (file) {
 
         Promise.all(promises).then(function () {
 
-            fileModel.onZipLoad(fbxFile, images);
+            fileOnloadCallbacks.onZipLoad(fbxFile, images);
         });
     });
 };
@@ -49034,7 +48941,6 @@ manager.onError = function (msg) {
   console.error('THREE.LoadingManager error: ' + msg);
 };
 
-// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -49059,37 +48965,45 @@ fileReader.onerror = function (msg) {
    This is imported in the FbxViewerCanvas, where onload callbacks are set up
 *******************************************************************   */
 
-var fileModel = {
+var fileOnloadCallbacks = {
 
-  fileReader: fileReader,
+  onJSONLoad: function () {},
+  onFBXLoad: function () {},
   onZipLoad: function () {}
 
 };
 
 /*  *******************************************************************
-              Set up eventlistener for file input
+              Set up eventListener for file input
 *******************************************************************   */
 
 var fileInput = document.querySelector('#file-upload-input');
 
 fileInput.addEventListener('change', function (e) {
+
   var file = e.target.files[0];
 
   var extension = file.name.split('.').pop().toLowerCase();
 
   switch (extension) {
 
+    case 'json':
+    case 'js':
+      manager.onStart();
+      fileReader.onload = fileOnloadCallbacks.onJSONLoad();
+      fileReader.readAsText(file);
+      break;
     case 'fbx':
       manager.onStart();
+      fileReader.onload = fileOnloadCallbacks.onFBXLoad;
       fileReader.readAsArrayBuffer(file);
       break;
     case 'zip':
       manager.onStart();
-      processZip(file);
+      zipHandler(file);
       break;
     default:
       console.error('Unsupported file type - please load an FBX file or a zip archive.');
-      break;
 
   }
 }, false);
@@ -49815,6 +49729,31 @@ var addModelInfo = function (renderer) {
   vertices.innerHTML = renderer.info.render.vertices;
 };
 
+var backgroundColorChanger = function (app) {
+
+  var controlLinks = document.querySelector('#controls').getElementsByTagName('a');
+
+  var toggle = document.querySelector('#toggle-background');
+
+  toggle.addEventListener('change', function () {
+    if (toggle.checked) {
+
+      app.renderer.setClearColor(0x000000, 1.0);
+      for (var i = 0; i < controlLinks.length; i++) {
+
+        controlLinks[i].style.color = 'white';
+      }
+    } else {
+
+      app.renderer.setClearColor(0xf7f7f7, 1.0);
+      for (var _i = 0; _i < controlLinks.length; _i++) {
+
+        controlLinks[_i].style.color = 'black';
+      }
+    }
+  });
+};
+
 var LoaderCanvas = function () {
   function LoaderCanvas(canvas) {
     classCallCheck(this, LoaderCanvas);
@@ -49829,8 +49768,6 @@ var LoaderCanvas = function () {
     this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
     this.animationControls = new AnimationControls();
-
-    this.mixers = [];
 
     // Put any per frame calculation here
     this.app.onUpdate = function () {
@@ -49848,9 +49785,9 @@ var LoaderCanvas = function () {
 
     this.app.initControls();
 
-    this.initBackgroundColorChanger();
+    backgroundColorChanger(this.app);
 
-    this.initFBXLoader();
+    this.initFormatLoaders();
   }
 
   LoaderCanvas.prototype.initLights = function initLights() {
@@ -49883,52 +49820,6 @@ var LoaderCanvas = function () {
     this.app.scene.add(this.app.camera);
   };
 
-  LoaderCanvas.prototype.takeScreenShot = function takeScreenShot(width, height) {
-
-    // set camera and renderer to screenshot size
-    this.app.camera.aspect = width / height;
-    this.app.camera.updateProjectionMatrix();
-    this.app.renderer.setSize(width, height, false);
-
-    // render scene at new size
-    this.app.renderer.render(this.app.scene, this.app.camera, null, false);
-
-    var img = new Image();
-    img.src = this.app.renderer.domElement.toDataURL();
-    document.querySelector('#screenshot').appendChild(img);
-
-    // reset the renderer and camera to original size
-    this.app.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-    this.app.camera.updateProjectionMatrix();
-    this.app.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-  };
-
-  LoaderCanvas.prototype.initBackgroundColorChanger = function initBackgroundColorChanger() {
-    var _this = this;
-
-    var controlLinks = document.querySelector('#controls').getElementsByTagName('a');
-
-    var toggle = document.querySelector('#toggle-background');
-
-    toggle.addEventListener('change', function () {
-      if (toggle.checked) {
-
-        _this.app.renderer.setClearColor(0x000000, 1.0);
-        for (var i = 0; i < controlLinks.length; i++) {
-
-          controlLinks[i].style.color = 'white';
-        }
-      } else {
-
-        _this.app.renderer.setClearColor(0xf7f7f7, 1.0);
-        for (var _i = 0; _i < controlLinks.length; _i++) {
-
-          controlLinks[_i].style.color = 'black';
-        }
-      }
-    });
-  };
-
   LoaderCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
     this.app.fitCameraToObject(object);
@@ -49937,10 +49828,6 @@ var LoaderCanvas = function () {
 
     this.app.scene.add(object);
 
-    // this needs to be called a little while after loading, otherwise
-    // otherwise textures may not have fully loaded
-    // setTimeout( () => this.takeScreenShot( 1440, 800 ), 1000 );
-
     this.app.play();
 
     addModelInfo(this.app.renderer);
@@ -49948,22 +49835,34 @@ var LoaderCanvas = function () {
     document.querySelector('#loading-overlay').classList.add('hide');
   };
 
-  LoaderCanvas.prototype.initFBXLoader = function initFBXLoader() {
-    var _this2 = this;
+  LoaderCanvas.prototype.initFormatLoaders = function initFormatLoaders() {
+    var _this = this;
 
-    var fbxLoader = new FBXLoader(manager);
+    var processObject = function (object) {
 
-    fileModel.fileReader.onload = function (e) {
+      if (object !== undefined) _this.addObjectToScene(object);else console.error('Oops! An unspecified error occured :(');
+    };
 
-      var object = fbxLoader.parse(e.target.result);
-      if (object !== undefined) _this2.addObjectToScene(object);
+    fileOnloadCallbacks.onJSONLoad = function (e) {
+
+      var loader = new ObjectLoader(manager);
+      var object = loader.parse(e.target.result);
+      processObject(object);
+    };
+
+    fileOnloadCallbacks.onFBXLoad = function (e) {
+
+      var loader = new FBXLoader(manager);
+      var object = loader.parse(e.target.result);
+      processObject(object);
     };
 
     // onload callback when loading .zip file
-    fileModel.onZipLoad = function (fbxFile, resources) {
+    fileOnloadCallbacks.onZipLoad = function (fbxFile, resources) {
 
-      var object = fbxLoader.parse(fbxFile, resources);
-      if (object !== undefined) _this2.addObjectToScene(object);
+      var loader = new FBXLoader(manager);
+      var object = loader.parse(fbxFile, resources);
+      processObject(object);
     };
   };
 
