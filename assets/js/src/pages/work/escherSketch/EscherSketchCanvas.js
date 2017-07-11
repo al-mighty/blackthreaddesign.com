@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import App from '../../../App/App.js';
+import App from 'App/App.js';
 
 // import { createGeometries, createGeometry, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
 import { createGeometries } from './escherSketchCanvasHelpers.js';
@@ -9,8 +9,6 @@ import './escherSketchCanvasSetup.js';
 
 import basicVert from './shaders/basic.vert';
 import basicFrag from './shaders/basic.frag';
-
-import StatisticsOverlay from '../../../App/StatisticsOverlay.js';
 
 import RegularHyperbolicTesselation from './utilities/RegularHyperbolicTesselation.js';
 
@@ -28,10 +26,6 @@ export default class EscherSketchCanvas {
     self.app.camera.position.set( 0, 0, 1.5 );
     self.app.camera.far = 5;
 
-    // TODO: not working in Edge
-    let statisticsOverlay;
-    if ( showStats ) statisticsOverlay = new StatisticsOverlay( self.app, self.container );
-
     self.initPQControls();
 
     self.initSpec();
@@ -41,8 +35,6 @@ export default class EscherSketchCanvas {
     this.buildTiling();
 
     self.app.onUpdate = function () {
-
-      if ( showStats ) statisticsOverlay.updateStatistics( self.app.delta );
 
     };
 

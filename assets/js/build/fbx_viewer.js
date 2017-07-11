@@ -43703,6 +43703,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43737,6 +43739,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -44245,8 +44248,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 
 	return tangent;
 };
-
-// import console.error from '../../utilities/console.error.js';
 
 /**
  * @author Kyle-Larson https://github.com/Kyle-Larson

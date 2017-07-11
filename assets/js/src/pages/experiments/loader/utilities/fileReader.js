@@ -1,4 +1,3 @@
-import errorHandler from './errorHandler.js';
 import processZip from './zipHandler.js';
 import manager from './loadingManager.js';
 
@@ -7,7 +6,7 @@ const checkForFileAPI = () => {
 
   if ( !( window.File && window.FileReader && window.FileList && window.Blob ) ) {
 
-    errorHandler( 'This loader requires the File API. Please upgrade your browser' );
+    console.error( 'This loader requires the File API. Please upgrade your browser' );
 
   }
 
@@ -21,7 +20,7 @@ checkForFileAPI();
 const fileReader = new FileReader();
 
 fileReader.onerror = ( msg ) => { 
-  errorHandler( 'FileReader error: ' + msg );
+  console.error( 'FileReader error: ' + msg );
 };
 
 /*  *******************************************************************
@@ -58,7 +57,7 @@ fileInput.addEventListener( 'change', ( e ) => {
       processZip( file );
       break;
     default:
-      errorHandler( 'Unsupported file type - please load an FBX file or a zip archive.' );
+      console.error( 'Unsupported file type - please load an FBX file or a zip archive.' );
       break;
 
   }

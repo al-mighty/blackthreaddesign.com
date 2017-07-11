@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-import explodeModifier from '../../utilities/three/explodeModifier.js';
-import tessellateRecursive from '../../utilities/three/tessellateRecursive.js';
-import positionTextGeometry from '../../utilities/three/positionTextGeometry.js';
+import explodeModifier from 'utilities/three/explodeModifier.js';
+import tessellateRecursive from 'utilities/three/tessellateRecursive.js';
+import positionTextGeometry from 'utilities/three/positionTextGeometry.js';
 
 const v = new THREE.Vector3();
 

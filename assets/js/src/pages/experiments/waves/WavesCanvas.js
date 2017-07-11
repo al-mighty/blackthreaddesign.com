@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-import pointerPos from '../../../utilities/pointerPos.js';
-// import Stats from '../../../utilities/stats.js';
-import App from '../../../App/App.js';
+import pointerPos from 'utilities/pointerPos.js';
+// import Stats from 'utilities/stats.js';
+import App from 'App/App.js';
 
 import { createGroup1, createGroup2, createGroup3 } from './objects/lines.js';
 

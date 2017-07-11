@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import App from '../../../App/App.js';
-import FBXLoader from '../../../App/modules/FBXLoader.module.js';
+import App from 'App/App.js';
+import FBXLoader from './loaders-modules/FBXLoader.module.js';
 
 import fileModel from './utilities/fileReader.js';
 import manager from './utilities/loadingManager.js';

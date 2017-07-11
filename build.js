@@ -3,6 +3,7 @@ const watch = require( 'rollup-watch' );
 const babel = require( 'rollup-plugin-babel' );
 const nodeResolve = require( 'rollup-plugin-node-resolve' );
 const commonjs = require( 'rollup-plugin-commonjs' );
+const includePaths = require( 'rollup-plugin-includepaths' );
 
 const glslify = require( 'glslify' );
 
@@ -26,7 +27,15 @@ const glsl = () => {
   };
 };
 
+const includePathOptions = {
+    include: {},
+    paths: [ 'assets/js/src' ],
+    external: [],
+    extensions: [ '.js', '.json' ],
+};
+
 const defaultPlugins = [
+  includePaths( includePathOptions ),
   nodeResolve( {
     // jsnext: true,
     // module: true,

@@ -1,4 +1,4 @@
-import avalonbox from '../../vendor/avalonbox/avalonbox.js';
+import avalonbox from 'vendor/avalonbox/avalonbox.js';
 
 import uuid from '../uuid.js';
 

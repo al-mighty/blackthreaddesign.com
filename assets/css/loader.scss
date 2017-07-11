@@ -1,7 +1,7 @@
 #info{
-  position: absolute;
-  top: 100%;
-  margin: 0;
+  // position: absolute;
+  // top: 100%;
+  // margin: 0;
 }
 
 #view-container {
@@ -111,25 +111,6 @@
   text-align: center;
 }
 
-#screenshot {
-  display: none;
-  position: absolute;
-  top: 110%;
-  left: 0;
-  width: 1140px;
-  height: 800px;
-  background-color: white;
-}
-
-#logo {
-  display: none;
-  position: absolute;
-	bottom: 0;
-	left: 1%;;
-  width: 8%;
-  color: black;
-}
-
 #controls {
 	position: absolute;
 	bottom: 0;
@@ -140,6 +121,8 @@
 
 	a {
 		color: black;
+    // bottom: 50%;
+    transform: translate( -50%, 50% );
 	}
 
   span {
@@ -147,6 +130,24 @@
   }
 }
 
+#settings-button {
+  float: left;
+}
+
+#fullscreen-button {
+  float: right;
+}
+
+#playback-control {
+  // position: absolute;
+  // bottom: 50%;
+  // transform: translate( -50%, 50% )
+}
+
+#play-button, #pause-button {
+  top: 25%;
+  position: absolute;
+}
 
 #animation-controls {
   position: absolute;
@@ -160,7 +161,8 @@
   position: absolute;
   right: 0;
   height: 100%;
-  top: 0;
+  // top: 25%;
+  width: 6%;
 }
 
 #animation-slider{

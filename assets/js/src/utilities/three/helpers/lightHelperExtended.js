@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import dat from '../vendor/dat.gui.js';
+import dat from 'vendor/dat.gui.js';
 
 export default class LightHelperExtended {
 

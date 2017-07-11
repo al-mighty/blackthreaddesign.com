@@ -11126,7 +11126,6 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
-// Set up Hammer as global
 window.Hammer = hammer$1;
 
 var Greedy = function Greedy(options) {
@@ -13707,10 +13706,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -24769,6 +24765,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -24798,10 +24796,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -36143,7 +36137,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -36172,7 +36166,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -47846,7 +47839,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -51816,9 +51812,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -52163,7 +52158,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -52236,8 +52230,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -52830,26 +52823,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -53006,10 +52982,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -53045,6 +53017,10 @@ var SceneUtils = {
 
 };
 
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
 function MultiMaterial( materials ) {
 
 	if ( materials === undefined ) materials = [];
@@ -53060,8 +53036,6 @@ function MultiMaterial( materials ) {
 	return materials;
 
 }
-
-//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -53108,13 +53082,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -54162,6 +54135,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -54209,6 +54184,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -54331,21 +54308,6 @@ function Time() {
         this.paused = true;
     };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -55275,11 +55237,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -55429,6 +55386,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -55463,6 +55422,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -55649,8 +55609,6 @@ var transformPoint = function (transform, x, y) {
 
 // export const randomInt = ( min, max ) => Math.floor( Math.random() * ( max - min + 1 ) + min );
 
-// The longest edge with radius > 0 should be used to calculate how finely
-// the polygon gets subdivided
 function findSubdivisionEdge(polygon) {
   // curvature === 0 means this edge goes through origin
   // in which case subdivide based on next longest edge
@@ -55971,16 +55929,6 @@ var basicVert = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec2 uv;
 
 var basicFrag = "precision mediump float;\n#define GLSLIFY 1\nuniform sampler2D tileTexture;\nvarying vec2 vUv;\nvoid main() {\n\tgl_FragColor = texture2D(tileTexture, vUv);\n}";
 
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
-
 var asyncGenerator = function () {
   function AwaitValue(value) {
     this.value = value;
@@ -56100,132 +56048,6 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-var minFrame = 1000000;
-var maxFrame = 0;
-
-var StatisticsOverlay = function () {
-    function StatisticsOverlay(app, container) {
-        classCallCheck(this, StatisticsOverlay);
-
-        this.app = app;
-
-        this.container = container || app.renderer.domElement;
-
-        this.show = false;
-
-        this.initStatsContainer();
-
-        this.initHideOverLayCheckbox();
-    }
-
-    StatisticsOverlay.prototype.initHideOverLayCheckbox = function initHideOverLayCheckbox() {
-        var _this = this;
-
-        var hide = this.container.appendChild(document.createElement('div'));
-        hide.id = 'hideStatsOverlay';
-        hide.style = 'position: absolute;\n      top: 0;\n      left: 0;';
-
-        var checkbox = hide.appendChild(document.createElement('input'));
-        checkbox.type = 'checkbox';
-
-        var label = hide.appendChild(document.createElement('span'));
-        label.innerText = 'Show Stats';
-        label.style = 'color: white;';
-
-        checkbox.addEventListener('change', function () {
-
-            _this.statsElem.classList.toggle('hidden');
-            _this.show = !_this.show;
-        });
-    };
-
-    StatisticsOverlay.prototype.initStatsContainer = function initStatsContainer() {
-
-        this.statsElem = this.container.appendChild(document.createElement('div'));
-        this.statsElem.id = 'infoContainer';
-        this.statsElem.style = 'text-align: center;\n      position: absolute;\n      top: 0;\n      left: 0;\n      width: 100%;\n      height: 30%;';
-
-        this.statsElem.classList.add('hidden');
-
-        var timeCount = this.statsElem.appendChild(document.createElement('span'));
-        timeCount.innerText = 'Total Time: ';
-        this.total = timeCount.appendChild(document.createElement('span'));
-
-        var totalUnscaled = this.statsElem.appendChild(document.createElement('span'));
-        totalUnscaled.innerText = ' Total Unscaled Time: ';
-        this.totalUnscaled = totalUnscaled.appendChild(document.createElement('span'));
-
-        var frameCount = this.statsElem.appendChild(document.createElement('span'));
-        frameCount.innerText = ' Frame Count: ';
-        this.frameCount = frameCount.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var lastFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        lastFrameTime.innerText = 'Last Frame Time: ';
-        this.lastFrameTime = lastFrameTime.appendChild(document.createElement('span'));
-
-        var minFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        minFrameTime.innerText = ' Min Frame Time: ';
-        this.minFrameTime = minFrameTime.appendChild(document.createElement('span'));
-
-        var maxFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        maxFrameTime.innerText = ' Max Frame Time: ';
-        this.maxFrameTime = maxFrameTime.appendChild(document.createElement('span'));
-
-        this.statsElem.appendChild(document.createElement('br'));
-
-        var avgFrameTime = this.statsElem.appendChild(document.createElement('span'));
-        avgFrameTime.innerText = 'Average Frame Time: ';
-        this.avgFrameTime = avgFrameTime.appendChild(document.createElement('span'));
-
-        var fps = this.statsElem.appendChild(document.createElement('span'));
-        fps.innerText = ' FPS: ';
-        this.fps = fps.appendChild(document.createElement('span'));
-
-        this.hideCheck = document.querySelector('#hideOverlayChk');
-
-        this.stats = new Stats();
-        this.stats.dom.style = 'position: absolute;\n    top: 0px;\n    right: 0px;\n    cursor: pointer;\n    opacity: 0.9;';
-
-        this.statsElem.appendChild(this.stats.dom);
-    };
-
-    StatisticsOverlay.prototype.updateStatistics = function updateStatistics(delta) {
-
-        if (!this.show) return;
-
-        this.total.innerText = Math.floor(this.app.time.totalTime / 1000);
-        this.totalUnscaled.innerText = Math.floor(this.app.time.unscaledTotalTime / 1000);
-        this.frameCount.innerText = this.app.frameCount;
-
-        if (delta) {
-
-            var unscaledDelta = Math.floor(delta / this.app.time.timeScale);
-
-            if (unscaledDelta < minFrame) this.minFrameTime.innerText = minFrame = unscaledDelta;
-            if (unscaledDelta > maxFrame) this.maxFrameTime.innerText = maxFrame = unscaledDelta;
-
-            this.lastFrameTime.innerText = unscaledDelta;
-        }
-
-        this.avgFrameTime.innerText = Math.floor(this.app.averageFrameTime);
-        this.fps.innerText = this.app.averageFrameTime !== 0 ? Math.floor(1000 / this.app.averageFrameTime) : 0;
-
-        this.stats.update();
-    };
-
-    return StatisticsOverlay;
-}();
-
-// * ***********************************************************************
-// *
-// *  HYPERBOLIC ARC CLASS
-// *  Represents a hyperbolic arc on the Poincare disk, which is a
-// *  Euclidean straight line if it goes through the origin
-// *
-// *************************************************************************
-
 var HyperbolicArc = function () {
   function HyperbolicArc(startPoint, endPoint) {
     classCallCheck(this, HyperbolicArc);
@@ -56310,13 +56132,6 @@ var HyperbolicPolygon = function () {
   return HyperbolicPolygon;
 }();
 
-// TODO Document these classes
-// * ***********************************************************************
-// *
-// *  TRANSFORM CLASS
-// *  Represents a transformation of a point in hyperbolic space
-// *
-// *************************************************************************
 var HyperbolicTransform = function () {
   function HyperbolicTransform(matrix, orientation, position) {
     classCallCheck(this, HyperbolicTransform);
@@ -56580,31 +56395,6 @@ var HyperbolicParameters = function () {
   return HyperbolicParameters;
 }();
 
-// * ***********************************************************************
-// *    REGULAR HYPERBOLIC TESSELATION CLASS
-// *    Creates a regular Tesselation of the Poincare Disk using the techniques
-// *    created by Coxeter and Dunham
-// *
-// *    spec = {
-// *      wireframe: true/false
-// *      p: number of sides of p-gon
-// *      q: number of p-gons meeting at each vertex
-// *      textures: array
-// *      edgeAdjacency: [ (multiDim array)
-// *                      [
-// *                        edge_0 orientation (-1 = reflection, 1 = rotation)],
-// *                        edge_0 adjacency (range p - 1)],
-// *                      ],
-// *                    ...
-// *                      [edge_p orientation, edge_p adjacency]
-// *                    ],
-// *      minPolygonSize: stop at polygons below this size,
-// *    }
-// *
-// *
-// *
-// *************************************************************************
-
 var RegularHyperbolicTesselation = function () {
   function RegularHyperbolicTesselation(spec) {
     classCallCheck(this, RegularHyperbolicTesselation);
@@ -56801,7 +56591,6 @@ var RegularHyperbolicTesselation = function () {
   return RegularHyperbolicTesselation;
 }();
 
-// import { createGeometries, createGeometry, positionsA, positionsB, uvsA, uvsB } from './escherSketchCanvasHelpers.js';
 var EscherSketchCanvas = function () {
   function EscherSketchCanvas(showStats) {
     classCallCheck(this, EscherSketchCanvas);
@@ -56816,10 +56605,6 @@ var EscherSketchCanvas = function () {
     self.app.camera.position.set(0, 0, 1.5);
     self.app.camera.far = 5;
 
-    // TODO: not working in Edge
-    var statisticsOverlay = void 0;
-    if (showStats) statisticsOverlay = new StatisticsOverlay(self.app, self.container);
-
     self.initPQControls();
 
     self.initSpec();
@@ -56828,10 +56613,7 @@ var EscherSketchCanvas = function () {
 
     this.buildTiling();
 
-    self.app.onUpdate = function () {
-
-      if (showStats) statisticsOverlay.updateStatistics(self.app.delta);
-    };
+    self.app.onUpdate = function () {};
 
     self.app.onWindowResize = function () {};
 
@@ -56955,7 +56737,6 @@ var EscherSketchCanvas = function () {
   return EscherSketchCanvas;
 }();
 
-// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
 initNav();
 
 escherSketchLayout();

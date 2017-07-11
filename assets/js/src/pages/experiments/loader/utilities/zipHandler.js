@@ -1,4 +1,3 @@
-import errorHandler from './errorHandler.js';
 import fileModel from './fileReader.js';
 
 const processZip = ( file ) => {
@@ -22,7 +21,7 @@ const processZip = ( file ) => {
 
           if ( fbxFileZipped ) {
 
-            errorHandler( 
+            console.error( 
               `Warning: more than one FBX file found in archive,
               skipping subsequent files.`
             );
@@ -47,7 +46,7 @@ const processZip = ( file ) => {
     // if there was no FBX file found exit with an error here
     if( !fbxFileZipped ) {
 
-      errorHandler( 'No FBX file found in archive.' );
+      console.error( 'No FBX file found in archive.' );
       return;
 
     }
@@ -86,7 +85,7 @@ const processZip = ( file ) => {
 
           if ( images[ fileName ] !== undefined ) {
 
-            errorHandler( 'Warning: the archive contains multiple images with the same name:'  + fileName );
+            console.error( 'Warning: the archive contains multiple images with the same name:'  + fileName );
 
           } else {
 
@@ -94,7 +93,7 @@ const processZip = ( file ) => {
 
           }     
 
-        }, ( err ) => { console.log( 'JSZip error unpacking image: ' + err ); } );
+        }, ( err ) => { console.error( 'JSZip error unpacking image: ' + err ); } );
 
     } );
 
@@ -102,7 +101,7 @@ const processZip = ( file ) => {
     const fbxFilePromise = fbxFileZipped.async( 'arrayBuffer' )
       .then(
         ( data ) => { fbxFile = data; },
-        ( err ) => { console.log( 'JSZip error unpacking FBX: ' + err ); } 
+        ( err ) => { console.error( 'JSZip error unpacking FBX: ' + err ); } 
       );
 
     promises.push( fbxFilePromise );

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import errorHandler from './errorHandler.js';
 
 const manager = new THREE.LoadingManager();
 
@@ -26,12 +25,9 @@ manager.onProgress = ( url, currentFile, totalFiles ) => {
   progress.style.width = percentComplete + '%';
 
 };
-
-// NOTE: A lot of unimportant errors tend to come from here,
-// so these are just output as warnings to the console instead of
-// using the errorHandler
+ 
 manager.onError = ( msg ) => {
-  errorHandler( 'THREE.LoadingManager error: ' + msg );
+  console.error( 'THREE.LoadingManager error: ' + msg );
 };
 
 export default manager;

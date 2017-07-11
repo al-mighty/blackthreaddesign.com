@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 
-import pointerPosToCanvasCentre from '../../utilities/three/pointerPosToCanvasCentre.js';
-import computeCentroid from '../../utilities/three/computeCentroid.js';
-import createBufferAttribute from '../../utilities/three/createBufferAttribute.js';
-import setBufferGeometryIndicesFromFaces from '../../utilities/three/setBufferGeometryIndicesFromFaces.js';
-import createBufferPositionsAttribute from '../../utilities/three/createBufferPositionsAttribute.js';
+import pointerPosToCanvasCentre from 'utilities/three/pointerPosToCanvasCentre.js';
+import computeCentroid from 'utilities/three/computeCentroid.js';
+import createBufferAttribute from 'utilities/three/createBufferAttribute.js';
+import setBufferGeometryIndicesFromFaces from 'utilities/three/setBufferGeometryIndicesFromFaces.js';
+import createBufferPositionsAttribute from 'utilities/three/createBufferPositionsAttribute.js';
 
-import fontLoader from '../../utilities/three/loaders/fontLoader.js';
+import fontLoader from 'utilities/three/loaders/fontLoader.js';
 
-import pointerPos from '../../utilities/pointerPos.js';
+import pointerPos from 'utilities/pointerPos.js';
 import './splashCanvasSetup.js';
 
-import App from '../../App/App.js';
-import OrbitControls from '../../App/modules/OrbitControls.module.js';
+import App from 'App/App.js';
+import OrbitControls from 'App/modules/OrbitControls.module.js';
 
 import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';

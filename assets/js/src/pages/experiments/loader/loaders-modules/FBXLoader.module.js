@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import NURBSCurve from './curves/NURBSCurve.js';
 
-import errorHandler from '../utilities/errorHandler.js';
-
 /**
  * @author Kyle-Larson https://github.com/Kyle-Larson
  * @author Takahiro https://github.com/takahirox
@@ -104,7 +102,7 @@ Object.assign( FBXLoader.prototype, {
 
       if ( !isFbxFormatASCII( FBXText ) ) {
 
-        errorHandler( 'Unknown FBX format.');
+        console.error( 'Unknown FBX format.');
         return;
 
       }
@@ -113,7 +111,7 @@ Object.assign( FBXLoader.prototype, {
 
       if ( version < 7000 ) {
 
-        errorHandler( 'FBX version too low. Current version: ' + version + '. Required at least version 7000' );
+        console.error( 'FBX version too low. Current version: ' + version + '. Required at least version 7000' );
         return;
         // this.manager.itemError( FBXText );
         // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
@@ -361,7 +359,7 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
  
     if ( texturesFromZip[ fileName ] === undefined ) {
 
-      errorHandler( 'Texture missing from archive: ' + fileName );
+      console.error( 'Texture missing from archive: ' + fileName );
 
       fileName = '/assets/images/textures/default.jpg';
 
@@ -1300,7 +1298,7 @@ function parseNurbsGeometry( geometryNode ) {
 
   if ( NURBSCurve === undefined ) {
 
-    errorHandler( 'THREE.FBXLoader relies on NURBSCurve for any nurbs present in the model.  Nurbs will show up as empty geometry.' );
+    console.error( 'THREE.FBXLoader relies on NURBSCurve for any nurbs present in the model.  Nurbs will show up as empty geometry.' );
     return new THREE.BufferGeometry();
 
   }
@@ -1309,7 +1307,7 @@ function parseNurbsGeometry( geometryNode ) {
 
   if ( isNaN( order ) ) {
 
-    errorHandler( 'FBXLoader: Invalid Order ' + geometryNode.properties.Order + ' given for geometry ID: ' + geometryNode.id );
+    console.error( 'FBXLoader: Invalid Order ' + geometryNode.properties.Order + ' given for geometry ID: ' + geometryNode.id );
     return new THREE.BufferGeometry();
 
   }
@@ -4411,7 +4409,7 @@ Object.assign( BinaryParser.prototype, {
         return reader.getArrayBuffer( length );
 
       default:
-        errorHandler( 'FBX contains an unknown property type ' + type );
+        console.error( 'FBX contains an unknown property type ' + type );
         return;
     }
 

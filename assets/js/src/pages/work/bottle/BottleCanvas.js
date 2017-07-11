@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import Stats from 'three/examples/js/libs/stats.min';
 
-import App from '../../../App/App.js';
+import App from 'App/App.js';
 
-import OrbitControls from '../../../App/modules/OrbitControls.module.js';
+import OrbitControls from 'App/modules/OrbitControls.module.js';
 
-// import LightHelperExtended from '../../../utilities/three/helpers/LightHelperExtended.js';
+// import LightHelperExtended from 'utilities/three/helpers/LightHelperExtended.js';
 
 // Set up THREE
 THREE.Cache.enabled = true;

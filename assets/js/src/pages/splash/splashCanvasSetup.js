@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import PNLTRI from '../../vendor/pnltri.js';
+import PNLTRI from 'vendor/pnltri.js';
 // Set up THREE
 THREE.Cache.enabled = true;
 

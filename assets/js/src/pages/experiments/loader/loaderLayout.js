@@ -1,3 +1,5 @@
+import errorHandler from './utilities/errorHandler.js';
+
 const goFullscreen = ( elem ) => {
   if ( !document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
     if ( elem.requestFullscreen ) {
@@ -35,3 +37,7 @@ settingsButton.addEventListener( 'click', () => {
 fullscreenButton.addEventListener( 'click', () => {
   goFullscreen( viewer );
 } );
+
+// override console functions to show errors and warnings on the page
+console.warn = errorHandler;
+console.error = errorHandler;

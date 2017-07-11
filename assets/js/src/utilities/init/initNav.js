@@ -1,4 +1,4 @@
-import Greedy from '../../vendor/greedy-nav.js';
+import Greedy from 'vendor/greedy-nav.js';
 
 const addActiveToCurrentNavLink = () => {
   const menuItems = Array.prototype.slice.call( document.querySelectorAll( '.masthead__menu-item' ) );

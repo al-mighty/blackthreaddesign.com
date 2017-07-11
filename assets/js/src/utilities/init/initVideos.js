@@ -1,4 +1,4 @@
-import fluidvids from '../../vendor/fluidVids.js';
+import fluidvids from 'vendor/fluidVids.js';
 
 export default function () {
   fluidvids.init( {
