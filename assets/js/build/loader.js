@@ -2005,7 +2005,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13064,8 +13067,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13095,6 +13096,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -24436,7 +24441,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24465,6 +24470,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36138,10 +36144,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -40111,8 +40114,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40457,6 +40461,7 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40529,7 +40534,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41122,9 +41128,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -41281,6 +41304,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41316,9 +41343,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41365,12 +41390,13 @@ Object.assign( Spline.prototype, {
 
 } );
 
-//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
+
+//
 
 Object.assign( Box2.prototype, {
 
@@ -42418,8 +42444,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42467,8 +42491,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -42591,6 +42613,21 @@ function Time() {
         this.paused = true;
     };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43520,6 +43557,11 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -43669,6 +43711,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43703,6 +43747,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43745,6 +43790,18 @@ function App(canvas) {
     this.camera.position.set(center.x, center.y, cameraZ);
   };
 }
+
+/**
+ * @author renej
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
 
 var NURBSUtils = {
 
@@ -44139,6 +44196,20 @@ var NURBSUtils = {
 
 };
 
+/**
+ * @author renej
+ * NURBS curve object
+ *
+ * Derives from Curve, overriding getPoint and getTangent.
+ *
+ * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS curve
+ **************************************************************/
+
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -44186,6 +44257,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -44244,20 +44342,20 @@ Object.assign(FBXLoader.prototype, {
 
     var FBXTree = void 0;
 
-    if (isFbxFormatBinary$1(FBXBuffer)) {
+    if (isFbxFormatBinary(FBXBuffer)) {
 
-      FBXTree = new BinaryParser$1().parse(FBXBuffer);
+      FBXTree = new BinaryParser().parse(FBXBuffer);
     } else {
 
-      var FBXText = convertArrayBufferToString$1(FBXBuffer);
+      var FBXText = convertArrayBufferToString(FBXBuffer);
 
-      if (!isFbxFormatASCII$1(FBXText)) {
+      if (!isFbxFormatASCII(FBXText)) {
 
         console.error('Unknown FBX format.');
         return;
       }
 
-      var version = getFbxVersion$1(FBXText);
+      var version = getFbxVersion(FBXText);
 
       if (version < 7000) {
 
@@ -44267,29 +44365,29 @@ Object.assign(FBXLoader.prototype, {
         // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
       }
 
-      FBXTree = new TextParser$1().parse(FBXText);
+      FBXTree = new TextParser().parse(FBXText);
     }
 
     // console.log( 'FBXTree', FBXTree );
 
-    var connections = parseConnections$1(FBXTree);
+    var connections = parseConnections(FBXTree);
 
     // parse embedded images
-    var images = parseImages$1(FBXTree);
+    var images = parseImages(FBXTree);
 
     var textures = void 0;
     if (typeof resourceDirectory === 'string') {
 
-      textures = parseTextures$1(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
+      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
     } else {
 
-      textures = parseTextures$1(FBXTree, new TextureLoader(this.manager), images, connections, resourceDirectory);
+      textures = parseTextures(FBXTree, new TextureLoader(this.manager), images, connections, resourceDirectory);
     }
 
-    var materials = parseMaterials$1(FBXTree, textures, connections);
-    var deformers = parseDeformers$1(FBXTree, connections);
-    var geometryMap = parseGeometries$1(FBXTree, connections, deformers);
-    var sceneGraph = parseScene$1(FBXTree, connections, deformers, geometryMap, materials);
+    var materials = parseMaterials(FBXTree, textures, connections);
+    var deformers = parseDeformers(FBXTree, connections);
+    var geometryMap = parseGeometries(FBXTree, connections, deformers);
+    var sceneGraph = parseScene(FBXTree, connections, deformers, geometryMap, materials);
 
     return sceneGraph;
   }
@@ -44300,7 +44398,7 @@ Object.assign(FBXLoader.prototype, {
  * @param {{Connections: { properties: { connections: [number, number, string][]}}}} FBXTree
  * @returns {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>}
  */
-function parseConnections$1(FBXTree) {
+function parseConnections(FBXTree) {
 
   /**
    * @type {Map<number, { parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>}
@@ -44349,7 +44447,7 @@ function parseConnections$1(FBXTree) {
  * @param {{Objects: {subNodes: {Texture: Object.<string, FBXTextureNode>}}}} FBXTree
  * @returns {Map<number, string(image blob URL)>}
  */
-function parseImages$1(FBXTree) {
+function parseImages(FBXTree) {
 
   /**
    * @type {Map<number, string(image blob URL)>}
@@ -44429,7 +44527,7 @@ function parseImage(videoNode) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {Map<number, THREE.Texture>}
  */
-function parseTextures$1(FBXTree, loader, imageMap, connections) {
+function parseTextures(FBXTree, loader, imageMap, connections) {
   var texturesFromZip = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
 
@@ -44558,7 +44656,7 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {Map<number, THREE.Material>}
  */
-function parseMaterials$1(FBXTree, textureMap, connections) {
+function parseMaterials(FBXTree, textureMap, connections) {
 
   var materialMap = new Map();
 
@@ -44709,7 +44807,7 @@ function parseParameters(properties, textureMap, childrenRelationships) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}>}
  */
-function parseDeformers$1(FBXTree, connections) {
+function parseDeformers(FBXTree, connections) {
 
   var deformers = {};
 
@@ -44784,7 +44882,7 @@ function parseSkeleton(connections, DeformerNodes) {
  * @param {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}>} deformers
  * @returns {Map<number, THREE.BufferGeometry>}
  */
-function parseGeometries$1(FBXTree, connections, deformers) {
+function parseGeometries(FBXTree, connections, deformers) {
 
   var geometryMap = new Map();
 
@@ -45403,7 +45501,7 @@ function parseNurbsGeometry(geometryNode) {
  * @param {Map<number, THREE.Material>} materialMap
  * @returns {THREE.Group}
  */
-function parseScene$1(FBXTree, connections, deformers, geometryMap, materialMap) {
+function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
 
   var sceneGraph = new Group();
 
@@ -47512,9 +47610,9 @@ Object.assign(Geometry$1.prototype, {
   }
 });
 
-function TextParser$1() {}
+function TextParser() {}
 
-Object.assign(TextParser$1.prototype, {
+Object.assign(TextParser.prototype, {
   getPrevNode: function () {
 
     return this.nodeStack[this.currentIndent - 2];
@@ -47857,9 +47955,9 @@ Object.assign(TextParser$1.prototype, {
 // Binary format specification:
 //   https://code.blender.org/2013/08/fbx-binary-file-format-specification/
 //   https://wiki.rogiken.org/specifications/file-format/fbx/ (more detail but Japanese)
-function BinaryParser$1() {}
+function BinaryParser() {}
 
-Object.assign(BinaryParser$1.prototype, {
+Object.assign(BinaryParser.prototype, {
 
   /**
    * Parses binary data and builds FBXTree as much compatible as possible with the one built by TextParser.
@@ -48614,17 +48712,17 @@ Object.assign(FBXTree.prototype, {
  * @param {ArrayBuffer} buffer
  * @returns {boolean}
  */
-function isFbxFormatBinary$1(buffer) {
+function isFbxFormatBinary(buffer) {
 
   var CORRECT = 'Kaydara FBX Binary  \0';
 
-  return buffer.byteLength >= CORRECT.length && CORRECT === convertArrayBufferToString$1(buffer, 0, CORRECT.length);
+  return buffer.byteLength >= CORRECT.length && CORRECT === convertArrayBufferToString(buffer, 0, CORRECT.length);
 }
 
 /**
  * @returns {boolean}
  */
-function isFbxFormatASCII$1(text) {
+function isFbxFormatASCII(text) {
 
   var CORRECT = ['K', 'a', 'y', 'd', 'a', 'r', 'a', '\\', 'F', 'B', 'X', '\\', 'B', 'i', 'n', 'a', 'r', 'y', '\\', '\\'];
 
@@ -48653,7 +48751,7 @@ function isFbxFormatASCII$1(text) {
 /**
  * @returns {number}
  */
-function getFbxVersion$1(text) {
+function getFbxVersion(text) {
 
   var versionRegExp = /FBXVersion: (\d+)/;
   var match = text.match(versionRegExp);
@@ -48746,7 +48844,7 @@ function parseMatrixArray(floatString) {
  * @param {number} to
  * @returns {String}
  */
-function convertArrayBufferToString$1(buffer, from, to) {
+function convertArrayBufferToString(buffer, from, to) {
 
   if (from === undefined) from = 0;
   if (to === undefined) to = buffer.byteLength;
@@ -48809,234 +48907,6 @@ function slice(a, b, from, to) {
 
   return a;
 }
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-var possibleConstructorReturn = function (self, call) {
-  if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return call && (typeof call === "object" || typeof call === "function") ? call : self;
-};
-
-// Customised version of FBXLoader that supports an array of images loaded from a zip;
-
-var FBXLoaderCustom = function (_FBXLoader) {
-    inherits(FBXLoaderCustom, _FBXLoader);
-
-    function FBXLoaderCustom() {
-        classCallCheck(this, FBXLoaderCustom);
-        return possibleConstructorReturn(this, _FBXLoader.call(this));
-
-        // this.FBXLoaderOrig = new FBXLoader();
-
-        // FBXLoaderOrig.
-
-        // return this.FBXLoaderOrig;
-    }
-
-    /**
-    * Parses an ASCII/Binary FBX file and returns a THREE.Group.
-    * THREE.Group will have an animations property of AnimationClips
-    * of the different animations within the FBX file.
-    * @param {ArrayBuffer} FBXBuffer - Contents of FBX file to parse.
-    * @param {string} resourceDirectory - Directory to load external assets (e.g. textures ) from.
-    * @returns {THREE.Group}
-    */
-
-
-    FBXLoaderCustom.prototype.parseZip = function parseZip(FBXBuffer, resourceDirectory) {
-
-        console.error('test');
-
-        var FBXTree = void 0;
-
-        if (isFbxFormatBinary(FBXBuffer)) {
-
-            FBXTree = new BinaryParser().parse(FBXBuffer);
-        } else {
-
-            var FBXText = convertArrayBufferToString(FBXBuffer);
-
-            if (!isFbxFormatASCII(FBXText)) {
-
-                console.error('Unknown FBX format.');
-                return;
-            }
-
-            var version = getFbxVersion(FBXText);
-
-            if (version < 7000) {
-
-                console.error('FBX version too low. Current version: ' + version + '. Required at least version 7000');
-                return;
-                // this.manager.itemError( FBXText );
-                // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
-            }
-
-            FBXTree = new TextParser().parse(FBXText);
-        }
-
-        // console.log( 'FBXTree', FBXTree );
-
-        var connections = parseConnections(FBXTree);
-
-        // parse embedded images
-        var images = parseImages(FBXTree);
-
-        var textures = void 0;
-        if (typeof resourceDirectory === 'string') {
-
-            textures = parseTextures(FBXTree, new THREE.TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
-        } else {
-
-            textures = parseTextures(FBXTree, new THREE.TextureLoader(this.manager), images, connections, resourceDirectory);
-        }
-
-        var materials = parseMaterials(FBXTree, textures, connections);
-        var deformers = parseDeformers(FBXTree, connections);
-        var geometryMap = parseGeometries(FBXTree, connections, deformers);
-        var sceneGraph = parseScene(FBXTree, connections, deformers, geometryMap, materials);
-
-        return sceneGraph;
-    };
-
-    return FBXLoaderCustom;
-}(FBXLoader);
 
 var processZip = function (file) {
     JSZip.loadAsync(file).then(function (zip) {
@@ -49164,6 +49034,7 @@ manager.onError = function (msg) {
   console.error('THREE.LoadingManager error: ' + msg);
 };
 
+// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -49677,6 +49548,125 @@ module.exports = throttle;
 
 var throttle = interopDefault(index);
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
 var AnimationControls = function () {
     function AnimationControls() {
         classCallCheck(this, AnimationControls);
@@ -49961,7 +49951,7 @@ var LoaderCanvas = function () {
   LoaderCanvas.prototype.initFBXLoader = function initFBXLoader() {
     var _this2 = this;
 
-    var fbxLoader = new FBXLoaderCustom(manager);
+    var fbxLoader = new FBXLoader(manager);
 
     fileModel.fileReader.onload = function (e) {
 

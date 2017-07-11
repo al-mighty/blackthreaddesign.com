@@ -3,7 +3,7 @@ import Stats from 'three/examples/js/libs/stats.min';
 
 import App from 'App/App.js';
 
-import OrbitControls from 'App/modules/OrbitControls.module.js';
+import OrbitControls from 'modules/OrbitControls.module.js';
 
 // import LightHelperExtended from 'utilities/three/helpers/LightHelperExtended.js';
 

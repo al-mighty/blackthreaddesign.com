@@ -12,7 +12,7 @@ import pointerPos from 'utilities/pointerPos.js';
 import './splashCanvasSetup.js';
 
 import App from 'App/App.js';
-import OrbitControls from 'App/modules/OrbitControls.module.js';
+import OrbitControls from 'modules/OrbitControls.module.js';
 
 import backgroundVert from './shaders/background.vert';
 import backgroundFrag from './shaders/background.frag';

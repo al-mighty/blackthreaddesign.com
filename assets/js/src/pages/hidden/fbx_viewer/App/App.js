@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import Time from './Time.js';
 
-import OrbitControls from './modules/OrbitControls.module.js';
+import OrbitControls from 'modules/OrbitControls.module.js';
 
 /**
  * @author Lewy Blue / https://github.com/looeee

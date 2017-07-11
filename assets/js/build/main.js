@@ -11126,6 +11126,7 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
+// Set up Hammer as global
 window.Hammer = hammer$1;
 
 var bind = createCommonjsModule(function (module, exports) {
@@ -12269,6 +12270,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -12393,6 +12395,8 @@ function initLoader() {
   }, 3000);
 }
 
+// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
+// Set up loading overlay
 initLoader();
 
 // Initialise layout and other things
