@@ -1,8 +1,6 @@
 
 import 'babel-polyfill';
 
-//TODO: this sets up globals such as Hammer object. Do this elsewhere
-
 // this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
 import '../utilities/init/initHammer.js';
 

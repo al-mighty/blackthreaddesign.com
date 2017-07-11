@@ -2,12 +2,12 @@
   <script async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 {% endif %}
 
-<script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
-
 {% if page.js %}
   {% for file in page.js %}
   <script async src='/assets/js/build/{{ file }}.js'></script>
   {% endfor %}
+{% else %}
+  <script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
 {% endif %}
 
 {% include /comments-providers/scripts.html %}

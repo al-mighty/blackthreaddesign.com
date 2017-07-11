@@ -7,7 +7,7 @@ const calculateCanvasDims = () => {
   return Math.min( 1280, dim );
 };
 
-export default function escherSketchLayout() {
+export default function bottleLayout() {
   const canvasContainer = document.querySelector( '.canvas-container' );
 
   let canvasContainerDim = calculateCanvasDims();

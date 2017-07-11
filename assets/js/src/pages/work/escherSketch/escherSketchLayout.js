@@ -1,16 +1,13 @@
 import throttle from 'lodash.throttle';
-import * as Ham from 'hammerjs';
-
-const Hammer = Ham.default;
 
 const calculateCanvasDims = () => {
-  const dim = ( window.innerWidth < window.innerHeight ) 
+  const dim = ( window.innerWidth < window.innerHeight )
     ? window.innerWidth * 0.9 : window.innerHeight * 0.9;
 
   return Math.min( 1280, dim );
-}
+};
 
-function initPQSelectors(){
+function initPQSelectors() {
 
   function change( direction, elem ) {
 
@@ -18,8 +15,7 @@ function initPQSelectors(){
     if ( direction === 1 ) {
       if ( currentValue === 8 ) return;
       elem.innerHTML = currentValue + 2;
-    }
-    else {
+    } else {
       if ( currentValue === 4 ) return;
       elem.innerHTML = String( currentValue - 2 );
     }
@@ -47,7 +43,6 @@ function initPQSelectors(){
 
 }
 
-
 export default function escherSketchLayout() {
   const canvasContainer = document.querySelector( '.canvas-container' );
 
@@ -60,7 +55,7 @@ export default function escherSketchLayout() {
     canvasContainerDim = calculateCanvasDims();
     canvasContainer.style.height = canvasContainerDim + 'px';
     canvasContainer.style.width = canvasContainerDim + 'px';
-  }), 250 );
+  } ), 250 );
 
   initPQSelectors();
 

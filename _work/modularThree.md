@@ -5,7 +5,7 @@ excerpt: "An NPM module that simplifies the creation of THREE.js based WebGL sce
 categories: work
 permalink: work/modular-three
 header:
-  teaser: /assets/images/work/modular_three/teaser.jpg
+  teaser: /assets/images/work/modular-three/teaser.jpg
 comments: false
 redirection: https://www.npmjs.com/package/modular-three
 ---

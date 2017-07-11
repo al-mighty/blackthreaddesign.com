@@ -49722,11 +49722,6 @@ var addModelInfo = function (renderer) {
   vertices.innerHTML = renderer.info.render.vertices;
 };
 
-/* ******************************************************** */
-// STATS overlay. Don't use this in production as it
-// causes issues in some browsers!
-// import Stats from 'three/examples/js/libs/stats.min';
-
 var FbxViewerCanvas = function () {
   function FbxViewerCanvas(canvas) {
     classCallCheck(this, FbxViewerCanvas);
@@ -49747,9 +49742,6 @@ var FbxViewerCanvas = function () {
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
-
-      // remove if no longer using stats
-      // if ( stats ) stats.update();
 
       self.animationControls.update(self.app.delta);
     };

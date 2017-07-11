@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 
 import pointerPos from '../../../utilities/pointerPos.js';
+// import Stats from '../../../utilities/stats.js';
 import App from '../../../App/App.js';
 
 import { createGroup1, createGroup2, createGroup3 } from './objects/lines.js';
 
 export default class WavelinesCanvas {
 
-  constructor( showStats ) {
+  constructor() {
 
     const self = this;
 
@@ -22,11 +23,15 @@ export default class WavelinesCanvas {
 
     self.mixers = [];
 
+    // this.stats = new Stats();
+
     self.app.onUpdate = function () {
 
       self.animateCamera();
 
       self.mixers.forEach( mixer => mixer.update( self.app.delta * 0.001 ) );
+
+      // self.stats.update();
 
     };
 
