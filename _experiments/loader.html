@@ -1,0 +1,96 @@
+---
+layout: minimal
+title: "Three.js loader"
+excerpt: "App for testing models for use with three.js, supporting a variety of formats"
+categories: work
+js:
+  loader
+css:
+  loader
+vendor-js: 
+  [ "/zip/inflate.min", "/zip/jszip.min" ]
+---
+
+<div id="view-container">
+  <canvas id="viewer-canvas"></canvas>
+
+  <div id="help-overlay" class="hide fullscreen-controls">
+    <h1>HELP OVERLAY</h1>
+  </div>
+
+  <div id="settings-overlay" class="hide fullscreen-controls">
+    <input id="toggle-background" type="checkbox">Black Background
+  </div>
+
+  <div id="controls">
+    <div id="animation-controls" class="hide">
+      <a href="#" id="playback-control">
+        <span id="play-button" class="fa fa-play-circle hide" aria-hidden="true"></span>
+        <span id="pause-button" class="fa fa-pause-circle" aria-hidden="true"></span>
+      </a>
+      <input id="animation-slider" type="range" min="0" max="100" value="0" />
+    </div>
+
+    <div id="right-buttons">
+      <a href="#" id="help-button">
+        <span class="fa fa-question-circle" aria-hidden="true"></span>
+      </a>
+
+      <a href="#" id="settings-button">
+        <span class="fa fa-cog" aria-hidden="true"></span>
+      </a>
+
+      <a href="#" id="fullscreen-button">
+        <span class="fa fa-arrows-alt" aria-hidden="true"></span>
+      </a>
+    </div>
+  </div>
+
+  <div id="loading-overlay">
+
+    <form id="file-upload-form">
+      Upload an FBX file or Zip archive containg an FBX and textures here.
+      <input id="file-upload-input" type="file" name="FBX">
+    </form>
+
+
+    <div id="loading-bar" class="hide">
+      <span id="bar">
+        <span id="progress"></span>
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="info">
+  <div id="error-overlay" class="hide notice--info">
+    <h2>The following error(s) and warning(s) occurred:</h2>
+    <div id="error-message"></div>
+  </div>
+
+  <h3>Currently supported formats</h3>
+
+  <p>FBX</p>
+
+  <h3>Supported texture formats</h3>
+
+  <p>JPG, PNG</p>
+
+  <h3>Archive supports</h3>
+
+  <p>Models can be loaded in ZIP format, where the ZIP archive contains a single scene and associated textures. The directory structure of the zip does not matter. 
+
+  <p>Limitations of archive support:</p>
+
+  <ul>
+    <li>Only one model / scene per zip</li>
+    <li>All textures must have a unique name, duplicate textures will be ignored.</li>
+  </ul> 
+
+  <div id="model-info">
+    <h3>Model Info</h3>
+    <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
+  </div>
+</div>
