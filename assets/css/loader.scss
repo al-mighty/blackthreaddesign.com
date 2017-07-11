@@ -1,18 +1,14 @@
 #info{
   position: absolute;
   top: 100%;
-  margin-left: 5%;
-  margin-right: 5%;
-  
+  margin: 0;
 }
 
 #view-container {
-	position: absolute;
-	background-color: grey;
-	height: 70%;
-	width: 90%;
-	margin-left: 5%;
-	margin-top: 5%;
+	position: relative;
+	height: 90vh;
+	width: 100%;
+	margin: 0;
 }
 
 #view-container:fullscreen {
@@ -139,26 +135,32 @@
 	bottom: 0;
 	right: 0.5em;
   width: 90%;
+  height: 5%;
   left: 9%;
 
 	a {
 		color: black;
 	}
+
+  span {
+    display: block;
+  }
 }
 
 
 #animation-controls {
   position: absolute;
   width: 86%;
+  height: 100%;
   left: 0;
-  bottom: 0;
-  // display: none;
+  top: 0;
 }
 
 #right-buttons{
   position: absolute;
   right: 0;
-  bottom: 0;
+  height: 100%;
+  top: 0;
 }
 
 #animation-slider{

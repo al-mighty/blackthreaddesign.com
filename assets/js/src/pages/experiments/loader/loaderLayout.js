@@ -22,17 +22,10 @@ const goFullscreen = ( elem ) => {
 
 const viewer = document.querySelector( '#view-container' );
 
-const helpButton = document.querySelector( '#help-button' );
 const settingsButton = document.querySelector( '#settings-button' );
 const fullscreenButton = document.querySelector( '#fullscreen-button' );
 
-const helpOverLay = document.querySelector( '#help-overlay' );
 const settingsOverlay = document.querySelector( '#settings-overlay' );
-
-helpButton.addEventListener( 'click', () => {
-  settingsOverlay.classList.add( 'hide' );
-  helpOverLay.classList.toggle( 'hide' );
-} );
 
 settingsButton.addEventListener( 'click', () => {
   helpOverLay.classList.add( 'hide' );

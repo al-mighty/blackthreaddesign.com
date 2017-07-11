@@ -26,17 +26,10 @@ var goFullscreen = function (elem) {
 
 var viewer = document.querySelector('#view-container');
 
-var helpButton = document.querySelector('#help-button');
 var settingsButton = document.querySelector('#settings-button');
 var fullscreenButton = document.querySelector('#fullscreen-button');
 
-var helpOverLay = document.querySelector('#help-overlay');
 var settingsOverlay = document.querySelector('#settings-overlay');
-
-helpButton.addEventListener('click', function () {
-  settingsOverlay.classList.add('hide');
-  helpOverLay.classList.toggle('hide');
-});
 
 settingsButton.addEventListener('click', function () {
   helpOverLay.classList.add('hide');
