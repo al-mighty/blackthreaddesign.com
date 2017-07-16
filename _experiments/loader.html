@@ -42,10 +42,9 @@ vendor-js:
   <div id="loading-overlay">
 
     <form id="file-upload-form">
-      Upload an FBX file or Zip archive containg an FBX and textures here.
-      <input id="file-upload-input" type="file" name="FBX">
+      Upload a .json, .fbx, .obj, gltf, .glb or .zip file
+      <input id="file-upload-input" type="file" name="files[]" multiple>
     </form>
-
 
     <div id="loading-bar" class="hide">
       <span id="bar">
@@ -70,19 +69,25 @@ vendor-js:
 
   <h3>Currently supported formats</h3>
 
-  <p>FBX</p>
+  <p>Three.js native JSON format: Complete scene, or a file containing and geometry or buffer geometry.</p>
+
+  <p>FBX: Binary higher than version 6.1 and ASCII higher than version 7.0</p>
+
+  <p>GLTF: .gltf or .glb file, only embedded textures supported for now, animations not yet supported.</p>
+
 
   <h3>Supported texture formats</h3>
 
-  <p>JPG, PNG</p>
+  <p>JPG, PNG, GIF, BMP, DDS</p>
 
-  <h3>Archive supports</h3>
+  <h3>Archive support</h3>
 
   <p>Models can be loaded in ZIP format, where the ZIP archive contains a single scene and associated textures. The directory structure of the zip does not matter. 
 
   <p>Limitations of archive support:</p>
 
   <ul>
+    <li>Currently on support FBX</li>
     <li>Only one model / scene per zip</li>
     <li>All textures must have a unique name, duplicate textures will be ignored.</li>
   </ul> 

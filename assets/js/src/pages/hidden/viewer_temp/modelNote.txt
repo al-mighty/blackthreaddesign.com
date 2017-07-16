@@ -1,0 +1,5 @@
+Problems with model that had to be corrected:
+- rotated at 90 degrees on x axis
+- huge scale ( 20 metres tall ) - best to make model fit inside 1 metre box or less
+- modelled with quads ( these have to be subdivided at runtime which is bad for mobile devices, best to do this in modelling program )
+- very high polygon count ( 200,000 ) polygons. Not suitable for display on mobile devices

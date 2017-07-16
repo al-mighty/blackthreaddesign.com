@@ -1,4 +1,4 @@
-import fileModel from './fileReader.js';
+import OnLoadCallbacks from './OnLoadCallbacks.js';
 
 const zipHandler = ( file ) => {
   JSZip.loadAsync( file ).then( ( zip ) => {
@@ -21,7 +21,7 @@ const zipHandler = ( file ) => {
 
           if ( fbxFileZipped ) {
 
-            console.error( 
+            console.error(
               `Warning: more than one FBX file found in archive,
               skipping subsequent files.`
             );
@@ -32,7 +32,7 @@ const zipHandler = ( file ) => {
 
           }
 
-        } else {
+        } else if ( extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif' ) {
 
           // should check if it's an image here - not completely neccessary as it will
           // work anyway, but maybe more efficient
@@ -44,7 +44,7 @@ const zipHandler = ( file ) => {
     }
 
     // if there was no FBX file found exit with an error here
-    if( !fbxFileZipped ) {
+    if ( !fbxFileZipped ) {
 
       console.error( 'No FBX file found in archive.' );
       return;
@@ -90,7 +90,7 @@ const zipHandler = ( file ) => {
 
             images[ fileName ] = url;
 
-          }   
+          }
 
         }, ( err ) => { console.error( 'JSZip error unpacking image: ' + err ); } );
 
@@ -107,7 +107,9 @@ const zipHandler = ( file ) => {
 
     Promise.all( promises ).then( () => {
 
-      fileModel.onZipLoad( fbxFile, images );
+      console.log( images )
+
+      OnLoadCallbacks.onZipLoad( fbxFile, images );
 
     } );
 

@@ -1,0 +1,258 @@
+import * as THREE from 'three';
+
+import App from 'App/App.js';
+
+import addModelInfo from './utilities/addModelInfo.js';
+
+import Loaders from './utilities/Loaders.js';
+
+import errorHandler from  './utilities/errorHandler.js';
+
+/* ******************************************************** */
+
+// Set up THREE caching
+THREE.Cache.enabled = true;
+
+class LoaderCanvas {
+
+  constructor( canvas ) {
+
+    // const self = this;
+
+    this.loaders = new Loaders();
+
+    this.canvas = canvas;
+
+    this.app = new App( this.canvas );
+
+    this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
+
+    this.app.camera.far = 10000;
+    
+
+    // Put any per frame calculation here
+    this.app.onUpdate = function () {
+
+      // NB: use self inside this function
+
+    };
+
+    // put any per resize calculations here (throttled to once per 250ms)
+    this.app.onWindowResize = function () {
+
+      // NB: use self inside this function
+
+    };
+
+    this.initLights();
+
+    this.app.initControls();
+
+    this.loadMaps();
+    this.initMaterials();
+
+    this.loadFBXObject();
+    // this.loadOBJObject();
+
+  }
+
+  initLights() {
+
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
+    this.app.scene.add( ambientLight );
+
+    // ****  METHOD 1:   3 POINT LIGHTING ***************************
+    // Traditional 3 point light setup - slightly more expensive due to
+    // two extra lights
+
+    const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
+    backLight.position.set( 3, 1, -3 );
+
+    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+    keyLight.position.set( -2, -1, 0 );
+
+    const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
+    fillLight.position.set( 3, 3, 2 );
+
+    this.app.scene.add( backLight, keyLight, fillLight );
+
+
+    // ****  METHOD 2:   CAMERA LIGHT ***********************************
+    // Visually similar to 3 point lighting, but cheaper as only two lights
+    // are needed - use this if performance is low
+
+    // const pointLight = new THREE.PointLight( 0xffffff, 0.7, 0, 0 );
+    // this.app.camera.add( pointLight );
+    // this.app.scene.add( this.app.camera );
+
+  }
+
+
+  addObjectToScene( object ) {
+
+    if ( object === undefined ) {
+
+      errorHandler( 'Oops! An unspecified error occurred :(' );
+      return;
+
+    }
+
+    this.app.fitCameraToObject( object );
+
+    this.app.scene.add( object );
+
+    this.app.play();
+
+    addModelInfo( this.app.renderer );
+
+    document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
+  }
+
+  loadMaps() {
+    // this.envMap = this.loaders.textureLoader.load( '/assets/images/textures/env_maps/grey_room.jpg' );
+    // this.envMap = this.loaders.textureLoader.load( '/assets/images/textures/env_maps/grey_lights.jpg' );
+    // this.envMap = this.loaders.textureLoader.load( '/assets/images/textures/env_maps/studio_setup.jpg' );
+    this.envMap = this.loaders.textureLoader.load( '/assets/images/textures/env_maps/test_env_map.jpg' );
+    // this.envMap = this.loaders.textureLoader.load( '/assets/images/textures/env_maps/very_grey.jpg' );
+
+    this.envMap.mapping = THREE.EquirectangularReflectionMapping;
+
+  }
+
+  initMaterials() {
+
+    this.materials = {
+      
+      // transparent stem
+      Glas: new THREE.MeshStandardMaterial( {
+
+        envMap: this.envMap,
+        envMapIntensity: 0.4,
+        transparent: true,
+        opacity: 0.7,
+        color: 0xffffff,
+
+      } ),
+
+
+      // red plastic
+      glossy_red01: new THREE.MeshStandardMaterial( {
+
+        envMap: this.envMap,
+        envMapIntensity: 0.8,
+        color: 0xd60000,
+        side: THREE.DoubleSide,
+
+        // STANDARD
+        metalness: 0.1,
+        roughness: 0.4,
+
+      } ),
+
+      // inner grey rim
+      'Plastik Mittelgl': new THREE.MeshStandardMaterial( {
+
+        envMap: this.envMap,
+        envMapIntensity: 0.8,
+
+        color: 0xcccccc,
+        side: THREE.DoubleSide,
+
+        // STANDARD
+        metalness: 0.1,
+        roughness: 0.4,
+
+      } ),
+
+      // inner top black plastic
+      'Schwarz Matt': new THREE.MeshStandardMaterial( {
+
+        color: 0x333333,
+        side: THREE.DoubleSide,
+
+        // STANDARD
+        metalness: 0.1,
+        roughness: 0.4,
+
+      } ),
+
+    };
+
+  }
+
+  loadFBXObject() {
+
+    const url = '/assets/models/viewer_temp/product_scaled_triangulated.fbx';
+
+    this.loaders.fbxLoader.load( url,
+      ( result ) => {
+
+        const object = result.children[0];
+
+        object.traverse( ( child ) => {
+
+          if ( child.material !== undefined ) {
+
+            console.log( child.material, this.materials[ child.material.name ] )
+
+            child.material = this.materials[ child.material.name ];
+            // console.log( child.material.name)
+
+            // switch ( child.material.name ) {
+
+            //   case 'glossy_red01':
+            //     break;
+            //   case 'Schwarz Matt':
+            //     break;
+            //   case 'Glas':
+            //     break;
+            //   case 'Plastik Mittelgl':
+            //     break;
+            // }
+          }
+
+        } );
+
+        this.addObjectToScene( object );
+
+      },
+      ( progress ) => {
+
+        // set up loading bar here if desired
+
+      },
+      ( error ) => { errorHandler( error ); },
+
+    );
+
+  }
+
+  loadOBJObject() {
+
+    const objURL = '/assets/models/viewer_temp/product_scaled.obj';
+
+    const objLoader = this.loaders.objLoader2;
+
+    objLoader.setMaterials( this.materials );
+
+    objLoader.load( objURL,
+      ( result ) => {
+
+        this.addObjectToScene( result );
+
+      },
+      ( progress ) => {},
+      ( error ) => { console.error( error ); }
+
+    );
+
+  }
+
+}
+
+const canvas = document.querySelector( '#viewer-canvas' );
+
+const loaderCanvas = new LoaderCanvas( canvas );
+
+export default loaderCanvas;

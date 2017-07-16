@@ -333,6 +333,7 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
 
   let fileName;
 
+  console.log( textureNode )
   const filePath = textureNode.properties.FileName;
 
   const relativeFilePath = textureNode.properties.RelativeFilename;
@@ -407,6 +408,7 @@ function parseTexture( textureNode, loader, imageMap, connections, texturesFromZ
 
   }
 
+  console.log(fileName)
 	/**
 	 * @type {THREE.Texture}
 	 */

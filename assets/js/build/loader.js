@@ -6,6 +6,9 @@ this.loader = this.loader || {};
 
 var errorHandler = function (msg) {
 
+  // bug in three.js or WebGL returns this error on Chrome
+  if (msg.indexOf('gl.getProgramInfoLog()') !== -1) return;
+
   document.querySelector('#error-overlay').classList.remove('hide');
   var p = document.createElement('p');
   p.innerHTML = msg;
@@ -2007,7 +2010,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13066,8 +13072,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13097,6 +13101,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -24438,7 +24446,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24467,6 +24475,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36140,10 +36149,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -40113,8 +40119,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40459,6 +40466,7 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40531,7 +40539,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41124,9 +41133,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -41283,6 +41309,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41318,9 +41348,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41367,12 +41395,13 @@ Object.assign( Spline.prototype, {
 
 } );
 
-//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
+
+//
 
 Object.assign( Box2.prototype, {
 
@@ -42420,8 +42449,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42469,8 +42496,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -42593,6 +42618,21 @@ function Time() {
         this.paused = true;
     };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43522,6 +43562,11 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -43671,8 +43716,6 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
-      if (self.controls && self.controls.enableDamping) self.controls.update();
-
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43707,7 +43750,6 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
-  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43734,22 +43776,1027 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
-    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
-
-    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max edge of the bounding box
-    var maxDim = Math.max(size.x, size.y);
-
+    // get the max side of the bounding box
+    var maxDim = Math.max(size.x, size.y, size.z);
     var fov = this.camera.fov * (Math.PI / 180);
-
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
+
+    var minZ = boundingBox.min.z;
+    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+
+    if (this.controls) {
+
+      // set camera to rotate around center of loaded object
+      this.controls.target = center;
+
+      // prevent camera from zooming out far enough to create far plane cutoff
+      this.controls.maxDistance = cameraToFarEdge * 2;
+    }
   };
 }
+
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
+
+function interopDefault(ex) {
+	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var index = createCommonjsModule(function (module) {
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        result = wait - timeSinceLastCall;
+
+    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+/**
+ * Creates a throttled function that only invokes `func` at most once per
+ * every `wait` milliseconds. The throttled function comes with a `cancel`
+ * method to cancel delayed `func` invocations and a `flush` method to
+ * immediately invoke them. Provide `options` to indicate whether `func`
+ * should be invoked on the leading and/or trailing edge of the `wait`
+ * timeout. The `func` is invoked with the last arguments provided to the
+ * throttled function. Subsequent calls to the throttled function return the
+ * result of the last `func` invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the throttled function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.throttle` and `_.debounce`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to throttle.
+ * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=true]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new throttled function.
+ * @example
+ *
+ * // Avoid excessively updating the position while scrolling.
+ * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+ *
+ * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+ * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
+ * jQuery(element).on('click', throttled);
+ *
+ * // Cancel the trailing throttled invocation.
+ * jQuery(window).on('popstate', throttled.cancel);
+ */
+function throttle(func, wait, options) {
+  var leading = true,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  if (isObject(options)) {
+    leading = 'leading' in options ? !!options.leading : leading;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+  return debounce(func, wait, {
+    'leading': leading,
+    'maxWait': wait,
+    'trailing': trailing
+  });
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = throttle;
+});
+
+var throttle = interopDefault(index);
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var AnimationControls = function () {
+    function AnimationControls() {
+        classCallCheck(this, AnimationControls);
+
+
+        this.slider = document.querySelector('#animation-slider');
+        this.playButton = document.querySelector('#play-button');
+        this.pauseButton = document.querySelector('#pause-button');
+        this.playbackControl = document.querySelector('#playback-control');
+
+        this.controls = document.querySelector('#animation-controls');
+
+        this.isPaused = false;
+        this.pauseButtonActive = false;
+    }
+
+    AnimationControls.prototype.update = function update(delta) {
+
+        // delta is in seconds while fbx animations are in milliseconds so convert here
+        if (this.mixer && this.action && !this.isPaused) {
+
+            this.mixer.update(delta / 1000);
+
+            // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
+            // the animation duration, so set the slider value from that
+            this.setSliderValue(this.action.time);
+        }
+    };
+
+    AnimationControls.prototype.initAnimation = function initAnimation(object) {
+
+        // don't do anything if the object has no animations
+        if (!object.animations || object.animations.length === 0) return;
+
+        var animation = object.animations[0];
+
+        // lots of models have tiny < .1 second animations that cause
+        // flickering / stuttering - ignore these
+        if (animation.duration < 0.1) {
+
+            console.warn('Skipping animation with duration < 0.1 seconds.');
+            return;
+        }
+
+        // set animation slider max to length of animation
+        this.slider.max = String(animation.duration);
+
+        this.slider.step = String(animation.duration / 150);
+
+        this.mixer = new AnimationMixer(object);
+
+        this.action = this.mixer.clipAction(animation);
+
+        this.action.play();
+
+        document.querySelector('#animation-controls').classList.remove('hide');
+
+        this.initPlaybackControls();
+
+        this.initSlider();
+    };
+
+    AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
+
+        this.slider.value = String(val);
+    };
+
+    AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
+        var _this = this;
+
+        this.playbackControl.addEventListener('click', function () {
+
+            if (!_this.isPaused) {
+
+                _this.pauseButtonActive = true;
+            } else {
+
+                _this.pauseButtonActive = false;
+            }
+
+            _this.togglePause();
+        });
+    };
+
+    AnimationControls.prototype.togglePause = function togglePause() {
+
+        if (!this.isPaused) {
+
+            this.pause();
+        } else {
+
+            this.play();
+        }
+    };
+
+    AnimationControls.prototype.pause = function pause() {
+
+        this.isPaused = true;
+        this.playButton.classList.remove('hide');
+        this.pauseButton.classList.add('hide');
+    };
+
+    AnimationControls.prototype.play = function play() {
+
+        this.isPaused = false;
+        this.playButton.classList.add('hide');
+        this.pauseButton.classList.remove('hide');
+    };
+
+    AnimationControls.prototype.initSlider = function initSlider() {
+        var _this2 = this;
+
+        this.slider.addEventListener('mousedown', function () {
+
+            if (!_this2.pauseButtonActive) _this2.pause();
+        });
+
+        this.slider.addEventListener('input', throttle(function () {
+
+            var oldTime = _this2.mixer.time;
+            var newTime = _this2.slider.value;
+
+            _this2.mixer.update(newTime - oldTime);
+        }, 17)); // throttling at ~17 ms will give approx 60fps while sliding the controls
+
+        this.slider.addEventListener('mouseup', function () {
+
+            if (!_this2.pauseButtonActive) _this2.play();
+        });
+    };
+
+    return AnimationControls;
+}();
+
+// Note - this currently get the info from the three.js renderer rather than the model.
+// The number of faces / vertices that aare rendered by three.js may be different than the
+// number in the original model, since quads (4-sided polygons) are not supported in WebGL
+// - these are subdivided into tris 
+
+var vertices = document.querySelector('#vertices');
+var faces = document.querySelector('#faces');
+
+var addModelInfo = function (renderer) {
+
+  faces.innerHTML = renderer.info.render.faces;
+  vertices.innerHTML = renderer.info.render.vertices;
+};
+
+var backgroundColorChanger = function (app) {
+
+  var controlLinks = document.querySelector('#controls').getElementsByTagName('a');
+
+  var toggle = document.querySelector('#toggle-background');
+
+  toggle.addEventListener('change', function () {
+    if (toggle.checked) {
+
+      app.renderer.setClearColor(0x000000, 1.0);
+      for (var i = 0; i < controlLinks.length; i++) {
+
+        controlLinks[i].style.color = 'white';
+      }
+    } else {
+
+      app.renderer.setClearColor(0xf7f7f7, 1.0);
+      for (var _i = 0; _i < controlLinks.length; _i++) {
+
+        controlLinks[_i].style.color = 'black';
+      }
+    }
+  });
+};
+
+/*
+ * @author mrdoob / http://mrdoob.com/
+ */
+
+function DDSLoader() {
+
+  this._parser = DDSLoader.parse;
+}
+
+DDSLoader.prototype = Object.create(CompressedTextureLoader.prototype);
+DDSLoader.prototype.constructor = DDSLoader;
+
+DDSLoader.parse = function (buffer, loadMipmaps) {
+
+  var dds = { mipmaps: [], width: 0, height: 0, format: null, mipmapCount: 1 };
+
+  // Adapted from @toji's DDS utils
+  // https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
+
+  // All values and structures referenced from:
+  // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+
+  var DDS_MAGIC = 0x20534444;
+
+  var DDSD_CAPS = 0x1,
+      DDSD_HEIGHT = 0x2,
+      DDSD_WIDTH = 0x4,
+      DDSD_PITCH = 0x8,
+      DDSD_PIXELFORMAT = 0x1000,
+      DDSD_MIPMAPCOUNT = 0x20000,
+      DDSD_LINEARSIZE = 0x80000,
+      DDSD_DEPTH = 0x800000;
+
+  var DDSCAPS_COMPLEX = 0x8,
+      DDSCAPS_MIPMAP = 0x400000,
+      DDSCAPS_TEXTURE = 0x1000;
+
+  var DDSCAPS2_CUBEMAP = 0x200,
+      DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
+      DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
+      DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
+      DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
+      DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
+      DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
+      DDSCAPS2_VOLUME = 0x200000;
+
+  var DDPF_ALPHAPIXELS = 0x1,
+      DDPF_ALPHA = 0x2,
+      DDPF_FOURCC = 0x4,
+      DDPF_RGB = 0x40,
+      DDPF_YUV = 0x200,
+      DDPF_LUMINANCE = 0x20000;
+
+  function fourCCToInt32(value) {
+
+    return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
+  }
+
+  function int32ToFourCC(value) {
+
+    return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
+  }
+
+  function loadARGBMip(buffer, dataOffset, width, height) {
+
+    var dataLength = width * height * 4;
+    var srcBuffer = new Uint8Array(buffer, dataOffset, dataLength);
+    var byteArray = new Uint8Array(dataLength);
+    var dst = 0;
+    var src = 0;
+    for (var y = 0; y < height; y++) {
+
+      for (var x = 0; x < width; x++) {
+
+        var b = srcBuffer[src];src++;
+        var g = srcBuffer[src];src++;
+        var r = srcBuffer[src];src++;
+        var a = srcBuffer[src];src++;
+        byteArray[dst] = r;dst++; // r
+        byteArray[dst] = g;dst++; // g
+        byteArray[dst] = b;dst++; // b
+        byteArray[dst] = a;dst++; // a
+      }
+    }
+    return byteArray;
+  }
+
+  var FOURCC_DXT1 = fourCCToInt32('DXT1');
+  var FOURCC_DXT3 = fourCCToInt32('DXT3');
+  var FOURCC_DXT5 = fourCCToInt32('DXT5');
+  var FOURCC_ETC1 = fourCCToInt32('ETC1');
+
+  var headerLengthInt = 31; // The header length in 32 bit ints
+
+  // Offsets into the header array
+
+  var off_magic = 0;
+
+  var off_size = 1;
+  var off_flags = 2;
+  var off_height = 3;
+  var off_width = 4;
+
+  var off_mipmapCount = 7;
+
+  var off_pfFlags = 20;
+  var off_pfFourCC = 21;
+  var off_RGBBitCount = 22;
+  var off_RBitMask = 23;
+  var off_GBitMask = 24;
+  var off_BBitMask = 25;
+  var off_ABitMask = 26;
+
+  var off_caps = 27;
+  var off_caps2 = 28;
+  var off_caps3 = 29;
+  var off_caps4 = 30;
+
+  // Parse header
+
+  var header = new Int32Array(buffer, 0, headerLengthInt);
+
+  if (header[off_magic] !== DDS_MAGIC) {
+
+    console.error('DDSLoader.parse: Invalid magic number in DDS header.');
+    return dds;
+  }
+
+  if (!header[off_pfFlags] & DDPF_FOURCC) {
+
+    console.error('DDSLoader.parse: Unsupported format, must contain a FourCC code.');
+    return dds;
+  }
+
+  var blockBytes = void 0;
+
+  var fourCC = header[off_pfFourCC];
+
+  var isRGBAUncompressed = false;
+
+  switch (fourCC) {
+
+    case FOURCC_DXT1:
+
+      blockBytes = 8;
+      dds.format = RGB_S3TC_DXT1_Format;
+      break;
+
+    case FOURCC_DXT3:
+
+      blockBytes = 16;
+      dds.format = RGBA_S3TC_DXT3_Format;
+      break;
+
+    case FOURCC_DXT5:
+
+      blockBytes = 16;
+      dds.format = RGBA_S3TC_DXT5_Format;
+      break;
+
+    case FOURCC_ETC1:
+
+      blockBytes = 8;
+      dds.format = RGB_ETC1_Format;
+      break;
+
+    default:
+
+      if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
+
+        isRGBAUncompressed = true;
+        blockBytes = 64;
+        dds.format = RGBAFormat;
+      } else {
+
+        console.error('DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+        return dds;
+      }
+  }
+
+  dds.mipmapCount = 1;
+
+  if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
+
+    dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
+  }
+
+  var caps2 = header[off_caps2];
+  dds.isCubemap = !!(caps2 & DDSCAPS2_CUBEMAP);
+  if (dds.isCubemap && (!(caps2 & DDSCAPS2_CUBEMAP_POSITIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEZ) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEZ))) {
+
+    console.error('DDSLoader.parse: Incomplete cubemap faces');
+    return dds;
+  }
+
+  dds.width = header[off_width];
+  dds.height = header[off_height];
+
+  var dataOffset = header[off_size] + 4;
+
+  // Extract mipmaps buffers
+
+  var faces = dds.isCubemap ? 6 : 1;
+
+  for (var face = 0; face < faces; face++) {
+
+    var width = dds.width;
+    var height = dds.height;
+
+    for (var i = 0; i < dds.mipmapCount; i++) {
+
+      if (isRGBAUncompressed) {
+
+        var byteArray = loadARGBMip(buffer, dataOffset, width, height);
+        var dataLength = byteArray.length;
+      } else {
+
+        var dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+        var byteArray = new Uint8Array(buffer, dataOffset, dataLength);
+      }
+
+      var mipmap = { data: byteArray, width: width, height: height };
+      dds.mipmaps.push(mipmap);
+
+      dataOffset += dataLength;
+
+      width = Math.max(width >> 1, 1);
+      height = Math.max(height >> 1, 1);
+    }
+  }
+
+  return dds;
+};
+
+// With this line you can now just do import 'DDSLoader.js' and it should work
+Loader.Handlers.add(/\.dds$/i, new DDSLoader());
+
+/**
+ * @author renej
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
 
 var NURBSUtils = {
 
@@ -44144,6 +45191,20 @@ var NURBSUtils = {
 
 };
 
+/**
+ * @author renej
+ * NURBS curve object
+ *
+ * Derives from Curve, overriding getPoint and getTangent.
+ *
+ * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS curve
+ **************************************************************/
+
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -44191,6 +45252,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -44471,6 +45559,7 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
   var fileName = void 0;
 
+  console.log(textureNode);
   var filePath = textureNode.properties.FileName;
 
   var relativeFilePath = textureNode.properties.RelativeFilename;
@@ -44532,6 +45621,7 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
     loader.setPath(undefined);
   }
 
+  console.log(fileName);
   /**
    * @type {THREE.Texture}
    */
@@ -48815,6 +49905,5514 @@ function slice(a, b, from, to) {
   return a;
 }
 
+/**
+ * @author Rich Tibbett / https://github.com/richtr
+ * @author mrdoob / http://mrdoob.com/
+ * @author Tony Parisi / http://www.tonyparisi.com/
+ * @author Takahiro / https://github.com/takahirox
+ * @author Don McCurdy / https://www.donmccurdy.com
+ */
+
+var GLTF2Loader = function () {
+
+	function GLTF2Loader(manager) {
+
+		this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+	}
+
+	GLTF2Loader.prototype = {
+
+		constructor: GLTF2Loader,
+
+		load: function (url, onLoad, onProgress, onError) {
+
+			var scope = this;
+
+			var path = this.path && typeof this.path === "string" ? this.path : Loader.prototype.extractUrlBase(url);
+
+			var loader = new FileLoader(scope.manager);
+
+			loader.setResponseType('arraybuffer');
+
+			loader.load(url, function (data) {
+
+				scope.parse(data, onLoad, path);
+			}, onProgress, onError);
+		},
+
+		setCrossOrigin: function (value) {
+
+			this.crossOrigin = value;
+		},
+
+		setPath: function (value) {
+
+			this.path = value;
+		},
+
+		parse: function (data, callback, path) {
+
+			var content;
+			var extensions = {};
+
+			var magic = convertUint8ArrayToString(new Uint8Array(data, 0, 4));
+
+			if (magic === BINARY_EXTENSION_HEADER_MAGIC) {
+
+				extensions[EXTENSIONS.KHR_BINARY_GLTF] = new GLTFBinaryExtension(data);
+				content = extensions[EXTENSIONS.KHR_BINARY_GLTF].content;
+			} else {
+
+				content = convertUint8ArrayToString(new Uint8Array(data));
+			}
+
+			var json = JSON.parse(content);
+
+			if (json.extensionsUsed) {
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_LIGHTS) >= 0) {
+
+					extensions[EXTENSIONS.KHR_LIGHTS] = new GLTFLightsExtension(json);
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_MATERIALS_COMMON) >= 0) {
+
+					extensions[EXTENSIONS.KHR_MATERIALS_COMMON] = new GLTFMaterialsCommonExtension(json);
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS) >= 0) {
+
+					extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS] = new GLTFMaterialsPbrSpecularGlossinessExtension();
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_TECHNIQUE_WEBGL) >= 0) {
+
+					extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] = new GLTFTechniqueWebglExtension(json);
+				}
+			}
+
+			console.time('GLTF2Loader');
+
+			var parser = new GLTFParser(json, extensions, {
+
+				path: path || this.path,
+				crossOrigin: this.crossOrigin
+
+			});
+
+			parser.parse(function (scene, scenes, cameras, animations) {
+
+				console.timeEnd('GLTF2Loader');
+
+				var glTF = {
+					"scene": scene,
+					"scenes": scenes,
+					"cameras": cameras,
+					"animations": animations
+				};
+
+				callback(glTF);
+			});
+		}
+
+	};
+
+	/* GLTFREGISTRY */
+
+	function GLTFRegistry() {
+
+		var objects = {};
+
+		return {
+
+			get: function (key) {
+
+				return objects[key];
+			},
+
+			add: function (key, object) {
+
+				objects[key] = object;
+			},
+
+			remove: function (key) {
+
+				delete objects[key];
+			},
+
+			removeAll: function () {
+
+				objects = {};
+			},
+
+			update: function (scene, camera) {
+
+				for (var name in objects) {
+
+					var object = objects[name];
+
+					if (object.update) {
+
+						object.update(scene, camera);
+					}
+				}
+			}
+
+		};
+	}
+
+	/* GLTFSHADER */
+
+	function GLTFShader(targetNode, allNodes) {
+
+		var boundUniforms = {};
+
+		// bind each uniform to its source node
+
+		var uniforms = targetNode.material.uniforms;
+
+		for (var uniformId in uniforms) {
+
+			var uniform = uniforms[uniformId];
+
+			if (uniform.semantic) {
+
+				var sourceNodeRef = uniform.node;
+
+				var sourceNode = targetNode;
+
+				if (sourceNodeRef) {
+
+					sourceNode = allNodes[sourceNodeRef];
+				}
+
+				boundUniforms[uniformId] = {
+					semantic: uniform.semantic,
+					sourceNode: sourceNode,
+					targetNode: targetNode,
+					uniform: uniform
+				};
+			}
+		}
+
+		this.boundUniforms = boundUniforms;
+		this._m4 = new Matrix4();
+	}
+
+	// Update - update all the uniform values
+	GLTFShader.prototype.update = function (scene, camera) {
+
+		var boundUniforms = this.boundUniforms;
+
+		for (var name in boundUniforms) {
+
+			var boundUniform = boundUniforms[name];
+
+			switch (boundUniform.semantic) {
+
+				case "MODELVIEW":
+
+					var m4 = boundUniform.uniform.value;
+					m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					break;
+
+				case "MODELVIEWINVERSETRANSPOSE":
+
+					var m3 = boundUniform.uniform.value;
+					this._m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					m3.getNormalMatrix(this._m4);
+					break;
+
+				case "PROJECTION":
+
+					var m4 = boundUniform.uniform.value;
+					m4.copy(camera.projectionMatrix);
+					break;
+
+				case "JOINTMATRIX":
+
+					var m4v = boundUniform.uniform.value;
+
+					for (var mi = 0; mi < m4v.length; mi++) {
+
+						// So it goes like this:
+						// SkinnedMesh world matrix is already baked into MODELVIEW;
+						// transform joints to local space,
+						// then transform using joint's inverse
+						m4v[mi].getInverse(boundUniform.sourceNode.matrixWorld).multiply(boundUniform.targetNode.skeleton.bones[mi].matrixWorld).multiply(boundUniform.targetNode.skeleton.boneInverses[mi]).multiply(boundUniform.targetNode.bindMatrix);
+					}
+
+					break;
+
+				default:
+
+					console.warn("Unhandled shader semantic: " + boundUniform.semantic);
+					break;
+
+			}
+		}
+	};
+
+	/*********************************/
+	/********** EXTENSIONS ***********/
+	/*********************************/
+
+	var EXTENSIONS = {
+		KHR_BINARY_GLTF: 'KHR_binary_glTF',
+		KHR_LIGHTS: 'KHR_lights',
+		KHR_MATERIALS_COMMON: 'KHR_materials_common',
+		KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS: 'KHR_materials_pbrSpecularGlossiness',
+		KHR_TECHNIQUE_WEBGL: 'KHR_technique_webgl'
+	};
+
+	/**
+  * Lights Extension
+  *
+  * Specification: PENDING
+  */
+	function GLTFLightsExtension(json) {
+
+		this.name = EXTENSIONS.KHR_LIGHTS;
+
+		this.lights = {};
+
+		var extension = json.extensions && json.extensions[EXTENSIONS.KHR_LIGHTS] || {};
+		var lights = extension.lights || {};
+
+		for (var lightId in lights) {
+
+			var light = lights[lightId];
+			var lightNode;
+
+			var color = new Color().fromArray(light.color);
+
+			switch (light.type) {
+
+				case 'directional':
+					lightNode = new DirectionalLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case 'point':
+					lightNode = new PointLight(color);
+					break;
+
+				case 'spot':
+					lightNode = new SpotLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case 'ambient':
+					lightNode = new AmbientLight(color);
+					break;
+
+			}
+
+			if (lightNode) {
+
+				if (light.constantAttenuation !== undefined) {
+
+					lightNode.intensity = light.constantAttenuation;
+				}
+
+				if (light.linearAttenuation !== undefined) {
+
+					lightNode.distance = 1 / light.linearAttenuation;
+				}
+
+				if (light.quadraticAttenuation !== undefined) {
+
+					lightNode.decay = light.quadraticAttenuation;
+				}
+
+				if (light.fallOffAngle !== undefined) {
+
+					lightNode.angle = light.fallOffAngle;
+				}
+
+				if (light.fallOffExponent !== undefined) {
+
+					console.warn('GLTF2Loader: light.fallOffExponent not currently supported.');
+				}
+
+				lightNode.name = light.name || 'light_' + lightId;
+				this.lights[lightId] = lightNode;
+			}
+		}
+	}
+
+	/**
+  * Common Materials Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_materials_common
+  */
+	function GLTFMaterialsCommonExtension(json) {
+
+		this.name = EXTENSIONS.KHR_MATERIALS_COMMON;
+	}
+
+	GLTFMaterialsCommonExtension.prototype.getMaterialType = function (material) {
+
+		var khrMaterial = material.extensions[this.name];
+
+		switch (khrMaterial.type) {
+
+			case 'commonBlinn':
+			case 'commonPhong':
+				return MeshPhongMaterial;
+
+			case 'commonLambert':
+				return MeshLambertMaterial;
+
+			case 'commonConstant':
+			default:
+				return MeshBasicMaterial;
+
+		}
+	};
+
+	GLTFMaterialsCommonExtension.prototype.extendParams = function (materialParams, material, dependencies) {
+
+		var khrMaterial = material.extensions[this.name];
+
+		var keys = [];
+
+		// TODO: Currently ignored: 'ambientFactor', 'ambientTexture'
+		switch (khrMaterial.type) {
+
+			case 'commonBlinn':
+			case 'commonPhong':
+				keys.push('diffuseFactor', 'diffuseTexture', 'specularFactor', 'specularTexture', 'shininessFactor');
+				break;
+
+			case 'commonLambert':
+				keys.push('diffuseFactor', 'diffuseTexture');
+				break;
+
+			case 'commonConstant':
+			default:
+				break;
+
+		}
+
+		var materialValues = {};
+
+		keys.forEach(function (v) {
+
+			if (khrMaterial[v] !== undefined) materialValues[v] = khrMaterial[v];
+		});
+
+		if (materialValues.diffuseFactor !== undefined) {
+
+			materialParams.color = new Color().fromArray(materialValues.diffuseFactor);
+			materialParams.opacity = materialValues.diffuseFactor[3];
+		}
+
+		if (materialValues.diffuseTexture !== undefined) {
+
+			materialParams.map = dependencies.textures[materialValues.diffuseTexture.index];
+		}
+
+		if (materialValues.specularFactor !== undefined) {
+
+			materialParams.specular = new Color().fromArray(materialValues.specularFactor);
+		}
+
+		if (materialValues.specularTexture !== undefined) {
+
+			materialParams.specularMap = dependencies.textures[materialValues.specularTexture.index];
+		}
+
+		if (materialValues.shininessFactor !== undefined) {
+
+			materialParams.shininess = materialValues.shininessFactor;
+		}
+	};
+
+	/* BINARY EXTENSION */
+
+	var BINARY_EXTENSION_BUFFER_NAME = 'binary_glTF';
+	var BINARY_EXTENSION_HEADER_MAGIC = 'glTF';
+	var BINARY_EXTENSION_HEADER_LENGTH = 12;
+	var BINARY_EXTENSION_CHUNK_TYPES = { JSON: 0x4E4F534A, BIN: 0x004E4942 };
+
+	function GLTFBinaryExtension(data) {
+
+		this.name = EXTENSIONS.KHR_BINARY_GLTF;
+		this.content = null;
+		this.body = null;
+
+		var headerView = new DataView(data, 0, BINARY_EXTENSION_HEADER_LENGTH);
+
+		this.header = {
+			magic: convertUint8ArrayToString(new Uint8Array(data.slice(0, 4))),
+			version: headerView.getUint32(4, true),
+			length: headerView.getUint32(8, true)
+		};
+
+		if (this.header.magic !== BINARY_EXTENSION_HEADER_MAGIC) {
+
+			throw new Error('GLTF2Loader: Unsupported glTF-Binary header.');
+		} else if (this.header.version < 2.0) {
+
+			throw new Error('GLTF2Loader: Legacy binary file detected. Use GLTFLoader instead.');
+		}
+
+		var chunkView = new DataView(data, BINARY_EXTENSION_HEADER_LENGTH);
+		var chunkIndex = 0;
+
+		while (chunkIndex < chunkView.byteLength) {
+
+			var chunkLength = chunkView.getUint32(chunkIndex, true);
+			chunkIndex += 4;
+
+			var chunkType = chunkView.getUint32(chunkIndex, true);
+			chunkIndex += 4;
+
+			if (chunkType === BINARY_EXTENSION_CHUNK_TYPES.JSON) {
+
+				var contentArray = new Uint8Array(data, BINARY_EXTENSION_HEADER_LENGTH + chunkIndex, chunkLength);
+				this.content = convertUint8ArrayToString(contentArray);
+			} else if (chunkType === BINARY_EXTENSION_CHUNK_TYPES.BIN) {
+
+				var byteOffset = BINARY_EXTENSION_HEADER_LENGTH + chunkIndex;
+				this.body = data.slice(byteOffset, byteOffset + chunkLength);
+			}
+
+			// Clients must ignore chunks with unknown types.
+
+			chunkIndex += chunkLength;
+		}
+
+		if (this.content === null) {
+
+			throw new Error('GLTF2Loader: JSON content not found.');
+		}
+	}
+
+	/**
+  * WebGL Technique Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_technique_webgl
+  */
+	function GLTFTechniqueWebglExtension(json) {
+
+		this.name = EXTENSIONS.KHR_TECHNIQUE_WEBGL;
+
+		var extension = json.extensions && json.extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] || {};
+
+		this.techniques = extension.techniques || {};
+		this.programs = extension.programs || {};
+		this.shaders = extension.shaders || {};
+	}
+
+	GLTFTechniqueWebglExtension.prototype.getMaterialType = function () {
+
+		return DeferredShaderMaterial;
+	};
+
+	GLTFTechniqueWebglExtension.prototype.extendParams = function (materialParams, material, dependencies) {
+
+		var extension = material[EXTENSIONS.KHR_TECHNIQUE_WEBGL];
+		var technique = dependencies.techniques[extension.technique];
+
+		materialParams.uniforms = {};
+
+		var program = dependencies.programs[technique.program];
+
+		if (program === undefined) {
+
+			return;
+		}
+
+		materialParams.fragmentShader = dependencies.shaders[program.fragmentShader];
+
+		if (!materialParams.fragmentShader) {
+
+			throw new Error('ERROR: Missing fragment shader definition:', program.fragmentShader);
+		}
+
+		var vertexShader = dependencies.shaders[program.vertexShader];
+
+		if (!vertexShader) {
+
+			throw new Error('ERROR: Missing vertex shader definition:', program.vertexShader);
+		}
+
+		// IMPORTANT: FIX VERTEX SHADER ATTRIBUTE DEFINITIONS
+		materialParams.vertexShader = replaceTHREEShaderAttributes(vertexShader, technique);
+
+		var uniforms = technique.uniforms;
+
+		for (var uniformId in uniforms) {
+
+			var pname = uniforms[uniformId];
+			var shaderParam = technique.parameters[pname];
+
+			var ptype = shaderParam.type;
+
+			if (WEBGL_TYPE[ptype]) {
+
+				var pcount = shaderParam.count;
+				var value;
+
+				if (material.values !== undefined) value = material.values[pname];
+
+				var uvalue = new WEBGL_TYPE[ptype]();
+				var usemantic = shaderParam.semantic;
+				var unode = shaderParam.node;
+
+				switch (ptype) {
+
+					case WEBGL_CONSTANTS.FLOAT:
+
+						uvalue = shaderParam.value;
+
+						if (pname === 'transparency') {
+
+							materialParams.transparent = true;
+						}
+
+						if (value !== undefined) {
+
+							uvalue = value;
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_VEC2:
+					case WEBGL_CONSTANTS.FLOAT_VEC3:
+					case WEBGL_CONSTANTS.FLOAT_VEC4:
+					case WEBGL_CONSTANTS.FLOAT_MAT3:
+
+						if (shaderParam && shaderParam.value) {
+
+							uvalue.fromArray(shaderParam.value);
+						}
+
+						if (value) {
+
+							uvalue.fromArray(value);
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_MAT2:
+
+						// what to do?
+						console.warn('FLOAT_MAT2 is not a supported uniform type');
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_MAT4:
+
+						if (pcount) {
+
+							uvalue = new Array(pcount);
+
+							for (var mi = 0; mi < pcount; mi++) {
+
+								uvalue[mi] = new WEBGL_TYPE[ptype]();
+							}
+
+							if (shaderParam && shaderParam.value) {
+
+								var m4v = shaderParam.value;
+								uvalue.fromArray(m4v);
+							}
+
+							if (value) {
+
+								uvalue.fromArray(value);
+							}
+						} else {
+
+							if (shaderParam && shaderParam.value) {
+
+								var m4 = shaderParam.value;
+								uvalue.fromArray(m4);
+							}
+
+							if (value) {
+
+								uvalue.fromArray(value);
+							}
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.SAMPLER_2D:
+
+						if (value !== undefined) {
+
+							uvalue = dependencies.textures[value];
+						} else if (shaderParam.value !== undefined) {
+
+							uvalue = dependencies.textures[shaderParam.value];
+						} else {
+
+							uvalue = null;
+						}
+
+						break;
+
+				}
+
+				materialParams.uniforms[uniformId] = {
+					value: uvalue,
+					semantic: usemantic,
+					node: unode
+				};
+			} else {
+
+				throw new Error('Unknown shader uniform param type: ' + ptype);
+			}
+		}
+
+		var states = technique.states || {};
+		var enables = states.enable || [];
+		var functions = states.functions || {};
+
+		var enableCullFace = false;
+		var enableDepthTest = false;
+		var enableBlend = false;
+
+		for (var i = 0, il = enables.length; i < il; i++) {
+
+			var enable = enables[i];
+
+			switch (STATES_ENABLES[enable]) {
+
+				case 'CULL_FACE':
+
+					enableCullFace = true;
+
+					break;
+
+				case 'DEPTH_TEST':
+
+					enableDepthTest = true;
+
+					break;
+
+				case 'BLEND':
+
+					enableBlend = true;
+
+					break;
+
+				// TODO: implement
+				case 'SCISSOR_TEST':
+				case 'POLYGON_OFFSET_FILL':
+				case 'SAMPLE_ALPHA_TO_COVERAGE':
+
+					break;
+
+				default:
+
+					throw new Error("Unknown technique.states.enable: " + enable);
+
+			}
+		}
+
+		if (enableCullFace) {
+
+			materialParams.side = functions.cullFace !== undefined ? WEBGL_SIDES[functions.cullFace] : FrontSide;
+		} else {
+
+			materialParams.side = DoubleSide;
+		}
+
+		materialParams.depthTest = enableDepthTest;
+		materialParams.depthFunc = functions.depthFunc !== undefined ? WEBGL_DEPTH_FUNCS[functions.depthFunc] : LessDepth;
+		materialParams.depthWrite = functions.depthMask !== undefined ? functions.depthMask[0] : true;
+
+		materialParams.blending = enableBlend ? CustomBlending : NoBlending;
+		materialParams.transparent = enableBlend;
+
+		var blendEquationSeparate = functions.blendEquationSeparate;
+
+		if (blendEquationSeparate !== undefined) {
+
+			materialParams.blendEquation = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[0]];
+			materialParams.blendEquationAlpha = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[1]];
+		} else {
+
+			materialParams.blendEquation = AddEquation;
+			materialParams.blendEquationAlpha = AddEquation;
+		}
+
+		var blendFuncSeparate = functions.blendFuncSeparate;
+
+		if (blendFuncSeparate !== undefined) {
+
+			materialParams.blendSrc = WEBGL_BLEND_FUNCS[blendFuncSeparate[0]];
+			materialParams.blendDst = WEBGL_BLEND_FUNCS[blendFuncSeparate[1]];
+			materialParams.blendSrcAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[2]];
+			materialParams.blendDstAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[3]];
+		} else {
+
+			materialParams.blendSrc = OneFactor;
+			materialParams.blendDst = ZeroFactor;
+			materialParams.blendSrcAlpha = OneFactor;
+			materialParams.blendDstAlpha = ZeroFactor;
+		}
+	};
+
+	/**
+  * Specular-Glossiness Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness
+  */
+	function GLTFMaterialsPbrSpecularGlossinessExtension() {
+
+		return {
+
+			name: EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS,
+
+			getMaterialType: function () {
+
+				return ShaderMaterial;
+			},
+
+			extendParams: function (params, material, dependencies) {
+
+				// specification
+				// https://github.com/sbtron/glTF/tree/KHRpbrSpecGloss/extensions/Khronos/KHR_materials_pbrSpecularGlossiness
+
+				var pbrSpecularGlossiness = material.extensions[this.name];
+
+				var shader = ShaderLib['standard'];
+
+				var uniforms = UniformsUtils.clone(shader.uniforms);
+
+				var specularMapParsFragmentChunk = ['#ifdef USE_SPECULARMAP', '	uniform sampler2D specularMap;', '#endif'].join('\n');
+
+				var glossinessMapParsFragmentChunk = ['#ifdef USE_GLOSSINESSMAP', '	uniform sampler2D glossinessMap;', '#endif'].join('\n');
+
+				var specularMapFragmentChunk = ['vec3 specularFactor = specular;', '#ifdef USE_SPECULARMAP', '	vec4 texelSpecular = texture2D( specularMap, vUv );', '	// reads channel RGB, compatible with a glTF Specular-Glossiness (RGBA) texture', '	specularFactor *= texelSpecular.rgb;', '#endif'].join('\n');
+
+				var glossinessMapFragmentChunk = ['float glossinessFactor = glossiness;', '#ifdef USE_GLOSSINESSMAP', '	vec4 texelGlossiness = texture2D( glossinessMap, vUv );', '	// reads channel A, compatible with a glTF Specular-Glossiness (RGBA) texture', '	glossinessFactor *= texelGlossiness.a;', '#endif'].join('\n');
+
+				var lightPhysicalFragmentChunk = ['PhysicalMaterial material;', 'material.diffuseColor = diffuseColor.rgb;', 'material.specularRoughness = clamp( 1.0 - glossinessFactor, 0.04, 1.0 );', 'material.specularColor = specularFactor.rgb;'].join('\n');
+
+				var fragmentShader = shader.fragmentShader.replace('#include <specularmap_fragment>', '').replace('uniform float roughness;', 'uniform vec3 specular;').replace('uniform float metalness;', 'uniform float glossiness;').replace('#include <roughnessmap_pars_fragment>', specularMapParsFragmentChunk).replace('#include <metalnessmap_pars_fragment>', glossinessMapParsFragmentChunk).replace('#include <roughnessmap_fragment>', specularMapFragmentChunk).replace('#include <metalnessmap_fragment>', glossinessMapFragmentChunk).replace('#include <lights_physical_fragment>', lightPhysicalFragmentChunk);
+
+				delete uniforms.roughness;
+				delete uniforms.metalness;
+				delete uniforms.roughnessMap;
+				delete uniforms.metalnessMap;
+
+				uniforms.specular = { value: new Color().setHex(0x111111) };
+				uniforms.glossiness = { value: 0.5 };
+				uniforms.specularMap = { value: null };
+				uniforms.glossinessMap = { value: null };
+
+				params.vertexShader = shader.vertexShader;
+				params.fragmentShader = fragmentShader;
+				params.uniforms = uniforms;
+				params.defines = { 'STANDARD': '' };
+
+				params.color = new Color(1.0, 1.0, 1.0);
+				params.opacity = 1.0;
+
+				if (Array.isArray(pbrSpecularGlossiness.diffuseFactor)) {
+
+					var array = pbrSpecularGlossiness.diffuseFactor;
+
+					params.color.fromArray(array);
+					params.opacity = array[3];
+				}
+
+				if (pbrSpecularGlossiness.diffuseTexture !== undefined) {
+
+					params.map = dependencies.textures[pbrSpecularGlossiness.diffuseTexture.index];
+				}
+
+				params.emissive = new Color(0.0, 0.0, 0.0);
+				params.glossiness = pbrSpecularGlossiness.glossinessFactor !== undefined ? pbrSpecularGlossiness.glossinessFactor : 1.0;
+				params.specular = new Color(1.0, 1.0, 1.0);
+
+				if (Array.isArray(pbrSpecularGlossiness.specularFactor)) {
+
+					params.specular.fromArray(pbrSpecularGlossiness.specularFactor);
+				}
+
+				if (pbrSpecularGlossiness.specularGlossinessTexture !== undefined) {
+
+					params.glossinessMap = dependencies.textures[pbrSpecularGlossiness.specularGlossinessTexture.index];
+					params.specularMap = dependencies.textures[pbrSpecularGlossiness.specularGlossinessTexture.index];
+				}
+			},
+
+			createMaterial: function (params) {
+
+				// setup material properties based on MeshStandardMaterial for Specular-Glossiness
+
+				var material = new ShaderMaterial({
+					defines: params.defines,
+					vertexShader: params.vertexShader,
+					fragmentShader: params.fragmentShader,
+					uniforms: params.uniforms,
+					fog: true,
+					lights: true,
+					opacity: params.opacity,
+					transparent: params.transparent
+				});
+
+				material.color = params.color;
+
+				material.map = params.map === undefined ? null : params.map;
+
+				material.lightMap = null;
+				material.lightMapIntensity = 1.0;
+
+				material.aoMap = params.aoMap === undefined ? null : params.aoMap;
+				material.aoMapIntensity = 1.0;
+
+				material.emissive = params.emissive;
+				material.emissiveIntensity = 1.0;
+				material.emissiveMap = params.emissiveMap === undefined ? null : params.emissiveMap;
+
+				material.bumpMap = params.bumpMap === undefined ? null : params.bumpMap;
+				material.bumpScale = 1;
+
+				material.normalMap = params.normalMap === undefined ? null : params.normalMap;
+				material.normalScale = new Vector2(1, 1);
+
+				material.displacementMap = null;
+				material.displacementScale = 1;
+				material.displacementBias = 0;
+
+				material.specularMap = params.specularMap === undefined ? null : params.specularMap;
+				material.specular = params.specular;
+
+				material.glossinessMap = params.glossinessMap === undefined ? null : params.glossinessMap;
+				material.glossiness = params.glossiness;
+
+				material.alphaMap = null;
+
+				material.envMap = params.envMap === undefined ? null : params.envMap;
+				material.envMapIntensity = 1.0;
+
+				material.refractionRatio = 0.98;
+
+				material.extensions.derivatives = true;
+
+				return material;
+			},
+
+			// Here's based on refreshUniformsCommon() and refreshUniformsStandard() in WebGLRenderer.
+			refreshUniforms: function (renderer, scene, camera, geometry, material, group) {
+
+				var uniforms = material.uniforms;
+				var defines = material.defines;
+
+				uniforms.opacity.value = material.opacity;
+
+				uniforms.diffuse.value.copy(material.color);
+				uniforms.emissive.value.copy(material.emissive).multiplyScalar(material.emissiveIntensity);
+
+				uniforms.map.value = material.map;
+				uniforms.specularMap.value = material.specularMap;
+				uniforms.alphaMap.value = material.alphaMap;
+
+				uniforms.lightMap.value = material.lightMap;
+				uniforms.lightMapIntensity.value = material.lightMapIntensity;
+
+				uniforms.aoMap.value = material.aoMap;
+				uniforms.aoMapIntensity.value = material.aoMapIntensity;
+
+				// uv repeat and offset setting priorities
+				// 1. color map
+				// 2. specular map
+				// 3. normal map
+				// 4. bump map
+				// 5. alpha map
+				// 6. emissive map
+
+				var uvScaleMap;
+
+				if (material.map) {
+
+					uvScaleMap = material.map;
+				} else if (material.specularMap) {
+
+					uvScaleMap = material.specularMap;
+				} else if (material.displacementMap) {
+
+					uvScaleMap = material.displacementMap;
+				} else if (material.normalMap) {
+
+					uvScaleMap = material.normalMap;
+				} else if (material.bumpMap) {
+
+					uvScaleMap = material.bumpMap;
+				} else if (material.glossinessMap) {
+
+					uvScaleMap = material.glossinessMap;
+				} else if (material.alphaMap) {
+
+					uvScaleMap = material.alphaMap;
+				} else if (material.emissiveMap) {
+
+					uvScaleMap = material.emissiveMap;
+				}
+
+				if (uvScaleMap !== undefined) {
+
+					// backwards compatibility
+					if (uvScaleMap.isWebGLRenderTarget) {
+
+						uvScaleMap = uvScaleMap.texture;
+					}
+
+					var offset = uvScaleMap.offset;
+					var repeat = uvScaleMap.repeat;
+
+					uniforms.offsetRepeat.value.set(offset.x, offset.y, repeat.x, repeat.y);
+				}
+
+				uniforms.envMap.value = material.envMap;
+				uniforms.envMapIntensity.value = material.envMapIntensity;
+				uniforms.flipEnvMap.value = material.envMap && material.envMap.isCubeTexture ? -1 : 1;
+
+				uniforms.refractionRatio.value = material.refractionRatio;
+
+				uniforms.specular.value.copy(material.specular);
+				uniforms.glossiness.value = material.glossiness;
+
+				uniforms.glossinessMap.value = material.glossinessMap;
+
+				uniforms.emissiveMap.value = material.emissiveMap;
+				uniforms.bumpMap.value = material.bumpMap;
+				uniforms.normalMap.value = material.normalMap;
+
+				uniforms.displacementMap.value = material.displacementMap;
+				uniforms.displacementScale.value = material.displacementScale;
+				uniforms.displacementBias.value = material.displacementBias;
+
+				if (uniforms.glossinessMap.value !== null && defines.USE_GLOSSINESSMAP === undefined) {
+
+					defines.USE_GLOSSINESSMAP = '';
+					// set USE_ROUGHNESSMAP to enable vUv
+					defines.USE_ROUGHNESSMAP = '';
+				}
+
+				if (uniforms.glossinessMap.value === null && defines.USE_GLOSSINESSMAP !== undefined) {
+
+					delete defines.USE_GLOSSINESSMAP;
+					delete defines.USE_ROUGHNESSMAP;
+				}
+			}
+
+		};
+	}
+
+	/*********************************/
+	/********** INTERNALS ************/
+	/*********************************/
+
+	/* CONSTANTS */
+
+	var WEBGL_CONSTANTS = {
+		FLOAT: 5126,
+		//FLOAT_MAT2: 35674,
+		FLOAT_MAT3: 35675,
+		FLOAT_MAT4: 35676,
+		FLOAT_VEC2: 35664,
+		FLOAT_VEC3: 35665,
+		FLOAT_VEC4: 35666,
+		LINEAR: 9729,
+		REPEAT: 10497,
+		SAMPLER_2D: 35678,
+		TRIANGLES: 4,
+		LINES: 1,
+		UNSIGNED_BYTE: 5121,
+		UNSIGNED_SHORT: 5123,
+
+		VERTEX_SHADER: 35633,
+		FRAGMENT_SHADER: 35632
+	};
+
+	var WEBGL_TYPE = {
+		5126: Number,
+		//35674: THREE.Matrix2,
+		35675: Matrix3,
+		35676: Matrix4,
+		35664: Vector2,
+		35665: Vector3,
+		35666: Vector4,
+		35678: Texture
+	};
+
+	var WEBGL_COMPONENT_TYPES = {
+		5120: Int8Array,
+		5121: Uint8Array,
+		5122: Int16Array,
+		5123: Uint16Array,
+		5125: Uint32Array,
+		5126: Float32Array
+	};
+
+	var WEBGL_FILTERS = {
+		9728: NearestFilter,
+		9729: LinearFilter,
+		9984: NearestMipMapNearestFilter,
+		9985: LinearMipMapNearestFilter,
+		9986: NearestMipMapLinearFilter,
+		9987: LinearMipMapLinearFilter
+	};
+
+	var WEBGL_WRAPPINGS = {
+		33071: ClampToEdgeWrapping,
+		33648: MirroredRepeatWrapping,
+		10497: RepeatWrapping
+	};
+
+	var WEBGL_TEXTURE_FORMATS = {
+		6406: AlphaFormat,
+		6407: RGBFormat,
+		6408: RGBAFormat,
+		6409: LuminanceFormat,
+		6410: LuminanceAlphaFormat
+	};
+
+	var WEBGL_TEXTURE_DATATYPES = {
+		5121: UnsignedByteType,
+		32819: UnsignedShort4444Type,
+		32820: UnsignedShort5551Type,
+		33635: UnsignedShort565Type
+	};
+
+	var WEBGL_SIDES = {
+		1028: BackSide, // Culling front
+		1029: FrontSide // Culling back
+		//1032: THREE.NoSide   // Culling front and back, what to do?
+	};
+
+	var WEBGL_DEPTH_FUNCS = {
+		512: NeverDepth,
+		513: LessDepth,
+		514: EqualDepth,
+		515: LessEqualDepth,
+		516: GreaterEqualDepth,
+		517: NotEqualDepth,
+		518: GreaterEqualDepth,
+		519: AlwaysDepth
+	};
+
+	var WEBGL_BLEND_EQUATIONS = {
+		32774: AddEquation,
+		32778: SubtractEquation,
+		32779: ReverseSubtractEquation
+	};
+
+	var WEBGL_BLEND_FUNCS = {
+		0: ZeroFactor,
+		1: OneFactor,
+		768: SrcColorFactor,
+		769: OneMinusSrcColorFactor,
+		770: SrcAlphaFactor,
+		771: OneMinusSrcAlphaFactor,
+		772: DstAlphaFactor,
+		773: OneMinusDstAlphaFactor,
+		774: DstColorFactor,
+		775: OneMinusDstColorFactor,
+		776: SrcAlphaSaturateFactor
+		// The followings are not supported by Three.js yet
+		//32769: CONSTANT_COLOR,
+		//32770: ONE_MINUS_CONSTANT_COLOR,
+		//32771: CONSTANT_ALPHA,
+		//32772: ONE_MINUS_CONSTANT_COLOR
+	};
+
+	var WEBGL_TYPE_SIZES = {
+		'SCALAR': 1,
+		'VEC2': 2,
+		'VEC3': 3,
+		'VEC4': 4,
+		'MAT2': 4,
+		'MAT3': 9,
+		'MAT4': 16
+	};
+
+	var PATH_PROPERTIES = {
+		scale: 'scale',
+		translation: 'position',
+		rotation: 'quaternion',
+		weights: 'morphTargetInfluences'
+	};
+
+	var INTERPOLATION = {
+		LINEAR: InterpolateLinear,
+		STEP: InterpolateDiscrete
+	};
+
+	var STATES_ENABLES = {
+		2884: 'CULL_FACE',
+		2929: 'DEPTH_TEST',
+		3042: 'BLEND',
+		3089: 'SCISSOR_TEST',
+		32823: 'POLYGON_OFFSET_FILL',
+		32926: 'SAMPLE_ALPHA_TO_COVERAGE'
+	};
+
+	var ALPHA_MODES = {
+		OPAQUE: 'OPAQUE',
+		MASK: 'MASK',
+		BLEND: 'BLEND'
+	};
+
+	/* UTILITY FUNCTIONS */
+
+	function _each(object, callback, thisObj) {
+
+		if (!object) {
+			return Promise.resolve();
+		}
+
+		var results;
+		var fns = [];
+
+		if (Object.prototype.toString.call(object) === '[object Array]') {
+
+			results = [];
+
+			var length = object.length;
+
+			for (var idx = 0; idx < length; idx++) {
+
+				var value = callback.call(thisObj || this, object[idx], idx);
+
+				if (value) {
+
+					fns.push(value);
+
+					if (value instanceof Promise) {
+
+						value.then(function (key, value) {
+
+							results[key] = value;
+						}.bind(this, idx));
+					} else {
+
+						results[idx] = value;
+					}
+				}
+			}
+		} else {
+
+			results = {};
+
+			for (var key in object) {
+
+				if (object.hasOwnProperty(key)) {
+
+					var value = callback.call(thisObj || this, object[key], key);
+
+					if (value) {
+
+						fns.push(value);
+
+						if (value instanceof Promise) {
+
+							value.then(function (key, value) {
+
+								results[key] = value;
+							}.bind(this, key));
+						} else {
+
+							results[key] = value;
+						}
+					}
+				}
+			}
+		}
+
+		return Promise.all(fns).then(function () {
+
+			return results;
+		});
+	}
+
+	function resolveURL(url, path) {
+
+		// Invalid URL
+		if (typeof url !== 'string' || url === '') return '';
+
+		// Absolute URL http://,https://,//
+		if (/^(https?:)?\/\//i.test(url)) {
+
+			return url;
+		}
+
+		// Data URI
+		if (/^data:.*,.*$/i.test(url)) {
+
+			return url;
+		}
+
+		// Blob URL
+		if (/^blob:.*$/i.test(url)) {
+
+			return url;
+		}
+
+		// Relative URL
+		return (path || '') + url;
+	}
+
+	function convertUint8ArrayToString(array) {
+
+		if (window.TextDecoder !== undefined) {
+
+			return new TextDecoder().decode(array);
+		}
+
+		// Avoid the String.fromCharCode.apply(null, array) shortcut, which
+		// throws a "maximum call stack size exceeded" error for large arrays.
+
+		var s = '';
+
+		for (var i = 0, il = array.length; i < il; i++) {
+
+			s += String.fromCharCode(array[i]);
+		}
+
+		return s;
+	}
+
+	// Three.js seems too dependent on attribute names so globally
+	// replace those in the shader code
+	function replaceTHREEShaderAttributes(shaderText, technique) {
+
+		// Expected technique attributes
+		var attributes = {};
+
+		for (var attributeId in technique.attributes) {
+
+			var pname = technique.attributes[attributeId];
+
+			var param = technique.parameters[pname];
+			var atype = param.type;
+			var semantic = param.semantic;
+
+			attributes[attributeId] = {
+				type: atype,
+				semantic: semantic
+			};
+		}
+
+		// Figure out which attributes to change in technique
+
+		var shaderParams = technique.parameters;
+		var shaderAttributes = technique.attributes;
+		var params = {};
+
+		for (var attributeId in attributes) {
+
+			var pname = shaderAttributes[attributeId];
+			var shaderParam = shaderParams[pname];
+			var semantic = shaderParam.semantic;
+			if (semantic) {
+
+				params[attributeId] = shaderParam;
+			}
+		}
+
+		for (var pname in params) {
+
+			var param = params[pname];
+			var semantic = param.semantic;
+
+			var regEx = new RegExp("\\b" + pname + "\\b", "g");
+
+			switch (semantic) {
+
+				case 'POSITION':
+
+					shaderText = shaderText.replace(regEx, 'position');
+					break;
+
+				case 'NORMAL':
+
+					shaderText = shaderText.replace(regEx, 'normal');
+					break;
+
+				case 'TEXCOORD_0':
+				case 'TEXCOORD0':
+				case 'TEXCOORD':
+
+					shaderText = shaderText.replace(regEx, 'uv');
+					break;
+
+				case 'TEXCOORD_1':
+
+					shaderText = shaderText.replace(regEx, 'uv2');
+					break;
+
+				case 'COLOR_0':
+				case 'COLOR0':
+				case 'COLOR':
+
+					shaderText = shaderText.replace(regEx, 'color');
+					break;
+
+				case 'WEIGHTS_0':
+				case 'WEIGHT':
+					// WEIGHT semantic deprecated.
+
+					shaderText = shaderText.replace(regEx, 'skinWeight');
+					break;
+
+				case 'JOINTS_0':
+				case 'JOINT':
+					// JOINT semantic deprecated.
+
+					shaderText = shaderText.replace(regEx, 'skinIndex');
+					break;
+
+			}
+		}
+
+		return shaderText;
+	}
+
+	function createDefaultMaterial() {
+
+		return new MeshPhongMaterial({
+			color: 0x00000,
+			emissive: 0x888888,
+			specular: 0x000000,
+			shininess: 0,
+			transparent: false,
+			depthTest: true,
+			side: FrontSide
+		});
+	}
+
+	// Deferred constructor for RawShaderMaterial types
+	function DeferredShaderMaterial(params) {
+
+		this.isDeferredShaderMaterial = true;
+
+		this.params = params;
+	}
+
+	DeferredShaderMaterial.prototype.create = function () {
+
+		var uniforms = UniformsUtils.clone(this.params.uniforms);
+
+		for (var uniformId in this.params.uniforms) {
+
+			var originalUniform = this.params.uniforms[uniformId];
+
+			if (originalUniform.value instanceof Texture) {
+
+				uniforms[uniformId].value = originalUniform.value;
+				uniforms[uniformId].value.needsUpdate = true;
+			}
+
+			uniforms[uniformId].semantic = originalUniform.semantic;
+			uniforms[uniformId].node = originalUniform.node;
+		}
+
+		this.params.uniforms = uniforms;
+
+		return new RawShaderMaterial(this.params);
+	};
+
+	/* GLTF PARSER */
+
+	function GLTFParser(json, extensions, options) {
+
+		this.json = json || {};
+		this.extensions = extensions || {};
+		this.options = options || {};
+
+		// loader object cache
+		this.cache = new GLTFRegistry();
+	}
+
+	GLTFParser.prototype._withDependencies = function (dependencies) {
+
+		var _dependencies = {};
+
+		for (var i = 0; i < dependencies.length; i++) {
+
+			var dependency = dependencies[i];
+			var fnName = "load" + dependency.charAt(0).toUpperCase() + dependency.slice(1);
+
+			var cached = this.cache.get(dependency);
+
+			if (cached !== undefined) {
+
+				_dependencies[dependency] = cached;
+			} else if (this[fnName]) {
+
+				var fn = this[fnName]();
+				this.cache.add(dependency, fn);
+
+				_dependencies[dependency] = fn;
+			}
+		}
+
+		return _each(_dependencies, function (dependency) {
+
+			return dependency;
+		});
+	};
+
+	GLTFParser.prototype.parse = function (callback) {
+
+		var json = this.json;
+
+		// Clear the loader cache
+		this.cache.removeAll();
+
+		// Fire the callback on complete
+		this._withDependencies(["scenes", "cameras", "animations"]).then(function (dependencies) {
+
+			var scenes = [];
+
+			for (var name in dependencies.scenes) {
+
+				scenes.push(dependencies.scenes[name]);
+			}
+
+			var scene = json.scene !== undefined ? dependencies.scenes[json.scene] : scenes[0];
+
+			var cameras = [];
+
+			for (var name in dependencies.cameras) {
+
+				var camera = dependencies.cameras[name];
+				cameras.push(camera);
+			}
+
+			var animations = [];
+
+			for (var name in dependencies.animations) {
+
+				animations.push(dependencies.animations[name]);
+			}
+
+			callback(scene, scenes, cameras, animations);
+		});
+	};
+
+	GLTFParser.prototype.loadShaders = function () {
+
+		var json = this.json;
+		var options = this.options;
+		var extensions = this.extensions;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			var shaders = extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] !== undefined ? extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].shaders : json.shaders;
+
+			if (shaders === undefined) shaders = {};
+
+			return _each(shaders, function (shader) {
+
+				if (shader.bufferView !== undefined) {
+
+					var bufferView = dependencies.bufferViews[shader.bufferView];
+					var array = new Uint8Array(bufferView);
+					return convertUint8ArrayToString(array);
+				}
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('text');
+					loader.load(resolveURL(shader.uri, options.path), function (shaderText) {
+
+						resolve(shaderText);
+					});
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadBuffers = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var options = this.options;
+
+		return _each(json.buffers, function (buffer, name) {
+
+			if (buffer.type === 'arraybuffer' || buffer.type === undefined) {
+
+				// If present, GLB container is required to be the first buffer.
+				if (buffer.uri === undefined && name === 0) {
+
+					return extensions[EXTENSIONS.KHR_BINARY_GLTF].body;
+				}
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('arraybuffer');
+					loader.load(resolveURL(buffer.uri, options.path), function (buffer) {
+
+						resolve(buffer);
+					});
+				});
+			} else {
+
+				console.warn('GLTFLoader: ' + buffer.type + ' buffer type is not supported');
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadBufferViews = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["buffers"]).then(function (dependencies) {
+
+			return _each(json.bufferViews, function (bufferView) {
+
+				var arraybuffer = dependencies.buffers[bufferView.buffer];
+
+				var byteLength = bufferView.byteLength || 0;
+				var byteOffset = bufferView.byteOffset || 0;
+
+				return arraybuffer.slice(byteOffset, byteOffset + byteLength);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAccessors = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.accessors, function (accessor) {
+
+				var arraybuffer = dependencies.bufferViews[accessor.bufferView];
+				var itemSize = WEBGL_TYPE_SIZES[accessor.type];
+				var TypedArray = WEBGL_COMPONENT_TYPES[accessor.componentType];
+
+				// For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
+				var elementBytes = TypedArray.BYTES_PER_ELEMENT;
+				var itemBytes = elementBytes * itemSize;
+				var byteStride = json.bufferViews[accessor.bufferView].byteStride;
+				var array;
+
+				// The buffer is not interleaved if the stride is the item size in bytes.
+				if (byteStride && byteStride !== itemBytes) {
+
+					// Use the full buffer if it's interleaved.
+					array = new TypedArray(arraybuffer);
+
+					// Integer parameters to IB/IBA are in array elements, not bytes.
+					var ib = new InterleavedBuffer(array, byteStride / elementBytes);
+
+					return new InterleavedBufferAttribute(ib, itemSize, accessor.byteOffset / elementBytes);
+				} else {
+
+					array = new TypedArray(arraybuffer, accessor.byteOffset, accessor.count * itemSize);
+
+					return new BufferAttribute(array, itemSize);
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadTextures = function () {
+
+		var json = this.json;
+		var options = this.options;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.textures, function (texture) {
+
+				if (texture.source !== undefined) {
+
+					return new Promise(function (resolve) {
+
+						var source = json.images[texture.source];
+						var sourceUri = source.uri;
+
+						var urlCreator;
+
+						if (source.bufferView !== undefined) {
+
+							var bufferView = dependencies.bufferViews[source.bufferView];
+							var blob = new Blob([bufferView], { type: source.mimeType });
+							urlCreator = window.URL || window.webkitURL;
+							sourceUri = urlCreator.createObjectURL(blob);
+						}
+
+						var textureLoader = Loader.Handlers.get(sourceUri);
+
+						if (textureLoader === null) {
+
+							textureLoader = new TextureLoader();
+						}
+
+						textureLoader.setCrossOrigin(options.crossOrigin);
+
+						textureLoader.load(resolveURL(sourceUri, options.path), function (_texture) {
+
+							if (urlCreator !== undefined) {
+
+								urlCreator.revokeObjectURL(sourceUri);
+							}
+
+							_texture.flipY = false;
+
+							if (texture.name !== undefined) _texture.name = texture.name;
+
+							_texture.format = texture.format !== undefined ? WEBGL_TEXTURE_FORMATS[texture.format] : RGBAFormat;
+
+							if (texture.internalFormat !== undefined && _texture.format !== WEBGL_TEXTURE_FORMATS[texture.internalFormat]) {
+
+								console.warn('GLTFLoader: Three.js doesn\'t support texture internalFormat which is different from texture format. ' + 'internalFormat will be forced to be the same value as format.');
+							}
+
+							_texture.type = texture.type !== undefined ? WEBGL_TEXTURE_DATATYPES[texture.type] : UnsignedByteType;
+
+							var samplers = json.samplers || {};
+							var sampler = samplers[texture.sampler] || {};
+
+							_texture.magFilter = WEBGL_FILTERS[sampler.magFilter] || LinearFilter;
+							_texture.minFilter = WEBGL_FILTERS[sampler.minFilter] || NearestMipMapLinearFilter;
+							_texture.wrapS = WEBGL_WRAPPINGS[sampler.wrapS] || RepeatWrapping;
+							_texture.wrapT = WEBGL_WRAPPINGS[sampler.wrapT] || RepeatWrapping;
+
+							resolve(_texture);
+						}, undefined, function () {
+
+							resolve();
+						});
+					});
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMaterials = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+
+		return this._withDependencies(['shaders', 'textures']).then(function (dependencies) {
+
+			return _each(json.materials, function (material) {
+
+				var materialType;
+				var materialParams = {};
+				var materialExtensions = material.extensions || {};
+
+				if (materialExtensions[EXTENSIONS.KHR_MATERIALS_COMMON]) {
+
+					materialType = extensions[EXTENSIONS.KHR_MATERIALS_COMMON].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_MATERIALS_COMMON].extendParams(materialParams, material, dependencies);
+				} else if (materialExtensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS]) {
+
+					materialType = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].extendParams(materialParams, material, dependencies);
+				} else if (materialExtensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL]) {
+
+					materialType = extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].extendParams(materialParams, material, dependencies);
+				} else if (material.pbrMetallicRoughness !== undefined) {
+
+					// Specification:
+					// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#metallic-roughness-material
+
+					materialType = MeshStandardMaterial;
+
+					var metallicRoughness = material.pbrMetallicRoughness;
+
+					materialParams.color = new Color(1.0, 1.0, 1.0);
+					materialParams.opacity = 1.0;
+
+					if (Array.isArray(metallicRoughness.baseColorFactor)) {
+
+						var array = metallicRoughness.baseColorFactor;
+
+						materialParams.color.fromArray(array);
+						materialParams.opacity = array[3];
+					}
+
+					if (metallicRoughness.baseColorTexture !== undefined) {
+
+						materialParams.map = dependencies.textures[metallicRoughness.baseColorTexture.index];
+					}
+
+					materialParams.metalness = metallicRoughness.metallicFactor !== undefined ? metallicRoughness.metallicFactor : 1.0;
+					materialParams.roughness = metallicRoughness.roughnessFactor !== undefined ? metallicRoughness.roughnessFactor : 1.0;
+
+					if (metallicRoughness.metallicRoughnessTexture !== undefined) {
+
+						var textureIndex = metallicRoughness.metallicRoughnessTexture.index;
+						materialParams.metalnessMap = dependencies.textures[textureIndex];
+						materialParams.roughnessMap = dependencies.textures[textureIndex];
+					}
+				} else {
+
+					materialType = MeshPhongMaterial;
+				}
+
+				if (material.doubleSided === true) {
+
+					materialParams.side = DoubleSide;
+				}
+
+				var alphaMode = material.alphaMode || ALPHA_MODES.OPAQUE;
+
+				if (alphaMode !== ALPHA_MODES.OPAQUE) {
+
+					materialParams.transparent = true;
+				} else {
+
+					materialParams.transparent = false;
+				}
+
+				if (material.normalTexture !== undefined) {
+
+					materialParams.normalMap = dependencies.textures[material.normalTexture.index];
+				}
+
+				if (material.occlusionTexture !== undefined) {
+
+					materialParams.aoMap = dependencies.textures[material.occlusionTexture.index];
+				}
+
+				if (material.emissiveFactor !== undefined) {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.color = new Color().fromArray(material.emissiveFactor);
+					} else {
+
+						materialParams.emissive = new Color().fromArray(material.emissiveFactor);
+					}
+				}
+
+				if (material.emissiveTexture !== undefined) {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.map = dependencies.textures[material.emissiveTexture.index];
+					} else {
+
+						materialParams.emissiveMap = dependencies.textures[material.emissiveTexture.index];
+					}
+				}
+
+				var _material;
+
+				if (materialType === ShaderMaterial) {
+
+					_material = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].createMaterial(materialParams);
+				} else {
+
+					_material = new materialType(materialParams);
+				}
+
+				if (material.name !== undefined) _material.name = material.name;
+
+				return _material;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMeshes = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "materials"]).then(function (dependencies) {
+
+			return _each(json.meshes, function (mesh) {
+
+				var group = new Group();
+				if (mesh.name !== undefined) group.name = mesh.name;
+
+				if (mesh.extras) group.userData = mesh.extras;
+
+				var primitives = mesh.primitives || [];
+
+				for (var name in primitives) {
+
+					var primitive = primitives[name];
+
+					var material = primitive.material !== undefined ? dependencies.materials[primitive.material] : createDefaultMaterial();
+
+					var geometry;
+
+					var meshNode;
+
+					if (primitive.mode === WEBGL_CONSTANTS.TRIANGLES || primitive.mode === undefined) {
+
+						geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (attributeEntry === undefined) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'NORMAL':
+
+									geometry.addAttribute('normal', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_0':
+								case 'TEXCOORD0':
+								case 'TEXCOORD':
+
+									geometry.addAttribute('uv', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_1':
+
+									geometry.addAttribute('uv2', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+								case 'WEIGHTS_0':
+								case 'WEIGHT':
+									// WEIGHT semantic deprecated.
+
+									geometry.addAttribute('skinWeight', bufferAttribute);
+									break;
+
+								case 'JOINTS_0':
+								case 'JOINT':
+									// JOINT semantic deprecated.
+
+									geometry.addAttribute('skinIndex', bufferAttribute);
+									break;
+
+							}
+						}
+
+						if (primitive.indices !== undefined) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+						}
+
+						if (material.aoMap !== undefined && geometry.attributes.uv2 === undefined && geometry.attributes.uv !== undefined) {
+
+							console.log('GLTF2Loader: Duplicating UVs to support aoMap.');
+							geometry.addAttribute('uv2', new BufferAttribute(geometry.attributes.uv.array, 2));
+						}
+
+						meshNode = new Mesh(geometry, material);
+						meshNode.castShadow = true;
+
+						if (primitive.targets !== undefined) {
+
+							var targets = primitive.targets;
+							var morphAttributes = geometry.morphAttributes;
+
+							morphAttributes.position = [];
+							morphAttributes.normal = [];
+
+							material.morphTargets = true;
+
+							for (var i = 0, il = targets.length; i < il; i++) {
+
+								var target = targets[i];
+								var attributeName = 'morphTarget' + i;
+
+								var positionAttribute, normalAttribute;
+
+								if (target.POSITION !== undefined) {
+
+									// Three.js morph formula is
+									//   position
+									//     + weight0 * ( morphTarget0 - position )
+									//     + weight1 * ( morphTarget1 - position )
+									//     ...
+									// while the glTF one is
+									//   position
+									//     + weight0 * morphTarget0
+									//     + weight1 * morphTarget1
+									//     ...
+									// then adding position to morphTarget.
+									// So morphTarget value will depend on mesh's position, then cloning attribute
+									// for the case if attribute is shared among two or more meshes.
+
+									positionAttribute = dependencies.accessors[target.POSITION].clone();
+									var position = geometry.attributes.position;
+
+									for (var j = 0, jl = positionAttribute.array.length; j < jl; j++) {
+
+										positionAttribute.array[j] += position.array[j];
+									}
+								} else {
+
+									// Copying the original position not to affect the final position.
+									// See the formula above.
+									positionAttribute = geometry.attributes.position.clone();
+								}
+
+								if (target.NORMAL !== undefined) {
+
+									material.morphNormals = true;
+
+									// see target.POSITION's comment
+
+									normalAttribute = dependencies.accessors[target.NORMAL].clone();
+									var normal = geometry.attributes.normal;
+
+									for (var j = 0, jl = normalAttribute.array.length; j < jl; j++) {
+
+										normalAttribute.array[j] += normal.array[j];
+									}
+								} else {
+
+									normalAttribute = geometry.attributes.normal.clone();
+								}
+
+								// TODO: implement
+								if (target.TANGENT !== undefined) {}
+
+								positionAttribute.name = attributeName;
+								normalAttribute.name = attributeName;
+
+								morphAttributes.position.push(positionAttribute);
+								morphAttributes.normal.push(normalAttribute);
+							}
+
+							meshNode.updateMorphTargets();
+
+							if (mesh.weights !== undefined) {
+
+								for (var i = 0, il = mesh.weights.length; i < il; i++) {
+
+									meshNode.morphTargetInfluences[i] = mesh.weights[i];
+								}
+							}
+						}
+					} else if (primitive.mode === WEBGL_CONSTANTS.LINES) {
+
+						geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (!attributeEntry) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+							}
+						}
+
+						if (primitive.indices !== undefined) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+
+							meshNode = new LineSegments(geometry, material);
+						} else {
+
+							meshNode = new Line(geometry, material);
+						}
+					} else {
+
+						throw new Error("Only triangular and line primitives are supported");
+					}
+
+					if (geometry.attributes.color !== undefined) {
+
+						material.vertexColors = VertexColors;
+						material.needsUpdate = true;
+					}
+
+					meshNode.name = name === "0" ? group.name : group.name + name;
+
+					if (primitive.extras) meshNode.userData = primitive.extras;
+
+					group.add(meshNode);
+				}
+
+				return group;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadCameras = function () {
+
+		var json = this.json;
+
+		return _each(json.cameras, function (camera) {
+
+			if (camera.type == "perspective" && camera.perspective) {
+
+				var yfov = camera.perspective.yfov;
+				var aspectRatio = camera.perspective.aspectRatio !== undefined ? camera.perspective.aspectRatio : 1;
+
+				// According to COLLADA spec...
+				// aspectRatio = xfov / yfov
+				var xfov = yfov * aspectRatio;
+
+				var _camera = new PerspectiveCamera(_Math.radToDeg(xfov), aspectRatio, camera.perspective.znear || 1, camera.perspective.zfar || 2e6);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			} else if (camera.type == "orthographic" && camera.orthographic) {
+
+				var _camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, camera.orthographic.znear, camera.orthographic.zfar);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadSkins = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors"]).then(function (dependencies) {
+
+			return _each(json.skins, function (skin) {
+
+				var bindShapeMatrix = new Matrix4();
+
+				if (skin.bindShapeMatrix !== undefined) bindShapeMatrix.fromArray(skin.bindShapeMatrix);
+
+				var _skin = {
+					bindShapeMatrix: bindShapeMatrix,
+					joints: skin.joints,
+					inverseBindMatrices: dependencies.accessors[skin.inverseBindMatrices]
+				};
+
+				return _skin;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAnimations = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "nodes"]).then(function (dependencies) {
+
+			return _each(json.animations, function (animation, animationId) {
+
+				var tracks = [];
+
+				for (var channelId in animation.channels) {
+
+					var channel = animation.channels[channelId];
+					var sampler = animation.samplers[channel.sampler];
+
+					if (sampler) {
+
+						var target = channel.target;
+						var name = target.node !== undefined ? target.node : target.id; // NOTE: target.id is deprecated.
+						var input = animation.parameters !== undefined ? animation.parameters[sampler.input] : sampler.input;
+						var output = animation.parameters !== undefined ? animation.parameters[sampler.output] : sampler.output;
+
+						var inputAccessor = dependencies.accessors[input];
+						var outputAccessor = dependencies.accessors[output];
+
+						var node = dependencies.nodes[name];
+
+						if (node) {
+
+							node.updateMatrix();
+							node.matrixAutoUpdate = true;
+
+							var TypedKeyframeTrack;
+
+							switch (PATH_PROPERTIES[target.path]) {
+
+								case PATH_PROPERTIES.weights:
+
+									TypedKeyframeTrack = NumberKeyframeTrack;
+									break;
+
+								case PATH_PROPERTIES.rotation:
+
+									TypedKeyframeTrack = QuaternionKeyframeTrack;
+									break;
+
+								case PATH_PROPERTIES.position:
+								case PATH_PROPERTIES.scale:
+								default:
+
+									TypedKeyframeTrack = VectorKeyframeTrack;
+									break;
+
+							}
+
+							var targetName = node.name ? node.name : node.uuid;
+							var interpolation = sampler.interpolation !== undefined ? INTERPOLATION[sampler.interpolation] : InterpolateLinear;
+
+							var targetNames = [];
+
+							if (PATH_PROPERTIES[target.path] === PATH_PROPERTIES.weights) {
+
+								// node should be THREE.Group here but
+								// PATH_PROPERTIES.weights(morphTargetInfluences) should be
+								// the property of a mesh object under node.
+								// So finding targets here.
+
+								node.traverse(function (object) {
+
+									if (object.isMesh === true && object.material.morphTargets === true) {
+
+										targetNames.push(object.name ? object.name : object.uuid);
+									}
+								});
+							} else {
+
+								targetNames.push(targetName);
+							}
+
+							// KeyframeTrack.optimize() will modify given 'times' and 'values'
+							// buffers before creating a truncated copy to keep. Because buffers may
+							// be reused by other tracks, make copies here.
+							for (var i = 0, il = targetNames.length; i < il; i++) {
+
+								tracks.push(new TypedKeyframeTrack(targetNames[i] + '.' + PATH_PROPERTIES[target.path], AnimationUtils.arraySlice(inputAccessor.array, 0), AnimationUtils.arraySlice(outputAccessor.array, 0), interpolation));
+							}
+						}
+					}
+				}
+
+				var name = animation.name !== undefined ? animation.name : "animation_" + animationId;
+
+				return new AnimationClip(name, undefined, tracks);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadNodes = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var scope = this;
+
+		var nodes = json.nodes || [];
+		var skins = json.skins || [];
+
+		// Nothing in the node definition indicates whether it is a Bone or an
+		// Object3D. Use the skins' joint references to mark bones.
+		skins.forEach(function (skin) {
+
+			skin.joints.forEach(function (id) {
+
+				nodes[id].isBone = true;
+			});
+		});
+
+		return _each(json.nodes, function (node) {
+
+			var matrix = new Matrix4();
+
+			var _node = node.isBone === true ? new Bone() : new Object3D();
+
+			if (node.name !== undefined) {
+
+				_node.name = PropertyBinding.sanitizeNodeName(node.name);
+			}
+
+			if (node.extras) _node.userData = node.extras;
+
+			if (node.matrix !== undefined) {
+
+				matrix.fromArray(node.matrix);
+				_node.applyMatrix(matrix);
+			} else {
+
+				if (node.translation !== undefined) {
+
+					_node.position.fromArray(node.translation);
+				}
+
+				if (node.rotation !== undefined) {
+
+					_node.quaternion.fromArray(node.rotation);
+				}
+
+				if (node.scale !== undefined) {
+
+					_node.scale.fromArray(node.scale);
+				}
+			}
+
+			return _node;
+		}).then(function (__nodes) {
+
+			return scope._withDependencies(["meshes", "skins", "cameras"]).then(function (dependencies) {
+
+				return _each(__nodes, function (_node, nodeId) {
+
+					var node = json.nodes[nodeId];
+
+					var meshes;
+
+					if (node.mesh !== undefined) {
+
+						meshes = [node.mesh];
+					} else if (node.meshes !== undefined) {
+
+						console.warn('GLTF2Loader: Legacy glTF file detected. Nodes may have no more than 1 mesh.');
+
+						meshes = node.meshes;
+					}
+
+					if (meshes !== undefined) {
+
+						for (var meshId in meshes) {
+
+							var mesh = meshes[meshId];
+							var group = dependencies.meshes[mesh];
+
+							if (group === undefined) {
+
+								console.warn('GLTF2Loader: Couldn\'t find node "' + mesh + '".');
+								continue;
+							}
+
+							for (var childrenId in group.children) {
+
+								var child = group.children[childrenId];
+
+								// clone Mesh to add to _node
+
+								var originalMaterial = child.material;
+								var originalGeometry = child.geometry;
+								var originalUserData = child.userData;
+								var originalName = child.name;
+
+								var material;
+
+								if (originalMaterial.isDeferredShaderMaterial) {
+
+									originalMaterial = material = originalMaterial.create();
+								} else {
+
+									material = originalMaterial;
+								}
+
+								switch (child.type) {
+
+									case 'LineSegments':
+										child = new LineSegments(originalGeometry, material);
+										break;
+
+									case 'LineLoop':
+										child = new LineLoop(originalGeometry, material);
+										break;
+
+									case 'Line':
+										child = new Line(originalGeometry, material);
+										break;
+
+									default:
+										child = new Mesh(originalGeometry, material);
+
+								}
+
+								child.castShadow = true;
+								child.userData = originalUserData;
+								child.name = originalName;
+
+								var skinEntry;
+
+								if (node.skin !== undefined) {
+
+									skinEntry = dependencies.skins[node.skin];
+								}
+
+								// Replace Mesh with SkinnedMesh in library
+								if (skinEntry) {
+
+									var geometry = originalGeometry;
+									material = originalMaterial;
+									material.skinning = true;
+
+									child = new SkinnedMesh(geometry, material, false);
+									child.castShadow = true;
+									child.userData = originalUserData;
+									child.name = originalName;
+
+									var bones = [];
+									var boneInverses = [];
+
+									for (var i = 0, l = skinEntry.joints.length; i < l; i++) {
+
+										var jointId = skinEntry.joints[i];
+										var jointNode = __nodes[jointId];
+
+										if (jointNode) {
+
+											bones.push(jointNode);
+
+											var m = skinEntry.inverseBindMatrices.array;
+											var mat = new Matrix4().fromArray(m, i * 16);
+											boneInverses.push(mat);
+										} else {
+
+											console.warn("WARNING: joint: '" + jointId + "' could not be found");
+										}
+									}
+
+									child.bind(new Skeleton(bones, boneInverses, false), skinEntry.bindShapeMatrix);
+
+									var buildBoneGraph = function (parentJson, parentObject, property) {
+
+										var children = parentJson[property];
+
+										if (children === undefined) return;
+
+										for (var i = 0, il = children.length; i < il; i++) {
+
+											var nodeId = children[i];
+											var bone = __nodes[nodeId];
+											var boneJson = json.nodes[nodeId];
+
+											if (bone !== undefined && bone.isBone === true && boneJson !== undefined) {
+
+												parentObject.add(bone);
+												buildBoneGraph(boneJson, bone, 'children');
+											}
+										}
+									};
+
+									buildBoneGraph(node, child, 'skeletons');
+								}
+
+								_node.add(child);
+							}
+						}
+					}
+
+					if (node.camera !== undefined) {
+
+						var camera = dependencies.cameras[node.camera];
+
+						_node.add(camera);
+					}
+
+					if (node.extensions && node.extensions[EXTENSIONS.KHR_LIGHTS] && node.extensions[EXTENSIONS.KHR_LIGHTS].light !== undefined) {
+
+						var lights = extensions[EXTENSIONS.KHR_LIGHTS].lights;
+						_node.add(lights[node.extensions[EXTENSIONS.KHR_LIGHTS].light]);
+					}
+
+					return _node;
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadScenes = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+
+		// scene node hierachy builder
+
+		function buildNodeHierachy(nodeId, parentObject, allNodes) {
+
+			var _node = allNodes[nodeId];
+			parentObject.add(_node);
+
+			var node = json.nodes[nodeId];
+
+			if (node.children) {
+
+				var children = node.children;
+
+				for (var i = 0, l = children.length; i < l; i++) {
+
+					var child = children[i];
+					buildNodeHierachy(child, _node, allNodes);
+				}
+			}
+		}
+
+		return this._withDependencies(["nodes"]).then(function (dependencies) {
+
+			return _each(json.scenes, function (scene) {
+
+				var _scene = new Scene();
+				if (scene.name !== undefined) _scene.name = scene.name;
+
+				if (scene.extras) _scene.userData = scene.extras;
+
+				var nodes = scene.nodes || [];
+
+				for (var i = 0, l = nodes.length; i < l; i++) {
+
+					var nodeId = nodes[i];
+					buildNodeHierachy(nodeId, _scene, dependencies.nodes);
+				}
+
+				_scene.traverse(function (child) {
+
+					// Register raw material meshes with GLTF2Loader.Shaders
+					if (child.material && child.material.isRawShaderMaterial) {
+
+						child.gltfShader = new GLTFShader(child, dependencies.nodes);
+						child.onBeforeRender = function (renderer, scene, camera) {
+							this.gltfShader.update(scene, camera);
+						};
+					}
+
+					// for Specular-Glossiness.
+					if (child.material && child.material.type === 'ShaderMaterial') {
+
+						child.onBeforeRender = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].refreshUniforms;
+					}
+				});
+
+				// Ambient lighting, if present, is always attached to the scene root.
+				if (scene.extensions && scene.extensions[EXTENSIONS.KHR_LIGHTS] && scene.extensions[EXTENSIONS.KHR_LIGHTS].light !== undefined) {
+
+					var lights = extensions[EXTENSIONS.KHR_LIGHTS].lights;
+					_scene.add(lights[scene.extensions[EXTENSIONS.KHR_LIGHTS].light]);
+				}
+
+				return _scene;
+			});
+		});
+	};
+
+	return GLTF2Loader;
+}();
+
+/**
+  * @author Kai Salmen / https://kaisalmen.de
+  * Development repository: https://github.com/kaisalmen/WWOBJLoader
+  */
+
+/**
+ * Use this class to load OBJ data from files or to parse OBJ data from arraybuffer or text
+ * @class
+ *
+ * @param {THREE.DefaultLoadingManager} [manager] The loadingManager for the loader to use. Default is {@link THREE.DefaultLoadingManager}
+ */
+
+var OBJLoader2 = function () {
+
+	var OBJLOADER2_VERSION = '1.2.1';
+
+	function OBJLoader2(manager) {
+		console.log("Using THREE.OBJLoader2 version: " + OBJLOADER2_VERSION);
+		this.manager = Validator.verifyInput(manager, DefaultLoadingManager);
+
+		this.path = '';
+		this.fileLoader = new FileLoader(this.manager);
+
+		this.meshCreator = new MeshCreator();
+		this.parser = new Parser(this.meshCreator);
+
+		this.validated = false;
+	}
+
+	/**
+  * Base path to use.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} path The basepath
+  */
+	OBJLoader2.prototype.setPath = function (path) {
+		this.path = Validator.verifyInput(path, this.path);
+	};
+
+	/**
+  * Set the node where the loaded objects will be attached.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {THREE.Object3D} sceneGraphBaseNode Scenegraph object where meshes will be attached
+  */
+	OBJLoader2.prototype.setSceneGraphBaseNode = function (sceneGraphBaseNode) {
+		this.meshCreator.setSceneGraphBaseNode(sceneGraphBaseNode);
+	};
+
+	/**
+  * Set materials loaded by MTLLoader or any other supplier of an Array of {@link THREE.Material}.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {THREE.Material[]} materials  Array of {@link THREE.Material} from MTLLoader
+  */
+	OBJLoader2.prototype.setMaterials = function (materials) {
+		this.meshCreator.setMaterials(materials);
+	};
+
+	/**
+  * Allows to set debug mode for the parser and the meshCreator.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {boolean} parserDebug Internal Parser will produce debug output
+  * @param {boolean} meshCreatorDebug Internal MeshCreator will produce debug output
+  */
+	OBJLoader2.prototype.setDebug = function (parserDebug, meshCreatorDebug) {
+		this.parser.setDebug(parserDebug);
+		this.meshCreator.setDebug(meshCreatorDebug);
+	};
+
+	/**
+  * Use this convenient method to load an OBJ file at the given URL. Per default the fileLoader uses an arraybuffer
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} url URL of the file to load
+  * @param {callback} onLoad Called after loading was successfully completed
+  * @param {callback} onProgress Called to report progress of loading. The argument will be the XMLHttpRequest instance, which contains {integer total} and {integer loaded} bytes.
+  * @param {callback} onError Called after an error occurred during loading
+  * @param {boolean} [useArrayBuffer=true] Set this to false to force string based parsing
+  */
+	OBJLoader2.prototype.load = function (url, onLoad, onProgress, onError, useArrayBuffer) {
+		this._validate();
+		this.fileLoader.setPath(this.path);
+		this.fileLoader.setResponseType(useArrayBuffer !== false ? 'arraybuffer' : 'text');
+
+		var scope = this;
+		scope.fileLoader.load(url, function (content) {
+
+			// only use parseText if useArrayBuffer is explicitly set to false
+			onLoad(useArrayBuffer !== false ? scope.parse(content) : scope.parseText(content));
+		}, onProgress, onError);
+	};
+
+	/**
+  * Default parse function: Parses OBJ file content stored in arrayBuffer and returns the sceneGraphBaseNode
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {Uint8Array} arrayBuffer OBJ data as Uint8Array
+  */
+	OBJLoader2.prototype.parse = function (arrayBuffer) {
+		// fast-fail on bad type
+		if (!(arrayBuffer instanceof ArrayBuffer || arrayBuffer instanceof Uint8Array)) {
+
+			throw 'Provided input is not of type arraybuffer! Aborting...';
+		}
+		console.log('Parsing arrayBuffer...');
+		console.time('parseArrayBuffer');
+
+		this._validate();
+		this.parser.parseArrayBuffer(arrayBuffer);
+		var sceneGraphAttach = this._finalize();
+
+		console.timeEnd('parseArrayBuffer');
+
+		return sceneGraphAttach;
+	};
+
+	/**
+  * Legacy parse function: Parses OBJ file content stored in string and returns the sceneGraphBaseNode
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} text OBJ data as string
+  */
+	OBJLoader2.prototype.parseText = function (text) {
+		// fast-fail on bad type
+		if (!(typeof text === 'string' || text instanceof String)) {
+
+			throw 'Provided input is not of type String! Aborting...';
+		}
+		console.log('Parsing text...');
+		console.time('parseText');
+
+		this._validate();
+		this.parser.parseText(text);
+		var sceneGraphBaseNode = this._finalize();
+
+		console.timeEnd('parseText');
+
+		return sceneGraphBaseNode;
+	};
+
+	OBJLoader2.prototype._validate = function () {
+		if (this.validated) return;
+
+		this.fileLoader = Validator.verifyInput(this.fileLoader, new FileLoader(this.manager));
+		this.parser.validate();
+		this.meshCreator.validate();
+
+		this.validated = true;
+	};
+
+	OBJLoader2.prototype._finalize = function () {
+		console.log('Global output object count: ' + this.meshCreator.globalObjectCount);
+
+		this.parser.finalize();
+		this.fileLoader = null;
+		var sceneGraphBaseNode = this.meshCreator.sceneGraphBaseNode;
+		this.meshCreator.finalize();
+		this.validated = false;
+
+		return sceneGraphBaseNode;
+	};
+
+	/**
+  * Constants used by THREE.OBJLoader2
+  */
+	var Consts = {
+		CODE_LF: 10,
+		CODE_CR: 13,
+		CODE_SPACE: 32,
+		CODE_SLASH: 47,
+		STRING_LF: '\n',
+		STRING_CR: '\r',
+		STRING_SPACE: ' ',
+		STRING_SLASH: '/',
+		LINE_F: 'f',
+		LINE_G: 'g',
+		LINE_L: 'l',
+		LINE_O: 'o',
+		LINE_S: 's',
+		LINE_V: 'v',
+		LINE_VT: 'vt',
+		LINE_VN: 'vn',
+		LINE_MTLLIB: 'mtllib',
+		LINE_USEMTL: 'usemtl',
+		/*
+   * Build Face/Quad: first element in indexArray is the line identification, therefore offset of one needs to be taken into account
+   * N-Gons are not supported
+   * Quad Faces: FaceA: 0, 1, 2  FaceB: 2, 3, 0
+   *
+   * 0: "f vertex/uv/normal	vertex/uv/normal	vertex/uv/normal	(vertex/uv/normal)"
+   * 1: "f vertex/uv		  	vertex/uv		   	vertex/uv		   	(vertex/uv		 )"
+   * 2: "f vertex//normal	 	vertex//normal	  	vertex//normal	  	(vertex//normal  )"
+   * 3: "f vertex			 	vertex			  	vertex			  	(vertex		  	 )"
+   *
+   * @param indexArray
+   * @param faceType
+   */
+		QUAD_INDICES_1: [1, 2, 3, 3, 4, 1],
+		QUAD_INDICES_2: [1, 3, 5, 5, 7, 1],
+		QUAD_INDICES_3: [1, 4, 7, 7, 10, 1]
+	};
+
+	var Validator = {
+		/**
+   * If given input is null or undefined, false is returned otherwise true.
+   *
+   * @param input Anything
+   * @returns {boolean}
+   */
+		isValid: function (input) {
+			return input !== null && input !== undefined;
+		},
+		/**
+   * If given input is null or undefined, the defaultValue is returned otherwise the given input.
+   *
+   * @param input Anything
+   * @param defaultValue Anything
+   * @returns {*}
+   */
+		verifyInput: function (input, defaultValue) {
+			return input === null || input === undefined ? defaultValue : input;
+		}
+	};
+
+	OBJLoader2.prototype._getValidator = function () {
+		return Validator;
+	};
+
+	/**
+  * Parse OBJ data either from ArrayBuffer or string
+  * @class
+  */
+	var Parser = function () {
+
+		function Parser(meshCreator) {
+			this.meshCreator = meshCreator;
+			this.rawObject = null;
+			this.inputObjectCount = 1;
+			this.debug = false;
+		}
+
+		Parser.prototype.setDebug = function (debug) {
+			if (debug === true || debug === false) this.debug = debug;
+		};
+
+		Parser.prototype.validate = function () {
+			this.rawObject = new RawObject();
+			this.inputObjectCount = 1;
+		};
+
+		/**
+   * Parse the provided arraybuffer
+   * @memberOf Parser
+   *
+   * @param {Uint8Array} arrayBuffer OBJ data as Uint8Array
+   */
+		Parser.prototype.parseArrayBuffer = function (arrayBuffer) {
+			var arrayBufferView = new Uint8Array(arrayBuffer);
+			var length = arrayBufferView.byteLength;
+			var buffer = new Array(32);
+			var bufferPointer = 0;
+			var slashes = new Array(32);
+			var slashesPointer = 0;
+			var reachedFaces = false;
+			var code;
+			var word = '';
+			for (var i = 0; i < length; i++) {
+
+				code = arrayBufferView[i];
+				switch (code) {
+					case Consts.CODE_SPACE:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.CODE_SLASH:
+						slashes[slashesPointer++] = i;
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.CODE_LF:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						reachedFaces = this.processLine(buffer, bufferPointer, slashes, slashesPointer, reachedFaces);
+						slashesPointer = 0;
+						bufferPointer = 0;
+						break;
+
+					case Consts.CODE_CR:
+						break;
+
+					default:
+						word += String.fromCharCode(code);
+						break;
+				}
+			}
+		};
+
+		/**
+   * Parse the provided text
+   * @memberOf Parser
+   *
+   * @param {string} text OBJ data as string
+   */
+		Parser.prototype.parseText = function (text) {
+			var length = text.length;
+			var buffer = new Array(32);
+			var bufferPointer = 0;
+			var slashes = new Array(32);
+			var slashesPointer = 0;
+			var reachedFaces = false;
+			var char;
+			var word = '';
+			for (var i = 0; i < length; i++) {
+
+				char = text[i];
+				switch (char) {
+					case Consts.STRING_SPACE:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.STRING_SLASH:
+						slashes[slashesPointer++] = i;
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.STRING_LF:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						reachedFaces = this.processLine(buffer, bufferPointer, slashes, slashesPointer, reachedFaces);
+						slashesPointer = 0;
+						bufferPointer = 0;
+						break;
+
+					case Consts.STRING_CR:
+						break;
+
+					default:
+						word += char;
+				}
+			}
+		};
+
+		Parser.prototype.processLine = function (buffer, bufferPointer, slashes, slashesPointer, reachedFaces) {
+			if (bufferPointer < 1) return reachedFaces;
+
+			var bufferLength = bufferPointer - 1;
+			switch (buffer[0]) {
+				case Consts.LINE_V:
+
+					// object complete instance required if reached faces already (= reached next block of v)
+					if (reachedFaces) {
+
+						this.processCompletedObject(null, this.rawObject.groupName);
+						reachedFaces = false;
+					}
+					this.rawObject.pushVertex(buffer);
+					break;
+
+				case Consts.LINE_VT:
+					this.rawObject.pushUv(buffer);
+					break;
+
+				case Consts.LINE_VN:
+					this.rawObject.pushNormal(buffer);
+					break;
+
+				case Consts.LINE_F:
+					reachedFaces = true;
+					/*
+      * 0: "f vertex/uv/normal ..."
+      * 1: "f vertex/uv ..."
+      * 2: "f vertex//normal ..."
+      * 3: "f vertex ..."
+      */
+					var haveQuad = bufferLength % 4 === 0;
+					if (slashesPointer > 1 && slashes[1] - slashes[0] === 1) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVn(buffer);
+						} else {
+							this.rawObject.buildFaceVVn(buffer);
+						}
+					} else if (bufferLength === slashesPointer * 2) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVt(buffer);
+						} else {
+							this.rawObject.buildFaceVVt(buffer);
+						}
+					} else if (bufferLength * 2 === slashesPointer * 3) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVtVn(buffer);
+						} else {
+							this.rawObject.buildFaceVVtVn(buffer);
+						}
+					} else {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadV(buffer);
+						} else {
+							this.rawObject.buildFaceV(buffer);
+						}
+					}
+					break;
+
+				case Consts.LINE_L:
+					if (bufferLength === slashesPointer * 2) {
+
+						this.rawObject.buildLineVvt(buffer);
+					} else {
+
+						this.rawObject.buildLineV(buffer);
+					}
+					break;
+
+				case Consts.LINE_S:
+					this.rawObject.pushSmoothingGroup(buffer[1]);
+					break;
+
+				case Consts.LINE_G:
+					this.processCompletedGroup(buffer[1]);
+					break;
+
+				case Consts.LINE_O:
+					if (this.rawObject.vertices.length > 0) {
+
+						this.processCompletedObject(buffer[1], null);
+						reachedFaces = false;
+					} else {
+
+						this.rawObject.pushObject(buffer[1]);
+					}
+					break;
+
+				case Consts.LINE_MTLLIB:
+					this.rawObject.pushMtllib(buffer[1]);
+					break;
+
+				case Consts.LINE_USEMTL:
+					this.rawObject.pushUsemtl(buffer[1]);
+					break;
+
+				default:
+					break;
+			}
+			return reachedFaces;
+		};
+
+		Parser.prototype.processCompletedObject = function (objectName, groupName) {
+			this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			this.inputObjectCount++;
+			this.rawObject = this.rawObject.newInstanceFromObject(objectName, groupName);
+		};
+
+		Parser.prototype.processCompletedGroup = function (groupName) {
+			var notEmpty = this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			if (notEmpty) {
+
+				this.inputObjectCount++;
+				this.rawObject = this.rawObject.newInstanceFromGroup(groupName);
+			} else {
+
+				// if a group was set that did not lead to object creation in finalize, then the group name has to be updated
+				this.rawObject.pushGroup(groupName);
+			}
+		};
+
+		Parser.prototype.finalize = function () {
+			this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			this.inputObjectCount++;
+		};
+
+		return Parser;
+	}();
+
+	/**
+  * {@link RawObject} is only used by {@link Parser}.
+  * The user of OBJLoader2 does not need to care about this class.
+  * It is defined publicly for inclusion in web worker based OBJ loader ({@link THREE.OBJLoader2.WWOBJLoader2})
+  */
+	var RawObject = function () {
+
+		function RawObject(objectName, groupName, mtllibName) {
+			this.globalVertexOffset = 1;
+			this.globalUvOffset = 1;
+			this.globalNormalOffset = 1;
+
+			this.vertices = [];
+			this.normals = [];
+			this.uvs = [];
+
+			// faces are stored according combined index of group, material and smoothingGroup (0 or not)
+			this.mtllibName = Validator.verifyInput(mtllibName, 'none');
+			this.objectName = Validator.verifyInput(objectName, 'none');
+			this.groupName = Validator.verifyInput(groupName, 'none');
+			this.activeMtlName = 'none';
+			this.activeSmoothingGroup = 1;
+
+			this.mtlCount = 0;
+			this.smoothingGroupCount = 0;
+
+			this.rawObjectDescriptions = [];
+			// this default index is required as it is possible to define faces without 'g' or 'usemtl'
+			var index = this.buildIndex(this.activeMtlName, this.activeSmoothingGroup);
+			this.rawObjectDescriptionInUse = new RawObjectDescription(this.objectName, this.groupName, this.activeMtlName, this.activeSmoothingGroup);
+			this.rawObjectDescriptions[index] = this.rawObjectDescriptionInUse;
+		}
+
+		RawObject.prototype.buildIndex = function (materialName, smoothingGroup) {
+			return materialName + '|' + smoothingGroup;
+		};
+
+		RawObject.prototype.newInstanceFromObject = function (objectName, groupName) {
+			var newRawObject = new RawObject(objectName, groupName, this.mtllibName);
+
+			// move indices forward
+			newRawObject.globalVertexOffset = this.globalVertexOffset + this.vertices.length / 3;
+			newRawObject.globalUvOffset = this.globalUvOffset + this.uvs.length / 2;
+			newRawObject.globalNormalOffset = this.globalNormalOffset + this.normals.length / 3;
+
+			return newRawObject;
+		};
+
+		RawObject.prototype.newInstanceFromGroup = function (groupName) {
+			var newRawObject = new RawObject(this.objectName, groupName, this.mtllibName);
+
+			// keep current buffers and indices forward
+			newRawObject.vertices = this.vertices;
+			newRawObject.uvs = this.uvs;
+			newRawObject.normals = this.normals;
+			newRawObject.globalVertexOffset = this.globalVertexOffset;
+			newRawObject.globalUvOffset = this.globalUvOffset;
+			newRawObject.globalNormalOffset = this.globalNormalOffset;
+
+			return newRawObject;
+		};
+
+		RawObject.prototype.pushVertex = function (buffer) {
+			this.vertices.push(parseFloat(buffer[1]));
+			this.vertices.push(parseFloat(buffer[2]));
+			this.vertices.push(parseFloat(buffer[3]));
+		};
+
+		RawObject.prototype.pushUv = function (buffer) {
+			this.uvs.push(parseFloat(buffer[1]));
+			this.uvs.push(parseFloat(buffer[2]));
+		};
+
+		RawObject.prototype.pushNormal = function (buffer) {
+			this.normals.push(parseFloat(buffer[1]));
+			this.normals.push(parseFloat(buffer[2]));
+			this.normals.push(parseFloat(buffer[3]));
+		};
+
+		RawObject.prototype.pushObject = function (objectName) {
+			this.objectName = objectName;
+		};
+
+		RawObject.prototype.pushMtllib = function (mtllibName) {
+			this.mtllibName = mtllibName;
+		};
+
+		RawObject.prototype.pushGroup = function (groupName) {
+			this.groupName = groupName;
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.pushUsemtl = function (mtlName) {
+			if (this.activeMtlName === mtlName || !Validator.isValid(mtlName)) return;
+			this.activeMtlName = mtlName;
+			this.mtlCount++;
+
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.pushSmoothingGroup = function (activeSmoothingGroup) {
+			var normalized = activeSmoothingGroup === 'off' ? 0 : activeSmoothingGroup;
+			if (this.activeSmoothingGroup === normalized) return;
+			this.activeSmoothingGroup = normalized;
+			this.smoothingGroupCount++;
+
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.verifyIndex = function () {
+			var index = this.buildIndex(this.activeMtlName, this.activeSmoothingGroup === 0 ? 0 : 1);
+			this.rawObjectDescriptionInUse = this.rawObjectDescriptions[index];
+			if (!Validator.isValid(this.rawObjectDescriptionInUse)) {
+
+				this.rawObjectDescriptionInUse = new RawObjectDescription(this.objectName, this.groupName, this.activeMtlName, this.activeSmoothingGroup);
+				this.rawObjectDescriptions[index] = this.rawObjectDescriptionInUse;
+			}
+		};
+
+		RawObject.prototype.buildQuadVVtVn = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_3[i]]);
+				this.attachFaceVt(indexArray[Consts.QUAD_INDICES_3[i] + 1]);
+				this.attachFaceVn(indexArray[Consts.QUAD_INDICES_3[i] + 2]);
+			}
+		};
+
+		RawObject.prototype.buildQuadVVt = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_2[i]]);
+				this.attachFaceVt(indexArray[Consts.QUAD_INDICES_2[i] + 1]);
+			}
+		};
+
+		RawObject.prototype.buildQuadVVn = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_2[i]]);
+				this.attachFaceVn(indexArray[Consts.QUAD_INDICES_2[i] + 1]);
+			}
+		};
+
+		RawObject.prototype.buildQuadV = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_1[i]]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVtVn = function (indexArray) {
+			for (var i = 1; i < 10; i += 3) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVt(indexArray[i + 1]);
+				this.attachFaceVn(indexArray[i + 2]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVt = function (indexArray) {
+			for (var i = 1; i < 7; i += 2) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVt(indexArray[i + 1]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVn = function (indexArray) {
+			for (var i = 1; i < 7; i += 2) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVn(indexArray[i + 1]);
+			}
+		};
+
+		RawObject.prototype.buildFaceV = function (indexArray) {
+			for (var i = 1; i < 4; i++) {
+				this.attachFaceV_(indexArray[i]);
+			}
+		};
+
+		RawObject.prototype.attachFaceV_ = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalVertexOffset) * 3;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.vertices.push(this.vertices[index++]);
+			rodiu.vertices.push(this.vertices[index++]);
+			rodiu.vertices.push(this.vertices[index]);
+		};
+
+		RawObject.prototype.attachFaceVt = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalUvOffset) * 2;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.uvs.push(this.uvs[index++]);
+			rodiu.uvs.push(this.uvs[index]);
+		};
+
+		RawObject.prototype.attachFaceVn = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalNormalOffset) * 3;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.normals.push(this.normals[index++]);
+			rodiu.normals.push(this.normals[index++]);
+			rodiu.normals.push(this.normals[index]);
+		};
+
+		/*
+   * Support for lines with or without texture. irst element in indexArray is the line identification
+   * 0: "f vertex/uv		vertex/uv 		..."
+   * 1: "f vertex			vertex 			..."
+   */
+		RawObject.prototype.buildLineVvt = function (lineArray) {
+			var length = lineArray.length;
+			for (var i = 1; i < length; i++) {
+				this.vertices.push(parseInt(lineArray[i]));
+				this.uvs.push(parseInt(lineArray[i]));
+			}
+		};
+
+		RawObject.prototype.buildLineV = function (lineArray) {
+			var length = lineArray.length;
+			for (var i = 1; i < length; i++) {
+				this.vertices.push(parseInt(lineArray[i]));
+			}
+		};
+
+		/**
+   * Clear any empty rawObjectDescription and calculate absolute vertex, normal and uv counts
+   */
+		RawObject.prototype.finalize = function (meshCreator, inputObjectCount, debug) {
+			var temp = this.rawObjectDescriptions;
+			this.rawObjectDescriptions = [];
+			var rawObjectDescription;
+			var index = 0;
+			var absoluteVertexCount = 0;
+			var absoluteNormalCount = 0;
+			var absoluteUvCount = 0;
+
+			for (var name in temp) {
+
+				rawObjectDescription = temp[name];
+				if (rawObjectDescription.vertices.length > 0) {
+
+					if (rawObjectDescription.objectName === 'none') rawObjectDescription.objectName = rawObjectDescription.groupName;
+					this.rawObjectDescriptions[index++] = rawObjectDescription;
+					absoluteVertexCount += rawObjectDescription.vertices.length;
+					absoluteUvCount += rawObjectDescription.uvs.length;
+					absoluteNormalCount += rawObjectDescription.normals.length;
+				}
+			}
+
+			// don not continue if no result
+			var notEmpty = false;
+			if (index > 0) {
+
+				if (debug) this.createReport(inputObjectCount, true);
+				meshCreator.buildMesh(this.rawObjectDescriptions, inputObjectCount, absoluteVertexCount, absoluteNormalCount, absoluteUvCount);
+				notEmpty = true;
+			}
+			return notEmpty;
+		};
+
+		RawObject.prototype.createReport = function (inputObjectCount, printDirectly) {
+			var report = {
+				name: this.objectName ? this.objectName : 'groups',
+				mtllibName: this.mtllibName,
+				vertexCount: this.vertices.length / 3,
+				normalCount: this.normals.length / 3,
+				uvCount: this.uvs.length / 2,
+				smoothingGroupCount: this.smoothingGroupCount,
+				mtlCount: this.mtlCount,
+				rawObjectDescriptions: this.rawObjectDescriptions.length
+			};
+
+			if (printDirectly) {
+				console.log('Input Object number: ' + inputObjectCount + ' Object name: ' + report.name);
+				console.log('Mtllib name: ' + report.mtllibName);
+				console.log('Vertex count: ' + report.vertexCount);
+				console.log('Normal count: ' + report.normalCount);
+				console.log('UV count: ' + report.uvCount);
+				console.log('SmoothingGroup count: ' + report.smoothingGroupCount);
+				console.log('Material count: ' + report.mtlCount);
+				console.log('Real RawObjectDescription count: ' + report.rawObjectDescriptions);
+				console.log('');
+			}
+
+			return report;
+		};
+
+		return RawObject;
+	}();
+
+	/**
+  * Descriptive information and data (vertices, normals, uvs) to passed on to mesh building function.
+  * @class
+  *
+  * @param {string} objectName Name of the mesh
+  * @param {string} groupName Name of the group
+  * @param {string} materialName Name of the material
+  * @param {number} smoothingGroup Normalized smoothingGroup (0: THREE.FlatShading, 1: THREE.SmoothShading)
+  */
+	var RawObjectDescription = function () {
+
+		function RawObjectDescription(objectName, groupName, materialName, smoothingGroup) {
+			this.objectName = objectName;
+			this.groupName = groupName;
+			this.materialName = materialName;
+			this.smoothingGroup = smoothingGroup;
+			this.vertices = [];
+			this.uvs = [];
+			this.normals = [];
+		}
+
+		return RawObjectDescription;
+	}();
+
+	/**
+  * MeshCreator is used to transform RawObjectDescriptions to THREE.Mesh
+  *
+  * @class
+  */
+	var MeshCreator = function () {
+
+		function MeshCreator() {
+			this.sceneGraphBaseNode = null;
+			this.materials = null;
+			this.debug = false;
+			this.globalObjectCount = 1;
+
+			this.validated = false;
+		}
+
+		MeshCreator.prototype.setSceneGraphBaseNode = function (sceneGraphBaseNode) {
+			this.sceneGraphBaseNode = Validator.verifyInput(sceneGraphBaseNode, this.sceneGraphBaseNode);
+			this.sceneGraphBaseNode = Validator.verifyInput(this.sceneGraphBaseNode, new Group());
+		};
+
+		MeshCreator.prototype.setMaterials = function (materials) {
+			this.materials = Validator.verifyInput(materials, this.materials);
+			this.materials = Validator.verifyInput(this.materials, { materials: [] });
+		};
+
+		MeshCreator.prototype.setDebug = function (debug) {
+			if (debug === true || debug === false) this.debug = debug;
+		};
+
+		MeshCreator.prototype.validate = function () {
+			if (this.validated) return;
+
+			this.setSceneGraphBaseNode(null);
+			this.setMaterials(null);
+			this.setDebug(null);
+			this.globalObjectCount = 1;
+		};
+
+		MeshCreator.prototype.finalize = function () {
+			this.sceneGraphBaseNode = null;
+			this.materials = null;
+			this.validated = false;
+		};
+
+		/**
+   * This is an internal function, but due to its importance to Parser it is documented.
+   * RawObjectDescriptions are transformed to THREE.Mesh.
+   * It is ensured that rawObjectDescriptions only contain objects with vertices (no need to check).
+   * This method shall be overridden by the web worker implementation
+   *
+   * @param {RawObjectDescription[]} rawObjectDescriptions Array of descriptive information and data (vertices, normals, uvs) about the parsed object(s)
+   * @param {number} inputObjectCount Number of objects already retrieved from OBJ
+   * @param {number} absoluteVertexCount Sum of all vertices of all rawObjectDescriptions
+   * @param {number} absoluteNormalCount Sum of all normals of all rawObjectDescriptions
+   * @param {number} absoluteUvCount Sum of all uvs of all rawObjectDescriptions
+   */
+		MeshCreator.prototype.buildMesh = function (rawObjectDescriptions, inputObjectCount, absoluteVertexCount, absoluteNormalCount, absoluteUvCount) {
+
+			if (this.debug) console.log('MeshCreator.buildRawMeshData:\nInput object no.: ' + inputObjectCount);
+
+			var bufferGeometry = new BufferGeometry();
+			var vertexBA = new BufferAttribute(new Float32Array(absoluteVertexCount), 3);
+			bufferGeometry.addAttribute('position', vertexBA);
+
+			var normalBA;
+			if (absoluteNormalCount > 0) {
+
+				normalBA = new BufferAttribute(new Float32Array(absoluteNormalCount), 3);
+				bufferGeometry.addAttribute('normal', normalBA);
+			}
+			var uvBA;
+			if (absoluteUvCount > 0) {
+
+				uvBA = new BufferAttribute(new Float32Array(absoluteUvCount), 2);
+				bufferGeometry.addAttribute('uv', uvBA);
+			}
+
+			if (this.debug) console.log('Creating Multi-Material for object no.: ' + this.globalObjectCount);
+
+			var rawObjectDescription;
+			var material;
+			var materialName;
+			var createMultiMaterial = rawObjectDescriptions.length > 1;
+			var materials = [];
+			var materialIndex = 0;
+			var materialIndexMapping = [];
+			var selectedMaterialIndex;
+
+			var vertexBAOffset = 0;
+			var vertexGroupOffset = 0;
+			var vertexLength;
+			var normalOffset = 0;
+			var uvOffset = 0;
+
+			for (var oodIndex in rawObjectDescriptions) {
+				rawObjectDescription = rawObjectDescriptions[oodIndex];
+
+				materialName = rawObjectDescription.materialName;
+				material = this.materials[materialName];
+				if (!material) {
+
+					material = this.materials['defaultMaterial'];
+					if (!material) {
+
+						material = new MeshStandardMaterial({ color: 0xDCF1FF });
+						material.name = 'defaultMaterial';
+						this.materials['defaultMaterial'] = material;
+					}
+					console.warn('object_group "' + rawObjectDescription.objectName + '_' + rawObjectDescription.groupName + '" was defined without material! Assigning "defaultMaterial".');
+				}
+				// clone material in case flat shading is needed due to smoothingGroup 0
+				if (rawObjectDescription.smoothingGroup === 0) {
+
+					materialName = material.name + '_flat';
+					var materialClone = this.materials[materialName];
+					if (!materialClone) {
+
+						materialClone = material.clone();
+						materialClone.name = materialName;
+						materialClone.shading = FlatShading;
+						this.materials[materialName] = name;
+					}
+				}
+
+				vertexLength = rawObjectDescription.vertices.length;
+				if (createMultiMaterial) {
+
+					// re-use material if already used before. Reduces materials array size and eliminates duplicates
+					selectedMaterialIndex = materialIndexMapping[materialName];
+					if (!selectedMaterialIndex) {
+
+						selectedMaterialIndex = materialIndex;
+						materialIndexMapping[materialName] = materialIndex;
+						materials.push(material);
+						materialIndex++;
+					}
+
+					bufferGeometry.addGroup(vertexGroupOffset, vertexLength / 3, selectedMaterialIndex);
+					vertexGroupOffset += vertexLength / 3;
+				}
+
+				vertexBA.set(rawObjectDescription.vertices, vertexBAOffset);
+				vertexBAOffset += vertexLength;
+
+				if (normalBA) {
+
+					normalBA.set(rawObjectDescription.normals, normalOffset);
+					normalOffset += rawObjectDescription.normals.length;
+				}
+				if (uvBA) {
+
+					uvBA.set(rawObjectDescription.uvs, uvOffset);
+					uvOffset += rawObjectDescription.uvs.length;
+				}
+				if (this.debug) this.printReport(rawObjectDescription, selectedMaterialIndex);
+			}
+			if (!normalBA) bufferGeometry.computeVertexNormals();
+
+			if (createMultiMaterial) material = materials;
+			var mesh = new Mesh(bufferGeometry, material);
+			this.sceneGraphBaseNode.add(mesh);
+
+			this.globalObjectCount++;
+		};
+
+		MeshCreator.prototype.printReport = function (rawObjectDescription, selectedMaterialIndex) {
+			console.log(' Output Object no.: ' + this.globalObjectCount + '\n objectName: ' + rawObjectDescription.objectName + '\n groupName: ' + rawObjectDescription.groupName + '\n materialName: ' + rawObjectDescription.materialName + '\n materialIndex: ' + selectedMaterialIndex + '\n smoothingGroup: ' + rawObjectDescription.smoothingGroup + '\n #vertices: ' + rawObjectDescription.vertices.length / 3 + '\n #uvs: ' + rawObjectDescription.uvs.length / 2 + '\n #normals: ' + rawObjectDescription.normals.length / 3);
+		};
+
+		return MeshCreator;
+	}();
+
+	OBJLoader2.prototype._buildWebWorkerCode = function (funcBuildObject, funcBuildSingelton) {
+		var workerCode = '';
+		workerCode += funcBuildObject('Consts', Consts);
+		workerCode += funcBuildObject('Validator', Validator);
+		workerCode += funcBuildSingelton('Parser', 'Parser', Parser);
+		workerCode += funcBuildSingelton('RawObject', 'RawObject', RawObject);
+		workerCode += funcBuildSingelton('RawObjectDescription', 'RawObjectDescription', RawObjectDescription);
+		return workerCode;
+	};
+
+	return OBJLoader2;
+}();
+
+/**
+  * @author Kai Salmen / https://kaisalmen.de
+  * Development repository: https://github.com/kaisalmen/WWOBJLoader
+  */
+// const  OBJLoader2 = {};
+// export default OBJLoader2;
+/**
+ * OBJ data will be loaded by dynamically created web worker.
+ * First feed instructions with: prepareRun
+ * Then: Execute with: run
+ * @class
+ */
+var WWOBJLoader2 = function () {
+
+	var WWOBJLOADER2_VERSION = '1.2.1';
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	function WWOBJLoader2() {
+		this._init();
+	}
+
+	WWOBJLoader2.prototype._init = function () {
+		console.log("Using WWOBJLoader2 version: " + WWOBJLOADER2_VERSION);
+
+		// check worker support first
+		if (window.Worker === undefined) throw "This browser does not support web workers!";
+		if (window.Blob === undefined) throw "This browser does not support Blob!";
+		if (typeof window.URL.createObjectURL !== 'function') throw "This browser does not support Object creation from URL!";
+
+		this.instanceNo = 0;
+		this.worker = null;
+		this.workerCode = null;
+		this.debug = false;
+
+		this.sceneGraphBaseNode = null;
+		this.streamMeshes = true;
+		this.meshStore = null;
+		this.modelName = 'none';
+		this.validated = false;
+		this.running = false;
+		this.requestTerminate = false;
+
+		this.clearAllCallbacks();
+
+		this.manager = DefaultLoadingManager;
+		this.fileLoader = new FileLoader(this.manager);
+		this.mtlLoader = null;
+		this.crossOrigin = null;
+
+		this.dataAvailable = false;
+		this.objAsArrayBuffer = null;
+		this.fileObj = null;
+		this.pathObj = null;
+
+		this.fileMtl = null;
+		this.mtlAsString = null;
+		this.texturePath = null;
+
+		this.materials = [];
+		this.counter = 0;
+	};
+
+	/**
+  * Enable or disable debug logging.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {boolean} enabled True or false
+  */
+	WWOBJLoader2.prototype.setDebug = function (enabled) {
+		this.debug = enabled;
+	};
+
+	/**
+  * Sets the CORS string to be used.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {string} crossOrigin CORS value
+  */
+	WWOBJLoader2.prototype.setCrossOrigin = function (crossOrigin) {
+		this.crossOrigin = crossOrigin;
+	};
+
+	/**
+  * Register callback function that is invoked by internal function "_announceProgress" to print feedback.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {callback} callbackProgress Callback function for described functionality
+  */
+	WWOBJLoader2.prototype.registerCallbackProgress = function (callbackProgress) {
+		if (Validator.isValid(callbackProgress)) this.callbacks.progress.push(callbackProgress);
+	};
+
+	/**
+  * Register callback function that is called once loading of the complete model is completed.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {callback} callbackCompletedLoading Callback function for described functionality
+  */
+	WWOBJLoader2.prototype.registerCallbackCompletedLoading = function (callbackCompletedLoading) {
+		if (Validator.isValid(callbackCompletedLoading)) this.callbacks.completedLoading.push(callbackCompletedLoading);
+	};
+
+	/**
+  * Register callback function that is called once materials have been loaded. It allows to alter and return materials.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {callback} callbackMaterialsLoaded Callback function for described functionality
+  */
+	WWOBJLoader2.prototype.registerCallbackMaterialsLoaded = function (callbackMaterialsLoaded) {
+		if (Validator.isValid(callbackMaterialsLoaded)) this.callbacks.materialsLoaded.push(callbackMaterialsLoaded);
+	};
+
+	/**
+  * Register callback function that is called every time a mesh was loaded.
+  * Use {@link THREE.WWOBJLoader2.LoadedMeshUserOverride} for alteration instructions (geometry, material or disregard mesh).
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {callback} callbackMeshLoaded Callback function for described functionality
+  */
+	WWOBJLoader2.prototype.registerCallbackMeshLoaded = function (callbackMeshLoaded) {
+		if (Validator.isValid(callbackMeshLoaded)) this.callbacks.meshLoaded.push(callbackMeshLoaded);
+	};
+
+	/**
+  * Register callback function that is called to report an error that prevented loading.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {callback} callbackErrorWhileLoading Callback function for described functionality
+  */
+	WWOBJLoader2.prototype.registerCallbackErrorWhileLoading = function (callbackErrorWhileLoading) {
+		if (Validator.isValid(callbackErrorWhileLoading)) this.callbacks.errorWhileLoading.push(callbackErrorWhileLoading);
+	};
+
+	/**
+  * Clears all registered callbacks.
+  * @memberOf THREE.WWOBJLoader2
+  */
+	WWOBJLoader2.prototype.clearAllCallbacks = function () {
+		this.callbacks = {
+			progress: [],
+			completedLoading: [],
+			errorWhileLoading: [],
+			materialsLoaded: [],
+			meshLoaded: []
+		};
+	};
+
+	/**
+  * Call requestTerminate to terminate the web worker and free local resource after execution.
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {boolean} requestTerminate True or false
+  */
+	WWOBJLoader2.prototype.setRequestTerminate = function (requestTerminate) {
+		this.requestTerminate = requestTerminate === true;
+	};
+
+	WWOBJLoader2.prototype._validate = function () {
+		if (this.validated) return;
+		if (!Validator.isValid(this.worker)) {
+
+			this._buildWebWorkerCode();
+			var blob = new Blob([this.workerCode], { type: 'text/plain' });
+			this.worker = new Worker(window.URL.createObjectURL(blob));
+
+			var scope = this;
+			var scopeFunction = function (e) {
+				scope._receiveWorkerMessage(e);
+			};
+			this.worker.addEventListener('message', scopeFunction, false);
+		}
+
+		this.sceneGraphBaseNode = null;
+		this.streamMeshes = true;
+		this.meshStore = [];
+		this.modelName = 'none';
+		this.validated = true;
+		this.running = true;
+		this.requestTerminate = false;
+
+		this.fileLoader = Validator.verifyInput(this.fileLoader, new FileLoader(this.manager));
+		this.mtlLoader = Validator.verifyInput(this.mtlLoader, new undefined());
+		if (Validator.isValid(this.crossOrigin)) this.mtlLoader.setCrossOrigin(this.crossOrigin);
+
+		this.dataAvailable = false;
+		this.fileObj = null;
+		this.pathObj = null;
+		this.fileMtl = null;
+		this.texturePath = null;
+
+		this.objAsArrayBuffer = null;
+		this.mtlAsString = null;
+
+		this.materials = [];
+		var defaultMaterial = new MeshStandardMaterial({ color: 0xDCF1FF });
+		defaultMaterial.name = 'defaultMaterial';
+		this.materials[defaultMaterial.name] = defaultMaterial;
+
+		this.counter = 0;
+	};
+
+	/**
+  * Set all parameters for required for execution of "run".
+  * @memberOf THREE.WWOBJLoader2
+  *
+  * @param {Object} params Either {@link THREE.WWOBJLoader2.PrepDataArrayBuffer} or {@link THREE.WWOBJLoader2.PrepDataFile}
+  */
+	WWOBJLoader2.prototype.prepareRun = function (params) {
+		this._validate();
+		this.dataAvailable = params.dataAvailable;
+		this.modelName = params.modelName;
+		console.time('WWOBJLoader2');
+		if (this.dataAvailable) {
+
+			// fast-fail on bad type
+			if (!(params.objAsArrayBuffer instanceof Uint8Array)) {
+				throw 'Provided input is not of type arraybuffer! Aborting...';
+			}
+
+			this.worker.postMessage({
+				cmd: 'init',
+				debug: this.debug
+			});
+
+			this.objAsArrayBuffer = params.objAsArrayBuffer;
+			this.mtlAsString = params.mtlAsString;
+		} else {
+
+			// fast-fail on bad type
+			if (!(typeof params.fileObj === 'string' || params.fileObj instanceof String)) {
+				throw 'Provided file is not properly defined! Aborting...';
+			}
+
+			this.worker.postMessage({
+				cmd: 'init',
+				debug: this.debug
+			});
+
+			this.fileObj = params.fileObj;
+			this.pathObj = params.pathObj;
+			this.fileMtl = params.fileMtl;
+		}
+		this.setRequestTerminate(params.requestTerminate);
+		this.pathTexture = params.pathTexture;
+		this.sceneGraphBaseNode = params.sceneGraphBaseNode;
+		this.streamMeshes = params.streamMeshes;
+		if (!this.streamMeshes) this.meshStore = [];
+	};
+
+	/**
+  * Run the loader according the preparation instruction provided in "prepareRun".
+  * @memberOf THREE.WWOBJLoader2
+  */
+	WWOBJLoader2.prototype.run = function () {
+		var scope = this;
+		var processLoadedMaterials = function (materialCreator) {
+			var materialCreatorMaterials = [];
+			var materialNames = [];
+			if (Validator.isValid(materialCreator)) {
+
+				materialCreator.preload();
+				materialCreatorMaterials = materialCreator.materials;
+				for (var materialName in materialCreatorMaterials) {
+
+					if (materialCreatorMaterials.hasOwnProperty(materialName)) {
+
+						materialNames.push(materialName);
+						scope.materials[materialName] = materialCreatorMaterials[materialName];
+					}
+				}
+			}
+			scope.worker.postMessage({
+				cmd: 'setMaterials',
+				materialNames: materialNames
+			});
+
+			var materialsFromCallback;
+			var callbackMaterialsLoaded;
+			for (var index in scope.callbacks.materialsLoaded) {
+
+				callbackMaterialsLoaded = scope.callbacks.materialsLoaded[index];
+				materialsFromCallback = callbackMaterialsLoaded(scope.materials);
+				if (Validator.isValid(materialsFromCallback)) scope.materials = materialsFromCallback;
+			}
+			if (scope.dataAvailable && scope.objAsArrayBuffer) {
+
+				scope.worker.postMessage({
+					cmd: 'run',
+					objAsArrayBuffer: scope.objAsArrayBuffer
+				}, [scope.objAsArrayBuffer.buffer]);
+			} else {
+
+				var refPercentComplete = 0;
+				var percentComplete = 0;
+				var onLoad = function (objAsArrayBuffer) {
+
+					scope._announceProgress('Running web worker!');
+					scope.objAsArrayBuffer = new Uint8Array(objAsArrayBuffer);
+					scope.worker.postMessage({
+						cmd: 'run',
+						objAsArrayBuffer: scope.objAsArrayBuffer
+					}, [scope.objAsArrayBuffer.buffer]);
+				};
+
+				var onProgress = function (event) {
+					if (!event.lengthComputable) return;
+
+					percentComplete = Math.round(event.loaded / event.total * 100);
+					if (percentComplete > refPercentComplete) {
+
+						refPercentComplete = percentComplete;
+						var output = 'Download of "' + scope.fileObj + '": ' + percentComplete + '%';
+						console.log(output);
+						scope._announceProgress(output);
+					}
+				};
+
+				var onError = function (event) {
+					var output = 'Error occurred while downloading "' + scope.fileObj + '"';
+					console.error(output + ': ' + event);
+					scope._announceProgress(output);
+					scope._finalize('error');
+				};
+
+				scope.fileLoader.setPath(scope.pathObj);
+				scope.fileLoader.setResponseType('arraybuffer');
+				scope.fileLoader.load(scope.fileObj, onLoad, onProgress, onError);
+			}
+			console.timeEnd('Loading MTL textures');
+		};
+
+		this.mtlLoader.setPath(this.pathTexture);
+		if (this.dataAvailable) {
+
+			processLoadedMaterials(Validator.isValid(this.mtlAsString) ? this.mtlLoader.parse(this.mtlAsString) : null);
+		} else {
+
+			if (Validator.isValid(this.fileMtl)) {
+
+				var onError = function (event) {
+					var output = 'Error occurred while downloading "' + scope.fileMtl + '"';
+					console.error(output + ': ' + event);
+					scope._announceProgress(output);
+					scope._finalize('error');
+				};
+
+				this.mtlLoader.load(this.fileMtl, processLoadedMaterials, undefined, onError);
+			} else {
+
+				processLoadedMaterials();
+			}
+		}
+	};
+
+	WWOBJLoader2.prototype._receiveWorkerMessage = function (event) {
+		var payload = event.data;
+
+		switch (payload.cmd) {
+			case 'objData':
+
+				this.counter++;
+				var meshName = payload.meshName;
+
+				var bufferGeometry = new BufferGeometry();
+				bufferGeometry.addAttribute('position', new BufferAttribute(new Float32Array(payload.vertices), 3));
+				if (Validator.isValid(payload.normals)) {
+
+					bufferGeometry.addAttribute('normal', new BufferAttribute(new Float32Array(payload.normals), 3));
+				} else {
+
+					bufferGeometry.computeVertexNormals();
+				}
+				if (Validator.isValid(payload.uvs)) {
+
+					bufferGeometry.addAttribute('uv', new BufferAttribute(new Float32Array(payload.uvs), 2));
+				}
+
+				var materialDescriptions = payload.materialDescriptions;
+				var materialDescription;
+				var material;
+				var materialName;
+				var createMultiMaterial = payload.multiMaterial;
+				var multiMaterials = [];
+
+				var key;
+				for (key in materialDescriptions) {
+
+					materialDescription = materialDescriptions[key];
+					material = this.materials[materialDescription.name];
+
+					if (materialDescription.default) {
+
+						material = this.materials['defaultMaterial'];
+					} else if (materialDescription.clone) {
+
+						materialName = material.name + '_flat';
+						var materialClone = this.materials[materialName];
+						if (!materialClone) {
+
+							materialClone = material.clone();
+							materialClone.name = materialName;
+							materialClone.shading = FlatShading;
+							this.materials[materialName] = name;
+						}
+					} else if (!material) {
+
+						material = this.materials['defaultMaterial'];
+					}
+					if (createMultiMaterial) multiMaterials.push(material);
+				}
+				if (createMultiMaterial) {
+
+					material = multiMaterials;
+					var materialGroups = payload.materialGroups;
+					var materialGroup;
+					for (key in materialGroups) {
+
+						materialGroup = materialGroups[key];
+						bufferGeometry.addGroup(materialGroup.start, materialGroup.count, materialGroup.index);
+					}
+				}
+
+				var callbackMeshLoaded;
+				var callbackMeshLoadedResult;
+				var disregardMesh = false;
+				for (var index in this.callbacks.meshLoaded) {
+
+					callbackMeshLoaded = this.callbacks.meshLoaded[index];
+					callbackMeshLoadedResult = callbackMeshLoaded(meshName, bufferGeometry, material);
+
+					if (Validator.isValid(callbackMeshLoadedResult)) {
+
+						if (callbackMeshLoadedResult.disregardMesh) {
+
+							// if one callback disregards the mesh, then processing stops
+							disregardMesh = true;
+							break;
+						}
+						if (callbackMeshLoadedResult.replaceBufferGeometry) bufferGeometry = callbackMeshLoadedResult.bufferGeometry;
+						if (callbackMeshLoadedResult.replaceMaterial) material = callbackMeshLoadedResult.material;
+					}
+				}
+
+				if (!disregardMesh) {
+
+					var mesh = new Mesh(bufferGeometry, material);
+					mesh.name = meshName;
+
+					if (this.streamMeshes) {
+
+						this.sceneGraphBaseNode.add(mesh);
+					} else {
+
+						this.meshStore.push(mesh);
+					}
+					this._announceProgress('Adding mesh (' + this.counter + '):', meshName);
+				} else {
+
+					this._announceProgress('Removing mesh:', meshName);
+				}
+				break;
+
+			case 'complete':
+
+				if (!this.streamMeshes) {
+
+					for (var meshStoreKey in this.meshStore) {
+
+						if (this.meshStore.hasOwnProperty(meshStoreKey)) this.sceneGraphBaseNode.add(this.meshStore[meshStoreKey]);
+					}
+				}
+
+				console.timeEnd('WWOBJLoader2');
+				if (Validator.isValid(payload.msg)) {
+
+					this._announceProgress(payload.msg);
+				} else {
+
+					this._announceProgress('');
+				}
+
+				this._finalize('complete');
+				break;
+
+			case 'report_progress':
+				this._announceProgress('', payload.output);
+				break;
+
+			default:
+				console.error('Received unknown command: ' + payload.cmd);
+				break;
+
+		}
+	};
+
+	WWOBJLoader2.prototype._terminate = function () {
+		if (Validator.isValid(this.worker)) {
+
+			if (this.running) throw 'Unable to gracefully terminate worker as it is currently running!';
+
+			this.worker.terminate();
+			this.worker = null;
+			this.workerCode = null;
+			this._finalize('terminate');
+		}
+		this.fileLoader = null;
+		this.mtlLoader = null;
+	};
+
+	WWOBJLoader2.prototype._finalize = function (reason, requestTerminate) {
+		this.running = false;
+		var index;
+		var callback;
+
+		if (reason === 'complete') {
+
+			for (index in this.callbacks.completedLoading) {
+
+				callback = this.callbacks.completedLoading[index];
+				callback(this.modelName, this.instanceNo, this.requestTerminate);
+			}
+		} else if (reason === 'error') {
+
+			for (index in this.callbacks.errorWhileLoading) {
+
+				callback = this.callbacks.errorWhileLoading[index];
+				callback(this.modelName, this.instanceNo, this.requestTerminate);
+			}
+		}
+		this.validated = false;
+
+		this.setRequestTerminate(requestTerminate);
+
+		if (this.requestTerminate) {
+			this._terminate();
+		}
+	};
+
+	WWOBJLoader2.prototype._announceProgress = function (baseText, text) {
+		var output = Validator.isValid(baseText) ? baseText : "";
+		output = Validator.isValid(text) ? output + " " + text : output;
+
+		var callbackProgress;
+		for (var index in this.callbacks.progress) {
+
+			callbackProgress = this.callbacks.progress[index];
+			callbackProgress(output);
+		}
+
+		if (this.debug) console.log(output);
+	};
+
+	WWOBJLoader2.prototype._buildWebWorkerCode = function (existingWorkerCode) {
+		if (Validator.isValid(existingWorkerCode)) this.workerCode = existingWorkerCode;
+		if (!Validator.isValid(this.workerCode)) {
+
+			console.time('buildWebWorkerCode');
+			var wwDef = function () {
+
+				function WWOBJLoader() {
+					this.wwMeshCreator = new WWMeshCreator();
+					this.parser = new Parser(this.wwMeshCreator);
+					this.validated = false;
+					this.cmdState = 'created';
+
+					this.debug = false;
+				}
+
+				/**
+     * Allows to set debug mode for the parser and the meshCreatorDebug
+     *
+     * @param parserDebug
+     * @param meshCreatorDebug
+     */
+				WWOBJLoader.prototype.setDebug = function (parserDebug, meshCreatorDebug) {
+					this.parser.setDebug(parserDebug);
+					this.wwMeshCreator.setDebug(meshCreatorDebug);
+				};
+
+				/**
+     * Validate status, then parse arrayBuffer, finalize and return objGroup
+     *
+     * @param arrayBuffer
+     */
+				WWOBJLoader.prototype.parse = function (arrayBuffer) {
+					console.log('Parsing arrayBuffer...');
+					console.time('parseArrayBuffer');
+
+					this.validate();
+					this.parser.parseArrayBuffer(arrayBuffer);
+					var objGroup = this._finalize();
+
+					console.timeEnd('parseArrayBuffer');
+
+					return objGroup;
+				};
+
+				WWOBJLoader.prototype.validate = function () {
+					if (this.validated) return;
+
+					this.parser.validate();
+					this.wwMeshCreator.validate();
+
+					this.validated = true;
+				};
+
+				WWOBJLoader.prototype._finalize = function () {
+					console.log('Global output object count: ' + this.wwMeshCreator.globalObjectCount);
+					this.parser.finalize();
+					this.wwMeshCreator.finalize();
+					this.validated = false;
+				};
+
+				WWOBJLoader.prototype.init = function (payload) {
+					this.cmdState = 'init';
+					this.setDebug(payload.debug, payload.debug);
+				};
+
+				WWOBJLoader.prototype.setMaterials = function (payload) {
+					this.cmdState = 'setMaterials';
+					this.wwMeshCreator.setMaterials(payload.materialNames);
+				};
+
+				WWOBJLoader.prototype.run = function (payload) {
+					this.cmdState = 'run';
+
+					this.parse(payload.objAsArrayBuffer);
+					console.log('OBJ loading complete!');
+
+					this.cmdState = 'complete';
+					self.postMessage({
+						cmd: this.cmdState,
+						msg: null
+					});
+				};
+
+				return WWOBJLoader;
+			}();
+
+			var wwMeshCreatorDef = function () {
+
+				function WWMeshCreator() {
+					this.materials = null;
+					this.debug = false;
+					this.globalObjectCount = 1;
+					this.validated = false;
+				}
+
+				WWMeshCreator.prototype.setMaterials = function (materials) {
+					this.materials = Validator.verifyInput(materials, this.materials);
+					this.materials = Validator.verifyInput(this.materials, { materials: [] });
+				};
+
+				WWMeshCreator.prototype.setDebug = function (debug) {
+					if (debug === true || debug === false) this.debug = debug;
+				};
+
+				WWMeshCreator.prototype.validate = function () {
+					if (this.validated) return;
+
+					this.setMaterials(null);
+					this.setDebug(null);
+					this.globalObjectCount = 1;
+				};
+
+				WWMeshCreator.prototype.finalize = function () {
+					this.materials = null;
+					this.validated = false;
+				};
+
+				/**
+     * RawObjectDescriptions are transformed to THREE.Mesh.
+     * It is ensured that rawObjectDescriptions only contain objects with vertices (no need to check).
+     *
+     * @param rawObjectDescriptions
+     * @param inputObjectCount
+     * @param absoluteVertexCount
+     * @param absoluteNormalCount
+     * @param absoluteUvCount
+     */
+				WWMeshCreator.prototype.buildMesh = function (rawObjectDescriptions, inputObjectCount, absoluteVertexCount, absoluteNormalCount, absoluteUvCount) {
+					if (this.debug) console.log('OBJLoader.buildMesh:\nInput object no.: ' + inputObjectCount);
+
+					var vertexFa = new Float32Array(absoluteVertexCount);
+					var normalFA = absoluteNormalCount > 0 ? new Float32Array(absoluteNormalCount) : null;
+					var uvFA = absoluteUvCount > 0 ? new Float32Array(absoluteUvCount) : null;
+
+					var rawObjectDescription;
+					var materialDescription;
+					var materialDescriptions = [];
+
+					var createMultiMaterial = rawObjectDescriptions.length > 1;
+					var materialIndex = 0;
+					var materialIndexMapping = [];
+					var selectedMaterialIndex;
+					var materialGroup;
+					var materialGroups = [];
+
+					var vertexBAOffset = 0;
+					var vertexGroupOffset = 0;
+					var vertexLength;
+					var normalOffset = 0;
+					var uvOffset = 0;
+
+					for (var oodIndex in rawObjectDescriptions) {
+						if (!rawObjectDescriptions.hasOwnProperty(oodIndex)) continue;
+						rawObjectDescription = rawObjectDescriptions[oodIndex];
+
+						materialDescription = { name: rawObjectDescription.materialName, flat: false, default: false };
+						if (this.materials[materialDescription.name] === null) {
+
+							materialDescription.default = true;
+							console.warn('object_group "' + rawObjectDescription.objectName + '_' + rawObjectDescription.groupName + '" was defined without material! Assigning "defaultMaterial".');
+						}
+						// Attach '_flat' to materialName in case flat shading is needed due to smoothingGroup 0
+						if (rawObjectDescription.smoothingGroup === 0) materialDescription.flat = true;
+
+						vertexLength = rawObjectDescription.vertices.length;
+						if (createMultiMaterial) {
+
+							// re-use material if already used before. Reduces materials array size and eliminates duplicates
+
+							selectedMaterialIndex = materialIndexMapping[materialDescription.name];
+							if (!selectedMaterialIndex) {
+
+								selectedMaterialIndex = materialIndex;
+								materialIndexMapping[materialDescription.name] = materialIndex;
+								materialDescriptions.push(materialDescription);
+								materialIndex++;
+							}
+							materialGroup = {
+								start: vertexGroupOffset,
+								count: vertexLength / 3,
+								index: selectedMaterialIndex
+							};
+							materialGroups.push(materialGroup);
+							vertexGroupOffset += vertexLength / 3;
+						} else {
+
+							materialDescriptions.push(materialDescription);
+						}
+
+						vertexFa.set(rawObjectDescription.vertices, vertexBAOffset);
+						vertexBAOffset += vertexLength;
+
+						if (normalFA) {
+
+							normalFA.set(rawObjectDescription.normals, normalOffset);
+							normalOffset += rawObjectDescription.normals.length;
+						}
+						if (uvFA) {
+
+							uvFA.set(rawObjectDescription.uvs, uvOffset);
+							uvOffset += rawObjectDescription.uvs.length;
+						}
+						if (this.debug) this.printReport(rawObjectDescription, selectedMaterialIndex);
+					}
+
+					self.postMessage({
+						cmd: 'objData',
+						meshName: rawObjectDescription.objectName,
+						multiMaterial: createMultiMaterial,
+						materialDescriptions: materialDescriptions,
+						materialGroups: materialGroups,
+						vertices: vertexFa,
+						normals: normalFA,
+						uvs: uvFA
+					}, [vertexFa.buffer], normalFA !== null ? [normalFA.buffer] : null, uvFA !== null ? [uvFA.buffer] : null);
+
+					this.globalObjectCount++;
+				};
+
+				return WWMeshCreator;
+			}();
+
+			var wwObjLoaderRunnerDef = function () {
+
+				function WWOBJLoaderRunner() {
+					self.addEventListener('message', this.runner, false);
+				}
+
+				WWOBJLoaderRunner.prototype.runner = function (event) {
+					var payload = event.data;
+
+					console.log('Command state before: ' + WWOBJLoaderRef.cmdState);
+
+					switch (payload.cmd) {
+						case 'init':
+
+							WWOBJLoaderRef.init(payload);
+							break;
+
+						case 'setMaterials':
+
+							WWOBJLoaderRef.setMaterials(payload);
+							break;
+
+						case 'run':
+
+							WWOBJLoaderRef.run(payload);
+							break;
+
+						default:
+
+							console.error('OBJLoader: Received unknown command: ' + payload.cmd);
+							break;
+
+					}
+
+					console.log('Command state after: ' + WWOBJLoaderRef.cmdState);
+				};
+
+				return WWOBJLoaderRunner;
+			}();
+
+			var buildObject = function (fullName, object) {
+				var objectString = fullName + ' = {\n';
+				var part;
+				for (var name in object) {
+
+					part = object[name];
+					if (typeof part === 'string' || part instanceof String) {
+
+						part = part.replace('\n', '\\n');
+						part = part.replace('\r', '\\r');
+						objectString += '\t' + name + ': "' + part + '",\n';
+					} else if (part instanceof Array) {
+
+						objectString += '\t' + name + ': [' + part + '],\n';
+					} else if (Number.isInteger(part)) {
+
+						objectString += '\t' + name + ': ' + part + ',\n';
+					} else if (typeof part === 'function') {
+
+						objectString += '\t' + name + ': ' + part + ',\n';
+					}
+				}
+				objectString += '}\n\n';
+
+				return objectString;
+			};
+
+			var buildSingelton = function (fullName, internalName, object) {
+				var objectString = fullName + ' = (function () {\n\n';
+				objectString += '\t' + object.prototype.constructor.toString() + '\n\n';
+
+				var funcString;
+				var objectPart;
+				for (var name in object.prototype) {
+
+					objectPart = object.prototype[name];
+					if (typeof objectPart === 'function') {
+
+						funcString = objectPart.toString();
+						objectString += '\t' + internalName + '.prototype.' + name + ' = ' + funcString + ';\n\n';
+					}
+				}
+				objectString += '\treturn ' + internalName + ';\n';
+				objectString += '})();\n\n';
+
+				return objectString;
+			};
+
+			this.workerCode = '';
+			this.workerCode += '/**\n';
+			this.workerCode += '  * This code was constructed by WWOBJLoader2._buildWebWorkerCode\n';
+			this.workerCode += '  */\n\n';
+
+			// parser re-construction
+			this.workerCode += OBJLoader2.prototype._buildWebWorkerCode(buildObject, buildSingelton);
+
+			// web worker construction
+			this.workerCode += buildSingelton('WWOBJLoader', 'WWOBJLoader', wwDef);
+			this.workerCode += buildSingelton('WWMeshCreator', 'WWMeshCreator', wwMeshCreatorDef);
+			this.workerCode += 'WWOBJLoaderRef = new WWOBJLoader();\n\n';
+			this.workerCode += buildSingelton('WWOBJLoaderRunner', 'WWOBJLoaderRunner', wwObjLoaderRunnerDef);
+			this.workerCode += 'new WWOBJLoaderRunner();\n\n';
+
+			console.timeEnd('buildWebWorkerCode');
+		}
+
+		return this.workerCode;
+	};
+
+	return WWOBJLoader2;
+}();
+
+/**
+ * Instruction to configure {@link THREE.WWOBJLoader2}.prepareRun to load OBJ from given ArrayBuffer and MTL from given String.
+ *
+ * @param {string} modelName Overall name of the model
+ * @param {Uint8Array} objAsArrayBuffer OBJ file content as ArrayBuffer
+ * @param {string} pathTexture Path to texture files
+ * @param {string} mtlAsString MTL file content as string
+ *
+ * @returns {{modelName: string, dataAvailable: boolean, objAsArrayBuffer: null, pathTexture: null, mtlAsString: null, sceneGraphBaseNode: null, streamMeshes: boolean, requestTerminate: boolean}}
+ * @constructor
+ */
+WWOBJLoader2.PrepDataArrayBuffer = function (modelName, objAsArrayBuffer, pathTexture, mtlAsString) {
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	return {
+
+		/**
+   * {@link THREE.Object3D} where meshes will be attached.
+   * @memberOf THREE.WWOBJLoader2.PrepDataArrayBuffer
+   *
+   * @param {THREE.Object3D} sceneGraphBaseNode Scene graph object
+   */
+		setSceneGraphBaseNode: function (sceneGraphBaseNode) {
+			this.sceneGraphBaseNode = Validator.verifyInput(sceneGraphBaseNode, null);
+		},
+
+		/**
+   * Singles meshes are directly integrated into scene when loaded or later.
+   * @memberOf THREE.WWOBJLoader2.PrepDataArrayBuffer
+   *
+   * @param {boolean} streamMeshes=true Default is true
+   */
+		setStreamMeshes: function (streamMeshes) {
+			this.streamMeshes = streamMeshes !== false;
+		},
+
+		/**
+   * Request termination of web worker and free local resources after execution.
+   * @memberOf THREE.WWOBJLoader2.PrepDataArrayBuffer
+   *
+   * @param {boolean} requestTerminate=false Default is false
+   */
+		setRequestTerminate: function (requestTerminate) {
+			this.requestTerminate = requestTerminate === true;
+		},
+
+		/**
+   * Returns all callbacks as {@link THREE.WWOBJLoader2.PrepDataCallbacks}
+   * @memberOf THREE.WWOBJLoader2.PrepDataArrayBuffer
+   *
+   * @returns {THREE.WWOBJLoader2.PrepDataCallbacks}
+   */
+		getCallbacks: function () {
+			return this.callbacks;
+		},
+		modelName: Validator.verifyInput(modelName, 'none'),
+		dataAvailable: true,
+		objAsArrayBuffer: Validator.verifyInput(objAsArrayBuffer, null),
+		pathTexture: Validator.verifyInput(pathTexture, null),
+		mtlAsString: Validator.verifyInput(mtlAsString, null),
+		sceneGraphBaseNode: null,
+		streamMeshes: true,
+		requestTerminate: false,
+		callbacks: new WWOBJLoader2.PrepDataCallbacks()
+	};
+};
+
+/**
+ * Instruction to configure {@link THREE.WWOBJLoader2}.prepareRun to load OBJ and MTL from files.
+ *
+ * @param {string} modelName Overall name of the model
+ * @param {string} pathObj Path to OBJ file
+ * @param {string} fileObj OBJ file name
+ * @param {string} pathTexture Path to texture files
+ * @param {string} fileMtl MTL file name
+ *
+ * @returns {{modelName: string, dataAvailable: boolean, pathObj: null, fileObj: null, pathTexture: null, fileMtl: null, sceneGraphBaseNode: null, streamMeshes: boolean,  requestTerminate: boolean}}
+ * @constructor
+ */
+WWOBJLoader2.PrepDataFile = function (modelName, pathObj, fileObj, pathTexture, fileMtl) {
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	return {
+
+		/**
+   * {@link THREE.Object3D} where meshes will be attached.
+   * @memberOf THREE.WWOBJLoader2.PrepDataFile
+   *
+   * @param {THREE.Object3D} sceneGraphBaseNode Scene graph object
+   */
+		setSceneGraphBaseNode: function (sceneGraphBaseNode) {
+			this.sceneGraphBaseNode = Validator.verifyInput(sceneGraphBaseNode, null);
+		},
+
+		/**
+   * Singles meshes are directly integrated into scene when loaded or later.
+   * @memberOf THREE.WWOBJLoader2.PrepDataFile
+   *
+   * @param {boolean} streamMeshes=true Default is true
+   */
+		setStreamMeshes: function (streamMeshes) {
+			this.streamMeshes = streamMeshes !== false;
+		},
+
+		/**
+   * Request termination of web worker and free local resources after execution.
+   * @memberOf THREE.WWOBJLoader2.PrepDataFile
+   *
+   * @param {boolean} requestTerminate=false Default is false
+   */
+		setRequestTerminate: function (requestTerminate) {
+			this.requestTerminate = requestTerminate === true;
+		},
+
+		/**
+   * Returns all callbacks as {@link THREE.WWOBJLoader2.PrepDataCallbacks}
+   * @memberOf THREE.WWOBJLoader2.PrepDataFile
+   *
+   * @returns {THREE.WWOBJLoader2.PrepDataCallbacks}
+   */
+		getCallbacks: function () {
+			return this.callbacks;
+		},
+		modelName: Validator.verifyInput(modelName, 'none'),
+		dataAvailable: false,
+		pathObj: Validator.verifyInput(pathObj, null),
+		fileObj: Validator.verifyInput(fileObj, null),
+		pathTexture: Validator.verifyInput(pathTexture, null),
+		fileMtl: Validator.verifyInput(fileMtl, null),
+		sceneGraphBaseNode: null,
+		streamMeshes: true,
+		requestTerminate: false,
+		callbacks: new WWOBJLoader2.PrepDataCallbacks()
+	};
+};
+
+/**
+ * Callbacks utilized by functions working with {@link THREE.WWOBJLoader2.PrepDataArrayBuffer} or {@link THREE.WWOBJLoader2.PrepDataFile}
+ *
+ * @returns {{registerCallbackProgress: THREE.WWOBJLoader2.PrepDataCallbacks.registerCallbackProgress, registerCallbackCompletedLoading: THREE.WWOBJLoader2.PrepDataCallbacks.registerCallbackCompletedLoading, registerCallbackMaterialsLoaded: THREE.WWOBJLoader2.PrepDataCallbacks.registerCallbackMaterialsLoaded, registerCallbackMeshLoaded: THREE.WWOBJLoader2.PrepDataCallbacks.registerCallbackMeshLoaded, registerCallbackErrorWhileLoading: THREE.WWOBJLoader2.PrepDataCallbacks.registerCallbackErrorWhileLoading, progress: null, completedLoading: null, errorWhileLoading: null, materialsLoaded: null, meshLoaded: null}}
+ * @constructor
+ */
+WWOBJLoader2.PrepDataCallbacks = function () {
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	return {
+		/**
+   * Register callback function that is invoked by internal function "_announceProgress" to print feedback.
+   * @memberOf THREE.WWOBJLoader2.PrepDataCallbacks
+   *
+   * @param {callback} callbackProgress Callback function for described functionality
+   */
+		registerCallbackProgress: function (callbackProgress) {
+			if (Validator.isValid(callbackProgress)) this.progress = callbackProgress;
+		},
+
+		/**
+   * Register callback function that is called once loading of the complete model is completed.
+   * @memberOf THREE.WWOBJLoader2.PrepDataCallbacks
+   *
+   * @param {callback} callbackCompletedLoading Callback function for described functionality
+   */
+		registerCallbackCompletedLoading: function (callbackCompletedLoading) {
+			if (Validator.isValid(callbackCompletedLoading)) this.completedLoading = callbackCompletedLoading;
+		},
+
+		/**
+   * Register callback function that is called once materials have been loaded. It allows to alter and return materials.
+   * @memberOf THREE.WWOBJLoader2.PrepDataCallbacks
+   *
+   * @param {callback} callbackMaterialsLoaded Callback function for described functionality
+   */
+		registerCallbackMaterialsLoaded: function (callbackMaterialsLoaded) {
+			if (Validator.isValid(callbackMaterialsLoaded)) this.materialsLoaded = callbackMaterialsLoaded;
+		},
+
+		/**
+   * Register callback function that is called every time a mesh was loaded.
+   * Use {@link THREE.WWOBJLoader2.LoadedMeshUserOverride} for alteration instructions (geometry, material or disregard mesh).
+   * @memberOf THREE.WWOBJLoader2.PrepDataCallbacks
+   *
+   * @param {callback} callbackMeshLoaded Callback function for described functionality
+   */
+		registerCallbackMeshLoaded: function (callbackMeshLoaded) {
+			if (Validator.isValid(callbackMeshLoaded)) this.meshLoaded = callbackMeshLoaded;
+		},
+
+		/**
+   * Report if an error prevented loading.
+   * @memberOf THREE.WWOBJLoader2.PrepDataCallbacks
+   *
+   * @param {callback} callbackErrorWhileLoading Callback function for described functionality
+   */
+		registerCallbackErrorWhileLoading: function (callbackErrorWhileLoading) {
+			if (Validator.isValid(callbackErrorWhileLoading)) this.errorWhileLoading = callbackErrorWhileLoading;
+		},
+
+		progress: null,
+		completedLoading: null,
+		errorWhileLoading: null,
+		materialsLoaded: null,
+		meshLoaded: null
+	};
+};
+
+/**
+ * Object to return by {@link THREE.WWOBJLoader2}.callbacks.meshLoaded. Used to adjust bufferGeometry or material or prevent complete loading of mesh
+ *
+ * @param {boolean} disregardMesh=false Tell WWOBJLoader2 to completely disregard this mesh
+ * @param {THREE.BufferGeometry} bufferGeometry The {@link THREE.BufferGeometry} to be used
+ * @param {THREE.Material} material The {@link THREE.Material} to be used
+ *
+ * @returns {{ disregardMesh: boolean, replaceBufferGeometry: boolean, bufferGeometry: THREE.BufferGeometry, replaceMaterial: boolean, material: THREE.Material}}
+ * @constructor
+ */
+WWOBJLoader2.LoadedMeshUserOverride = function (disregardMesh, bufferGeometry, material) {
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	return {
+		disregardMesh: disregardMesh === true,
+		replaceBufferGeometry: Validator.isValid(bufferGeometry),
+		bufferGeometry: Validator.verifyInput(bufferGeometry, null),
+		replaceMaterial: Validator.isValid(material),
+		material: Validator.verifyInput(material, null)
+	};
+};
+
+/**
+ * Orchestrate loading of multiple OBJ files/data from an instruction queue with a configurable amount of workers (1-16).
+ * Workflow:
+ *   prepareWorkers
+ *   enqueueForRun
+ *   processQueue
+ *   deregister
+ *
+ * @class
+ */
+var WWOBJLoader2Director = function () {
+
+	var Validator = OBJLoader2.prototype._getValidator();
+
+	var MAX_WEB_WORKER = 16;
+	var MAX_QUEUE_SIZE = 1024;
+
+	function WWOBJLoader2Director() {
+		this.maxQueueSize = MAX_QUEUE_SIZE;
+		this.maxWebWorkers = MAX_WEB_WORKER;
+		this.crossOrigin = null;
+
+		this.workerDescription = {
+			prototypeDef: WWOBJLoader2.prototype,
+			globalCallbacks: {},
+			webWorkers: [],
+			codeBuffer: null
+		};
+		this.objectsCompleted = 0;
+		this.instructionQueue = [];
+	}
+
+	/**
+  * Returns the maximum length of the instruction queue.
+  * @memberOf THREE.WWOBJLoader2Director
+  *
+  * @returns {number}
+  */
+	WWOBJLoader2Director.prototype.getMaxQueueSize = function () {
+		return this.maxQueueSize;
+	};
+
+	/**
+  * Returns the maximum number of workers.
+  * @memberOf THREE.WWOBJLoader2Director
+  *
+  * @returns {number}
+  */
+	WWOBJLoader2Director.prototype.getMaxWebWorkers = function () {
+		return this.maxWebWorkers;
+	};
+
+	/**
+  * Sets the CORS string to be used.
+  * @memberOf THREE.WWOBJLoader2Director
+  *
+  * @param {string} crossOrigin CORS value
+  */
+	WWOBJLoader2Director.prototype.setCrossOrigin = function (crossOrigin) {
+		this.crossOrigin = crossOrigin;
+	};
+
+	/**
+  * Create or destroy workers according limits. Set the name and register callbacks for dynamically created web workers.
+  * @memberOf THREE.WWOBJLoader2Director
+  *
+  * @param {THREE.WWOBJLoader2.PrepDataCallbacks} globalCallbacks  Register global callbacks used by all web workers
+  * @param {number} maxQueueSize Set the maximum size of the instruction queue (1-1024)
+  * @param {number} maxWebWorkers Set the maximum amount of workers (1-16)
+  */
+	WWOBJLoader2Director.prototype.prepareWorkers = function (globalCallbacks, maxQueueSize, maxWebWorkers) {
+		if (Validator.isValid(globalCallbacks)) this.workerDescription.globalCallbacks = globalCallbacks;
+		this.maxQueueSize = Math.min(maxQueueSize, MAX_QUEUE_SIZE);
+		this.maxWebWorkers = Math.min(maxWebWorkers, MAX_WEB_WORKER);
+		this.objectsCompleted = 0;
+		this.instructionQueue = [];
+
+		var start = this.workerDescription.webWorkers.length;
+		if (start < this.maxWebWorkers) {
+
+			for (i = start; i < this.maxWebWorkers; i++) {
+
+				webWorker = this._buildWebWorker();
+				this.workerDescription.webWorkers[i] = webWorker;
+			}
+		} else {
+
+			for (var webWorker, i = start - 1; i >= this.maxWebWorkers; i--) {
+
+				webWorker = this.workerDescription.webWorkers[i];
+				webWorker.setRequestTerminate(true);
+
+				this.workerDescription.webWorkers.pop();
+			}
+		}
+	};
+
+	/**
+  * Store run instructions in internal instructionQueue.
+  * @memberOf THREE.WWOBJLoader2Director
+  *
+  * @param {Object} runParams Either {@link THREE.WWOBJLoader2.PrepDataArrayBuffer} or {@link THREE.WWOBJLoader2.PrepDataFile}
+  */
+	WWOBJLoader2Director.prototype.enqueueForRun = function (runParams) {
+		if (this.instructionQueue.length < this.maxQueueSize) {
+			this.instructionQueue.push(runParams);
+		}
+	};
+
+	/**
+  * Process the instructionQueue until it is depleted.
+  * @memberOf THREE.WWOBJLoader2Director
+  */
+	WWOBJLoader2Director.prototype.processQueue = function () {
+		if (this.instructionQueue.length === 0) return;
+
+		var length = Math.min(this.maxWebWorkers, this.instructionQueue.length);
+		for (var i = 0; i < length; i++) {
+
+			this._kickWebWorkerRun(this.workerDescription.webWorkers[i], this.instructionQueue[0]);
+			this.instructionQueue.shift();
+		}
+	};
+
+	WWOBJLoader2Director.prototype._kickWebWorkerRun = function (worker, runParams) {
+		worker.clearAllCallbacks();
+		var key;
+		var globalCallbacks = this.workerDescription.globalCallbacks;
+		var workerCallbacks = worker.callbacks;
+		var selectedGlobalCallback;
+		for (key in globalCallbacks) {
+
+			if (workerCallbacks.hasOwnProperty(key) && globalCallbacks.hasOwnProperty(key)) {
+
+				selectedGlobalCallback = globalCallbacks[key];
+				if (Validator.isValid(selectedGlobalCallback)) workerCallbacks[key].push(selectedGlobalCallback);
+			}
+		}
+		// register per object callbacks
+		var runCallbacks = runParams.callbacks;
+		if (Validator.isValid(runCallbacks)) {
+
+			for (key in runCallbacks) {
+
+				if (workerCallbacks.hasOwnProperty(key) && runCallbacks.hasOwnProperty(key) && Validator.isValid(runCallbacks[key])) {
+
+					workerCallbacks[key].push(runCallbacks[key]);
+				}
+			}
+		}
+
+		var scope = this;
+		var directorCompletedLoading = function (modelName, instanceNo, requestTerminate) {
+			scope.objectsCompleted++;
+			if (!requestTerminate) {
+
+				var worker = scope.workerDescription.webWorkers[instanceNo];
+				var runParams = scope.instructionQueue[0];
+				if (Validator.isValid(runParams)) {
+
+					console.log('\nAssigning next item from queue to worker (queue length: ' + scope.instructionQueue.length + ')\n\n');
+					scope._kickWebWorkerRun(worker, runParams);
+					scope.instructionQueue.shift();
+				}
+			}
+		};
+		worker.registerCallbackCompletedLoading(directorCompletedLoading);
+
+		worker.prepareRun(runParams);
+		worker.run();
+	};
+
+	WWOBJLoader2Director.prototype._buildWebWorker = function () {
+		var webWorker = Object.create(this.workerDescription.prototypeDef);
+		webWorker._init();
+		if (Validator.isValid(this.crossOrigin)) webWorker.setCrossOrigin(this.crossOrigin);
+
+		// Ensure code string is built once and then it is just passed on to every new instance
+		if (Validator.isValid(this.workerDescription.codeBuffer)) {
+
+			webWorker._buildWebWorkerCode(this.workerDescription.codeBuffer);
+		} else {
+
+			this.workerDescription.codeBuffer = webWorker._buildWebWorkerCode();
+		}
+
+		webWorker.instanceNo = this.workerDescription.webWorkers.length;
+		this.workerDescription.webWorkers.push(webWorker);
+		return webWorker;
+	};
+
+	/**
+  * Terminate all workers.
+  * @memberOf THREE.WWOBJLoader2Director
+  */
+	WWOBJLoader2Director.prototype.deregister = function () {
+		console.log('WWOBJLoader2Director received the unregister call. Terminating all workers!');
+		for (var i = 0, webWorker, length = this.workerDescription.webWorkers.length; i < length; i++) {
+
+			webWorker = this.workerDescription.webWorkers[i];
+			webWorker.setRequestTerminate(true);
+		}
+		this.workerDescription.globalCallbacks = {};
+		this.workerDescription.webWorkers = [];
+		this.workerDescription.codeBuffer = null;
+	};
+
+	return WWOBJLoader2Director;
+}();
+
+/**
+ * Loads a Wavefront .mtl file specifying materials
+ *
+ * @author angelxuanchang
+ */
+
+function MTLLoader(manager) {
+
+	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+};
+
+MTLLoader.prototype = {
+
+	constructor: MTLLoader,
+
+	/**
+  * Loads and parses a MTL asset from a URL.
+  *
+  * @param {String} url - URL to the MTL file.
+  * @param {Function} [onLoad] - Callback invoked with the loaded object.
+  * @param {Function} [onProgress] - Callback for download progress.
+  * @param {Function} [onError] - Callback for download errors.
+  *
+  * @see setPath setTexturePath
+  *
+  * @note In order for relative texture references to resolve correctly
+  * you must call setPath and/or setTexturePath explicitly prior to load.
+  */
+	load: function (url, onLoad, onProgress, onError) {
+
+		var scope = this;
+
+		var loader = new FileLoader(this.manager);
+		loader.setPath(this.path);
+		loader.load(url, function (text) {
+
+			onLoad(scope.parse(text));
+		}, onProgress, onError);
+	},
+
+	/**
+  * Set base path for resolving references.
+  * If set this path will be prepended to each loaded and found reference.
+  *
+  * @see setTexturePath
+  * @param {String} path
+  *
+  * @example
+  *     mtlLoader.setPath( 'assets/obj/' );
+  *     mtlLoader.load( 'my.mtl', ... );
+  */
+	setPath: function (path) {
+
+		this.path = path;
+	},
+
+	/**
+  * Set base path for resolving texture references.
+  * If set this path will be prepended found texture reference.
+  * If not set and setPath is, it will be used as texture base path.
+  *
+  * @see setPath
+  * @param {String} path
+  *
+  * @example
+  *     mtlLoader.setPath( 'assets/obj/' );
+  *     mtlLoader.setTexturePath( 'assets/textures/' );
+  *     mtlLoader.load( 'my.mtl', ... );
+  */
+	setTexturePath: function (path) {
+
+		this.texturePath = path;
+	},
+
+	setBaseUrl: function (path) {
+
+		console.warn('MTLLoader: .setBaseUrl() is deprecated. Use .setTexturePath( path ) for texture path or .setPath( path ) for general base path instead.');
+
+		this.setTexturePath(path);
+	},
+
+	setCrossOrigin: function (value) {
+
+		this.crossOrigin = value;
+	},
+
+	setMaterialOptions: function (value) {
+
+		this.materialOptions = value;
+	},
+
+	/**
+  * Parses a MTL file.
+  *
+  * @param {String} text - Content of MTL file
+  * @return {MTLLoader.MaterialCreator}
+  *
+  * @see setPath setTexturePath
+  *
+  * @note In order for relative texture references to resolve correctly
+  * you must call setPath and/or setTexturePath explicitly prior to parse.
+  */
+	parse: function (text) {
+
+		var lines = text.split('\n');
+		var info = {};
+		var delimiter_pattern = /\s+/;
+		var materialsInfo = {};
+
+		for (var i = 0; i < lines.length; i++) {
+
+			var line = lines[i];
+			line = line.trim();
+
+			if (line.length === 0 || line.charAt(0) === '#') {
+
+				// Blank line or comment ignore
+				continue;
+			}
+
+			var pos = line.indexOf(' ');
+
+			var key = pos >= 0 ? line.substring(0, pos) : line;
+			key = key.toLowerCase();
+
+			var value = pos >= 0 ? line.substring(pos + 1) : '';
+			value = value.trim();
+
+			if (key === 'newmtl') {
+
+				// New material
+
+				info = { name: value };
+				materialsInfo[value] = info;
+			} else if (info) {
+
+				if (key === 'ka' || key === 'kd' || key === 'ks') {
+
+					var ss = value.split(delimiter_pattern, 3);
+					info[key] = [parseFloat(ss[0]), parseFloat(ss[1]), parseFloat(ss[2])];
+				} else {
+
+					info[key] = value;
+				}
+			}
+		}
+
+		var materialCreator = new MTLLoader.MaterialCreator(this.texturePath || this.path, this.materialOptions);
+		materialCreator.setCrossOrigin(this.crossOrigin);
+		materialCreator.setManager(this.manager);
+		materialCreator.setMaterials(materialsInfo);
+		return materialCreator;
+	}
+
+};
+
+/**
+ * Create a new THREE-MTLLoader.MaterialCreator
+ * @param baseUrl - Url relative to which textures are loaded
+ * @param options - Set of options on how to construct the materials
+ *                  side: Which side to apply the material
+ *                        THREE.FrontSide (default), THREE.BackSide, THREE.DoubleSide
+ *                  wrap: What type of wrapping to apply for textures
+ *                        THREE.RepeatWrapping (default), THREE.ClampToEdgeWrapping, THREE.MirroredRepeatWrapping
+ *                  normalizeRGB: RGBs need to be normalized to 0-1 from 0-255
+ *                                Default: false, assumed to be already normalized
+ *                  ignoreZeroRGBs: Ignore values of RGBs (Ka,Kd,Ks) that are all 0's
+ *                                  Default: false
+ * @constructor
+ */
+
+MTLLoader.MaterialCreator = function (baseUrl, options) {
+
+	this.baseUrl = baseUrl || '';
+	this.options = options;
+	this.materialsInfo = {};
+	this.materials = {};
+	this.materialsArray = [];
+	this.nameLookup = {};
+
+	this.side = this.options && this.options.side ? this.options.side : FrontSide;
+	this.wrap = this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
+};
+
+MTLLoader.MaterialCreator.prototype = {
+
+	constructor: MTLLoader.MaterialCreator,
+
+	setCrossOrigin: function (value) {
+
+		this.crossOrigin = value;
+	},
+
+	setManager: function (value) {
+
+		this.manager = value;
+	},
+
+	setMaterials: function (materialsInfo) {
+
+		this.materialsInfo = this.convert(materialsInfo);
+		this.materials = {};
+		this.materialsArray = [];
+		this.nameLookup = {};
+	},
+
+	convert: function (materialsInfo) {
+
+		if (!this.options) return materialsInfo;
+
+		var converted = {};
+
+		for (var mn in materialsInfo) {
+
+			// Convert materials info into normalized form based on options
+
+			var mat = materialsInfo[mn];
+
+			var covmat = {};
+
+			converted[mn] = covmat;
+
+			for (var prop in mat) {
+
+				var save = true;
+				var value = mat[prop];
+				var lprop = prop.toLowerCase();
+
+				switch (lprop) {
+
+					case 'kd':
+					case 'ka':
+					case 'ks':
+
+						// Diffuse color (color under white light) using RGB values
+
+						if (this.options && this.options.normalizeRGB) {
+
+							value = [value[0] / 255, value[1] / 255, value[2] / 255];
+						}
+
+						if (this.options && this.options.ignoreZeroRGBs) {
+
+							if (value[0] === 0 && value[1] === 0 && value[2] === 0) {
+
+								// ignore
+
+								save = false;
+							}
+						}
+
+						break;
+
+					default:
+
+						break;
+
+				}
+
+				if (save) {
+
+					covmat[lprop] = value;
+				}
+			}
+		}
+
+		return converted;
+	},
+
+	preload: function () {
+
+		for (var mn in this.materialsInfo) {
+
+			this.create(mn);
+		}
+	},
+
+	getIndex: function (materialName) {
+
+		return this.nameLookup[materialName];
+	},
+
+	getAsArray: function () {
+
+		var index = 0;
+
+		for (var mn in this.materialsInfo) {
+
+			this.materialsArray[index] = this.create(mn);
+			this.nameLookup[mn] = index;
+			index++;
+		}
+
+		return this.materialsArray;
+	},
+
+	create: function (materialName) {
+
+		if (this.materials[materialName] === undefined) {
+
+			this.createMaterial_(materialName);
+		}
+
+		return this.materials[materialName];
+	},
+
+	createMaterial_: function (materialName) {
+
+		// Create material
+
+		var scope = this;
+		var mat = this.materialsInfo[materialName];
+		var params = {
+
+			name: materialName,
+			side: this.side
+
+		};
+
+		function resolveURL(baseUrl, url) {
+
+			if (typeof url !== 'string' || url === '') return '';
+
+			// Absolute URL
+			if (/^https?:\/\//i.test(url)) return url;
+
+			return baseUrl + url;
+		}
+
+		function setMapForType(mapType, value) {
+
+			if (params[mapType]) return; // Keep the first encountered texture
+
+			var texParams = scope.getTextureParams(value, params);
+			var map = scope.loadTexture(resolveURL(scope.baseUrl, texParams.url));
+
+			map.repeat.copy(texParams.scale);
+			map.offset.copy(texParams.offset);
+
+			map.wrapS = scope.wrap;
+			map.wrapT = scope.wrap;
+
+			params[mapType] = map;
+		}
+
+		for (var prop in mat) {
+
+			var value = mat[prop];
+			var n;
+
+			if (value === '') continue;
+
+			switch (prop.toLowerCase()) {
+
+				// Ns is material specular exponent
+
+				case 'kd':
+
+					// Diffuse color (color under white light) using RGB values
+
+					params.color = new Color().fromArray(value);
+
+					break;
+
+				case 'ks':
+
+					// Specular color (color when light is reflected from shiny surface) using RGB values
+					params.specular = new Color().fromArray(value);
+
+					break;
+
+				case 'map_kd':
+
+					// Diffuse texture map
+
+					setMapForType("map", value);
+
+					break;
+
+				case 'map_ks':
+
+					// Specular map
+
+					setMapForType("specularMap", value);
+
+					break;
+
+				case 'map_bump':
+				case 'bump':
+
+					// Bump texture map
+
+					setMapForType("bumpMap", value);
+
+					break;
+
+				case 'ns':
+
+					// The specular exponent (defines the focus of the specular highlight)
+					// A high exponent results in a tight, concentrated highlight. Ns values normally range from 0 to 1000.
+
+					params.shininess = parseFloat(value);
+
+					break;
+
+				case 'd':
+					n = parseFloat(value);
+
+					if (n < 1) {
+
+						params.opacity = n;
+						params.transparent = true;
+					}
+
+					break;
+
+				case 'tr':
+					n = parseFloat(value);
+
+					if (n > 0) {
+
+						params.opacity = 1 - n;
+						params.transparent = true;
+					}
+
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		this.materials[materialName] = new MeshPhongMaterial(params);
+		return this.materials[materialName];
+	},
+
+	getTextureParams: function (value, matParams) {
+
+		var texParams = {
+
+			scale: new Vector2(1, 1),
+			offset: new Vector2(0, 0)
+
+		};
+
+		var items = value.split(/\s+/);
+		var pos;
+
+		pos = items.indexOf('-bm');
+
+		if (pos >= 0) {
+
+			matParams.bumpScale = parseFloat(items[pos + 1]);
+			items.splice(pos, 2);
+		}
+
+		pos = items.indexOf('-s');
+
+		if (pos >= 0) {
+
+			texParams.scale.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+			items.splice(pos, 4); // we expect 3 parameters here!
+		}
+
+		pos = items.indexOf('-o');
+
+		if (pos >= 0) {
+
+			texParams.offset.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+			items.splice(pos, 4); // we expect 3 parameters here!
+		}
+
+		texParams.url = items.join(' ').trim();
+		return texParams;
+	},
+
+	loadTexture: function (url, mapping, onLoad, onProgress, onError) {
+
+		var texture;
+		var loader = Loader.Handlers.get(url);
+		var manager = this.manager !== undefined ? this.manager : DefaultLoadingManager;
+
+		if (loader === null) {
+
+			loader = new TextureLoader(manager);
+		}
+
+		if (loader.setCrossOrigin) loader.setCrossOrigin(this.crossOrigin);
+		texture = loader.load(url, onLoad, onProgress, onError);
+
+		if (mapping !== undefined) texture.mapping = mapping;
+
+		return texture;
+	}
+
+};
+
+var manager = new LoadingManager();
+
+// hide the upload form when loading starts so that the progress bar can be shown
+manager.onStart = function () {
+
+  document.querySelector('#file-upload-form').classList.add('hide');
+  document.querySelector('#loading-bar').classList.remove('hide');
+};
+
+manager.onLoad = function () {
+
+  // this doesn't fire when loading objects with a single file
+
+  // document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
+};
+
+var progress = document.querySelector('#progress');
+manager.onProgress = function (url, currentFile, totalFiles) {
+
+  var percentComplete = currentFile / totalFiles * 100;
+  progress.style.width = percentComplete + '%';
+};
+
+manager.onError = function (msg) {
+  console.error('THREE.LoadingManager error: ' + msg);
+};
+
+var objectLoader = null;
+var bufferGeometryLoader = null;
+var jsonLoader = null;
+var fbxLoader = null;
+var gltf2Loader = null;
+var objLoader2 = null;
+var wwobj2Loader = null;
+var mtlLoader = null;
+
+var Loaders = function Loaders() {
+  classCallCheck(this, Loaders);
+
+
+  return {
+
+    get objectLoader() {
+      if (objectLoader === null) {
+        objectLoader = new ObjectLoader(manager);
+      }
+      return objectLoader;
+    },
+
+    get bufferGeometryLoader() {
+      if (bufferGeometryLoader === null) {
+        bufferGeometryLoader = new BufferGeometryLoader(manager);
+      }
+      return bufferGeometryLoader;
+    },
+
+    get jsonLoader() {
+      if (jsonLoader === null) {
+        jsonLoader = new JSONLoader(manager);
+      }
+      return jsonLoader;
+    },
+
+    get fbxLoader() {
+      if (fbxLoader === null) {
+        fbxLoader = new FBXLoader(manager);
+      }
+      return fbxLoader;
+    },
+
+    get gltf2Loader() {
+      if (gltf2Loader === null) {
+        gltf2Loader = new GLTF2Loader(manager);
+      }
+      return gltf2Loader;
+    },
+
+    get objLoader2() {
+      if (objLoader2 === null) {
+        objLoader2 = new OBJLoader2(manager);
+      }
+      return objLoader2;
+    },
+
+    get wwobj2Loader() {
+      if (wwobj2Loader === null) {
+        wwobj2Loader = new WWOBJLoader2(manager);
+      }
+      return wwobj2Loader;
+    },
+
+    get mtlLoader() {
+      if (mtlLoader === null) {
+        mtlLoader = new MTLLoader(manager);
+      }
+      return mtlLoader;
+    }
+
+  };
+};
+
+var loaders = new Loaders();
+var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
+
+var OnLoadCallbacks = function () {
+    function OnLoadCallbacks() {
+        classCallCheck(this, OnLoadCallbacks);
+    }
+
+    OnLoadCallbacks.onJSONLoad = function onJSONLoad(e) {
+
+        var geometry = void 0,
+            object = void 0;
+        var JsonObj = JSON.parse(e.target.result);
+
+        if (!JsonObj.metadata) {
+
+            console.error('Unsupported JSON format');
+            return;
+        }
+
+        var type = void 0;
+
+        if (JsonObj.metadata.type) type = JsonObj.metadata.type.toLowerCase();else type = 'object';
+
+        switch (type) {
+
+            case 'buffergeometry':
+                geometry = loaders.bufferGeometryLoader.parse(JsonObj);
+                object = new Mesh(geometry, defaultMat);
+                break;
+            case 'geometry':
+                geometry = loaders.jsonLoader.parse(JsonObj);
+                object = new Mesh(geometry, defaultMat);
+                break;
+            default:
+                // scene object
+                try {
+
+                    object = loaders.objectLoader.parse(JsonObj);
+                } catch (err) {
+
+                    console.log(err);
+                    console.error('Error loading JSON file, check console log for details.');
+                }
+
+        }
+
+        if (object) loaderCanvas.addObjectToScene(object);
+    };
+
+    OnLoadCallbacks.onFBXLoad = function onFBXLoad(e) {
+
+        var object = loaders.fbxLoader.parse(e.target.result);
+        loaderCanvas.addObjectToScene(object);
+    };
+
+    OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(e) {
+
+        loaders.gltf2Loader.parse(e.target.result, function (gltf) {
+
+            loaderCanvas.addObjectToScene(gltf.scene);
+        });
+    };
+
+    OnLoadCallbacks.onOBJLoad = function onOBJLoad(e) {
+
+        var object = loaders.objLoader2.parse(e.target.result);
+
+        loaderCanvas.addObjectToScene(object);
+    };
+
+    OnLoadCallbacks.onZipLoad = function onZipLoad(fbxFile, resources) {
+
+        var object = loaders.fbxLoader.parse(fbxFile, resources);
+        loaderCanvas.addObjectToScene(object);
+    };
+
+    return OnLoadCallbacks;
+}();
+
 var zipHandler = function (file) {
     JSZip.loadAsync(file).then(function (zip) {
 
@@ -48841,7 +55439,7 @@ var zipHandler = function (file) {
 
                         fbxFileZipped = zippedFile;
                     }
-                } else {
+                } else if (extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif') {
 
                     // should check if it's an image here - not completely neccessary as it will
                     // work anyway, but maybe more efficient
@@ -48908,39 +55506,14 @@ var zipHandler = function (file) {
 
         Promise.all(promises).then(function () {
 
-            fileOnloadCallbacks.onZipLoad(fbxFile, images);
+            console.log(images);
+
+            OnLoadCallbacks.onZipLoad(fbxFile, images);
         });
     });
 };
 
-var manager = new LoadingManager();
-
-// hide the upload form when loading starts so that the progress bar can be shown
-manager.onStart = function () {
-
-  document.querySelector('#file-upload-form').classList.add('hide');
-  document.querySelector('#loading-bar').classList.remove('hide');
-};
-
-manager.onLoad = function () {
-
-  // this doesn't fire when loading objects with a single file
-
-  // document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-
-};
-
-var progress = document.querySelector('#progress');
-manager.onProgress = function (url, currentFile, totalFiles) {
-
-  var percentComplete = currentFile / totalFiles * 100;
-  progress.style.width = percentComplete + '%';
-};
-
-manager.onError = function (msg) {
-  console.error('THREE.LoadingManager error: ' + msg);
-};
-
+// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -48957,20 +55530,8 @@ checkForFileAPI();
 var fileReader = new FileReader();
 
 fileReader.onerror = function (msg) {
+
   console.error('FileReader error: ' + msg);
-};
-
-/*  *******************************************************************
-   Set up File Model
-   This is imported in the FbxViewerCanvas, where onload callbacks are set up
-*******************************************************************   */
-
-var fileOnloadCallbacks = {
-
-  onJSONLoad: function () {},
-  onFBXLoad: function () {},
-  onZipLoad: function () {}
-
 };
 
 /*  *******************************************************************
@@ -48981,778 +55542,97 @@ var fileInput = document.querySelector('#file-upload-input');
 
 fileInput.addEventListener('change', function (e) {
 
-  var file = e.target.files[0];
+  var files = event.target.files;
 
-  var extension = file.name.split('.').pop().toLowerCase();
+  if (files.length === 1) {
 
-  switch (extension) {
+    var file = files[0];
+    var extension = file.name.split('.').pop().toLowerCase();
 
-    case 'json':
-    case 'js':
-      manager.onStart();
-      fileReader.onload = fileOnloadCallbacks.onJSONLoad();
-      fileReader.readAsText(file);
-      break;
-    case 'fbx':
-      manager.onStart();
-      fileReader.onload = fileOnloadCallbacks.onFBXLoad;
-      fileReader.readAsArrayBuffer(file);
-      break;
-    case 'zip':
-      manager.onStart();
-      zipHandler(file);
-      break;
-    default:
-      console.error('Unsupported file type - please load an FBX file or a zip archive.');
+    switch (extension) {
 
+      case 'json':
+      case 'js':
+        manager.onStart();
+        fileReader.onload = OnLoadCallbacks.onJSONLoad;
+        fileReader.readAsText(file);
+        break;
+      case 'fbx':
+        manager.onStart();
+        fileReader.onload = OnLoadCallbacks.onFBXLoad;
+        fileReader.readAsArrayBuffer(file);
+        break;
+      case 'gltf':
+      case 'glb':
+        manager.onStart();
+        fileReader.onload = OnLoadCallbacks.onGLTFLoad;
+        fileReader.readAsArrayBuffer(file);
+        break;
+      case 'obj':
+        manager.onStart();
+        fileReader.onload = OnLoadCallbacks.onOBJLoad;
+        fileReader.readAsArrayBuffer(file);
+        break;
+      case 'zip':
+        manager.onStart();
+        zipHandler(file);
+        break;
+      default:
+        console.error('Unsupported file type ' + extension + '- please load one of the supported model formats or a zip archive.');
+
+    }
+  } else {
+
+    var jsonFile = null;
+    var fbxFile = null;
+    var gltfFile = null;
+    var objFile = null;
+    var mtlFile = null;
+
+    var textures = [];
+
+    for (var i = 0; i < files.length; i++) {
+
+      var _file = files[i];
+
+      var _extension = _file.name.split('.').pop().toLowerCase();
+
+      // check for image file
+      if (_file.type.match('image.*')) {
+
+        textures.push(_file);
+      } else {
+
+        switch (_extension) {
+
+          case 'json':
+          case 'js':
+            jsonFile = _file;
+            break;
+          case 'fbx':
+            fbxFile = _file;
+            break;
+          case 'gltf':
+          case 'glb':
+            gltfFile = _file;
+            break;
+          case 'obj':
+            objFile = _file;
+            break;
+          case 'mtl':
+            mtlFile = _file;
+            break;
+          case 'zip':
+            console.error('Zip support forthcoming');
+            break;
+          default:
+            console.error('Unknown file type ' + _extension + '- please load one of the supported model formats or a zip archive.');
+
+        }
+      }
+    }
   }
 }, false);
-
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
-
-function interopDefault(ex) {
-	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var index = createCommonjsModule(function (module) {
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
-
-/** Used as the `TypeError` message for "Functions" methods. */
-var FUNC_ERROR_TEXT = 'Expected a function';
-
-/** Used as references for various `Number` constants. */
-var NAN = 0 / 0;
-
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/** Used to detect bad signed hexadecimal string values. */
-var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-/** Used to detect binary string values. */
-var reIsBinary = /^0b[01]+$/i;
-
-/** Used to detect octal string values. */
-var reIsOctal = /^0o[0-7]+$/i;
-
-/** Built-in method references without a dependency on `root`. */
-var freeParseInt = parseInt;
-
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax = Math.max,
-    nativeMin = Math.min;
-
-/**
- * Gets the timestamp of the number of milliseconds that have elapsed since
- * the Unix epoch (1 January 1970 00:00:00 UTC).
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Date
- * @returns {number} Returns the timestamp.
- * @example
- *
- * _.defer(function(stamp) {
- *   console.log(_.now() - stamp);
- * }, _.now());
- * // => Logs the number of milliseconds it took for the deferred invocation.
- */
-var now = function() {
-  return root.Date.now();
-};
-
-/**
- * Creates a debounced function that delays invoking `func` until after `wait`
- * milliseconds have elapsed since the last time the debounced function was
- * invoked. The debounced function comes with a `cancel` method to cancel
- * delayed `func` invocations and a `flush` method to immediately invoke them.
- * Provide `options` to indicate whether `func` should be invoked on the
- * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
- * with the last arguments provided to the debounced function. Subsequent
- * calls to the debounced function return the result of the last `func`
- * invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the debounced function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.debounce` and `_.throttle`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to debounce.
- * @param {number} [wait=0] The number of milliseconds to delay.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=false]
- *  Specify invoking on the leading edge of the timeout.
- * @param {number} [options.maxWait]
- *  The maximum time `func` is allowed to be delayed before it's invoked.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new debounced function.
- * @example
- *
- * // Avoid costly calculations while the window size is in flux.
- * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
- *
- * // Invoke `sendMail` when clicked, debouncing subsequent calls.
- * jQuery(element).on('click', _.debounce(sendMail, 300, {
- *   'leading': true,
- *   'trailing': false
- * }));
- *
- * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
- * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
- * var source = new EventSource('/stream');
- * jQuery(source).on('message', debounced);
- *
- * // Cancel the trailing debounced invocation.
- * jQuery(window).on('popstate', debounced.cancel);
- */
-function debounce(func, wait, options) {
-  var lastArgs,
-      lastThis,
-      maxWait,
-      result,
-      timerId,
-      lastCallTime,
-      lastInvokeTime = 0,
-      leading = false,
-      maxing = false,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  wait = toNumber(wait) || 0;
-  if (isObject(options)) {
-    leading = !!options.leading;
-    maxing = 'maxWait' in options;
-    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-
-  function invokeFunc(time) {
-    var args = lastArgs,
-        thisArg = lastThis;
-
-    lastArgs = lastThis = undefined;
-    lastInvokeTime = time;
-    result = func.apply(thisArg, args);
-    return result;
-  }
-
-  function leadingEdge(time) {
-    // Reset any `maxWait` timer.
-    lastInvokeTime = time;
-    // Start the timer for the trailing edge.
-    timerId = setTimeout(timerExpired, wait);
-    // Invoke the leading edge.
-    return leading ? invokeFunc(time) : result;
-  }
-
-  function remainingWait(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime,
-        result = wait - timeSinceLastCall;
-
-    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
-  }
-
-  function shouldInvoke(time) {
-    var timeSinceLastCall = time - lastCallTime,
-        timeSinceLastInvoke = time - lastInvokeTime;
-
-    // Either this is the first call, activity has stopped and we're at the
-    // trailing edge, the system time has gone backwards and we're treating
-    // it as the trailing edge, or we've hit the `maxWait` limit.
-    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-  }
-
-  function timerExpired() {
-    var time = now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
-    }
-    // Restart the timer.
-    timerId = setTimeout(timerExpired, remainingWait(time));
-  }
-
-  function trailingEdge(time) {
-    timerId = undefined;
-
-    // Only invoke if we have `lastArgs` which means `func` has been
-    // debounced at least once.
-    if (trailing && lastArgs) {
-      return invokeFunc(time);
-    }
-    lastArgs = lastThis = undefined;
-    return result;
-  }
-
-  function cancel() {
-    if (timerId !== undefined) {
-      clearTimeout(timerId);
-    }
-    lastInvokeTime = 0;
-    lastArgs = lastCallTime = lastThis = timerId = undefined;
-  }
-
-  function flush() {
-    return timerId === undefined ? result : trailingEdge(now());
-  }
-
-  function debounced() {
-    var time = now(),
-        isInvoking = shouldInvoke(time);
-
-    lastArgs = arguments;
-    lastThis = this;
-    lastCallTime = time;
-
-    if (isInvoking) {
-      if (timerId === undefined) {
-        return leadingEdge(lastCallTime);
-      }
-      if (maxing) {
-        // Handle invocations in a tight loop.
-        timerId = setTimeout(timerExpired, wait);
-        return invokeFunc(lastCallTime);
-      }
-    }
-    if (timerId === undefined) {
-      timerId = setTimeout(timerExpired, wait);
-    }
-    return result;
-  }
-  debounced.cancel = cancel;
-  debounced.flush = flush;
-  return debounced;
-}
-
-/**
- * Creates a throttled function that only invokes `func` at most once per
- * every `wait` milliseconds. The throttled function comes with a `cancel`
- * method to cancel delayed `func` invocations and a `flush` method to
- * immediately invoke them. Provide `options` to indicate whether `func`
- * should be invoked on the leading and/or trailing edge of the `wait`
- * timeout. The `func` is invoked with the last arguments provided to the
- * throttled function. Subsequent calls to the throttled function return the
- * result of the last `func` invocation.
- *
- * **Note:** If `leading` and `trailing` options are `true`, `func` is
- * invoked on the trailing edge of the timeout only if the throttled function
- * is invoked more than once during the `wait` timeout.
- *
- * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
- * until to the next tick, similar to `setTimeout` with a timeout of `0`.
- *
- * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
- * for details over the differences between `_.throttle` and `_.debounce`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to throttle.
- * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
- * @param {Object} [options={}] The options object.
- * @param {boolean} [options.leading=true]
- *  Specify invoking on the leading edge of the timeout.
- * @param {boolean} [options.trailing=true]
- *  Specify invoking on the trailing edge of the timeout.
- * @returns {Function} Returns the new throttled function.
- * @example
- *
- * // Avoid excessively updating the position while scrolling.
- * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
- *
- * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
- * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
- * jQuery(element).on('click', throttled);
- *
- * // Cancel the trailing throttled invocation.
- * jQuery(window).on('popstate', throttled.cancel);
- */
-function throttle(func, wait, options) {
-  var leading = true,
-      trailing = true;
-
-  if (typeof func != 'function') {
-    throw new TypeError(FUNC_ERROR_TEXT);
-  }
-  if (isObject(options)) {
-    leading = 'leading' in options ? !!options.leading : leading;
-    trailing = 'trailing' in options ? !!options.trailing : trailing;
-  }
-  return debounce(func, wait, {
-    'leading': leading,
-    'maxWait': wait,
-    'trailing': trailing
-  });
-}
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && objectToString.call(value) == symbolTag);
-}
-
-/**
- * Converts `value` to a number.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {number} Returns the number.
- * @example
- *
- * _.toNumber(3.2);
- * // => 3.2
- *
- * _.toNumber(Number.MIN_VALUE);
- * // => 5e-324
- *
- * _.toNumber(Infinity);
- * // => Infinity
- *
- * _.toNumber('3.2');
- * // => 3.2
- */
-function toNumber(value) {
-  if (typeof value == 'number') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return NAN;
-  }
-  if (isObject(value)) {
-    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-    value = isObject(other) ? (other + '') : other;
-  }
-  if (typeof value != 'string') {
-    return value === 0 ? value : +value;
-  }
-  value = value.replace(reTrim, '');
-  var isBinary = reIsBinary.test(value);
-  return (isBinary || reIsOctal.test(value))
-    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-    : (reIsBadHex.test(value) ? NAN : +value);
-}
-
-module.exports = throttle;
-});
-
-var throttle = interopDefault(index);
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var AnimationControls = function () {
-    function AnimationControls() {
-        classCallCheck(this, AnimationControls);
-
-
-        this.slider = document.querySelector('#animation-slider');
-        this.playButton = document.querySelector('#play-button');
-        this.pauseButton = document.querySelector('#pause-button');
-        this.playbackControl = document.querySelector('#playback-control');
-
-        this.controls = document.querySelector('#animation-controls');
-
-        this.isPaused = false;
-        this.pauseButtonActive = false;
-    }
-
-    AnimationControls.prototype.update = function update(delta) {
-
-        // delta is in seconds while fbx animations are in milliseconds so convert here
-        if (this.mixer && this.action && !this.isPaused) {
-
-            this.mixer.update(delta / 1000);
-
-            // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
-            // the animation duration, so set the slider value from that
-            this.setSliderValue(this.action.time);
-        }
-    };
-
-    AnimationControls.prototype.initAnimation = function initAnimation(object) {
-
-        // don't do anything if the object has no animations
-        if (object.animations.length === 0) return;
-
-        var animation = object.animations[0];
-
-        // lots of models have tiny < .1 second animations that cause
-        // flickering / stuttering - ignore these
-        if (animation.duration < 0.1) {
-
-            console.warn('Skipping animation with duration < 0.1 seconds.');
-            return;
-        }
-
-        // set animation slider max to length of animation
-        this.slider.max = String(animation.duration);
-
-        this.slider.step = String(animation.duration / 150);
-
-        this.mixer = new AnimationMixer(object);
-
-        this.action = this.mixer.clipAction(animation);
-
-        this.action.play();
-
-        document.querySelector('#animation-controls').classList.remove('hide');
-
-        this.initPlaybackControls();
-
-        this.initSlider();
-    };
-
-    AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
-
-        this.slider.value = String(val);
-    };
-
-    AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
-        var _this = this;
-
-        this.playbackControl.addEventListener('click', function () {
-
-            if (!_this.isPaused) {
-
-                _this.pauseButtonActive = true;
-            } else {
-
-                _this.pauseButtonActive = false;
-            }
-
-            _this.togglePause();
-        });
-    };
-
-    AnimationControls.prototype.togglePause = function togglePause() {
-
-        if (!this.isPaused) {
-
-            this.pause();
-        } else {
-
-            this.play();
-        }
-    };
-
-    AnimationControls.prototype.pause = function pause() {
-
-        this.isPaused = true;
-        this.playButton.classList.remove('hide');
-        this.pauseButton.classList.add('hide');
-    };
-
-    AnimationControls.prototype.play = function play() {
-
-        this.isPaused = false;
-        this.playButton.classList.add('hide');
-        this.pauseButton.classList.remove('hide');
-    };
-
-    AnimationControls.prototype.initSlider = function initSlider() {
-        var _this2 = this;
-
-        this.slider.addEventListener('mousedown', function () {
-
-            if (!_this2.pauseButtonActive) _this2.pause();
-        });
-
-        this.slider.addEventListener('input', throttle(function () {
-
-            var oldTime = _this2.mixer.time;
-            var newTime = _this2.slider.value;
-
-            _this2.mixer.update(newTime - oldTime);
-        }, 17)); // throttling at ~17 ms will give approx 60fps while sliding the controls
-
-        this.slider.addEventListener('mouseup', function () {
-
-            if (!_this2.pauseButtonActive) _this2.play();
-        });
-    };
-
-    return AnimationControls;
-}();
-
-// Note - this currently get the info from the three.js renderer rather than the model.
-// The number of faces / vertices that aare rendered by three.js may be different than the
-// number in the original model, since quads (4-sided polygons) are not supported in WebGL
-// - these are subdivided into tris 
-
-var vertices = document.querySelector('#vertices');
-var faces = document.querySelector('#faces');
-
-var addModelInfo = function (renderer) {
-
-  faces.innerHTML = renderer.info.render.faces;
-  vertices.innerHTML = renderer.info.render.vertices;
-};
-
-var backgroundColorChanger = function (app) {
-
-  var controlLinks = document.querySelector('#controls').getElementsByTagName('a');
-
-  var toggle = document.querySelector('#toggle-background');
-
-  toggle.addEventListener('change', function () {
-    if (toggle.checked) {
-
-      app.renderer.setClearColor(0x000000, 1.0);
-      for (var i = 0; i < controlLinks.length; i++) {
-
-        controlLinks[i].style.color = 'white';
-      }
-    } else {
-
-      app.renderer.setClearColor(0xf7f7f7, 1.0);
-      for (var _i = 0; _i < controlLinks.length; _i++) {
-
-        controlLinks[_i].style.color = 'black';
-      }
-    }
-  });
-};
 
 var LoaderCanvas = function () {
   function LoaderCanvas(canvas) {
@@ -49778,7 +55658,9 @@ var LoaderCanvas = function () {
 
     // put any per resize calculations here (throttled to once per 250ms)
     this.app.onWindowResize = function () {
+
       // NB: use self inside this function
+
     };
 
     this.initLights();
@@ -49786,8 +55668,6 @@ var LoaderCanvas = function () {
     this.app.initControls();
 
     backgroundColorChanger(this.app);
-
-    this.initFormatLoaders();
   }
 
   LoaderCanvas.prototype.initLights = function initLights() {
@@ -49822,6 +55702,12 @@ var LoaderCanvas = function () {
 
   LoaderCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
+    if (object === undefined) {
+
+      console.error('Oops! An unspecified error occurred :(');
+      return;
+    }
+
     this.app.fitCameraToObject(object);
 
     this.animationControls.initAnimation(object);
@@ -49833,37 +55719,6 @@ var LoaderCanvas = function () {
     addModelInfo(this.app.renderer);
 
     document.querySelector('#loading-overlay').classList.add('hide');
-  };
-
-  LoaderCanvas.prototype.initFormatLoaders = function initFormatLoaders() {
-    var _this = this;
-
-    var processObject = function (object) {
-
-      if (object !== undefined) _this.addObjectToScene(object);else console.error('Oops! An unspecified error occured :(');
-    };
-
-    fileOnloadCallbacks.onJSONLoad = function (e) {
-
-      var loader = new ObjectLoader(manager);
-      var object = loader.parse(e.target.result);
-      processObject(object);
-    };
-
-    fileOnloadCallbacks.onFBXLoad = function (e) {
-
-      var loader = new FBXLoader(manager);
-      var object = loader.parse(e.target.result);
-      processObject(object);
-    };
-
-    // onload callback when loading .zip file
-    fileOnloadCallbacks.onZipLoad = function (fbxFile, resources) {
-
-      var loader = new FBXLoader(manager);
-      var object = loader.parse(fbxFile, resources);
-      processObject(object);
-    };
   };
 
   return LoaderCanvas;

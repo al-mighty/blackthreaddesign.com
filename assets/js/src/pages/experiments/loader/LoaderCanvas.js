@@ -1,20 +1,19 @@
 import * as THREE from 'three';
 
 import App from 'App/App.js';
-import FBXLoader from 'modules/loaders/FBXLoader.module.js';
 
-import fileOnloadCallbacks from './utilities/fileReader.js';
-import manager from './utilities/loadingManager.js';
 import AnimationControls from './utilities/AnimationControls.js';
 import addModelInfo from './utilities/addModelInfo.js';
 import backgroundColorChanger from './utilities/backgroundColorChanger.js';
+
+import './utilities/fileReader.js';
 
 /* ******************************************************** */
 
 // Set up THREE caching
 THREE.Cache.enabled = true;
 
-export default class LoaderCanvas {
+class LoaderCanvas {
 
   constructor( canvas ) {
 
@@ -38,7 +37,9 @@ export default class LoaderCanvas {
 
     // put any per resize calculations here (throttled to once per 250ms)
     this.app.onWindowResize = function () {
+
       // NB: use self inside this function
+
     };
 
     this.initLights();
@@ -46,8 +47,6 @@ export default class LoaderCanvas {
     this.app.initControls();
 
     backgroundColorChanger( this.app );
-
-    this.initFormatLoaders();
 
   }
 
@@ -83,8 +82,14 @@ export default class LoaderCanvas {
   }
 
 
-
   addObjectToScene( object ) {
+
+    if ( object === undefined ) {
+
+      console.error( 'Oops! An unspecified error occurred :(' );
+      return;
+
+    }
 
     this.app.fitCameraToObject( object );
 
@@ -100,40 +105,10 @@ export default class LoaderCanvas {
 
   }
 
-  initFormatLoaders() {
-    const processObject = ( object ) => {
-
-      if ( object !== undefined ) this.addObjectToScene( object );
-      else console.error( 'Oops! An unspecified error occured :(' );
-
-    };
-
-    fileOnloadCallbacks.onJSONLoad = ( e ) => {
-
-      const loader = new THREE.ObjectLoader( manager );
-      const object = loader.parse( e.target.result );
-      processObject( object );
-
-    };
-
-    fileOnloadCallbacks.onFBXLoad = ( e ) => {
-
-      const loader = new FBXLoader( manager );
-      const object = loader.parse( e.target.result );
-      processObject( object );
-
-    };
-
-    // onload callback when loading .zip file
-    fileOnloadCallbacks.onZipLoad = ( fbxFile, resources ) => {
-
-      const loader = new FBXLoader( manager );
-      const object = loader.parse( fbxFile, resources );
-      processObject( object );
-
-    };
-
-  }
-
 }
 
+const canvas = document.querySelector( '#viewer-canvas' );
+
+const loaderCanvas = new LoaderCanvas( canvas );
+
+export default loaderCanvas;

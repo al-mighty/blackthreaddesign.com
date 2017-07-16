@@ -247,20 +247,31 @@ function App( canvas ) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject( object );
 
-    // set camera to rotate around center of loaded object
     const center = boundingBox.getCenter();
-
-    if ( this.controls ) this.controls.target = center;
 
     const size = boundingBox.getSize();
 
-    // get the max edge of the bounding box
-    const maxDim = Math.max( size.x, size.y );
-
+    // get the max side of the bounding box
+    const maxDim = Math.max( size.x, size.y, size.z );
     const fov = this.camera.fov * ( Math.PI / 180 );
-
     const cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
     this.camera.position.set( center.x, center.y, cameraZ );
+
+    const minZ = boundingBox.min.z;
+    const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
+
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+
+    if ( this.controls ) {
+
+      // set camera to rotate around center of loaded object
+      this.controls.target = center;
+
+      // prevent camera from zooming out far enough to create far plane cutoff
+      this.controls.maxDistance = cameraToFarEdge * 2;
+
+    }
 
   };
 

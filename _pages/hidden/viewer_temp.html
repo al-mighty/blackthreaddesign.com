@@ -1,0 +1,58 @@
+---
+layout: single
+title: "Product viewer"
+excerpt: ""
+categories: hidden
+permalink: /hidden/viewer_temp
+js:
+  viewer_temp
+css:
+  loader
+vendor-js: 
+  [ "/zip/inflate.min" ]
+---
+
+<div id="view-container">
+  <canvas id="viewer-canvas"></canvas>
+
+  <div id="controls">
+
+    <div id="right-buttons">
+      <a href="#" id="fullscreen-button">
+        <span class="fa fa-lg fa-arrows-alt" aria-hidden="true"></span>
+      </a>
+    </div>
+  </div>
+
+  <div id="loading-overlay">
+
+    <div id="loading-bar" class="hide">
+      <span id="bar">
+        <span id="progress"></span>
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="info">
+  <div id="error-overlay" class="hide notice--info">
+    <h2>The following error(s) and warning(s) occurred:</h2>
+    <div id="error-message"></div>
+  </div>
+
+  <h3>Controls</h3>
+  <p>Left mouse / touch: Rotate camera</p>
+  <p>Middle mouse / Pinch: zoom</p>
+  <p>Right mouse / Two finger touch: Pan camera</p>
+
+  <div id="model-info">
+    <h3>Model Info</h3>
+    <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
+    <p>Note that this is the number of faces / vertices as rendered by three.js, which may
+      be different from the numbers reported in programs. This is especially true if the model 
+      has quads (4-sided polygons) or higher, as these are automatically subdivied into triangles on load.
+    </p>
+  </div>
+</div>
