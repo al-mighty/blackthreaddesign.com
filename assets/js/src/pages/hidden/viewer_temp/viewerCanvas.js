@@ -54,6 +54,10 @@ class LoaderCanvas {
     this.loadFBXObject();
     // this.loadOBJObject();
 
+    this.initFloor();
+
+    this.setupControls();
+
   }
 
   initLights() {
@@ -118,6 +122,7 @@ class LoaderCanvas {
 
     this.envMap.mapping = THREE.EquirectangularReflectionMapping;
 
+    this.floorMap = this.loaders.textureLoader.load( '/assets/images/textures/hidden/floorReflection.png' );
   }
 
   initMaterials() {
@@ -140,7 +145,7 @@ class LoaderCanvas {
       glossy_red01: new THREE.MeshStandardMaterial( {
 
         envMap: this.envMap,
-        envMapIntensity: 0.8,
+        envMapIntensity: 0.7,
         color: 0xd60000,
         side: THREE.DoubleSide,
 
@@ -153,8 +158,8 @@ class LoaderCanvas {
       // inner grey rim
       'Plastik Mittelgl': new THREE.MeshStandardMaterial( {
 
-        envMap: this.envMap,
-        envMapIntensity: 0.8,
+        // envMap: this.envMap,
+        // envMapIntensity: 0.8,
 
         color: 0xcccccc,
         side: THREE.DoubleSide,
@@ -177,7 +182,33 @@ class LoaderCanvas {
 
       } ),
 
+      floorMat: new THREE.MeshStandardMaterial( {
+
+        transparent: true,
+        opacity: 0.15,
+        color: 0xffffff,
+        map: this.floorMap,
+
+        // side: THREE.DoubleSide,
+
+        // STANDARD
+        metalness: 0.1,
+        roughness: 0.4,
+
+      } ),
+
     };
+
+  }
+
+  initFloor() {
+
+    const floorGeo = new THREE.PlaneBufferGeometry( 265, 265, 4, 4 );
+    floorGeo.rotateX( -Math.PI / 2 );
+    floorGeo.rotateY( Math.PI / 2 );
+    floorGeo.translate( 71, 0, 42.8 );
+    const floorMesh = new THREE.Mesh( floorGeo, this.materials.floorMat );
+    this.app.scene.add( floorMesh );
 
   }
 
@@ -238,6 +269,25 @@ class LoaderCanvas {
 
     );
 
+  }
+
+  setupControls() {
+
+    const controls = this.app.controls;
+
+    // How far you can dolly in and out
+    controls.minDistance = 80;
+    controls.maxDistance = 200;
+
+    // How far you can orbit vertically, upper and lower limits.
+    // Range is 0 to Math.PI radians.
+    controls.minPolarAngle = 0; // radians
+    // controls.maxPolarAngle = Math.PI * 0.5; // radians
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    // controls.minAzimuthAngle = - Math.PI / 2; // radians
+    // controls.maxAzimuthAngle = Math.PI / 2; // radians
   }
 
 }

@@ -1,4 +1,5 @@
 const UglifyJS = require( 'uglify-js' );
+// const CleanCSS = require( 'clean-css' );
 
 const fs = require( 'fs' );
 
@@ -17,7 +18,7 @@ const uglifyJSOptions = {
 
 };
 
-// Read all files in a folder
+// Process js files
 fs.readdir( inputPath, ( err, files ) => {
 
   files.forEach( ( file ) => {
@@ -35,3 +36,5 @@ fs.readdir( inputPath, ( err, files ) => {
   } );
 
 } );
+
+// process css files

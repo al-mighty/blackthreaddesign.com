@@ -185,6 +185,8 @@ function App( canvas ) {
 
       self.onUpdate();
 
+      if ( self.controls && self.controls.enableDamping ) self.controls.update();
+
       if ( self.autoRender ) self.renderer.render( self.scene, self.camera );
 
       _currentAnimationFrameID = requestAnimationFrame( () => { animationHandler(); } );
