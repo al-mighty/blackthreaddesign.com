@@ -42490,120 +42490,120 @@ var ImageUtils = {
 
 function Time() {
 
-    // Keep track of time when pause() was called
-    var _pauseTime = void 0;
+  // Keep track of time when pause() was called
+  var _pauseTime = void 0;
 
-    // Keep track of time when delta was last checked
-    var _lastDelta = 0;
+  // Keep track of time when delta was last checked
+  var _lastDelta = 0;
 
-    // Hold the time when start() was called
-    // There is no point in exposing this as it's essentially a random number
-    // and will be different depending on whether performance.now or Date.now is used
-    var _startTime = 0;
+  // Hold the time when start() was called
+  // There is no point in exposing this as it's essentially a random number
+  // and will be different depending on whether performance.now or Date.now is used
+  var _startTime = 0;
+
+  this.running = false;
+  this.paused = false;
+
+  // The scale at which the time is passing. This can be used for slow motion effects.
+  var _timeScale = 1.0;
+  // Keep track of scaled time across scale changes
+  var _totalTimeAtLastScaleChange = 0;
+  var _timeAtLastScaleChange = 0;
+
+  Object.defineProperties(this, {
+
+    now: {
+      get: function () {
+
+        return (performance || Date).now();
+      }
+    },
+
+    timeScale: {
+      get: function () {
+
+        return _timeScale;
+      },
+      set: function (value) {
+
+        _totalTimeAtLastScaleChange = this.totalTime;
+        _timeAtLastScaleChange = this.now;
+        _timeScale = value;
+      }
+    },
+
+    unscaledTotalTime: {
+      get: function () {
+
+        return this.running ? this.now - _startTime : 0;
+      }
+    },
+
+    totalTime: {
+      get: function () {
+
+        var diff = (this.now - _timeAtLastScaleChange) * this.timeScale;
+
+        return this.running ? _totalTimeAtLastScaleChange + diff : 0;
+      }
+    },
+
+    // Unscaled time since delta was last checked
+    unscaledDelta: {
+      get: function () {
+
+        var diff = this.now - _lastDelta;
+        _lastDelta = this.now;
+
+        return diff;
+      }
+    },
+
+    // Scaled time since delta was last checked
+    delta: {
+      get: function () {
+
+        return this.unscaledDelta * this.timeScale;
+      }
+    }
+
+  });
+
+  this.start = function () {
+
+    if (this.paused) {
+
+      var diff = this.now - _pauseTime;
+
+      _startTime += diff;
+      _lastDelta += diff;
+      _timeAtLastScaleChange += diff;
+    } else if (!this.running) {
+
+      _startTime = _lastDelta = _timeAtLastScaleChange = this.now;
+
+      _totalTimeAtLastScaleChange = 0;
+    }
+
+    this.running = true;
+    this.paused = false;
+  };
+
+  // Reset and stop clock
+  this.stop = function () {
+
+    _startTime = 0;
+    _totalTimeAtLastScaleChange = 0;
 
     this.running = false;
-    this.paused = false;
+  };
 
-    // The scale at which the time is passing. This can be used for slow motion effects.
-    var _timeScale = 1.0;
-    // Keep track of scaled time across scale changes
-    var _totalTimeAtLastScaleChange = 0;
-    var _timeAtLastScaleChange = 0;
+  this.pause = function () {
 
-    Object.defineProperties(this, {
+    _pauseTime = this.now;
 
-        now: {
-            get: function () {
-
-                return (performance || Date).now();
-            }
-        },
-
-        timeScale: {
-            get: function () {
-
-                return _timeScale;
-            },
-            set: function (value) {
-
-                _totalTimeAtLastScaleChange = this.totalTime;
-                _timeAtLastScaleChange = this.now;
-                _timeScale = value;
-            }
-        },
-
-        unscaledTotalTime: {
-            get: function () {
-
-                return this.running ? this.now - _startTime : 0;
-            }
-        },
-
-        totalTime: {
-            get: function () {
-
-                var diff = (this.now - _timeAtLastScaleChange) * this.timeScale;
-
-                return this.running ? _totalTimeAtLastScaleChange + diff : 0;
-            }
-        },
-
-        // Unscaled time since delta was last checked
-        unscaledDelta: {
-            get: function () {
-
-                var diff = this.now - _lastDelta;
-                _lastDelta = this.now;
-
-                return diff;
-            }
-        },
-
-        // Scaled time since delta was last checked
-        delta: {
-            get: function () {
-
-                return this.unscaledDelta * this.timeScale;
-            }
-        }
-
-    });
-
-    this.start = function () {
-
-        if (this.paused) {
-
-            var diff = this.now - _pauseTime;
-
-            _startTime += diff;
-            _lastDelta += diff;
-            _timeAtLastScaleChange += diff;
-        } else if (!this.running) {
-
-            _startTime = _lastDelta = _timeAtLastScaleChange = this.now;
-
-            _totalTimeAtLastScaleChange = 0;
-        }
-
-        this.running = true;
-        this.paused = false;
-    };
-
-    // Reset and stop clock
-    this.stop = function () {
-
-        _startTime = 0;
-        _totalTimeAtLastScaleChange = 0;
-
-        this.running = false;
-    };
-
-    this.pause = function () {
-
-        _pauseTime = this.now;
-
-        this.paused = true;
-    };
+    this.paused = true;
+  };
 }
 
 /**
@@ -43703,9 +43703,9 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
-      if (self.controls && self.controls.enableDamping) self.controls.update();
-
       self.onUpdate();
+
+      if (self.controls && self.controls.enableDamping) self.controls.update();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
 
@@ -43739,7 +43739,6 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
-  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43766,20 +43765,30 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
-    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
-
-    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max edge of the bounding box
-    var maxDim = Math.max(size.x, size.y);
-
+    // get the max side of the bounding box
+    var maxDim = Math.max(size.x, size.y, size.z);
     var fov = this.camera.fov * (Math.PI / 180);
-
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
+
+    var minZ = boundingBox.min.z;
+    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+
+    if (this.controls) {
+
+      // set camera to rotate around center of loaded object
+      this.controls.target = center;
+
+      // prevent camera from zooming out far enough to create far plane cutoff
+      this.controls.maxDistance = cameraToFarEdge * 2;
+    }
   };
 }
 
