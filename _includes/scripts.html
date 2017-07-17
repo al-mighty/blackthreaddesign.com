@@ -8,12 +8,18 @@
   {% endfor %}
 {% endif %}
 
+{% if jekyll.environment == "production" %}
+  {% assign build_dir = '/assets/js/build-min/' %}
+{% else %}
+  {% assign build_dir = '/assets/js/build/' %}
+{% endif %}
+
 {% if page.js %}
   {% for file in page.js %}
-  <script async src='/assets/js/build/{{ file }}.js'></script>
+  <script async src="{{ build_dir }}{{ file }}.js"></script>
   {% endfor %}
 {% else %}
-  <script async src="{{ '/assets/js/build/main.js' | absolute_url }}"></script>
+  <script async src="{{ build_dir }}{{ main.js }}"></script>
 {% endif %}
 
 {% include /comments-providers/scripts.html %}

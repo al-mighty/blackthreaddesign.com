@@ -57017,6 +57017,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -57051,6 +57053,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -57077,30 +57080,20 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
+    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max side of the bounding box
-    var maxDim = Math.max(size.x, size.y, size.z);
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
     var fov = this.camera.fov * (Math.PI / 180);
+
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
-
-    var minZ = boundingBox.min.z;
-    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
-
-    this.camera.far = cameraToFarEdge * 3;
-    this.camera.updateProjectionMatrix();
-
-    if (this.controls) {
-
-      // set camera to rotate around center of loaded object
-      this.controls.target = center;
-
-      // prevent camera from zooming out far enough to create far plane cutoff
-      this.controls.maxDistance = cameraToFarEdge * 2;
-    }
   };
 }
 
@@ -57546,244 +57539,244 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var SplashCanvas = function () {
-    function SplashCanvas() {
-        classCallCheck(this, SplashCanvas);
+  function SplashCanvas() {
+    classCallCheck(this, SplashCanvas);
 
 
-        var self = this;
+    var self = this;
 
-        this.app = new App(document.querySelector('#splash-canvas'));
+    this.app = new App(document.querySelector('#splash-canvas'));
 
-        this.app.camera.fov = 75;
-        this.app.camera.position.set(0, 0, cameraZPos(this.app.camera.aspect));
-        this.app.camera.updateProjectionMatrix();
+    this.app.camera.fov = 75;
+    this.app.camera.position.set(0, 0, cameraZPos(this.app.camera.aspect));
+    this.app.camera.updateProjectionMatrix();
 
-        this.initMaterials();
+    this.initMaterials();
 
-        this.addBackground();
+    this.addBackground();
 
-        this.addText();
+    this.addText();
 
-        // this.initControls();
+    // this.initControls();
 
-        // this.pauseWhenOffscreen();
+    // this.pauseWhenOffscreen();
 
-        var updateMaterials = function () {
-            // Pan events on mobile sometimes register as (0,0); ignore these
-            if (pointerPos.x !== 0 && pointerPos.y !== 0) {
-                var offsetX = pointerPos.x / self.app.canvas.clientWidth;
-                var offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
+    var updateMaterials = function () {
+      // Pan events on mobile sometimes register as (0,0); ignore these
+      if (pointerPos.x !== 0 && pointerPos.y !== 0) {
+        var offsetX = pointerPos.x / self.app.canvas.clientWidth;
+        var offsetY = 1 - pointerPos.y / self.app.canvas.clientHeight;
 
-                // make the line well defined when moving the pointer off the top of the canvas
-                offsetY = offsetY > 0.99 ? 0.999 : offsetY;
+        // make the line well defined when moving the pointer off the top of the canvas
+        offsetY = offsetY > 0.99 ? 0.999 : offsetY;
 
-                self.offset.set(offsetX, offsetY);
-                self.smooth.set(1.0, offsetY);
+        self.offset.set(offsetX, offsetY);
+        self.smooth.set(1.0, offsetY);
 
-                var pointer = pointerPosToCanvasCentre(self.app.canvas, 0);
-                self.pointer.set(pointer.x, pointer.y);
-            }
-        };
+        var pointer = pointerPosToCanvasCentre(self.app.canvas, 0);
+        self.pointer.set(pointer.x, pointer.y);
+      }
+    };
 
-        var uTime = 1.0;
-        var minTime = 0.1;
-        var animSpeed = 8000;
+    var uTime = 1.0;
+    var minTime = 0.1;
+    var animSpeed = 8000;
 
-        var updateAnimation = function () {
+    var updateAnimation = function () {
 
-            // set on repeat (for testing)
-            // if ( uTime <= minTime ) uTime = 1.0;
+      // set on repeat (for testing)
+      // if ( uTime <= minTime ) uTime = 1.0;
 
-            // Ignore large values of delta (caused by window not be being focused for a while)
-            if (uTime >= minTime && self.app.delta < 100) {
-                uTime -= self.app.delta / animSpeed;
-            }
+      // Ignore large values of delta (caused by window not be being focused for a while)
+      if (uTime >= minTime && self.app.delta < 100) {
+        uTime -= self.app.delta / animSpeed;
+      }
 
-            self.textMat.uniforms.uTime.value = uTime;
+      self.textMat.uniforms.uTime.value = uTime;
 
-            // speed up the animation as it progresses
-            animSpeed -= 15;
+      // speed up the animation as it progresses
+      animSpeed -= 15;
 
-            // console.log( self.app.delta )
-            // console.log( uTime )
-            // console.log( self.app.frameCount );
-        };
+      // console.log( self.app.delta )
+      // console.log( uTime )
+      // console.log( self.app.frameCount );
+    };
 
-        this.app.onUpdate = function () {
-            updateMaterials();
+    this.app.onUpdate = function () {
+      updateMaterials();
 
-            updateAnimation();
+      updateAnimation();
 
-            if (self.controls && self.controls.enableDamping === true) self.controls.update();
-        };
+      if (self.controls && self.controls.enableDamping === true) self.controls.update();
+    };
 
-        this.app.onWindowResize = function () {
+    this.app.onWindowResize = function () {
 
-            self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
-        };
+      self.app.camera.position.set(0, 0, cameraZPos(self.app.camera.aspect));
+    };
 
-        this.app.play();
+    this.app.play();
+  }
+
+  SplashCanvas.prototype.addText = function addText() {
+    var self = this;
+
+    fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+
+      var textGeometry = createTextGeometry(font);
+
+      var bufferGeometry = new BufferGeometry(textGeometry);
+
+      self.initBufferAnimation(bufferGeometry, textGeometry);
+
+      var textMesh = new Mesh(bufferGeometry, self.textMat);
+
+      self.app.scene.add(textMesh);
+    });
+  };
+
+  SplashCanvas.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
+    var faceCount = geometry.faces.length;
+    var vertexCount = geometry.vertices.length;
+
+    setBufferGeometryIndicesFromFaces(bufferGeometry, faceCount, geometry.faces);
+    createBufferPositionsAttribute(bufferGeometry, geometry.vertices);
+
+    var aAnimation = createBufferAttribute(bufferGeometry, 'aAnimation', 2, vertexCount);
+    var aEndPosition = createBufferAttribute(bufferGeometry, 'aEndPosition', 3, vertexCount);
+
+    var i = void 0;
+    var i2 = void 0;
+    var i3 = void 0;
+    // let i4;
+    var v = void 0;
+
+    var maxDelay = 0.0;
+    var minDuration = 1.0;
+    var maxDuration = 100.0;
+
+    var stretch = 0.1;
+    var lengthFactor = 0.0001;
+
+    var maxLength = geometry.boundingBox.max.length();
+
+    this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
+    this._animationProgress = 0;
+
+    for (i = 0, i2 = 0, i3 = 0; i < faceCount; i++, i2 += 6, i3 += 9) {
+      var face = geometry.faces[i];
+
+      var centroid = computeCentroid(geometry, face);
+
+      // animation
+      var delay = (maxLength - centroid.length()) * lengthFactor;
+      var duration = _Math.randFloat(minDuration, maxDuration);
+
+      for (v = 0; v < 6; v += 2) {
+        aAnimation.array[i2 + v] = delay + stretch * 0.5;
+        aAnimation.array[i2 + v + 1] = duration;
+      }
+
+      // end position
+      var point = randomPointInSphere(1200);
+
+      for (v = 0; v < 9; v += 3) {
+        aEndPosition.array[i3 + v] = point.x;
+        aEndPosition.array[i3 + v + 1] = point.y;
+        aEndPosition.array[i3 + v + 2] = point.z;
+      }
     }
+  };
 
-    SplashCanvas.prototype.addText = function addText() {
-        var self = this;
+  SplashCanvas.prototype.addBackground = function addBackground() {
+    var geometry = new PlaneBufferGeometry(2, 2, 1);
+    this.bgMesh = new Mesh(geometry, this.backgroundMat);
+    this.app.scene.add(this.bgMesh);
+  };
 
-        fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+  SplashCanvas.prototype.initMaterials = function initMaterials() {
+    var loader = new TextureLoader();
+    var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
+    noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
 
-            var textGeometry = createTextGeometry(font);
+    this.offset = new Vector2(0, 0);
+    this.smooth = new Vector2(1.0, 1.0);
+    this.pointer = new Vector2(100, 100);
 
-            var bufferGeometry = new BufferGeometry(textGeometry);
+    var colA = new Color(0xffffff);
+    var colB = new Color(0x283844);
 
-            self.initBufferAnimation(bufferGeometry, textGeometry);
-
-            var textMesh = new Mesh(bufferGeometry, self.textMat);
-
-            self.app.scene.add(textMesh);
-        });
+    var uniforms = {
+      noiseTexture: { value: noiseTexture },
+      offset: { value: this.offset },
+      smooth: { value: this.smooth }
     };
 
-    SplashCanvas.prototype.initBufferAnimation = function initBufferAnimation(bufferGeometry, geometry) {
-        var faceCount = geometry.faces.length;
-        var vertexCount = geometry.vertices.length;
+    this.textMat = new ShaderMaterial({
+      uniforms: Object.assign({
+        color1: { value: colB },
+        color2: { value: colA },
+        uTime: { value: 0.0 },
+        pointer: { value: this.pointer }
+      }, uniforms),
+      vertexShader: textVert,
+      fragmentShader: textFrag,
+      side: DoubleSide
+    });
 
-        setBufferGeometryIndicesFromFaces(bufferGeometry, faceCount, geometry.faces);
-        createBufferPositionsAttribute(bufferGeometry, geometry.vertices);
+    this.backgroundMat = new RawShaderMaterial({
+      uniforms: Object.assign({
+        color1: { value: colA },
+        color2: { value: colB }
+      }, uniforms),
+      vertexShader: backgroundVert,
+      fragmentShader: backgroundFrag
+    });
+  };
 
-        var aAnimation = createBufferAttribute(bufferGeometry, 'aAnimation', 2, vertexCount);
-        var aEndPosition = createBufferAttribute(bufferGeometry, 'aEndPosition', 3, vertexCount);
+  // Pause if the canvas is not onscreen
+  // TODO: Make this a part of App
+  // TODO: Currently only works when scrolling down
+  // pauseWhenOffscreen() {
+  //   window.addEventListener( 'scroll', () => {
+  //     if ( !this.app.isPaused && window.scrollY > ( this.app.canvas.offsetTop + this.app.canvas.clientHeight ) ) {
+  //       this.app.pause();
+  //     } else if ( this.app.isPaused ) {
+  //       this.app.play();
+  //     }
+  //   } );
+  // }
 
-        var i = void 0;
-        var i2 = void 0;
-        var i3 = void 0;
-        // let i4;
-        var v = void 0;
+  SplashCanvas.prototype.initControls = function initControls() {
+    var controls = new OrbitControls(this.app.camera, this.canvas);
 
-        var maxDelay = 0.0;
-        var minDuration = 1.0;
-        var maxDuration = 100.0;
+    controls.enableZoom = false;
+    controls.enablePan = false;
 
-        var stretch = 0.1;
-        var lengthFactor = 0.0001;
+    // controls.autoRotate = true;
+    // controls.autoRotateSpeed = -1.0;
 
-        var maxLength = geometry.boundingBox.max.length();
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    controls.minAzimuthAngle = -Math.PI / 12; // radians
+    controls.maxAzimuthAngle = Math.PI / 12; // radians
 
-        this.animationDuration = maxDuration + maxDelay + stretch + lengthFactor * maxLength;
-        this._animationProgress = 0;
+    // How far you can orbit vertically, upper and lower limits.
+    // Range is 0 to Math.PI radians.
+    controls.minPolarAngle = Math.PI * 0.25;
+    controls.maxPolarAngle = Math.PI * 0.5;
 
-        for (i = 0, i2 = 0, i3 = 0; i < faceCount; i++, i2 += 6, i3 += 9) {
-            var face = geometry.faces[i];
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
 
-            var centroid = computeCentroid(geometry, face);
+    controls.enableKeys = false;
 
-            // animation
-            var delay = (maxLength - centroid.length()) * lengthFactor;
-            var duration = _Math.randFloat(minDuration, maxDuration);
+    controls.rotateSpeed = 0.01;
 
-            for (v = 0; v < 6; v += 2) {
-                aAnimation.array[i2 + v] = delay + stretch * 0.5;
-                aAnimation.array[i2 + v + 1] = duration;
-            }
+    this.controls = controls;
+  };
 
-            // end position
-            var point = randomPointInSphere(1200);
-
-            for (v = 0; v < 9; v += 3) {
-                aEndPosition.array[i3 + v] = point.x;
-                aEndPosition.array[i3 + v + 1] = point.y;
-                aEndPosition.array[i3 + v + 2] = point.z;
-            }
-        }
-    };
-
-    SplashCanvas.prototype.addBackground = function addBackground() {
-        var geometry = new PlaneBufferGeometry(2, 2, 1);
-        this.bgMesh = new Mesh(geometry, this.backgroundMat);
-        this.app.scene.add(this.bgMesh);
-    };
-
-    SplashCanvas.prototype.initMaterials = function initMaterials() {
-        var loader = new TextureLoader();
-        var noiseTexture = loader.load('/assets/images/textures/noise-1024.jpg');
-        noiseTexture.wrapS = noiseTexture.wrapT = RepeatWrapping;
-
-        this.offset = new Vector2(0, 0);
-        this.smooth = new Vector2(1.0, 1.0);
-        this.pointer = new Vector2(100, 100);
-
-        var colA = new Color(0xffffff);
-        var colB = new Color(0x283844);
-
-        var uniforms = {
-            noiseTexture: { value: noiseTexture },
-            offset: { value: this.offset },
-            smooth: { value: this.smooth }
-        };
-
-        this.textMat = new ShaderMaterial({
-            uniforms: Object.assign({
-                color1: { value: colB },
-                color2: { value: colA },
-                uTime: { value: 0.0 },
-                pointer: { value: this.pointer }
-            }, uniforms),
-            vertexShader: textVert,
-            fragmentShader: textFrag,
-            side: DoubleSide
-        });
-
-        this.backgroundMat = new RawShaderMaterial({
-            uniforms: Object.assign({
-                color1: { value: colA },
-                color2: { value: colB }
-            }, uniforms),
-            vertexShader: backgroundVert,
-            fragmentShader: backgroundFrag
-        });
-    };
-
-    // Pause if the canvas is not onscreen
-    // TODO: Make this a part of App
-    // TODO: Currently only works when scrolling down
-    // pauseWhenOffscreen() {
-    //   window.addEventListener( 'scroll', () => {
-    //     if ( !this.app.isPaused && window.scrollY > ( this.app.canvas.offsetTop + this.app.canvas.clientHeight ) ) {
-    //       this.app.pause();
-    //     } else if ( this.app.isPaused ) {
-    //       this.app.play();
-    //     }
-    //   } );
-    // }
-
-    SplashCanvas.prototype.initControls = function initControls() {
-        var controls = new OrbitControls(this.app.camera, this.canvas);
-
-        controls.enableZoom = false;
-        controls.enablePan = false;
-
-        // controls.autoRotate = true;
-        // controls.autoRotateSpeed = -1.0;
-
-        // How far you can orbit horizontally, upper and lower limits.
-        // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-        controls.minAzimuthAngle = -Math.PI / 12; // radians
-        controls.maxAzimuthAngle = Math.PI / 12; // radians
-
-        // How far you can orbit vertically, upper and lower limits.
-        // Range is 0 to Math.PI radians.
-        controls.minPolarAngle = Math.PI * 0.25;
-        controls.maxPolarAngle = Math.PI * 0.5;
-
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-
-        controls.enableKeys = false;
-
-        controls.rotateSpeed = 0.01;
-
-        this.controls = controls;
-    };
-
-    return SplashCanvas;
+  return SplashCanvas;
 }();
 
 // this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer

@@ -43716,6 +43716,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43750,6 +43752,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43776,30 +43779,20 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
+    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max side of the bounding box
-    var maxDim = Math.max(size.x, size.y, size.z);
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
     var fov = this.camera.fov * (Math.PI / 180);
+
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
-
-    var minZ = boundingBox.min.z;
-    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
-
-    this.camera.far = cameraToFarEdge * 3;
-    this.camera.updateProjectionMatrix();
-
-    if (this.controls) {
-
-      // set camera to rotate around center of loaded object
-      this.controls.target = center;
-
-      // prevent camera from zooming out far enough to create far plane cutoff
-      this.controls.maxDistance = cameraToFarEdge * 2;
-    }
   };
 }
 
@@ -44377,137 +44370,137 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var AnimationControls = function () {
-    function AnimationControls() {
-        classCallCheck(this, AnimationControls);
+  function AnimationControls() {
+    classCallCheck(this, AnimationControls);
 
 
-        this.slider = document.querySelector('#animation-slider');
-        this.playButton = document.querySelector('#play-button');
-        this.pauseButton = document.querySelector('#pause-button');
-        this.playbackControl = document.querySelector('#playback-control');
+    this.slider = document.querySelector('#animation-slider');
+    this.playButton = document.querySelector('#play-button');
+    this.pauseButton = document.querySelector('#pause-button');
+    this.playbackControl = document.querySelector('#playback-control');
 
-        this.controls = document.querySelector('#animation-controls');
+    this.controls = document.querySelector('#animation-controls');
 
-        this.isPaused = false;
-        this.pauseButtonActive = false;
+    this.isPaused = false;
+    this.pauseButtonActive = false;
+  }
+
+  AnimationControls.prototype.update = function update(delta) {
+
+    // delta is in seconds while fbx animations are in milliseconds so convert here
+    if (this.mixer && this.action && !this.isPaused) {
+
+      this.mixer.update(delta / 1000);
+
+      // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
+      // the animation duration, so set the slider value from that
+      this.setSliderValue(this.action.time);
+    }
+  };
+
+  AnimationControls.prototype.initAnimation = function initAnimation(object) {
+
+    // don't do anything if the object has no animations
+    if (!object.animations || object.animations.length === 0) return;
+
+    var animation = object.animations[0];
+
+    // lots of models have tiny < .1 second animations that cause
+    // flickering / stuttering - ignore these
+    if (animation.duration < 0.1) {
+
+      console.warn('Skipping animation with duration < 0.1 seconds.');
+      return;
     }
 
-    AnimationControls.prototype.update = function update(delta) {
+    // set animation slider max to length of animation
+    this.slider.max = String(animation.duration);
 
-        // delta is in seconds while fbx animations are in milliseconds so convert here
-        if (this.mixer && this.action && !this.isPaused) {
+    this.slider.step = String(animation.duration / 150);
 
-            this.mixer.update(delta / 1000);
+    this.mixer = new AnimationMixer(object);
 
-            // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
-            // the animation duration, so set the slider value from that
-            this.setSliderValue(this.action.time);
-        }
-    };
+    this.action = this.mixer.clipAction(animation);
 
-    AnimationControls.prototype.initAnimation = function initAnimation(object) {
+    this.action.play();
 
-        // don't do anything if the object has no animations
-        if (!object.animations || object.animations.length === 0) return;
+    document.querySelector('#animation-controls').classList.remove('hide');
 
-        var animation = object.animations[0];
+    this.initPlaybackControls();
 
-        // lots of models have tiny < .1 second animations that cause
-        // flickering / stuttering - ignore these
-        if (animation.duration < 0.1) {
+    this.initSlider();
+  };
 
-            console.warn('Skipping animation with duration < 0.1 seconds.');
-            return;
-        }
+  AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
 
-        // set animation slider max to length of animation
-        this.slider.max = String(animation.duration);
+    this.slider.value = String(val);
+  };
 
-        this.slider.step = String(animation.duration / 150);
+  AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
+    var _this = this;
 
-        this.mixer = new AnimationMixer(object);
+    this.playbackControl.addEventListener('click', function () {
 
-        this.action = this.mixer.clipAction(animation);
+      if (!_this.isPaused) {
 
-        this.action.play();
+        _this.pauseButtonActive = true;
+      } else {
 
-        document.querySelector('#animation-controls').classList.remove('hide');
+        _this.pauseButtonActive = false;
+      }
 
-        this.initPlaybackControls();
+      _this.togglePause();
+    });
+  };
 
-        this.initSlider();
-    };
+  AnimationControls.prototype.togglePause = function togglePause() {
 
-    AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
+    if (!this.isPaused) {
 
-        this.slider.value = String(val);
-    };
+      this.pause();
+    } else {
 
-    AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
-        var _this = this;
+      this.play();
+    }
+  };
 
-        this.playbackControl.addEventListener('click', function () {
+  AnimationControls.prototype.pause = function pause() {
 
-            if (!_this.isPaused) {
+    this.isPaused = true;
+    this.playButton.classList.remove('hide');
+    this.pauseButton.classList.add('hide');
+  };
 
-                _this.pauseButtonActive = true;
-            } else {
+  AnimationControls.prototype.play = function play() {
 
-                _this.pauseButtonActive = false;
-            }
+    this.isPaused = false;
+    this.playButton.classList.add('hide');
+    this.pauseButton.classList.remove('hide');
+  };
 
-            _this.togglePause();
-        });
-    };
+  AnimationControls.prototype.initSlider = function initSlider() {
+    var _this2 = this;
 
-    AnimationControls.prototype.togglePause = function togglePause() {
+    this.slider.addEventListener('mousedown', function () {
 
-        if (!this.isPaused) {
+      if (!_this2.pauseButtonActive) _this2.pause();
+    });
 
-            this.pause();
-        } else {
+    this.slider.addEventListener('input', throttle(function () {
 
-            this.play();
-        }
-    };
+      var oldTime = _this2.mixer.time;
+      var newTime = _this2.slider.value;
 
-    AnimationControls.prototype.pause = function pause() {
+      _this2.mixer.update(newTime - oldTime);
+    }, 17)); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-        this.isPaused = true;
-        this.playButton.classList.remove('hide');
-        this.pauseButton.classList.add('hide');
-    };
+    this.slider.addEventListener('mouseup', function () {
 
-    AnimationControls.prototype.play = function play() {
+      if (!_this2.pauseButtonActive) _this2.play();
+    });
+  };
 
-        this.isPaused = false;
-        this.playButton.classList.add('hide');
-        this.pauseButton.classList.remove('hide');
-    };
-
-    AnimationControls.prototype.initSlider = function initSlider() {
-        var _this2 = this;
-
-        this.slider.addEventListener('mousedown', function () {
-
-            if (!_this2.pauseButtonActive) _this2.pause();
-        });
-
-        this.slider.addEventListener('input', throttle(function () {
-
-            var oldTime = _this2.mixer.time;
-            var newTime = _this2.slider.value;
-
-            _this2.mixer.update(newTime - oldTime);
-        }, 17)); // throttling at ~17 ms will give approx 60fps while sliding the controls
-
-        this.slider.addEventListener('mouseup', function () {
-
-            if (!_this2.pauseButtonActive) _this2.play();
-        });
-    };
-
-    return AnimationControls;
+  return AnimationControls;
 }();
 
 // Note - this currently get the info from the three.js renderer rather than the model.
@@ -55337,180 +55330,180 @@ var loaders = new Loaders();
 var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
 var OnLoadCallbacks = function () {
-    function OnLoadCallbacks() {
-        classCallCheck(this, OnLoadCallbacks);
+  function OnLoadCallbacks() {
+    classCallCheck(this, OnLoadCallbacks);
+  }
+
+  OnLoadCallbacks.onJSONLoad = function onJSONLoad(e) {
+
+    var geometry = void 0,
+        object = void 0;
+    var JsonObj = JSON.parse(e.target.result);
+
+    if (!JsonObj.metadata) {
+
+      console.error('Unsupported JSON format');
+      return;
     }
 
-    OnLoadCallbacks.onJSONLoad = function onJSONLoad(e) {
+    var type = void 0;
 
-        var geometry = void 0,
-            object = void 0;
-        var JsonObj = JSON.parse(e.target.result);
+    if (JsonObj.metadata.type) type = JsonObj.metadata.type.toLowerCase();else type = 'object';
 
-        if (!JsonObj.metadata) {
+    switch (type) {
 
-            console.error('Unsupported JSON format');
-            return;
+      case 'buffergeometry':
+        geometry = loaders.bufferGeometryLoader.parse(JsonObj);
+        object = new Mesh(geometry, defaultMat);
+        break;
+      case 'geometry':
+        geometry = loaders.jsonLoader.parse(JsonObj);
+        object = new Mesh(geometry, defaultMat);
+        break;
+      default:
+        // scene object
+        try {
+
+          object = loaders.objectLoader.parse(JsonObj);
+        } catch (err) {
+
+          console.log(err);
+          console.error('Error loading JSON file, check console log for details.');
         }
 
-        var type = void 0;
+    }
 
-        if (JsonObj.metadata.type) type = JsonObj.metadata.type.toLowerCase();else type = 'object';
+    if (object) loaderCanvas.addObjectToScene(object);
+  };
 
-        switch (type) {
+  OnLoadCallbacks.onFBXLoad = function onFBXLoad(e) {
 
-            case 'buffergeometry':
-                geometry = loaders.bufferGeometryLoader.parse(JsonObj);
-                object = new Mesh(geometry, defaultMat);
-                break;
-            case 'geometry':
-                geometry = loaders.jsonLoader.parse(JsonObj);
-                object = new Mesh(geometry, defaultMat);
-                break;
-            default:
-                // scene object
-                try {
+    var object = loaders.fbxLoader.parse(e.target.result);
+    loaderCanvas.addObjectToScene(object);
+  };
 
-                    object = loaders.objectLoader.parse(JsonObj);
-                } catch (err) {
+  OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(e) {
 
-                    console.log(err);
-                    console.error('Error loading JSON file, check console log for details.');
-                }
+    loaders.gltf2Loader.parse(e.target.result, function (gltf) {
 
-        }
+      loaderCanvas.addObjectToScene(gltf.scene);
+    });
+  };
 
-        if (object) loaderCanvas.addObjectToScene(object);
-    };
+  OnLoadCallbacks.onOBJLoad = function onOBJLoad(e) {
 
-    OnLoadCallbacks.onFBXLoad = function onFBXLoad(e) {
+    var object = loaders.objLoader2.parse(e.target.result);
 
-        var object = loaders.fbxLoader.parse(e.target.result);
-        loaderCanvas.addObjectToScene(object);
-    };
+    loaderCanvas.addObjectToScene(object);
+  };
 
-    OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(e) {
+  OnLoadCallbacks.onZipLoad = function onZipLoad(fbxFile, resources) {
 
-        loaders.gltf2Loader.parse(e.target.result, function (gltf) {
+    var object = loaders.fbxLoader.parse(fbxFile, resources);
+    loaderCanvas.addObjectToScene(object);
+  };
 
-            loaderCanvas.addObjectToScene(gltf.scene);
-        });
-    };
-
-    OnLoadCallbacks.onOBJLoad = function onOBJLoad(e) {
-
-        var object = loaders.objLoader2.parse(e.target.result);
-
-        loaderCanvas.addObjectToScene(object);
-    };
-
-    OnLoadCallbacks.onZipLoad = function onZipLoad(fbxFile, resources) {
-
-        var object = loaders.fbxLoader.parse(fbxFile, resources);
-        loaderCanvas.addObjectToScene(object);
-    };
-
-    return OnLoadCallbacks;
+  return OnLoadCallbacks;
 }();
 
 var zipHandler = function (file) {
-    JSZip.loadAsync(file).then(function (zip) {
+  JSZip.loadAsync(file).then(function (zip) {
 
-        // First loop over the zip's contents and extract the FBX file and any images
-        var imagesZipped = [];
+    // First loop over the zip's contents and extract the FBX file and any images
+    var imagesZipped = [];
 
-        var fbxFileZipped = false;
+    var fbxFileZipped = false;
 
-        for (var entry in zip.files) {
+    for (var entry in zip.files) {
 
-            var zippedFile = zip.files[entry];
+      var zippedFile = zip.files[entry];
 
-            // skip if the entry is a directory
-            if (zippedFile.dir === false) {
+      // skip if the entry is a directory
+      if (zippedFile.dir === false) {
 
-                var extension = zippedFile.name.split('.').pop().toLowerCase();
+        var extension = zippedFile.name.split('.').pop().toLowerCase();
 
-                if (extension === 'fbx') {
+        if (extension === 'fbx') {
 
-                    if (fbxFileZipped) {
+          if (fbxFileZipped) {
 
-                        console.error('Warning: more than one FBX file found in archive,\n              skipping subsequent files.');
-                    } else {
+            console.error('Warning: more than one FBX file found in archive,\n              skipping subsequent files.');
+          } else {
 
-                        fbxFileZipped = zippedFile;
-                    }
-                } else if (extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif') {
+            fbxFileZipped = zippedFile;
+          }
+        } else if (extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif') {
 
-                    // should check if it's an image here - not completely neccessary as it will
-                    // work anyway, but maybe more efficient
-                    imagesZipped.push(zippedFile);
-                }
-            }
+          // should check if it's an image here - not completely neccessary as it will
+          // work anyway, but maybe more efficient
+          imagesZipped.push(zippedFile);
+        }
+      }
+    }
+
+    // if there was no FBX file found exit with an error here
+    if (!fbxFileZipped) {
+
+      console.error('No FBX file found in archive.');
+      return;
+    }
+
+    // At this point the FBX file should be contained in fbxFileZipped and images are in
+    // imagesZipped - these are still compressed, so we'll need to set up a Promise and
+    // uncompress them all before calling the FBXParser
+
+    var images = {};
+
+    var URL = window.URL || window.webkitURL || window.mozURL;
+
+    var promises = imagesZipped.map(function (zippedFile) {
+
+      return zippedFile.async('arrayBuffer').then(function (image) {
+
+        var buffer = new Uint8Array(image);
+        var blob = new Blob([buffer.buffer]);
+        var url = URL.createObjectURL(blob);
+
+        // drop any directories from the name
+        var split = zippedFile.name.split(/[\\\/]/);
+        var fileName = void 0;
+
+        if (split.length > 0) {
+
+          fileName = split[split.length - 1];
+        } else {
+
+          fileName = zippedFile.name;
         }
 
-        // if there was no FBX file found exit with an error here
-        if (!fbxFileZipped) {
+        if (images[fileName] !== undefined) {
 
-            console.error('No FBX file found in archive.');
-            return;
+          console.error('Warning: the archive contains multiple images with the same name:' + fileName);
+        } else {
+
+          images[fileName] = url;
         }
-
-        // At this point the FBX file should be contained in fbxFileZipped and images are in
-        // imagesZipped - these are still compressed, so we'll need to set up a Promise and
-        // uncompress them all before calling the FBXParser
-
-        var images = {};
-
-        var URL = window.URL || window.webkitURL || window.mozURL;
-
-        var promises = imagesZipped.map(function (zippedFile) {
-
-            return zippedFile.async('arrayBuffer').then(function (image) {
-
-                var buffer = new Uint8Array(image);
-                var blob = new Blob([buffer.buffer]);
-                var url = URL.createObjectURL(blob);
-
-                // drop any directories from the name
-                var split = zippedFile.name.split(/[\\\/]/);
-                var fileName = void 0;
-
-                if (split.length > 0) {
-
-                    fileName = split[split.length - 1];
-                } else {
-
-                    fileName = zippedFile.name;
-                }
-
-                if (images[fileName] !== undefined) {
-
-                    console.error('Warning: the archive contains multiple images with the same name:' + fileName);
-                } else {
-
-                    images[fileName] = url;
-                }
-            }, function (err) {
-                console.error('JSZip error unpacking image: ' + err);
-            });
-        });
-
-        var fbxFile = null;
-        var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
-            fbxFile = data;
-        }, function (err) {
-            console.error('JSZip error unpacking FBX: ' + err);
-        });
-
-        promises.push(fbxFilePromise);
-
-        Promise.all(promises).then(function () {
-
-            console.log(images);
-
-            OnLoadCallbacks.onZipLoad(fbxFile, images);
-        });
+      }, function (err) {
+        console.error('JSZip error unpacking image: ' + err);
+      });
     });
+
+    var fbxFile = null;
+    var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
+      fbxFile = data;
+    }, function (err) {
+      console.error('JSZip error unpacking FBX: ' + err);
+    });
+
+    promises.push(fbxFilePromise);
+
+    Promise.all(promises).then(function () {
+
+      console.log(images);
+
+      OnLoadCallbacks.onZipLoad(fbxFile, images);
+    });
+  });
 };
 
 // Check support for the File API support

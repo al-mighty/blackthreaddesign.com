@@ -43703,6 +43703,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -43737,6 +43739,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -43763,30 +43766,20 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
+    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max side of the bounding box
-    var maxDim = Math.max(size.x, size.y, size.z);
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
     var fov = this.camera.fov * (Math.PI / 180);
+
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
-
-    var minZ = boundingBox.min.z;
-    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
-
-    this.camera.far = cameraToFarEdge * 3;
-    this.camera.updateProjectionMatrix();
-
-    if (this.controls) {
-
-      // set camera to rotate around center of loaded object
-      this.controls.target = center;
-
-      // prevent camera from zooming out far enough to create far plane cutoff
-      this.controls.maxDistance = cameraToFarEdge * 2;
-    }
   };
 }
 

@@ -55404,6 +55404,8 @@ function App(canvas) {
       self.frameCount++;
       self.delta = self.time.delta;
 
+      if (self.controls && self.controls.enableDamping) self.controls.update();
+
       self.onUpdate();
 
       if (self.autoRender) self.renderer.render(self.scene, self.camera);
@@ -55438,6 +55440,7 @@ function App(canvas) {
 
   this.onUpdate = function () {};
 
+  // convert object to JSON format
   this.toJSON = function (object) {
     if (typeof object.toJSON === 'function') {
       var json = object.toJSON();
@@ -55464,30 +55467,20 @@ function App(canvas) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject(object);
 
+    // set camera to rotate around center of loaded object
     var center = boundingBox.getCenter();
+
+    if (this.controls) this.controls.target = center;
 
     var size = boundingBox.getSize();
 
-    // get the max side of the bounding box
-    var maxDim = Math.max(size.x, size.y, size.z);
+    // get the max edge of the bounding box
+    var maxDim = Math.max(size.x, size.y);
+
     var fov = this.camera.fov * (Math.PI / 180);
+
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
     this.camera.position.set(center.x, center.y, cameraZ);
-
-    var minZ = boundingBox.min.z;
-    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
-
-    this.camera.far = cameraToFarEdge * 3;
-    this.camera.updateProjectionMatrix();
-
-    if (this.controls) {
-
-      // set camera to rotate around center of loaded object
-      this.controls.target = center;
-
-      // prevent camera from zooming out far enough to create far plane cutoff
-      this.controls.maxDistance = cameraToFarEdge * 2;
-    }
   };
 }
 
@@ -55889,61 +55882,61 @@ function createGroup3(camera) {
 
 // import Stats from 'utilities/stats.js';
 var WavelinesCanvas = function () {
-    function WavelinesCanvas() {
-        classCallCheck(this, WavelinesCanvas);
+  function WavelinesCanvas() {
+    classCallCheck(this, WavelinesCanvas);
 
 
-        var self = this;
+    var self = this;
 
-        this.container = document.querySelector('.canvas-container');
+    this.container = document.querySelector('.canvas-container');
 
-        this.app = new App(document.querySelector('#wavelines-canvas'));
+    this.app = new App(document.querySelector('#wavelines-canvas'));
 
-        this.app.renderer.setClearColor(0xffffff);
-        this.app.camera.position.set(0, 0, 1);
-        this.app.camera.fov = 75;
-        this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setClearColor(0xffffff);
+    this.app.camera.position.set(0, 0, 1);
+    this.app.camera.fov = 75;
+    this.app.camera.updateProjectionMatrix();
 
-        self.mixers = [];
+    self.mixers = [];
 
-        // this.stats = new Stats();
+    // this.stats = new Stats();
 
-        self.app.onUpdate = function () {
+    self.app.onUpdate = function () {
 
-            self.animateCamera();
+      self.animateCamera();
 
-            self.mixers.forEach(function (mixer) {
-                return mixer.update(self.app.delta * 0.001);
-            });
+      self.mixers.forEach(function (mixer) {
+        return mixer.update(self.app.delta * 0.001);
+      });
 
-            // self.stats.update();
-        };
-
-        self.app.onWindowResize = function () {};
-
-        self.initLines();
-
-        self.app.play();
-    }
-
-    WavelinesCanvas.prototype.initLines = function initLines() {
-        var _this = this;
-
-        var groups = [createGroup1(this.app.camera), createGroup2(this.app.camera), createGroup3(this.app.camera)];
-
-        groups.forEach(function (group) {
-            _this.app.scene.add(group.group);
-            _this.mixers.push(group.mixer);
-        });
+      // self.stats.update();
     };
 
-    WavelinesCanvas.prototype.animateCamera = function animateCamera() {
-        var pointerY = pointerPos.y;
+    self.app.onWindowResize = function () {};
 
-        this.app.camera.position.y = pointerY / window.innerHeight;
-    };
+    self.initLines();
 
-    return WavelinesCanvas;
+    self.app.play();
+  }
+
+  WavelinesCanvas.prototype.initLines = function initLines() {
+    var _this = this;
+
+    var groups = [createGroup1(this.app.camera), createGroup2(this.app.camera), createGroup3(this.app.camera)];
+
+    groups.forEach(function (group) {
+      _this.app.scene.add(group.group);
+      _this.mixers.push(group.mixer);
+    });
+  };
+
+  WavelinesCanvas.prototype.animateCamera = function animateCamera() {
+    var pointerY = pointerPos.y;
+
+    this.app.camera.position.y = pointerY / window.innerHeight;
+  };
+
+  return WavelinesCanvas;
 }();
 
 // this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer

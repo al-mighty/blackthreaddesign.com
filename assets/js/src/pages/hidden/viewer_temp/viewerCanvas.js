@@ -183,10 +183,15 @@ class LoaderCanvas {
 
   loadFBXObject() {
 
-    const url = '/assets/models/viewer_temp/product_scaled_triangulated.fbx';
+    const url = '/assets/models/viewer_temp/product_scaled.fbx';
 
+    console.log( 'Starting model load' );
+    console.time( 'load' );
     this.loaders.fbxLoader.load( url,
       ( result ) => {
+
+        console.log( 'Loading finished' );
+        console.timeEnd( 'load' );
 
         const object = result.children[0];
 
@@ -194,22 +199,8 @@ class LoaderCanvas {
 
           if ( child.material !== undefined ) {
 
-            console.log( child.material, this.materials[ child.material.name ] )
-
             child.material = this.materials[ child.material.name ];
-            // console.log( child.material.name)
 
-            // switch ( child.material.name ) {
-
-            //   case 'glossy_red01':
-            //     break;
-            //   case 'Schwarz Matt':
-            //     break;
-            //   case 'Glas':
-            //     break;
-            //   case 'Plastik Mittelgl':
-            //     break;
-            // }
           }
 
         } );

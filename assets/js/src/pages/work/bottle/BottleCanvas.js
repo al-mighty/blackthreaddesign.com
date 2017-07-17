@@ -99,6 +99,7 @@ export default class BottleCanvas {
 
     // App has play / pause / stop functions
     this.app.play();
+
   }
 
   initLights() {
