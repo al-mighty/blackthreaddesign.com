@@ -1,4 +1,7 @@
+import * as THREE from 'three';
 import errorHandler from './utilities/errorHandler.js';
+
+document.querySelector( '.three-rev' ).innerHTML = THREE.REVISION;
 
 const goFullscreen = ( elem ) => {
 

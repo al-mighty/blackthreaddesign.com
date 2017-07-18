@@ -57062,6 +57062,39 @@ function App(canvas) {
       this.controls.maxDistance = cameraToFarEdge * 2;
     }
   };
+
+  // take a screenshot at a given width and height
+  // and return an img element
+  this.takeScreenshot = function (width, height) {
+
+    var img = new Image();
+
+    if (width > 0 && height > 0) {
+
+      // set camera and renderer to screenshot size
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(width, height, false);
+
+      // render scene 
+      this.renderer.render(this.scene, this.camera, null, false);
+
+      img.src = this.renderer.domElement.toDataURL();
+
+      // reset the renderer and camera to original size
+      this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
+    } else {
+
+      // render scene 
+      this.renderer.render(this.scene, this.camera, null, false);
+
+      img.src = this.renderer.domElement.toDataURL();
+    }
+
+    return img;
+  };
 }
 
 var backgroundVert = "#define GLSLIFY 1\nattribute vec3 position;\nvarying vec2 uv;\nvoid main() {\n\tgl_Position = vec4(vec3(position.x, position.y, 1.0), 1.0);\n\tuv = vec2(position.x, position.y) * 0.5;\n}\n";

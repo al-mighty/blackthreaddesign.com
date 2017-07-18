@@ -53,23 +53,23 @@ fileInput.addEventListener( 'change', ( e ) => {
       case 'fbx':
         manager.onStart();
         fileReader.onload = OnLoadCallbacks.onFBXLoad;
-        fileReader.readAsArrayBuffer( file );
+        fileReader.readAsDataURL( file );
         break;
       case 'gltf':
       case 'glb':
         manager.onStart();
         fileReader.onload = OnLoadCallbacks.onGLTFLoad;
-        fileReader.readAsArrayBuffer( file );
+        fileReader.readAsDataURL( file );
         break;
       case 'obj':
         manager.onStart();
         fileReader.onload = OnLoadCallbacks.onOBJLoad;
-        fileReader.readAsArrayBuffer( file );
+        fileReader.readAsDataURL( file );
         break;
       case 'dae':
         manager.onStart();
         fileReader.onload = OnLoadCallbacks.onDAELoad;
-        fileReader.readAsText( file );
+        fileReader.readAsDataURL( file );
         break;
       case 'zip':
         manager.onStart();

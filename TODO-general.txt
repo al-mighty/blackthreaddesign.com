@@ -2,4 +2,4 @@ Write a better about page
 Add continuous animation to landing page
 Finish first section of tutorials
 Work on loader experiment
-Footer broken on some pages
+Footer broken on some pagesFix width of content on medium width screens

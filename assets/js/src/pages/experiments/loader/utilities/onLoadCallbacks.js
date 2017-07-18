@@ -57,14 +57,18 @@ export default class OnLoadCallbacks {
 
   static onFBXLoad( e ) {
 
-    const object = loaders.fbxLoader.parse( e.target.result );
-    loaderCanvas.addObjectToScene( object );
+    loaders.fbxLoader.load( e.target.result, ( result ) => {
+
+      console.log( result )
+      loaderCanvas.addObjectToScene( result );
+
+    } );
 
   }
 
   static onGLTFLoad( e ) {
 
-    loaders.gltf2Loader.parse( e.target.result, ( gltf ) => {
+    loaders.gltf2Loader.load( e.target.result, ( gltf ) => {
 
       if ( gltf.scenes.length > 1 ) {
 
@@ -92,24 +96,25 @@ export default class OnLoadCallbacks {
 
   static onOBJLoad( e ) {
 
-    const object = loaders.objLoader2.parse( e.target.result );
+    loaders.objLoader2.load( e.target.result, ( result ) => {
 
-    loaderCanvas.addObjectToScene( object );
+      loaderCanvas.addObjectToScene( result );
+
+    } );
 
   }
 
   static onDAELoad( e ) {
 
-    const result = loaders.colladaLoader.parse( e.target.result );
-    
-    const object = result.scene;
+    loaders.colladaLoader.load( e.target.result, ( result ) => {
 
-    if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
+      const object = result.scene;
 
-    console.log( result )
-    console.log( object )
+      if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
 
-    loaderCanvas.addObjectToScene( object );
+      loaderCanvas.addObjectToScene( object );
+
+    } );
 
   }
 

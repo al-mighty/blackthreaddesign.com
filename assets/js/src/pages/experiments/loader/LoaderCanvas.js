@@ -6,6 +6,7 @@ import AnimationControls from './utilities/AnimationControls.js';
 import addModelInfo from './utilities/addModelInfo.js';
 import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 import LightingSetup from './utilities/LightingSetup.js';
+import ScreenshotHandler from './utilities/ScreenshotHandler.js';
 
 import './utilities/fileReader.js';
 
@@ -49,6 +50,8 @@ class LoaderCanvas {
 
     backgroundColorChanger( this.app );
 
+    this.screenshotHandler = new ScreenshotHandler( this.app );
+
   }
 
   addObjectToScene( object ) {
@@ -72,7 +75,9 @@ class LoaderCanvas {
     addModelInfo( this.app.renderer );
 
     document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-
+    document.querySelector( '#screenshot-controls' ).classList.remove( 'hide' );
+    document.querySelector( '#model-info' ).classList.remove( 'hide' );
+  
   }
 
 }
