@@ -111,13 +111,39 @@
   text-align: center;
 }
 
-#controls {
+#top-controls{
+	position: absolute;
+	top: 0;
+	right: 0.5em;
+  width: 96%;
+  height: 5%;
+  left: 2%;
+
+  // a {
+	// 	color: black;
+  //   // bottom: 50%;
+  //   transform: translate( -50%, 50% );
+  // }
+  
+  span {
+    display: block;
+    
+  }
+}
+
+#light-symbol{
+  color: black;
+  position: absolute;
+  top: 20%;
+}
+
+#bottom-controls {
 	position: absolute;
 	bottom: 0;
 	right: 0.5em;
-  width: 90%;
+  width: 96%;
   height: 5%;
-  left: 9%;
+  left: 2%;
 
 	a {
 		color: black;
@@ -130,6 +156,14 @@
   }
 }
 
+#lighting-controls {
+
+}
+
+#lighting-slider {
+
+}
+
 #settings-button {
   float: left;
 }
@@ -139,9 +173,16 @@
 }
 
 #playback-control {
-  // position: absolute;
-  // bottom: 50%;
-  // transform: translate( -50%, 50% )
+  position: absolute;
+  top: 20%;
+  left: 16%
+}
+
+#animation-clips {
+  position: absolute;
+  left: 0;
+  width: 15%;
+  color: black;
 }
 
 #play-button, #pause-button {
@@ -151,7 +192,7 @@
 
 #animation-controls {
   position: absolute;
-  width: 86%;
+  width: 90%;
   height: 100%;
   left: 0;
   top: 0;
@@ -167,8 +208,8 @@
 
 #animation-slider{
   position: absolute;
-  left: 5%;
-  width: 100%;
+  right: 0;
+  width: 80%;
 }
 
 #animation-controls:input[type=range] {

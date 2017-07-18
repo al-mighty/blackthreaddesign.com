@@ -1,9 +1,0 @@
-set maxAnisotropy if necessary
-fix camera far plane for large scenes
-work on progress bar
-add screenshot button
-improve lighting (some models, e.g. monster.gltf are dark)
-- add light strength slider
-camera setup not far enough away for some models (monster.gltf)
-JSON format
-  - make it work for blender exporter

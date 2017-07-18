@@ -66,7 +66,25 @@ export default class OnLoadCallbacks {
 
     loaders.gltf2Loader.parse( e.target.result, ( gltf ) => {
 
-      loaderCanvas.addObjectToScene( gltf.scene );
+      if ( gltf.scenes.length > 1 ) {
+
+        gltf.scenes.forEach( ( scene ) => {
+
+          if ( gltf.animations ) scene.animations = gltf.animations;
+          loaderCanvas.addObjectToScene( scene );
+
+        } );
+
+      } else if ( gltf.scene ) {
+
+        if ( gltf.animations ) gltf.scene.animations = gltf.animations;
+        loaderCanvas.addObjectToScene( gltf.scene );
+
+      } else {
+
+        console.error( 'No scene found in GLTF file.' );
+
+      }
 
     } );
 
@@ -80,6 +98,20 @@ export default class OnLoadCallbacks {
 
   }
 
+  static onDAELoad( e ) {
+
+    const result = loaders.colladaLoader.parse( e.target.result );
+    
+    const object = result.scene;
+
+    if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
+
+    console.log( result )
+    console.log( object )
+
+    loaderCanvas.addObjectToScene( object );
+
+  }
 
   static onZipLoad( fbxFile, resources ) {
 

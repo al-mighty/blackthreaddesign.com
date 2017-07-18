@@ -6,6 +6,7 @@ import GLTF2Loader from 'modules/loaders/Gltf2Loader.module.js';
 import OBJLoader2 from 'modules/loaders/OBJLoader2.module.js';
 import WWOBJLoader2 from 'modules/loaders/WWOBJLoader2.module.js';
 import MTLLoader from 'modules/loaders/MTLLoader.module.js';
+import ColladaLoader from 'modules/loaders/ColladaLoader2.module.js';
 
 import manager from './loadingManager.js';
 
@@ -17,6 +18,7 @@ let gltf2Loader = null;
 let objLoader2 = null;
 let wwobj2Loader = null;
 let mtlLoader = null;
+let colladaLoader = null;
 
 
 export default class Loaders {
@@ -79,6 +81,13 @@ export default class Loaders {
           mtlLoader = new MTLLoader( manager );
         }
         return mtlLoader;
+      },
+
+      get colladaLoader() {
+        if ( colladaLoader === null ) {
+          colladaLoader = new ColladaLoader( manager );
+        }
+        return colladaLoader;
       },
 
     };

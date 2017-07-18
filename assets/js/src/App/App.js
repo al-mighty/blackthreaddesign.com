@@ -256,7 +256,10 @@ function App( canvas ) {
     // get the max side of the bounding box
     const maxDim = Math.max( size.x, size.y, size.z );
     const fov = this.camera.fov * ( Math.PI / 180 );
-    const cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
+    let cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
+
+    cameraZ *= 1.25; // zoom out a little so that objects don't fill the screen
+
     this.camera.position.set( center.x, center.y, cameraZ );
 
     const minZ = boundingBox.min.z;

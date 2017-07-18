@@ -281,7 +281,7 @@ class LoaderCanvas {
 
     // How far you can orbit vertically, upper and lower limits.
     // Range is 0 to Math.PI radians.
-    controls.minPolarAngle = 0; // radians
+    // controls.minPolarAngle = 0; // radians
     // controls.maxPolarAngle = Math.PI * 0.5; // radians
 
     // How far you can orbit horizontally, upper and lower limits.

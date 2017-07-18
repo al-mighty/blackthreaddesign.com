@@ -66,6 +66,11 @@ fileInput.addEventListener( 'change', ( e ) => {
         fileReader.onload = OnLoadCallbacks.onOBJLoad;
         fileReader.readAsArrayBuffer( file );
         break;
+      case 'dae':
+        manager.onStart();
+        fileReader.onload = OnLoadCallbacks.onDAELoad;
+        fileReader.readAsText( file );
+        break;
       case 'zip':
         manager.onStart();
         zipHandler( file );

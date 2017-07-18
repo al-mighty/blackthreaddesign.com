@@ -18,13 +18,30 @@ vendor-js:
     <input id="toggle-background" type="checkbox">Black Background
   </div>
 
-  <div id="controls">
+  <div id="top-controls">
+    <div id="lighting-controls">
+      <span id="light-symbol" class="fa fa-lg fa-play-circle" aria-hidden="true"></span>
+      <input id="lighting-slider" type="range" min="0" max="15" step="0.1" value="0" />
+    </div>
+    
+  </div>
+
+
+  <div id="bottom-controls">
+  
     <div id="animation-controls" class="hide">
+
+      <select id="animation-clips">
+        <option value="static">Static Pose</option>
+      </select>
+
       <a href="#" id="playback-control">
         <span id="play-button" class="fa fa-lg fa-play-circle hide" aria-hidden="true"></span>
         <span id="pause-button" class="fa fa-lg fa-pause-circle" aria-hidden="true"></span>
       </a>
+
       <input id="animation-slider" type="range" min="0" max="100" value="0" />
+
     </div>
 
     <div id="right-buttons">
@@ -42,7 +59,7 @@ vendor-js:
   <div id="loading-overlay">
 
     <form id="file-upload-form">
-      Upload a .json, .fbx, .obj, gltf, .glb or .zip file
+      Upload a .json, .fbx, .obj, gltf, .glb, .dae or .zip file
       <input id="file-upload-input" type="file" name="files[]" multiple>
     </form>
 
@@ -73,8 +90,11 @@ vendor-js:
 
   <p>FBX: Binary higher than version 6.1 and ASCII higher than version 7.0</p>
 
-  <p>GLTF: .gltf or .glb file, only embedded textures supported for now, animations not yet supported.</p>
+  <p>GLTF:.gltf or .glb file, only embedded textures supported for now.</p>
 
+  <p>OBJ: Using THREE.OBJLoader2. MTL material file not supported yet.</p>
+
+  <p>DAE: Using THREE.ColladaLoader2, so skinned meshes are not yet supported. Textures not yet supported. </p>
 
   <h3>Supported texture formats</h3>
 

@@ -2,3 +2,4 @@ Write a better about page
 Add continuous animation to landing page
 Finish first section of tutorials
 Work on loader experiment
+Footer broken on some pages

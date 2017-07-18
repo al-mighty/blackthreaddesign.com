@@ -11,23 +11,30 @@ export default class AnimationControls {
     this.pauseButton = document.querySelector( '#pause-button' );
     this.playbackControl = document.querySelector( '#playback-control' );
 
+    this.clipsSelection = document.querySelector( '#animation-clips' );
+
     this.controls = document.querySelector( '#animation-controls' );
 
     this.isPaused = false;
     this.pauseButtonActive = false;
 
+    this.clips = [];
+    this.mixers = [];
+    this.actions = [];
+    this.animationNames = [];
+
   }
 
   update( delta ) {
 
-    // delta is in seconds while fbx animations are in milliseconds so convert here
-    if ( this.mixer && this.action && !this.isPaused ) {
+    // delta is in seconds while animations are in milliseconds so convert here
+    if ( this.currentMixer && this.currentAction && !this.isPaused ) {
 
-      this.mixer.update( delta / 1000 );
+      this.currentMixer.update( delta / 1000 );
 
-      // this.mixer.time increases indefinitely, whereas this.action.time increases modulo
+      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time increases modulo
       // the animation duration, so set the slider value from that
-      this.setSliderValue( this.action.time );
+      this.setSliderValue( this.currentAction.time );
 
     }
 
@@ -38,33 +45,67 @@ export default class AnimationControls {
     // don't do anything if the object has no animations
     if ( !object.animations || object.animations.length === 0 ) return;
 
-    const animation = object.animations[ 0 ];
+    object.animations.forEach( ( animation ) => {
 
-    // lots of models have tiny < .1 second animations that cause
-    // flickering / stuttering - ignore these
-    if ( animation.duration < 0.1 ) {
+      // lots of models have tiny < .1 second animations that cause
+      // flickering / stuttering - ignore these
+      if ( animation.duration < 0.1 ) {
 
-      console.warn( 'Skipping animation with duration < 0.1 seconds.' );
-      return;
+        console.warn( 'Skipping animation with duration < 0.1 seconds: ' + animation.name );
 
-    }
+      } else {
 
-    // set animation slider max to length of animation
-    this.slider.max = String( animation.duration );
+        const mixer = new THREE.AnimationMixer( object );
 
-    this.slider.step = String( animation.duration / 150 );
+        const action = mixer.clipAction( animation );
 
-    this.mixer = new THREE.AnimationMixer( object );
+        this.clips.push( animation );
+        this.mixers.push( mixer );
+        this.actions.push( action );
+        this.animationNames.push( animation.name );
 
-    this.action = this.mixer.clipAction( animation );
+        this.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
 
-    this.action.play();
+      }
+
+    } );
+
+    this.selectCurrentAnimation( this.animationNames[ 0 ] );
 
     document.querySelector( '#animation-controls' ).classList.remove( 'hide' );
 
     this.initPlaybackControls();
 
     this.initSlider();
+
+    this.initSelectionMenu();
+
+  }
+
+  selectCurrentAnimation( name ) {
+
+    const index = this.animationNames.indexOf( name );
+
+    if ( index === -1 ) {
+
+      console.warn( 'Animation ' + name + ' not found.' );
+
+    } else {
+
+      if ( this.currentAction ) this.currentAction.stop();
+
+      this.currentMixer = this.mixers[ index ];
+      this.currentAction = this.actions[ index ];
+      this.currentClip = this.clips[ index ];
+
+      // set animation slider max to length of animation
+      this.slider.max = String( this.currentClip.duration );
+
+      this.slider.step = String( this.currentClip.duration / 150 );
+
+      this.currentAction.play();
+
+    }
 
   }
 
@@ -134,10 +175,10 @@ export default class AnimationControls {
 
     this.slider.addEventListener( 'input', throttle( () => {
 
-      const oldTime = this.mixer.time;
+      const oldTime = this.currentMixer.time;
       const newTime = this.slider.value;
 
-      this.mixer.update( newTime - oldTime );
+      this.currentMixer.update( newTime - oldTime );
 
     }, 17 ) ); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
@@ -148,4 +189,25 @@ export default class AnimationControls {
     } );
 
   }
+
+  initSelectionMenu() {
+
+    this.clipsSelection.selectedIndex = 1;
+
+    this.clipsSelection.addEventListener( 'change', ( e ) => {
+
+      if ( e.target.value === 'static' ) {
+
+        this.currentAction.stop();
+
+      } else {
+
+        this.selectCurrentAnimation( e.target.value );
+
+      }
+
+    } );
+
+  }
+
 }

@@ -7,7 +7,7 @@ date:   2017-06-24 13:00:35 +0700
 comments: true
 excerpt: "3D bottle created for a brewery - showcasing high performance transparency effects"
 header:
-  teaser: /assets/images/work/product_viewer/teaser.jpg
+  teaser: /assets/images/work/bottle/teaser.jpg
 js:
   'bottle'
 ---

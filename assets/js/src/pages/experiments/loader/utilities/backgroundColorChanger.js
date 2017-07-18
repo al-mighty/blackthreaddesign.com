@@ -1,6 +1,6 @@
 const backgroundColorChanger = ( app ) => {
 
-  const controlLinks = document.querySelector( '#controls' ).getElementsByTagName( 'a' );
+  const controlLinks = document.querySelector( '#bottom-controls' ).getElementsByTagName( 'a' );
 
   const toggle = document.querySelector( '#toggle-background' );
 
