@@ -9,10 +9,10 @@ const defaultMat = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x0000
 
 export default class OnLoadCallbacks {
 
-  static onJSONLoad( e ) {
+  static onJSONLoad( file ) {
 
     let geometry, object;
-    const JsonObj = JSON.parse( e.target.result );
+    const JsonObj = JSON.parse( file );
 
     if ( !JsonObj.metadata ) {
 
@@ -55,20 +55,19 @@ export default class OnLoadCallbacks {
 
   }
 
-  static onFBXLoad( e ) {
+  static onFBXLoad( file, resources ) {
 
-    loaders.fbxLoader.load( e.target.result, ( result ) => {
+    loaders.fbxLoader.load( file, ( result ) => {
 
-      console.log( result )
       loaderCanvas.addObjectToScene( result );
 
     } );
 
   }
 
-  static onGLTFLoad( e ) {
+  static onGLTFLoad( file ) {
 
-    loaders.gltf2Loader.load( e.target.result, ( gltf ) => {
+    loaders.gltf2Loader.load( file, ( gltf ) => {
 
       if ( gltf.scenes.length > 1 ) {
 
@@ -94,9 +93,9 @@ export default class OnLoadCallbacks {
 
   }
 
-  static onOBJLoad( e ) {
+  static onOBJLoad( file ) {
 
-    loaders.objLoader2.load( e.target.result, ( result ) => {
+    loaders.objLoader2.load( file, ( result ) => {
 
       loaderCanvas.addObjectToScene( result );
 
@@ -104,9 +103,9 @@ export default class OnLoadCallbacks {
 
   }
 
-  static onDAELoad( e ) {
+  static onDAELoad( file ) {
 
-    loaders.colladaLoader.load( e.target.result, ( result ) => {
+    loaders.colladaLoader.load( file, ( result ) => {
 
       const object = result.scene;
 

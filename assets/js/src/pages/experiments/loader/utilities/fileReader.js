@@ -17,122 +17,96 @@ const checkForFileAPI = () => {
 checkForFileAPI();
 
 /*  *******************************************************************
-              Set up FileReader
-*******************************************************************   */
-const fileReader = new FileReader();
-
-fileReader.onerror = ( msg ) => {
-
-  console.error( 'FileReader error: ' + msg );
-
-};
-
-/*  *******************************************************************
               Set up eventListener for file input
 *******************************************************************   */
 
 const fileInput = document.querySelector( '#file-upload-input' );
 
+const allFilesLoadedCallback = ( textures, file, type ) => {
+
+  // console.log( textures )
+
+  switch ( type ) {
+
+    case 'json':
+    case 'js':
+      manager.onStart();
+      OnLoadCallbacks.onJSONLoad( file );
+      break;
+    case 'fbx':
+      manager.onStart();
+      OnLoadCallbacks.onFBXLoad( file, textures );
+      break;
+    case 'gltf':
+    case 'glb':
+      manager.onStart();
+      OnLoadCallbacks.onGLTFLoad( file );
+      break;
+    case 'obj':
+      manager.onStart();
+      OnLoadCallbacks.onOBJLoad( file );
+      break;
+    case 'dae':
+      manager.onStart();
+      OnLoadCallbacks.onDAELoad( file );
+      break;
+    case 'zip':
+      manager.onStart();
+      zipHandler( file );
+      break;
+    default:
+      console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats or a zip archive.' );
+
+  }
+
+}
+
 fileInput.addEventListener( 'change', ( e ) => {
 
-  const files = event.target.files;
+  const files = e.target.files;
 
-  if ( files.length === 1 ) {
+  const textures = [];
 
-    const file = files[0];
-    const extension = file.name.split( '.' ).pop().toLowerCase();
+  let count = files.length;
+  let type;
+  let mainFile;
 
-    switch ( extension ) {
+  for ( let i = 0; i < files.length; i++ ) {
 
-      case 'json':
-      case 'js':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onJSONLoad;
-        fileReader.readAsText( file );
-        break;
-      case 'fbx':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onFBXLoad;
-        fileReader.readAsDataURL( file );
-        break;
-      case 'gltf':
-      case 'glb':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onGLTFLoad;
-        fileReader.readAsDataURL( file );
-        break;
-      case 'obj':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onOBJLoad;
-        fileReader.readAsDataURL( file );
-        break;
-      case 'dae':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onDAELoad;
-        fileReader.readAsDataURL( file );
-        break;
-      case 'zip':
-        manager.onStart();
-        zipHandler( file );
-        break;
-      default:
-        console.error( 'Unsupported file type ' + extension + '- please load one of the supported model formats or a zip archive.' );
+    const fileReader = new FileReader();
 
-    }
+    fileReader.onerror = ( msg ) => {
 
-  } else {
+      console.error( 'FileReader error: ' + msg );
 
-    let jsonFile = null;
-    let fbxFile = null;
-    let gltfFile = null;
-    let objFile = null;
-    let mtlFile = null;
+    };
 
+    const file = files[i];
 
-    const textures = [];
+    fileReader.readAsDataURL( file );
 
-    for ( let i = 0; i < files.length; i++ ) {
+    // check for image file
+    if ( file.type.match( 'image.*' ) ) {
 
-      const file = files[i];
+      fileReader.onload = ( evt ) => {
 
-      const extension = file.name.split( '.' ).pop().toLowerCase();
+        textures.push( evt.target.result );
 
+        // count down loading of files and callback when all are done
+        if ( --count === 0 ) allFilesLoadedCallback( textures, mainFile, type );
 
-      // check for image file
-      if ( file.type.match( 'image.*' ) ) {
+      };
 
-        textures.push( file );
+    } else {
 
-      } else {
+      type = file.name.split( '.' ).pop().toLowerCase();
 
-        switch ( extension ) {
+      fileReader.onload = ( evt ) => {
 
-          case 'json':
-          case 'js':
-            jsonFile = file;
-            break;
-          case 'fbx':
-            fbxFile = file;
-            break;
-          case 'gltf':
-          case 'glb':
-            gltfFile = file;
-            break;
-          case 'obj':
-            objFile = file;
-            break;
-          case 'mtl':
-            mtlFile = file;
-            break;
-          case 'zip':
-            console.error( 'Zip support forthcoming' );
-            break;
-          default:
-            console.error( 'Unknown file type ' + extension + '- please load one of the supported model formats or a zip archive.' );
+        mainFile = evt.target.result;
+        if ( --count === 0 ) allFilesLoadedCallback( textures, mainFile, type );
 
-        }
-
-      }
+      };
 
     }
 

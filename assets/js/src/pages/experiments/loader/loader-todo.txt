@@ -1,6 +1,6 @@
 work on progress bar
-add screenshot button
 make sliders look better
 FONT Loader and TTFLoader
+Create a couple of default models to use without uploading
 JSON format
   - make it work for blender exporter

@@ -45442,39 +45442,22 @@ Object.assign(FBXLoader.prototype, {
 
       if (!isFbxFormatASCII(FBXText)) {
 
-        console.error('Unknown FBX format.');
-        return;
+        throw new Error('FBXLoader: Unknown format.');
       }
 
-      var version = getFbxVersion(FBXText);
+      if (getFbxVersion(FBXText) < 7000) {
 
-      if (version < 7000) {
-
-        console.error('FBX version too low. Current version: ' + version + '. Required at least version 7000');
-        return;
-        // this.manager.itemError( FBXText );
-        // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
+        throw new Error('FBXLoader: FBX version not supported, FileVersion: ' + getFbxVersion(FBXText));
       }
 
       FBXTree = new TextParser().parse(FBXText);
     }
 
-    // console.log( 'FBXTree', FBXTree );
+    // console.log( FBXTree );
 
     var connections = parseConnections(FBXTree);
-
-    // parse embedded images
     var images = parseImages(FBXTree);
-
-    var textures = void 0;
-    if (typeof resourceDirectory === 'string') {
-
-      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
-    } else {
-
-      textures = parseTextures(FBXTree, new TextureLoader(this.manager), images, connections, resourceDirectory);
-    }
-
+    var textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
     var materials = parseMaterials(FBXTree, textures, connections);
     var deformers = parseDeformers(FBXTree, connections);
     var geometryMap = parseGeometries(FBXTree, connections, deformers);
@@ -45619,8 +45602,6 @@ function parseImage(videoNode) {
  * @returns {Map<number, THREE.Texture>}
  */
 function parseTextures(FBXTree, loader, imageMap, connections) {
-  var texturesFromZip = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-
 
   /**
    * @type {Map<number, THREE.Texture>}
@@ -45632,7 +45613,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
     var textureNodes = FBXTree.Objects.subNodes.Texture;
     for (var nodeID in textureNodes) {
 
-      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections, texturesFromZip);
+      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections);
       textureMap.set(parseInt(nodeID), texture);
     }
   }
@@ -45647,7 +45628,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {THREE.Texture}
  */
-function parseTexture(textureNode, loader, imageMap, connections, texturesFromZip) {
+function parseTexture(textureNode, loader, imageMap, connections) {
 
   var FBX_ID = textureNode.id;
 
@@ -45655,16 +45636,21 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
   var fileName = void 0;
 
-  console.log(textureNode);
   var filePath = textureNode.properties.FileName;
-
   var relativeFilePath = textureNode.properties.RelativeFilename;
 
   var children = connections.get(FBX_ID).children;
 
-  var currentPath = loader.path;
+  if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
 
-  if (texturesFromZip) {
+    fileName = imageMap.get(children[0].ID);
+  } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
+
+    // use textureNode.properties.RelativeFilename
+    // if it exists and it doesn't seem an absolute path
+
+    fileName = relativeFilePath;
+  } else {
 
     var split = filePath.split(/[\\\/]/);
 
@@ -45675,49 +45661,15 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
       fileName = filePath;
     }
-
-    loader.setPath(undefined);
-
-    if (texturesFromZip[fileName] === undefined) {
-
-      console.error('Texture missing from archive: ' + fileName);
-
-      fileName = '/assets/images/textures/default.jpg';
-    } else {
-
-      fileName = texturesFromZip[fileName];
-    }
-  } else {
-
-    if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
-
-      fileName = imageMap.get(children[0].ID);
-    } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
-
-      // use textureNode.properties.RelativeFilename
-      // if it exists and it doesn't seem an absolute path
-
-      fileName = relativeFilePath;
-    } else {
-
-      var _split = filePath.split(/[\\\/]/);
-
-      if (_split.length > 0) {
-
-        fileName = _split[_split.length - 1];
-      } else {
-
-        fileName = filePath;
-      }
-    }
   }
+
+  var currentPath = loader.path;
 
   if (fileName.indexOf('blob:') === 0) {
 
     loader.setPath(undefined);
   }
 
-  console.log(fileName);
   /**
    * @type {THREE.Texture}
    */
@@ -49400,7 +49352,7 @@ Object.assign(BinaryParser.prototype, {
 
       default:
         console.error('FBX contains an unknown property type ' + type);
-        return;
+
     }
   }
 });
@@ -56555,11 +56507,11 @@ var OnLoadCallbacks = function () {
     classCallCheck(this, OnLoadCallbacks);
   }
 
-  OnLoadCallbacks.onJSONLoad = function onJSONLoad(e) {
+  OnLoadCallbacks.onJSONLoad = function onJSONLoad(file) {
 
     var geometry = void 0,
         object = void 0;
-    var JsonObj = JSON.parse(e.target.result);
+    var JsonObj = JSON.parse(file);
 
     if (!JsonObj.metadata) {
 
@@ -56597,18 +56549,17 @@ var OnLoadCallbacks = function () {
     if (object) loaderCanvas.addObjectToScene(object);
   };
 
-  OnLoadCallbacks.onFBXLoad = function onFBXLoad(e) {
+  OnLoadCallbacks.onFBXLoad = function onFBXLoad(file, resources) {
 
-    loaders.fbxLoader.load(e.target.result, function (result) {
+    loaders.fbxLoader.load(file, function (result) {
 
-      console.log(result);
       loaderCanvas.addObjectToScene(result);
     });
   };
 
-  OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(e) {
+  OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(file) {
 
-    loaders.gltf2Loader.load(e.target.result, function (gltf) {
+    loaders.gltf2Loader.load(file, function (gltf) {
 
       if (gltf.scenes.length > 1) {
 
@@ -56628,17 +56579,17 @@ var OnLoadCallbacks = function () {
     });
   };
 
-  OnLoadCallbacks.onOBJLoad = function onOBJLoad(e) {
+  OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
 
-    loaders.objLoader2.load(e.target.result, function (result) {
+    loaders.objLoader2.load(file, function (result) {
 
       loaderCanvas.addObjectToScene(result);
     });
   };
 
-  OnLoadCallbacks.onDAELoad = function onDAELoad(e) {
+  OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
 
-    loaders.colladaLoader.load(e.target.result, function (result) {
+    loaders.colladaLoader.load(file, function (result) {
 
       var object = result.scene;
 
@@ -56757,7 +56708,6 @@ var zipHandler = function (file) {
   });
 };
 
-// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -56769,116 +56719,91 @@ var checkForFileAPI = function () {
 checkForFileAPI();
 
 /*  *******************************************************************
-              Set up FileReader
-*******************************************************************   */
-var fileReader = new FileReader();
-
-fileReader.onerror = function (msg) {
-
-  console.error('FileReader error: ' + msg);
-};
-
-/*  *******************************************************************
               Set up eventListener for file input
 *******************************************************************   */
 
 var fileInput = document.querySelector('#file-upload-input');
 
+var allFilesLoadedCallback = function (textures, file, type) {
+
+  // console.log( textures )
+
+  switch (type) {
+
+    case 'json':
+    case 'js':
+      manager.onStart();
+      OnLoadCallbacks.onJSONLoad(file);
+      break;
+    case 'fbx':
+      manager.onStart();
+      OnLoadCallbacks.onFBXLoad(file, textures);
+      break;
+    case 'gltf':
+    case 'glb':
+      manager.onStart();
+      OnLoadCallbacks.onGLTFLoad(file);
+      break;
+    case 'obj':
+      manager.onStart();
+      OnLoadCallbacks.onOBJLoad(file);
+      break;
+    case 'dae':
+      manager.onStart();
+      OnLoadCallbacks.onDAELoad(file);
+      break;
+    case 'zip':
+      manager.onStart();
+      zipHandler(file);
+      break;
+    default:
+      console.error('Unsupported file type ' + type + '- please load one of the supported model formats or a zip archive.');
+
+  }
+};
+
 fileInput.addEventListener('change', function (e) {
 
-  var files = event.target.files;
+  var files = e.target.files;
 
-  if (files.length === 1) {
+  var textures = [];
 
-    var file = files[0];
-    var extension = file.name.split('.').pop().toLowerCase();
+  var count = files.length;
+  var type = void 0;
+  var mainFile = void 0;
 
-    switch (extension) {
+  for (var i = 0; i < files.length; i++) {
 
-      case 'json':
-      case 'js':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onJSONLoad;
-        fileReader.readAsText(file);
-        break;
-      case 'fbx':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onFBXLoad;
-        fileReader.readAsDataURL(file);
-        break;
-      case 'gltf':
-      case 'glb':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onGLTFLoad;
-        fileReader.readAsDataURL(file);
-        break;
-      case 'obj':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onOBJLoad;
-        fileReader.readAsDataURL(file);
-        break;
-      case 'dae':
-        manager.onStart();
-        fileReader.onload = OnLoadCallbacks.onDAELoad;
-        fileReader.readAsDataURL(file);
-        break;
-      case 'zip':
-        manager.onStart();
-        zipHandler(file);
-        break;
-      default:
-        console.error('Unsupported file type ' + extension + '- please load one of the supported model formats or a zip archive.');
+    var fileReader = new FileReader();
 
-    }
-  } else {
+    fileReader.onerror = function (msg) {
 
-    var jsonFile = null;
-    var fbxFile = null;
-    var gltfFile = null;
-    var objFile = null;
-    var mtlFile = null;
+      console.error('FileReader error: ' + msg);
+    };
 
-    var textures = [];
+    var file = files[i];
 
-    for (var i = 0; i < files.length; i++) {
+    fileReader.readAsDataURL(file);
 
-      var _file = files[i];
+    // check for image file
+    if (file.type.match('image.*')) {
 
-      var _extension = _file.name.split('.').pop().toLowerCase();
+      fileReader.onload = function (evt) {
 
-      // check for image file
-      if (_file.type.match('image.*')) {
+        textures.push(evt.target.result);
 
-        textures.push(_file);
-      } else {
+        // count down loading of files and callback when all are done
+        if (--count === 0) allFilesLoadedCallback(textures, mainFile, type);
+      };
+    } else {
 
-        switch (_extension) {
+      type = file.name.split('.').pop().toLowerCase();
 
-          case 'json':
-          case 'js':
-            jsonFile = _file;
-            break;
-          case 'fbx':
-            fbxFile = _file;
-            break;
-          case 'gltf':
-          case 'glb':
-            gltfFile = _file;
-            break;
-          case 'obj':
-            objFile = _file;
-            break;
-          case 'mtl':
-            mtlFile = _file;
-            break;
-          case 'zip':
-            console.error('Zip support forthcoming');
-            break;
-          default:
-            console.error('Unknown file type ' + _extension + '- please load one of the supported model formats or a zip archive.');
+      fileReader.onload = function (evt) {
 
-        }
-      }
+        mainFile = evt.target.result;
+        if (--count === 0) allFilesLoadedCallback(textures, mainFile, type);
+      };
     }
   }
 }, false);

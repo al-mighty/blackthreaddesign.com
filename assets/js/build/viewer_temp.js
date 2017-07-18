@@ -43497,11 +43497,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -44230,6 +44225,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -44297,39 +44319,22 @@ Object.assign(FBXLoader.prototype, {
 
       if (!isFbxFormatASCII(FBXText)) {
 
-        console.error('Unknown FBX format.');
-        return;
+        throw new Error('FBXLoader: Unknown format.');
       }
 
-      var version = getFbxVersion(FBXText);
+      if (getFbxVersion(FBXText) < 7000) {
 
-      if (version < 7000) {
-
-        console.error('FBX version too low. Current version: ' + version + '. Required at least version 7000');
-        return;
-        // this.manager.itemError( FBXText );
-        // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
+        throw new Error('FBXLoader: FBX version not supported, FileVersion: ' + getFbxVersion(FBXText));
       }
 
       FBXTree = new TextParser().parse(FBXText);
     }
 
-    // console.log( 'FBXTree', FBXTree );
+    // console.log( FBXTree );
 
     var connections = parseConnections(FBXTree);
-
-    // parse embedded images
     var images = parseImages(FBXTree);
-
-    var textures = void 0;
-    if (typeof resourceDirectory === 'string') {
-
-      textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
-    } else {
-
-      textures = parseTextures(FBXTree, new TextureLoader(this.manager), images, connections, resourceDirectory);
-    }
-
+    var textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
     var materials = parseMaterials(FBXTree, textures, connections);
     var deformers = parseDeformers(FBXTree, connections);
     var geometryMap = parseGeometries(FBXTree, connections, deformers);
@@ -44474,8 +44479,6 @@ function parseImage(videoNode) {
  * @returns {Map<number, THREE.Texture>}
  */
 function parseTextures(FBXTree, loader, imageMap, connections) {
-  var texturesFromZip = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-
 
   /**
    * @type {Map<number, THREE.Texture>}
@@ -44487,7 +44490,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
     var textureNodes = FBXTree.Objects.subNodes.Texture;
     for (var nodeID in textureNodes) {
 
-      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections, texturesFromZip);
+      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections);
       textureMap.set(parseInt(nodeID), texture);
     }
   }
@@ -44502,7 +44505,7 @@ function parseTextures(FBXTree, loader, imageMap, connections) {
  * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
  * @returns {THREE.Texture}
  */
-function parseTexture(textureNode, loader, imageMap, connections, texturesFromZip) {
+function parseTexture(textureNode, loader, imageMap, connections) {
 
   var FBX_ID = textureNode.id;
 
@@ -44510,16 +44513,21 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
   var fileName = void 0;
 
-  console.log(textureNode);
   var filePath = textureNode.properties.FileName;
-
   var relativeFilePath = textureNode.properties.RelativeFilename;
 
   var children = connections.get(FBX_ID).children;
 
-  var currentPath = loader.path;
+  if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
 
-  if (texturesFromZip) {
+    fileName = imageMap.get(children[0].ID);
+  } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
+
+    // use textureNode.properties.RelativeFilename
+    // if it exists and it doesn't seem an absolute path
+
+    fileName = relativeFilePath;
+  } else {
 
     var split = filePath.split(/[\\\/]/);
 
@@ -44530,49 +44538,15 @@ function parseTexture(textureNode, loader, imageMap, connections, texturesFromZi
 
       fileName = filePath;
     }
-
-    loader.setPath(undefined);
-
-    if (texturesFromZip[fileName] === undefined) {
-
-      console.error('Texture missing from archive: ' + fileName);
-
-      fileName = '/assets/images/textures/default.jpg';
-    } else {
-
-      fileName = texturesFromZip[fileName];
-    }
-  } else {
-
-    if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
-
-      fileName = imageMap.get(children[0].ID);
-    } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
-
-      // use textureNode.properties.RelativeFilename
-      // if it exists and it doesn't seem an absolute path
-
-      fileName = relativeFilePath;
-    } else {
-
-      var _split = filePath.split(/[\\\/]/);
-
-      if (_split.length > 0) {
-
-        fileName = _split[_split.length - 1];
-      } else {
-
-        fileName = filePath;
-      }
-    }
   }
+
+  var currentPath = loader.path;
 
   if (fileName.indexOf('blob:') === 0) {
 
     loader.setPath(undefined);
   }
 
-  console.log(fileName);
   /**
    * @type {THREE.Texture}
    */
@@ -48255,7 +48229,7 @@ Object.assign(BinaryParser.prototype, {
 
       default:
         console.error('FBX contains an unknown property type ' + type);
-        return;
+
     }
   }
 });

@@ -102,13 +102,19 @@ Object.assign( FBXLoader.prototype, {
 
       if ( !isFbxFormatASCII( FBXText ) ) {
 
-        throw new Error( 'FBXLoader: Unknown format.' );
+        console.error( 'Unknown FBX format.');
+        return;
 
       }
 
-      if ( getFbxVersion( FBXText ) < 7000 ) {
+      const version = getFbxVersion( FBXText );
 
-        throw new Error( 'FBXLoader: FBX version not supported, FileVersion: ' + getFbxVersion( FBXText ) );
+      if ( version < 7000 ) {
+
+        console.error( 'FBX version too low. Current version: ' + version + '. Required at least version 7000' );
+        return;
+        // this.manager.itemError( FBXText );
+        // throw new Error( 'FBXLoader: FBX version not supported for file at ' + FBXText + ', FileVersion: ' + getFbxVersion( FBXText ) );
 
       }
 
@@ -116,11 +122,24 @@ Object.assign( FBXLoader.prototype, {
 
     }
 
-			// console.log( FBXTree );
+		// console.log( 'FBXTree', FBXTree );
 
     const connections = parseConnections( FBXTree );
+
+    // parse embedded images
     const images = parseImages( FBXTree );
-    const textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections );
+
+    let textures;
+    if ( typeof resourceDirectory === 'string'  ) {
+
+      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ).setPath( resourceDirectory ), images, connections );
+   
+    } else {
+
+      textures = parseTextures( FBXTree, new THREE.TextureLoader( this.manager ), images, connections, resourceDirectory );
+    
+    }
+
     const materials = parseMaterials( FBXTree, textures, connections );
     const deformers = parseDeformers( FBXTree, connections );
     const geometryMap = parseGeometries( FBXTree, connections, deformers );
@@ -268,27 +287,27 @@ function parseImage( videoNode ) {
 
 }
 
-	/**
-	 * Parses map of textures referenced in FBXTree.
-	 * @param {{Objects: {subNodes: {Texture: Object.<string, FBXTextureNode>}}}} FBXTree
-	 * @param {THREE.TextureLoader} loader
-	 * @param {Map<number, string(image blob URL)>} imageMap
-	 * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
-	 * @returns {Map<number, THREE.Texture>}
-	 */
-function parseTextures( FBXTree, loader, imageMap, connections ) {
+/**
+ * Parses map of textures referenced in FBXTree.
+ * @param {{Objects: {subNodes: {Texture: Object.<string, FBXTextureNode>}}}} FBXTree
+ * @param {THREE.TextureLoader} loader
+ * @param {Map<number, string(image blob URL)>} imageMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {Map<number, THREE.Texture>}
+ */
+function parseTextures( FBXTree, loader, imageMap, connections, texturesFromZip = false ) {
 
-		/**
-		 * @type {Map<number, THREE.Texture>}
-		 */
+	/**
+	 * @type {Map<number, THREE.Texture>}
+	 */
   const textureMap = new Map();
 
   if ( 'Texture' in FBXTree.Objects.subNodes ) {
 
     const textureNodes = FBXTree.Objects.subNodes.Texture;
-    for ( const nodeID in textureNodes ) {
+    for ( const nodeID in textureNodes ) {  
 
-      const texture = parseTexture( textureNodes[ nodeID ], loader, imageMap, connections );
+      const texture = parseTexture( textureNodes[ nodeID ], loader, imageMap, connections, texturesFromZip );
       textureMap.set( parseInt( nodeID ), texture );
 
     }
@@ -299,14 +318,14 @@ function parseTextures( FBXTree, loader, imageMap, connections ) {
 
 }
 
-	/**
-	 * @param {textureNode} textureNode - Node to get texture information from.
-	 * @param {THREE.TextureLoader} loader
-	 * @param {Map<number, string(image blob URL)>} imageMap
-	 * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
-	 * @returns {THREE.Texture}
-	 */
-function parseTexture( textureNode, loader, imageMap, connections ) {
+/**
+ * @param {textureNode} textureNode - Node to get texture information from.
+ * @param {THREE.TextureLoader} loader
+ * @param {Map<number, string(image blob URL)>} imageMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {THREE.Texture}
+ */
+function parseTexture( textureNode, loader, imageMap, connections, texturesFromZip ) {
 
   const FBX_ID = textureNode.id;
 
@@ -315,23 +334,14 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
   let fileName;
 
   const filePath = textureNode.properties.FileName;
-  const relativeFilePath = textureNode.properties.RelativeFilename;
 
+  const relativeFilePath = textureNode.properties.RelativeFilename;
+  
   const children = connections.get( FBX_ID ).children;
 
-  if ( children !== undefined && children.length > 0 && imageMap.has( children[ 0 ].ID ) ) {
+  const currentPath = loader.path;
 
-    fileName = imageMap.get( children[ 0 ].ID );
-
-  } else if ( relativeFilePath !== undefined && relativeFilePath[ 0 ] !== '/' &&
-				relativeFilePath.match( /^[a-zA-Z]:/ ) === null ) {
-
-			// use textureNode.properties.RelativeFilename
-			// if it exists and it doesn't seem an absolute path
-
-    fileName = relativeFilePath;
-
-  } else {
+  if ( texturesFromZip ) {
 
     const split = filePath.split( /[\\\/]/ );
 
@@ -345,9 +355,51 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
     }
 
-  }
+    loader.setPath( undefined );
+ 
+    if ( texturesFromZip[ fileName ] === undefined ) {
 
-  const currentPath = loader.path;
+      console.error( 'Texture missing from archive: ' + fileName );
+
+      fileName = '/assets/images/textures/default.jpg';
+
+    } else { 
+
+      fileName = texturesFromZip[ fileName ];
+
+    }
+ 
+  } else {
+
+    if ( children !== undefined && children.length > 0 && imageMap.has( children[ 0 ].ID ) ) {
+
+      fileName = imageMap.get( children[ 0 ].ID );
+
+    } else if ( relativeFilePath !== undefined && relativeFilePath[ 0 ] !== '/' &&
+        relativeFilePath.match( /^[a-zA-Z]:/ ) === null ) {
+
+      // use textureNode.properties.RelativeFilename
+      // if it exists and it doesn't seem an absolute path
+
+      fileName = relativeFilePath;
+
+    } else {
+
+      const split = filePath.split( /[\\\/]/ );
+
+      if ( split.length > 0 ) {
+
+        fileName = split[ split.length - 1 ];
+
+      } else {
+
+        fileName = filePath;
+
+      }
+
+    }
+
+  }
 
   if ( fileName.indexOf( 'blob:' ) === 0 ) {
 
@@ -355,9 +407,9 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
   }
 
-		/**
-		 * @type {THREE.Texture}
-		 */
+	/**
+	 * @type {THREE.Texture}
+	 */
   const texture = loader.load( fileName );
   texture.name = name;
   texture.FBX_ID = FBX_ID;
@@ -368,8 +420,8 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
   const valueU = wrapModeU !== undefined ? wrapModeU.value : 0;
   const valueV = wrapModeV !== undefined ? wrapModeV.value : 0;
 
-		// http://download.autodesk.com/us/fbx/SDKdocs/FBX_SDK_Help/files/fbxsdkref/class_k_fbx_texture.html#889640e63e2e681259ea81061b85143a
-		// 0: repeat(default), 1: clamp
+  // http://download.autodesk.com/us/fbx/SDKdocs/FBX_SDK_Help/files/fbxsdkref/class_k_fbx_texture.html#889640e63e2e681259ea81061b85143a
+  // 0: repeat(default), 1: clamp
 
   texture.wrapS = valueU === 0 ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
   texture.wrapT = valueV === 0 ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
@@ -379,7 +431,6 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
   return texture;
 
 }
-
 
 /**
  * Parses map of Material information.
@@ -4359,7 +4410,7 @@ Object.assign( BinaryParser.prototype, {
 
       default:
         console.error( 'FBX contains an unknown property type ' + type );
-
+        return;
     }
 
   },
