@@ -9,9 +9,9 @@
 {% endif %}
 
 {% if jekyll.environment == "production" %}
-  {% assign build_dir = '/assets/js/build-min/' %}
+  {% assign build_dir = site.baseurl | append: '/assets/js/build-min/' %}
 {% else %}
-  {% assign build_dir = '/assets/js/build/' %}
+  {% assign build_dir = site.baseurl | append:'/assets/js/build/' %}
 {% endif %}
 
 {% if page.js %}

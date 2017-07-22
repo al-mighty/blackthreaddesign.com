@@ -1,4 +1,4 @@
-meta keywords
+meta keywords: "jekyll-seo-tag"
 link twitter
 update date on each page
 every relevant page at least 500 words

@@ -12,13 +12,15 @@ ruby RUBY_VERSION
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "3.3.1"
+gem "jekyll", "3.5.1"
 
 gem "autoprefixer-rails"
 
+# required by jekyll
 gem "font-awesome-sass"
 
-gem 'wdm'
+# time zone data
+gem "tzinfo-data"
 
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
 # uncomment the line below. To upgrade, run `bundle update github-pages`.

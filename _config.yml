@@ -14,7 +14,7 @@ title_separator          : "-"
 name                     : "Lewy Blue"
 description              : "Home page of the Black Thread Design Agency - tutorials, web experiments, WebGL and more"
 url                      : "https://www.blackthreaddesign.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : # "/"
+baseurl                  : ""
 repository               : "looeee/blackthreaddesign.com" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : "/assets/images/default-teaser.jpg"  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 breadcrumbs              : false # true, false (default)
@@ -131,14 +131,14 @@ timezone: Europe/Dublin # https://en.wikipedia.org/wiki/List_of_tz_database_time
 
 
 # Plugins
-gems:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jemoji
-  - jekyll-assets
-  - font-awesome-sass
-  - autoprefixer-rails
+plugins:
+#  - jekyll-paginate
+#  - jekyll-sitemap
+#  - jekyll-gist
+#  - jemoji
+#  - jekyll-assets
+#  - font-awesome-sass
+#  - autoprefixer-rails
 
 # mimic GitHub Pages with --safe
 whitelist:
