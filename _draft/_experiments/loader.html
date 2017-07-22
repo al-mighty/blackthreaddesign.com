@@ -58,10 +58,11 @@ vendor-js:
 
   <div id="loading-overlay">
 
-    <form action="/php/loader/upload.php" method="post" enctype="multipart/form-data" id="file-upload-form">
+    <form action="/php/loader/upload.php" method="post" enctype="multipart/form-data" target="target" id="file-upload-form">
       Upload a .json, .fbx, .obj, gltf, .glb, .dae or .zip file
       <input id="file-upload-input" type="file" name="files[]" multiple="">
       <input type="submit" class="" value="upload"/>
+      <iframe style="display:none;" name="target"></iframe>
     </form>
 
     <div id="loading-bar" class="hide">

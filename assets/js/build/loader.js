@@ -1952,7 +1952,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13011,8 +13014,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13042,6 +13043,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -24383,7 +24388,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24412,6 +24417,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36085,10 +36091,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -40058,8 +40061,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40404,6 +40408,7 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40476,7 +40481,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41069,9 +41075,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -41228,6 +41251,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41263,9 +41290,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41312,12 +41337,13 @@ Object.assign( Spline.prototype, {
 
 } );
 
-//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
+
+//
 
 Object.assign( Box2.prototype, {
 
@@ -42365,8 +42391,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42414,8 +42438,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 // Simple error handling function - customize as necessary
 
@@ -42598,6 +42620,21 @@ function Time() {
     this.paused = true;
   };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43526,6 +43563,11 @@ Object.defineProperties(OrbitControls.prototype, {
 	}
 
 });
+
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
 
 function App(canvas) {
 
@@ -44702,6 +44744,10 @@ var ScreenshotHandler = function () {
     return ScreenshotHandler;
 }();
 
+/*
+ * @author mrdoob / http://mrdoob.com/
+ */
+
 function DDSLoader() {
 
   this._parser = DDSLoader.parse;
@@ -44934,6 +44980,18 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
+
+/**
+ * @author renej
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
 
 var NURBSUtils = {
 
@@ -45328,6 +45386,20 @@ var NURBSUtils = {
 
 };
 
+/**
+ * @author renej
+ * NURBS curve object
+ *
+ * Derives from Curve, overriding getPoint and getTangent.
+ *
+ * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS curve
+ **************************************************************/
+
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -45375,6 +45447,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -49953,6 +50052,14 @@ function slice(a, b, from, to) {
   return a;
 }
 
+/**
+ * @author Rich Tibbett / https://github.com/richtr
+ * @author mrdoob / http://mrdoob.com/
+ * @author Tony Parisi / http://www.tonyparisi.com/
+ * @author Takahiro / https://github.com/takahirox
+ * @author Don McCurdy / https://www.donmccurdy.com
+ */
+
 var GLTF2Loader = function () {
 
 	function GLTF2Loader(manager) {
@@ -52462,6 +52569,18 @@ var GLTF2Loader = function () {
 	return GLTF2Loader;
 }();
 
+/**
+  * @author Kai Salmen / https://kaisalmen.de
+  * Development repository: https://github.com/kaisalmen/WWOBJLoader
+  */
+
+/**
+ * Use this class to load OBJ data from files or to parse OBJ data from arraybuffer or text
+ * @class
+ *
+ * @param {THREE.DefaultLoadingManager} [manager] The loadingManager for the loader to use. Default is {@link THREE.DefaultLoadingManager}
+ */
+
 var OBJLoader2 = function () {
 
 	var OBJLOADER2_VERSION = '1.2.1';
@@ -53432,6 +53551,12 @@ var OBJLoader2 = function () {
 	return OBJLoader2;
 }();
 
+/**
+ * Loads a Wavefront .mtl file specifying materials
+ *
+ * @author angelxuanchang
+ */
+
 function MTLLoader(manager) {
 
 	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -53923,6 +54048,11 @@ MTLLoader.MaterialCreator.prototype = {
 	}
 
 };
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
+ */
 
 function ColladaLoader(manager) {
 
@@ -56708,6 +56838,7 @@ var zipHandler = function (file) {
   });
 };
 
+// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {

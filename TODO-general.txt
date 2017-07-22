@@ -3,3 +3,4 @@ Add continuous animation to landing page
 Finish first section of tutorials
 Work on loader experiment
 Footer broken on some pagesFix width of content on medium width screens
+Still a problem with non www links: https://blackthreaddesign.com/tutorials

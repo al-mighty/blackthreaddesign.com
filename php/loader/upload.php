@@ -16,7 +16,7 @@
         else{ // No error found! Move uploaded files 
 
             //checking if file exsists
-            if(file_exists($path.$name)) unlink($path.$name);
+            if(file_exists($path.$name)) unlink($path.$name );
 
             move_uploaded_file($_FILES["files"]["tmp_name"][$f], $path.$name)
     
