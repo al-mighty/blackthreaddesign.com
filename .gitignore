@@ -45,3 +45,5 @@ jspm_packages
 
 #jekyll assets
 /.asset-cache
+/TODO-general.txt
+/TODO-seo.txt
