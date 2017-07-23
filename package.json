@@ -83,7 +83,8 @@
       "no-param-reassign": 0,
       "radix": 0,
       "computed-property-spacing": 0,
-      "one-var-declaration-per-line": 0
+      "one-var-declaration-per-line": 0,
+      "array-bracket-spacing": 0
     }
   }
 }

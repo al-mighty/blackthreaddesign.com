@@ -43,8 +43,6 @@ GEM
       pathutil (~> 0.9)
       rouge (~> 1.7)
       safe_yaml (~> 1.0)
-    jekyll-archives (2.1.1)
-      jekyll (>= 2.4)
     jekyll-assets (2.3.2)
       concurrent-ruby (~> 1.0)
       extras (~> 0.2)
@@ -118,7 +116,6 @@ DEPENDENCIES
   autoprefixer-rails
   font-awesome-sass
   jekyll (= 3.5.1)
-  jekyll-archives
   jekyll-assets
   jekyll-gist
   jekyll-livereload

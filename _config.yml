@@ -133,12 +133,12 @@ timezone: Europe/Dublin # https://en.wikipedia.org/wiki/List_of_tz_database_time
 # Plugins
 plugins:
 #  - jekyll-paginate
-#  - jekyll-sitemap
-#  - jekyll-gist
-#  - jemoji
-#  - jekyll-assets
-#  - font-awesome-sass
-#  - autoprefixer-rails
+  - jekyll-sitemap
+  - jekyll-gist
+  - jemoji
+  - jekyll-assets
+  - font-awesome-sass
+  - autoprefixer-rails
 
 # mimic GitHub Pages with --safe
 whitelist:

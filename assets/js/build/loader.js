@@ -42466,20 +42466,13 @@ var goFullscreen = function (elem) {
 
 var viewer = document.querySelector('#viewer-canvas');
 
-var settingsButton = document.querySelector('#settings-button');
 var fullscreenButton = document.querySelector('#fullscreen-button');
 
-var settingsOverlay = document.querySelector('#settings-overlay');
+fullscreenButton.addEventListener('click', function (e) {
 
-settingsButton.addEventListener('click', function () {
-
-  settingsOverlay.classList.toggle('hide');
-});
-
-fullscreenButton.addEventListener('click', function () {
-
+  e.preventDefault();
   goFullscreen(viewer);
-});
+}, false);
 
 // override console functions to show errors and warnings on the page
 console.warn = errorHandler;
@@ -44489,7 +44482,9 @@ var AnimationControls = function () {
   AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
     var _this2 = this;
 
-    this.playbackControl.addEventListener('click', function () {
+    this.playbackControl.addEventListener('click', function (e) {
+
+      e.preventDefault();
 
       if (!_this2.isPaused) {
 
@@ -44500,7 +44495,7 @@ var AnimationControls = function () {
       }
 
       _this2.togglePause();
-    });
+    }, false);
   };
 
   AnimationControls.prototype.togglePause = function togglePause() {
@@ -44531,23 +44526,26 @@ var AnimationControls = function () {
   AnimationControls.prototype.initSlider = function initSlider() {
     var _this3 = this;
 
-    this.slider.addEventListener('mousedown', function () {
+    this.slider.addEventListener('mousedown', function (e) {
 
+      // e.preventDefault();
       if (!_this3.pauseButtonActive) _this3.pause();
     });
 
-    this.slider.addEventListener('input', throttle(function () {
+    this.slider.addEventListener('input', throttle(function (e) {
 
+      // e.preventDefault();
       var oldTime = _this3.currentMixer.time;
       var newTime = _this3.slider.value;
 
       _this3.currentMixer.update(newTime - oldTime);
-    }, 17)); // throttling at ~17 ms will give approx 60fps while sliding the controls
+    }, 17), false); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-    this.slider.addEventListener('mouseup', function () {
+    this.slider.addEventListener('mouseup', function (e) {
 
+      // e.preventDefault();
       if (!_this3.pauseButtonActive) _this3.play();
-    });
+    }, false);
   };
 
   AnimationControls.prototype.initSelectionMenu = function initSelectionMenu() {
@@ -44557,6 +44555,7 @@ var AnimationControls = function () {
 
     this.clipsSelection.addEventListener('change', function (e) {
 
+      e.preventDefault();
       if (e.target.value === 'static') {
 
         _this4.currentAction.stop();
@@ -44564,7 +44563,7 @@ var AnimationControls = function () {
 
         _this4.selectCurrentAnimation(e.target.value);
       }
-    });
+    }, false);
   };
 
   return AnimationControls;
@@ -44586,27 +44585,47 @@ var addModelInfo = function (renderer) {
 
 var backgroundColorChanger = function (app) {
 
-  var controlLinks = document.querySelector('#bottom-controls').getElementsByTagName('a');
+  var controlLinks = document.querySelectorAll('.fa');
+
+  var sliders = document.querySelectorAll('.loader-slider');
 
   var toggle = document.querySelector('#toggle-background');
 
-  toggle.addEventListener('change', function () {
-    if (toggle.checked) {
+  var toggled = false;
+
+  toggle.addEventListener('click', function (e) {
+
+    e.preventDefault();
+    if (toggled) {
 
       app.renderer.setClearColor(0x000000, 1.0);
       for (var i = 0; i < controlLinks.length; i++) {
 
         controlLinks[i].style.color = 'white';
       }
+
+      for (var _i = 0; _i < sliders.length; _i++) {
+
+        sliders[_i].style.backgroundColor = 'white';
+        sliders[_i].classList.remove('white-slider');
+      }
     } else {
 
       app.renderer.setClearColor(0xf7f7f7, 1.0);
-      for (var _i = 0; _i < controlLinks.length; _i++) {
+      for (var _i2 = 0; _i2 < controlLinks.length; _i2++) {
 
-        controlLinks[_i].style.color = 'black';
+        controlLinks[_i2].style.color = 'black';
+      }
+
+      for (var _i3 = 0; _i3 < sliders.length; _i3++) {
+
+        sliders[_i3].style.backgroundColor = '#424242';
+        sliders[_i3].classList.add('white-slider');
       }
     }
-  });
+
+    toggled = !toggled;
+  }, false);
 };
 
 var LightingSetup = function () {
@@ -44655,12 +44674,22 @@ var LightingSetup = function () {
     LightingSetup.prototype.initSlider = function initSlider() {
         var _this = this;
 
+        var initialStrenth = this.pointLight.intensity;
+
         this.strengthSlider.value = this.pointLight.intensity;
 
-        this.strengthSlider.addEventListener('input', throttle(function () {
+        this.strengthSlider.addEventListener('input', throttle(function (e) {
 
+            e.preventDefault();
             _this.pointLight.intensity = _this.strengthSlider.value;
-        }, 100));
+        }, 100), false);
+
+        document.querySelector('#light-symbol').addEventListener('click', throttle(function (e) {
+
+            e.preventDefault();
+            _this.pointLight.intensity = initialStrenth;
+            _this.strengthSlider.value = _this.pointLight.intensity;
+        }, 100), false);
     };
 
     return LightingSetup;
@@ -44694,8 +44723,9 @@ var ScreenshotHandler = function () {
     ScreenshotHandler.prototype.initButton = function initButton() {
         var _this2 = this;
 
-        this.button.addEventListener('click', throttle(function () {
+        this.button.addEventListener('click', throttle(function (e) {
 
+            e.preventDefault();
             var width = _this2.widthSelector.value;
             var height = _this2.heightSelector.value;
 
@@ -44704,7 +44734,7 @@ var ScreenshotHandler = function () {
             var w = window.open('');
             w.document.write('<title>Three.js Loader screenshot</title>');
             w.document.write(img.outerHTML);
-        }, 1000));
+        }, 1000), false);
     };
 
     return ScreenshotHandler;
@@ -56688,7 +56718,6 @@ var OnLoadCallbacks = function () {
   return OnLoadCallbacks;
 }();
 
-// Check support for the File API support
 var checkForFileAPI = function () {
 
   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -56699,9 +56728,9 @@ var checkForFileAPI = function () {
 
 checkForFileAPI();
 
-// Files that do no match these extensions will not be uploaded. 
+// Files that do no match these extensions will not be uploaded.
 var checkValidType = function (type) {
-  return new RegExp("(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$").test(type);
+  return new RegExp('(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$').test(type);
 };
 
 var loadFileFromUrl = function (url, type) {
@@ -56712,24 +56741,19 @@ var loadFileFromUrl = function (url, type) {
     case 'js':
       manager.onStart();
       return OnLoadCallbacks.onJSONLoad(url);
-      break;
     case 'fbx':
       manager.onStart();
       return OnLoadCallbacks.onFBXLoad(url);
-      break;
     case 'gltf':
     case 'glb':
       manager.onStart();
       return OnLoadCallbacks.onGLTFLoad(url);
-      break;
     case 'obj':
       manager.onStart();
       return OnLoadCallbacks.onOBJLoad(url);
-      break;
     case 'dae':
       manager.onStart();
       return OnLoadCallbacks.onDAELoad(url);
-      break;
     default:
       if (checkValidType(type)) console.error('Unsupported file type ' + type + '- please load one of the supported model formats.');
       return Promise.resolve();
@@ -56760,8 +56784,6 @@ var processSingleFile = function (files) {
 
 var processMultipleFiles = function (files) {
 
-  var uploadDir = 'php/uploads/';
-
   var data = new FormData();
 
   for (var i = 0; i < files.length; i++) {
@@ -56778,10 +56800,7 @@ var processMultipleFiles = function (files) {
     method: 'post',
     body: data
   }).then(function (response) {
-    // const json = response.json();
-    var text = response.text();
-    console.log(text);
-    return json;
+    return response.json();
   }).then(function (response) {
 
     if (response.status === 'success') {
@@ -56801,13 +56820,22 @@ var processMultipleFiles = function (files) {
       });
     } else {
 
-      console.error("An error occurred while uploading the files: " + response.data);
+      console.error('An error occurred while uploading the files: ' + response.data);
     }
   });
 };
 
-document.querySelector('#file-upload-input').addEventListener('change', function (e) {
+var uploadInput = document.querySelector('#file-upload-input');
 
+document.querySelector('#file-upload-button').addEventListener('click', function (e) {
+
+  e.preventDefault();
+  uploadInput.click();
+}, false);
+
+uploadInput.addEventListener('change', function (e) {
+
+  e.preventDefault();
   var files = e.target.files;
 
   if (files.length === 1) {
@@ -56817,7 +56845,7 @@ document.querySelector('#file-upload-input').addEventListener('change', function
 
     processMultipleFiles(files);
   }
-});
+}, false);
 
 var LoaderCanvas = function () {
   function LoaderCanvas(canvas) {

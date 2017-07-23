@@ -26,8 +26,9 @@ export default class ScreenshotHandler {
 
   initButton() {
 
-    this.button.addEventListener( 'click', throttle( () => {
+    this.button.addEventListener( 'click', throttle( ( e ) => {
 
+      e.preventDefault();
       const width = this.widthSelector.value;
       const height = this.heightSelector.value;
 
@@ -37,7 +38,7 @@ export default class ScreenshotHandler {
       w.document.write( '<title>Three.js Loader screenshot</title>' );
       w.document.write( img.outerHTML );
 
-    }, 1000 ) );
+    }, 1000 ), false );
   }
 
 }

@@ -117,7 +117,9 @@ export default class AnimationControls {
 
   initPlaybackControls() {
 
-    this.playbackControl.addEventListener( 'click', () => {
+    this.playbackControl.addEventListener( 'click', ( e ) => {
+
+      e.preventDefault();
 
       if ( !this.isPaused ) {
 
@@ -131,7 +133,7 @@ export default class AnimationControls {
 
       this.togglePause();
 
-    } );
+    }, false );
 
   }
 
@@ -167,26 +169,29 @@ export default class AnimationControls {
 
   initSlider() {
 
-    this.slider.addEventListener( 'mousedown', () => {
+    this.slider.addEventListener( 'mousedown', ( e ) => {
 
+      // e.preventDefault();
       if ( !this.pauseButtonActive ) this.pause();
 
     } );
 
-    this.slider.addEventListener( 'input', throttle( () => {
+    this.slider.addEventListener( 'input', throttle( ( e ) => {
 
+      // e.preventDefault();
       const oldTime = this.currentMixer.time;
       const newTime = this.slider.value;
 
       this.currentMixer.update( newTime - oldTime );
 
-    }, 17 ) ); // throttling at ~17 ms will give approx 60fps while sliding the controls
+    }, 17 ), false ); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-    this.slider.addEventListener( 'mouseup', () => {
+    this.slider.addEventListener( 'mouseup', ( e ) => {
 
+      // e.preventDefault();
       if ( !this.pauseButtonActive ) this.play();
 
-    } );
+    }, false );
 
   }
 
@@ -196,6 +201,7 @@ export default class AnimationControls {
 
     this.clipsSelection.addEventListener( 'change', ( e ) => {
 
+      e.preventDefault();
       if ( e.target.value === 'static' ) {
 
         this.currentAction.stop();
@@ -206,7 +212,7 @@ export default class AnimationControls {
 
       }
 
-    } );
+    }, false );
 
   }
 

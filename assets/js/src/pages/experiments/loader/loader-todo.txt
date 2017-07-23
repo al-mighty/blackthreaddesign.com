@@ -1,5 +1,4 @@
 work on progress bar
-make sliders look better
 FONT Loader and TTFLoader
 Create a couple of default models to use without uploading
 JSON format

@@ -45,15 +45,25 @@ export default class LightingSetup {
 
   initSlider() {
 
+    const initialStrenth = this.pointLight.intensity;
+
     this.strengthSlider.value = this.pointLight.intensity;
 
-    this.strengthSlider.addEventListener( 'input', throttle( () => {
+    this.strengthSlider.addEventListener( 'input', throttle( ( e ) => {
 
+      e.preventDefault();
       this.pointLight.intensity = this.strengthSlider.value;
 
-    }, 100 ) );
+    }, 100 ), false );
+
+    document.querySelector( '#light-symbol' ).addEventListener( 'click', throttle( ( e ) => {
+
+      e.preventDefault();
+      this.pointLight.intensity = initialStrenth;
+      this.strengthSlider.value = this.pointLight.intensity;
+
+    }, 100 ), false );
 
   }
-
 
 }

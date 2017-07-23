@@ -15,9 +15,9 @@ const checkForFileAPI = () => {
 
 checkForFileAPI();
 
-// Files that do no match these extensions will not be uploaded. 
-const checkValidType = ( type ) => 
-  new RegExp("(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$")
+// Files that do no match these extensions will not be uploaded.
+const checkValidType = type =>
+  new RegExp( '(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$' )
     .test( type );
 
 
@@ -29,30 +29,25 @@ const loadFileFromUrl = ( url, type ) => {
     case 'js':
       manager.onStart();
       return OnLoadCallbacks.onJSONLoad( url );
-      break;
     case 'fbx':
       manager.onStart();
       return OnLoadCallbacks.onFBXLoad( url );
-      break;
     case 'gltf':
     case 'glb':
       manager.onStart();
       return OnLoadCallbacks.onGLTFLoad( url );
-      break;
     case 'obj':
       manager.onStart();
       return OnLoadCallbacks.onOBJLoad( url );
-      break;
     case 'dae':
       manager.onStart();
       return OnLoadCallbacks.onDAELoad( url );
-      break;
     default:
-      if( checkValidType( type ) ) console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats.' );
+      if ( checkValidType( type ) ) console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats.' );
       return Promise.resolve();
   }
 
-}
+};
 
 const processSingleFile = ( files ) => {
 
@@ -71,7 +66,7 @@ const processSingleFile = ( files ) => {
 
   fileReader.readAsDataURL( file );
 
-  fileReader.onload = ( e ) => { 
+  fileReader.onload = ( e ) => {
 
     loadFileFromUrl( e.target.result, type );
 
@@ -81,11 +76,9 @@ const processSingleFile = ( files ) => {
 
 const processMultipleFiles = ( files ) => {
 
-  const uploadDir = 'php/uploads/';
-
   const data = new FormData();
 
-  for( let i = 0; i < files.length; i++ ) {
+  for ( let i = 0; i < files.length; i++ ) {
 
     const type = files[i].name.split( '.' ).pop().toLowerCase();
 
@@ -101,12 +94,7 @@ const processMultipleFiles = ( files ) => {
     method: 'post',
     body: data,
   } )
-    .then( ( response ) => {
-      // const json = response.json();
-      const text = response.text();
-      console.log( text )
-      return json;
-    } )
+    .then( response => response.json() )
     .then( ( response ) => {
 
       if ( response.status === 'success' ) {
@@ -130,20 +118,32 @@ const processMultipleFiles = ( files ) => {
 
       } else {
 
-        console.error( "An error occurred while uploading the files: " + response.data );
+        console.error( 'An error occurred while uploading the files: ' + response.data );
 
       }
 
 
-  });
+    } );
 
-}
+};
 
-document.querySelector( '#file-upload-input' ).addEventListener( 'change', ( e ) => { 
 
+const uploadInput = document.querySelector( '#file-upload-input' );
+
+document.querySelector( '#file-upload-button' ).addEventListener( 'click',
+  ( e ) => {
+
+    e.preventDefault();
+    uploadInput.click();
+
+  }, false );
+
+uploadInput.addEventListener( 'change', ( e ) => {
+
+  e.preventDefault();
   const files = e.target.files;
 
-  if( files.length === 1 ) {
+  if ( files.length === 1 ) {
 
     processSingleFile( files );
 
@@ -151,6 +151,6 @@ document.querySelector( '#file-upload-input' ).addEventListener( 'change', ( e )
 
     processMultipleFiles( files );
 
-  } 
+  }
 
-} );
+}, false );

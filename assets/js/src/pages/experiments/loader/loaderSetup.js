@@ -31,22 +31,14 @@ const goFullscreen = ( elem ) => {
 
 const viewer = document.querySelector( '#viewer-canvas' );
 
-const settingsButton = document.querySelector( '#settings-button' );
 const fullscreenButton = document.querySelector( '#fullscreen-button' );
 
-const settingsOverlay = document.querySelector( '#settings-overlay' );
+fullscreenButton.addEventListener( 'click', ( e ) => {
 
-settingsButton.addEventListener( 'click', () => {
-
-  settingsOverlay.classList.toggle( 'hide' );
-
-} );
-
-fullscreenButton.addEventListener( 'click', () => {
-
+  e.preventDefault();
   goFullscreen( viewer );
 
-} );
+}, false );
 
 // override console functions to show errors and warnings on the page
 console.warn = errorHandler;
