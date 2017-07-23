@@ -220,14 +220,10 @@
 }
 
 input[type=range] {
-  //margin: auto;
-  //outline: none;
-  //padding: 0;
   height: 3px;
   background-color: rgb(66, 66, 66);
   background-image: linear-gradient(rgb(66, 66, 66), #cfcfcf);
   background-size: 0 100%;
-  //background-repeat: no-repeat;
   border-radius: 50%;
   cursor: pointer;
   -webkit-appearance: none;
@@ -264,7 +260,7 @@ input[type=range]::-moz-range-thumb {
     box-shadow: 0 0 1px 0 rgba(0,0,0,0.1);
 }
 
-.white-slider::-moz-range-thumb,
-.white-slider::-webkit-slider-thumb {
-  background: white !important;
-}
+// .white-slider::-moz-range-thumb,
+// .white-slider::-webkit-slider-thumb {
+//   background: white !important;
+// }
