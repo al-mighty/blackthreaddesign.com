@@ -1952,10 +1952,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -13014,6 +13011,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -13043,10 +13042,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -24388,7 +24383,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -24417,7 +24412,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -36091,7 +36085,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -40061,9 +40058,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -40408,7 +40404,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -40481,8 +40476,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -41075,26 +41069,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -41251,10 +41228,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -41290,7 +41263,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -41337,13 +41312,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -42391,6 +42365,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -42439,9 +42415,17 @@ var ImageUtils = {
 
 };
 
+//
+
 // Simple error handling function - customize as necessary
 
 var errorHandler = function (msg) {
+
+  if (!(msg instanceof String)) {
+
+    console.log(msg);
+    return;
+  }
 
   // bug in three.js or WebGL returns this error on Chrome
   if (msg.indexOf('gl.getProgramInfoLog()') !== -1) return;
@@ -42453,7 +42437,9 @@ var errorHandler = function (msg) {
   document.querySelector('#error-message').appendChild(p);
 };
 
-document.querySelector('.three-rev').innerHTML = REVISION;
+var revElem = document.querySelector('.three-rev');
+
+if (revElem !== undefined) revElem.innerHTML = REVISION;
 
 var goFullscreen = function (elem) {
 
@@ -42620,21 +42606,6 @@ function Time() {
     this.paused = true;
   };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -43563,11 +43534,6 @@ Object.defineProperties(OrbitControls.prototype, {
 	}
 
 });
-
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
 
 function App(canvas) {
 
@@ -44744,9 +44710,33 @@ var ScreenshotHandler = function () {
     return ScreenshotHandler;
 }();
 
-/*
- * @author mrdoob / http://mrdoob.com/
- */
+var manager = new LoadingManager();
+
+// hide the upload form when loading starts so that the progress bar can be shown
+manager.onStart = function () {
+
+  document.querySelector('#file-upload-form').classList.add('hide');
+  document.querySelector('#loading-bar').classList.remove('hide');
+};
+
+manager.onLoad = function () {
+
+  // this doesn't fire when loading objects with a single file
+
+  // document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+
+};
+
+var progress = document.querySelector('#progress');
+manager.onProgress = function (url, currentFile, totalFiles) {
+
+  var percentComplete = currentFile / totalFiles * 100;
+  progress.style.width = percentComplete + '%';
+};
+
+manager.onError = function (msg) {
+  console.error('THREE.LoadingManager error: ' + msg);
+};
 
 function DDSLoader() {
 
@@ -44980,18 +44970,6 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -45386,20 +45364,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -45447,33 +45411,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -50052,14 +49989,6 @@ function slice(a, b, from, to) {
   return a;
 }
 
-/**
- * @author Rich Tibbett / https://github.com/richtr
- * @author mrdoob / http://mrdoob.com/
- * @author Tony Parisi / http://www.tonyparisi.com/
- * @author Takahiro / https://github.com/takahirox
- * @author Don McCurdy / https://www.donmccurdy.com
- */
-
 var GLTF2Loader = function () {
 
 	function GLTF2Loader(manager) {
@@ -52569,18 +52498,6 @@ var GLTF2Loader = function () {
 	return GLTF2Loader;
 }();
 
-/**
-  * @author Kai Salmen / https://kaisalmen.de
-  * Development repository: https://github.com/kaisalmen/WWOBJLoader
-  */
-
-/**
- * Use this class to load OBJ data from files or to parse OBJ data from arraybuffer or text
- * @class
- *
- * @param {THREE.DefaultLoadingManager} [manager] The loadingManager for the loader to use. Default is {@link THREE.DefaultLoadingManager}
- */
-
 var OBJLoader2 = function () {
 
 	var OBJLOADER2_VERSION = '1.2.1';
@@ -53551,12 +53468,6 @@ var OBJLoader2 = function () {
 	return OBJLoader2;
 }();
 
-/**
- * Loads a Wavefront .mtl file specifying materials
- *
- * @author angelxuanchang
- */
-
 function MTLLoader(manager) {
 
 	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -54048,11 +53959,6 @@ MTLLoader.MaterialCreator.prototype = {
 	}
 
 };
-
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
- */
 
 function ColladaLoader(manager) {
 
@@ -56527,34 +56433,6 @@ ColladaLoader.prototype = {
 
 };
 
-var manager = new LoadingManager();
-
-// hide the upload form when loading starts so that the progress bar can be shown
-manager.onStart = function () {
-
-  document.querySelector('#file-upload-form').classList.add('hide');
-  document.querySelector('#loading-bar').classList.remove('hide');
-};
-
-manager.onLoad = function () {
-
-  // this doesn't fire when loading objects with a single file
-
-  // document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-
-};
-
-var progress = document.querySelector('#progress');
-manager.onProgress = function (url, currentFile, totalFiles) {
-
-  var percentComplete = currentFile / totalFiles * 100;
-  progress.style.width = percentComplete + '%';
-};
-
-manager.onError = function (msg) {
-  console.error('THREE.LoadingManager error: ' + msg);
-};
-
 var objectLoader = null;
 var bufferGeometryLoader = null;
 var jsonLoader = null;
@@ -56564,6 +56442,21 @@ var objLoader2 = null;
 var mtlLoader = null;
 var colladaLoader = null;
 
+var defaultReject = function (err) {
+  console.log(err);
+};
+
+var promisifyLoader = function (loader) {
+  return function (url) {
+    return new Promise(function (resolve) {
+      var reject = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultReject;
+
+
+      loader.load(url, resolve);
+    });
+  };
+};
+
 var Loaders = function Loaders() {
   classCallCheck(this, Loaders);
 
@@ -56572,56 +56465,56 @@ var Loaders = function Loaders() {
 
     get objectLoader() {
       if (objectLoader === null) {
-        objectLoader = new ObjectLoader(manager);
+        objectLoader = promisifyLoader(new ObjectLoader(manager));
       }
       return objectLoader;
     },
 
     get bufferGeometryLoader() {
       if (bufferGeometryLoader === null) {
-        bufferGeometryLoader = new BufferGeometryLoader(manager);
+        bufferGeometryLoader = promisifyLoader(new BufferGeometryLoader(manager));
       }
       return bufferGeometryLoader;
     },
 
     get jsonLoader() {
       if (jsonLoader === null) {
-        jsonLoader = new JSONLoader(manager);
+        jsonLoader = promisifyLoader(new JSONLoader(manager));
       }
       return jsonLoader;
     },
 
     get fbxLoader() {
       if (fbxLoader === null) {
-        fbxLoader = new FBXLoader(manager);
+        fbxLoader = promisifyLoader(new FBXLoader(manager));
       }
       return fbxLoader;
     },
 
     get gltf2Loader() {
       if (gltf2Loader === null) {
-        gltf2Loader = new GLTF2Loader(manager);
+        gltf2Loader = promisifyLoader(new GLTF2Loader(manager));
       }
       return gltf2Loader;
     },
 
     get objLoader2() {
       if (objLoader2 === null) {
-        objLoader2 = new OBJLoader2(manager);
+        objLoader2 = promisifyLoader(new OBJLoader2(manager));
       }
       return objLoader2;
     },
 
     get mtlLoader() {
       if (mtlLoader === null) {
-        mtlLoader = new MTLLoader(manager);
+        mtlLoader = promisifyLoader(new MTLLoader(manager));
       }
       return mtlLoader;
     },
 
     get colladaLoader() {
       if (colladaLoader === null) {
-        colladaLoader = new ColladaLoader(manager);
+        colladaLoader = promisifyLoader(new ColladaLoader(manager));
       }
       return colladaLoader;
     }
@@ -56639,57 +56532,110 @@ var OnLoadCallbacks = function () {
 
   OnLoadCallbacks.onJSONLoad = function onJSONLoad(file) {
 
-    var geometry = void 0,
-        object = void 0;
-    var JsonObj = JSON.parse(file);
+    var promise = void 0;
 
-    if (!JsonObj.metadata) {
+    try {
 
-      console.error('Unsupported JSON format');
-      return;
-    }
+      console.log('Attempting to load JSON with THREE.BufferGeometryLoader');
 
-    var type = void 0;
+      promise = loaders.bufferGeometryLoader(file);
+      promise.then(function (geometry) {
 
-    if (JsonObj.metadata.type) type = JsonObj.metadata.type.toLowerCase();else type = 'object';
+        console.log('Success!');
 
-    switch (type) {
+        var object = new Mesh(geometry, defaultMat);
+        loaderCanvas.addObjectToScene(object);
+      }).catch(function (err) {});
+      return promise;
+    } catch (err) {
 
-      case 'buffergeometry':
-        geometry = loaders.bufferGeometryLoader.parse(JsonObj);
-        object = new Mesh(geometry, defaultMat);
-        break;
-      case 'geometry':
-        geometry = loaders.jsonLoader.parse(JsonObj);
-        object = new Mesh(geometry, defaultMat);
-        break;
-      default:
-        // scene object
+      console.log('Failed...');
+
+      try {
+
+        console.log('Attempting to load JSON with THREE.JSONLoader');
+
+        promise = loaders.jsonLoader(file);
+        promise.then(function (geometry) {
+
+          console.log('Success!');
+
+          var object = new Mesh(geometry, defaultMat);
+          loaderCanvas.addObjectToScene(object);
+        }).catch(function (err) {});
+        return promise;
+      } catch (err) {
+
+        console.log('Failed...');
+
         try {
 
-          object = loaders.objectLoader.parse(JsonObj);
+          console.log('Attempting to load JSON with THREE.ObjectLoader');
+
+          promise = loaders.objectLoader(file);
+          promise.then(function (result) {
+
+            console.log('Success!');
+
+            loaderCanvas.addObjectToScene(result);
+          }).catch(function (err) {});
+          return promise;
         } catch (err) {
 
-          console.log(err);
-          console.error('Error loading JSON file, check console log for details.');
+          console.log('Failed...');
+
+          console.error(err);
         }
-
+      }
     }
+    // switch ( type ) {
 
-    if (object) loaderCanvas.addObjectToScene(object);
+    //   case 'buffergeometry':
+    //     promise = loaders.bufferGeometryLoader( file );
+    //     promise.then( ( geometry ) => {
+
+    //       object = new THREE.Mesh( geometry, defaultMat );
+    //       loaderCanvas.addObjectToScene( object );
+
+    //     } );
+    //     return promise;
+    //   case 'geometry':
+    //     promise = loaders.jsonLoader( file );
+    //     promise.then( ( geometry ) => {
+
+    //       object = new THREE.Mesh( geometry, defaultMat );
+    //       loaderCanvas.addObjectToScene( object );
+
+    //     } );
+    //     return promise;
+    //   default:
+    //     promise = loaders.objectLoader( file );
+    //     promise.then( ( result ) => {
+    //       loaderCanvas.addObjectToScene( object );
+
+    //     } );
+    //     return promise;
+
+    // }
   };
 
-  OnLoadCallbacks.onFBXLoad = function onFBXLoad(file, resources) {
+  OnLoadCallbacks.onFBXLoad = function onFBXLoad(file) {
 
-    loaders.fbxLoader.load(file, function (result) {
+    var promise = loaders.fbxLoader(file);
+
+    promise.then(function (result) {
 
       loaderCanvas.addObjectToScene(result);
     });
+
+    return promise;
   };
 
   OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(file) {
 
-    loaders.gltf2Loader.load(file, function (gltf) {
+    var promise = loaders.gltf2Loader(file);
+
+    promise.then(function (gltf) {
 
       if (gltf.scenes.length > 1) {
 
@@ -56707,19 +56653,27 @@ var OnLoadCallbacks = function () {
         console.error('No scene found in GLTF file.');
       }
     });
+
+    return promise;
   };
 
   OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
 
-    loaders.objLoader2.load(file, function (result) {
+    var promise = loaders.objLoader2(file);
+
+    promise.then(function (result) {
 
       loaderCanvas.addObjectToScene(result);
     });
+
+    return promise;
   };
 
   OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
 
-    loaders.colladaLoader.load(file, function (result) {
+    var promise = loaders.colladaLoader(file);
+
+    promise.then(function (result) {
 
       var object = result.scene;
 
@@ -56727,116 +56681,12 @@ var OnLoadCallbacks = function () {
 
       loaderCanvas.addObjectToScene(object);
     });
-  };
 
-  OnLoadCallbacks.onZipLoad = function onZipLoad(fbxFile, resources) {
-
-    var object = loaders.fbxLoader.parse(fbxFile, resources);
-    loaderCanvas.addObjectToScene(object);
+    return promise;
   };
 
   return OnLoadCallbacks;
 }();
-
-var zipHandler = function (file) {
-  JSZip.loadAsync(file).then(function (zip) {
-
-    // First loop over the zip's contents and extract the FBX file and any images
-    var imagesZipped = [];
-
-    var fbxFileZipped = false;
-
-    for (var entry in zip.files) {
-
-      var zippedFile = zip.files[entry];
-
-      // skip if the entry is a directory
-      if (zippedFile.dir === false) {
-
-        var extension = zippedFile.name.split('.').pop().toLowerCase();
-
-        if (extension === 'fbx') {
-
-          if (fbxFileZipped) {
-
-            console.error('Warning: more than one FBX file found in archive,\n              skipping subsequent files.');
-          } else {
-
-            fbxFileZipped = zippedFile;
-          }
-        } else if (extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'gif') {
-
-          // should check if it's an image here - not completely neccessary as it will
-          // work anyway, but maybe more efficient
-          imagesZipped.push(zippedFile);
-        }
-      }
-    }
-
-    // if there was no FBX file found exit with an error here
-    if (!fbxFileZipped) {
-
-      console.error('No FBX file found in archive.');
-      return;
-    }
-
-    // At this point the FBX file should be contained in fbxFileZipped and images are in
-    // imagesZipped - these are still compressed, so we'll need to set up a Promise and
-    // uncompress them all before calling the FBXParser
-
-    var images = {};
-
-    var URL = window.URL || window.webkitURL || window.mozURL;
-
-    var promises = imagesZipped.map(function (zippedFile) {
-
-      return zippedFile.async('arrayBuffer').then(function (image) {
-
-        var buffer = new Uint8Array(image);
-        var blob = new Blob([buffer.buffer]);
-        var url = URL.createObjectURL(blob);
-
-        // drop any directories from the name
-        var split = zippedFile.name.split(/[\\\/]/);
-        var fileName = void 0;
-
-        if (split.length > 0) {
-
-          fileName = split[split.length - 1];
-        } else {
-
-          fileName = zippedFile.name;
-        }
-
-        if (images[fileName] !== undefined) {
-
-          console.error('Warning: the archive contains multiple images with the same name:' + fileName);
-        } else {
-
-          images[fileName] = url;
-        }
-      }, function (err) {
-        console.error('JSZip error unpacking image: ' + err);
-      });
-    });
-
-    var fbxFile = null;
-    var fbxFilePromise = fbxFileZipped.async('arrayBuffer').then(function (data) {
-      fbxFile = data;
-    }, function (err) {
-      console.error('JSZip error unpacking FBX: ' + err);
-    });
-
-    promises.push(fbxFilePromise);
-
-    Promise.all(promises).then(function () {
-
-      console.log(images);
-
-      OnLoadCallbacks.onZipLoad(fbxFile, images);
-    });
-  });
-};
 
 // Check support for the File API support
 var checkForFileAPI = function () {
@@ -56849,95 +56699,125 @@ var checkForFileAPI = function () {
 
 checkForFileAPI();
 
-/*  *******************************************************************
-              Set up eventListener for file input
-*******************************************************************   */
+// Files that do no match these extensions will not be uploaded. 
+var checkValidType = function (type) {
+  return new RegExp("(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$").test(type);
+};
 
-var fileInput = document.querySelector('#file-upload-input');
-
-var allFilesLoadedCallback = function (textures, file, type) {
-
-  // console.log( textures )
+var loadFileFromUrl = function (url, type) {
 
   switch (type) {
 
     case 'json':
     case 'js':
       manager.onStart();
-      OnLoadCallbacks.onJSONLoad(file);
+      return OnLoadCallbacks.onJSONLoad(url);
       break;
     case 'fbx':
       manager.onStart();
-      OnLoadCallbacks.onFBXLoad(file, textures);
+      return OnLoadCallbacks.onFBXLoad(url);
       break;
     case 'gltf':
     case 'glb':
       manager.onStart();
-      OnLoadCallbacks.onGLTFLoad(file);
+      return OnLoadCallbacks.onGLTFLoad(url);
       break;
     case 'obj':
       manager.onStart();
-      OnLoadCallbacks.onOBJLoad(file);
+      return OnLoadCallbacks.onOBJLoad(url);
       break;
     case 'dae':
       manager.onStart();
-      OnLoadCallbacks.onDAELoad(file);
-      break;
-    case 'zip':
-      manager.onStart();
-      zipHandler(file);
+      return OnLoadCallbacks.onDAELoad(url);
       break;
     default:
-      console.error('Unsupported file type ' + type + '- please load one of the supported model formats or a zip archive.');
-
+      if (checkValidType(type)) console.error('Unsupported file type ' + type + '- please load one of the supported model formats.');
+      return Promise.resolve();
   }
 };
 
-fileInput.addEventListener('change', function (e) {
+var processSingleFile = function (files) {
 
-  var files = e.target.files;
+  var fileReader = new FileReader();
 
-  var textures = [];
+  var file = files[0];
 
-  var count = files.length;
-  var type = void 0;
-  var mainFile = void 0;
+  var type = file.name.split('.').pop().toLowerCase();
+
+  if (checkValidType(type)) {
+
+    console.error('Invalid file type: ' + type);
+    return;
+  }
+
+  fileReader.readAsDataURL(file);
+
+  fileReader.onload = function (e) {
+
+    loadFileFromUrl(e.target.result, type);
+  };
+};
+
+var processMultipleFiles = function (files) {
+
+  var uploadDir = 'php/uploads/';
+
+  var data = new FormData();
 
   for (var i = 0; i < files.length; i++) {
 
-    var fileReader = new FileReader();
+    var type = files[i].name.split('.').pop().toLowerCase();
 
-    fileReader.onerror = function (msg) {
+    if (!checkValidType(type)) {
 
-      console.error('FileReader error: ' + msg);
-    };
-
-    var file = files[i];
-
-    fileReader.readAsDataURL(file);
-
-    // check for image file
-    if (file.type.match('image.*')) {
-
-      fileReader.onload = function (evt) {
-
-        textures.push(evt.target.result);
-
-        // count down loading of files and callback when all are done
-        if (--count === 0) allFilesLoadedCallback(textures, mainFile, type);
-      };
-    } else {
-
-      type = file.name.split('.').pop().toLowerCase();
-
-      fileReader.onload = function (evt) {
-
-        mainFile = evt.target.result;
-        if (--count === 0) allFilesLoadedCallback(textures, mainFile, type);
-      };
+      data.append('files[]', files[i]);
     }
   }
-}, false);
+
+  fetch('/php/upload.php', {
+    method: 'post',
+    body: data
+  }).then(function (response) {
+    // const json = response.json();
+    var text = response.text();
+    console.log(text);
+    return json;
+  }).then(function (response) {
+
+    if (response.status === 'success') {
+
+      var promises = response.data.map(function (name) {
+
+        var type = name.split('.').pop().toLowerCase();
+        return loadFileFromUrl('/php/uploads/' + name, type);
+      });
+
+      Promise.all(promises).then(function () {
+
+        fetch('/php/deleteUploadedFiles.php', {
+          method: 'post',
+          body: data
+        });
+      });
+    } else {
+
+      console.error("An error occurred while uploading the files: " + response.data);
+    }
+  });
+};
+
+document.querySelector('#file-upload-input').addEventListener('change', function (e) {
+
+  var files = e.target.files;
+
+  if (files.length === 1) {
+
+    processSingleFile(files);
+  } else if (files.length > 1) {
+
+    processMultipleFiles(files);
+  }
+});
 
 var LoaderCanvas = function () {
   function LoaderCanvas(canvas) {

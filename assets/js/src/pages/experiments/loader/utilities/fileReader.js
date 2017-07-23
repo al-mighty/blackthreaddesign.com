@@ -1,4 +1,3 @@
-import zipHandler from './zipHandler.js';
 import manager from './loadingManager.js';
 
 import OnLoadCallbacks from './OnLoadCallbacks.js';
@@ -16,101 +15,142 @@ const checkForFileAPI = () => {
 
 checkForFileAPI();
 
-/*  *******************************************************************
-              Set up eventListener for file input
-*******************************************************************   */
+// Files that do no match these extensions will not be uploaded. 
+const checkValidType = ( type ) => 
+  new RegExp("(.*?)\.(png|jpg|jpeg|gif|bmp|dds|tga|json|js|fbx|gltf|bin|glb|dae|obj|mtl|txt|vert|frag)$")
+    .test( type );
 
-const fileInput = document.querySelector( '#file-upload-input' );
 
-const allFilesLoadedCallback = ( textures, file, type ) => {
-
-  // console.log( textures )
+const loadFileFromUrl = ( url, type ) => {
 
   switch ( type ) {
 
     case 'json':
     case 'js':
       manager.onStart();
-      OnLoadCallbacks.onJSONLoad( file );
+      return OnLoadCallbacks.onJSONLoad( url );
       break;
     case 'fbx':
       manager.onStart();
-      OnLoadCallbacks.onFBXLoad( file, textures );
+      return OnLoadCallbacks.onFBXLoad( url );
       break;
     case 'gltf':
     case 'glb':
       manager.onStart();
-      OnLoadCallbacks.onGLTFLoad( file );
+      return OnLoadCallbacks.onGLTFLoad( url );
       break;
     case 'obj':
       manager.onStart();
-      OnLoadCallbacks.onOBJLoad( file );
+      return OnLoadCallbacks.onOBJLoad( url );
       break;
     case 'dae':
       manager.onStart();
-      OnLoadCallbacks.onDAELoad( file );
-      break;
-    case 'zip':
-      manager.onStart();
-      zipHandler( file );
+      return OnLoadCallbacks.onDAELoad( url );
       break;
     default:
-      console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats or a zip archive.' );
-
+      if( checkValidType( type ) ) console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats.' );
+      return Promise.resolve();
   }
 
 }
 
-fileInput.addEventListener( 'change', ( e ) => {
+const processSingleFile = ( files ) => {
 
-  const files = e.target.files;
+  const fileReader = new FileReader();
 
-  const textures = [];
+  const file = files[0];
 
-  let count = files.length;
-  let type;
-  let mainFile;
+  const type = file.name.split( '.' ).pop().toLowerCase();
 
-  for ( let i = 0; i < files.length; i++ ) {
+  if ( checkValidType( type ) ) {
 
-    const fileReader = new FileReader();
+    console.error( 'Invalid file type: ' + type );
+    return;
 
-    fileReader.onerror = ( msg ) => {
+  }
 
-      console.error( 'FileReader error: ' + msg );
+  fileReader.readAsDataURL( file );
 
-    };
+  fileReader.onload = ( e ) => { 
 
-    const file = files[i];
+    loadFileFromUrl( e.target.result, type );
 
-    fileReader.readAsDataURL( file );
+  };
 
-    // check for image file
-    if ( file.type.match( 'image.*' ) ) {
+};
 
-      fileReader.onload = ( evt ) => {
+const processMultipleFiles = ( files ) => {
 
-        textures.push( evt.target.result );
+  const uploadDir = 'php/uploads/';
 
-        // count down loading of files and callback when all are done
-        if ( --count === 0 ) allFilesLoadedCallback( textures, mainFile, type );
+  const data = new FormData();
 
-      };
+  for( let i = 0; i < files.length; i++ ) {
 
-    } else {
+    const type = files[i].name.split( '.' ).pop().toLowerCase();
 
-      type = file.name.split( '.' ).pop().toLowerCase();
+    if ( !checkValidType( type ) ) {
 
-      fileReader.onload = ( evt ) => {
-
-        mainFile = evt.target.result;
-        if ( --count === 0 ) allFilesLoadedCallback( textures, mainFile, type );
-
-      };
+      data.append( 'files[]', files[i] );
 
     }
 
   }
 
-}, false );
+  fetch( '/php/upload.php', {
+    method: 'post',
+    body: data,
+  } )
+    .then( ( response ) => {
+      // const json = response.json();
+      const text = response.text();
+      console.log( text )
+      return json;
+    } )
+    .then( ( response ) => {
 
+      if ( response.status === 'success' ) {
+
+        const promises = response.data.map( ( name ) => {
+
+          const type = name.split( '.' ).pop().toLowerCase();
+          return loadFileFromUrl( '/php/uploads/' + name, type );
+
+        } );
+
+        Promise.all( promises ).then( () => {
+
+          fetch( '/php/deleteUploadedFiles.php', {
+            method: 'post',
+            body: data,
+          } );
+
+        } );
+
+
+      } else {
+
+        console.error( "An error occurred while uploading the files: " + response.data );
+
+      }
+
+
+  });
+
+}
+
+document.querySelector( '#file-upload-input' ).addEventListener( 'change', ( e ) => { 
+
+  const files = e.target.files;
+
+  if( files.length === 1 ) {
+
+    processSingleFile( files );
+
+  } else if ( files.length > 1 ) {
+
+    processMultipleFiles( files );
+
+  } 
+
+} );

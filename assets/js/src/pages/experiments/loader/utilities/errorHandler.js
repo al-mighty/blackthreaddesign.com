@@ -2,6 +2,13 @@
 
 const errorHandler = ( msg ) => {
 
+  if ( !( msg instanceof String ) ) {
+
+    console.log( msg );
+    return;
+
+  }
+
   // bug in three.js or WebGL returns this error on Chrome
   if ( msg.indexOf( 'gl.getProgramInfoLog()' ) !== -1 ) return;
 

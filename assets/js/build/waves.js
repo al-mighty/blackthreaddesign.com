@@ -7702,6 +7702,7 @@ var runtime = createCommonjsModule(function (module) {
   var undefined; // More compressible than void 0.
   var $Symbol = typeof Symbol === "function" ? Symbol : {};
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
   var inModule = typeof module === "object";
@@ -7875,8 +7876,8 @@ var runtime = createCommonjsModule(function (module) {
       }
     }
 
-    if (typeof process === "object" && process.domain) {
-      invoke = process.domain.bind(invoke);
+    if (typeof global.process === "object" && global.process.domain) {
+      invoke = global.process.domain.bind(invoke);
     }
 
     var previousPromise;
@@ -7915,6 +7916,9 @@ var runtime = createCommonjsModule(function (module) {
   }
 
   defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
   runtime.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
@@ -8097,6 +8101,15 @@ var runtime = createCommonjsModule(function (module) {
   defineIteratorMethods(Gp);
 
   Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
 
   Gp.toString = function() {
     return "[object Generator]";
@@ -55795,6 +55808,7 @@ function initMaterial(opacity) {
     fragmentShader: morphLineFrag,
     morphTargets: true,
     transparent: true
+    // side: THREE.DoubleSide,
   });
 }
 
