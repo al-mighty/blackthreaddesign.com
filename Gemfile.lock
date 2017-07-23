@@ -15,6 +15,7 @@ GEM
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
+    eventmachine (1.2.3)
     eventmachine (1.2.3-x86-mingw32)
     execjs (2.7.0)
     extras (0.3.0)
@@ -22,6 +23,7 @@ GEM
     faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
     fastimage (2.1.0)
+    ffi (1.9.18)
     ffi (1.9.18-x86-mingw32)
     font-awesome-sass (4.7.0)
       sass (>= 3.2)
@@ -79,6 +81,8 @@ GEM
     mini_portile2 (2.2.0)
     minitest (5.10.3)
     multipart-post (2.0.0)
+    nokogiri (1.8.0)
+      mini_portile2 (~> 2.2.0)
     nokogiri (1.8.0-x86-mingw32)
       mini_portile2 (~> 2.2.0)
     octokit (4.7.0)
@@ -110,7 +114,9 @@ GEM
       tzinfo (>= 1.0.0)
 
 PLATFORMS
-  x86-mingw32 ruby x86_64-linux
+  ruby
+  x86-linux
+  x86-mingw32
 
 DEPENDENCIES
   autoprefixer-rails
