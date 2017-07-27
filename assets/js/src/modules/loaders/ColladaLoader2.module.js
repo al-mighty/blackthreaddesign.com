@@ -5,15 +5,15 @@ import * as THREE from 'three';
  * @author Mugen87 / https://github.com/Mugen87
  */
 
-export default function ColladaLoader( manager ) {
+export default function ColladaLoader2( manager ) {
 
 	this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
 
 };
 
-ColladaLoader.prototype = {
+ColladaLoader2.prototype = {
 
-	constructor: ColladaLoader,
+	constructor: ColladaLoader2,
 
 	load: function ( url, onLoad, onProgress, onError ) {
 
@@ -36,7 +36,7 @@ ColladaLoader.prototype = {
 
 		set convertUpAxis( value ) {
 
-			console.log( 'ColladaLoader.options.convertUpAxis: TODO' );
+			console.log( 'ColladaLoader2.options.convertUpAxis: TODO' );
 
 		}
 
@@ -419,22 +419,22 @@ ColladaLoader.prototype = {
 					break;
 
 				case 'translate':
-					console.warn( 'ColladaLoader: Animation transform type "%s" not yet implemented.', transform );
+					console.warn( 'ColladaLoader2: Animation transform type "%s" not yet implemented.', transform );
 					break;
 
 				case 'rotate':
-					console.warn( 'ColladaLoader: Animation transform "%s" not yet implemented.', transform );
+					console.warn( 'ColladaLoader2: Animation transform "%s" not yet implemented.', transform );
 					break;
 
 				case 'scale':
-					console.warn( 'ColladaLoader: Animation transform "%s" not yet implemented.', transform );
+					console.warn( 'ColladaLoader2: Animation transform "%s" not yet implemented.', transform );
 					break;
 
 			}
 
 			var keyframes = prepareAnimationData( data, defaultMatrix );
 
-			if ( node.type !== 'JOINT' ) console.warn( 'ColladaLoader: Animation data for invalid node with ID "%s" found. The loader only supports animation of bones (skeletal animation).', node.id );
+			if ( node.type !== 'JOINT' ) console.warn( 'ColladaLoader2: Animation data for invalid node with ID "%s" found. The loader only supports animation of bones (skeletal animation).', node.id );
 
 			var animation = {
 				name: '.skeleton.bones[' + node.sid + ']',
@@ -1410,7 +1410,7 @@ ColladaLoader.prototype = {
 
 				}
 
-				console.error( 'ColladaLoader: Undefined sampler', textureObject.id );
+				console.error( 'ColladaLoader2: Undefined sampler', textureObject.id );
 
 				return null;
 
@@ -1773,7 +1773,7 @@ ColladaLoader.prototype = {
 						break;
 
 					case 'polygons':
-						console.warn( 'ColladaLoader: Unsupported primitive type: ', child.nodeName );
+						console.warn( 'ColladaLoader2: Unsupported primitive type: ', child.nodeName );
 						break;
 
 					case 'lines':
@@ -2072,7 +2072,7 @@ ColladaLoader.prototype = {
 
 				if ( maxcount > 0 ) {
 
-					console.log( 'ColladaLoader: Geometry has faces with more than 4 vertices.' );
+					console.log( 'ColladaLoader2: Geometry has faces with more than 4 vertices.' );
 
 				}
 
@@ -2357,7 +2357,7 @@ ColladaLoader.prototype = {
 						// ensure a correct animation of the model.
 
 						 boneInverse = new THREE.Matrix4();
-						 console.warn( 'ColladaLoader: Missing data for bone: %s.', object.name );
+						 console.warn( 'ColladaLoader2: Missing data for bone: %s.', object.name );
 
 					}
 
@@ -2623,7 +2623,7 @@ ColladaLoader.prototype = {
 
 		}
 
-		console.time( 'ColladaLoader' );
+		console.time( 'ColladaLoader2' );
 
 		if ( text.length === 0 ) {
 
@@ -2631,18 +2631,18 @@ ColladaLoader.prototype = {
 
 		}
 
-		console.time( 'ColladaLoader: DOMParser' );
+		console.time( 'ColladaLoader2: DOMParser' );
 
 		var xml = new DOMParser().parseFromString( text, 'application/xml' );
 
-		console.timeEnd( 'ColladaLoader: DOMParser' );
+		console.timeEnd( 'ColladaLoader2: DOMParser' );
 
 		var collada = getElementsByTagName( xml, 'COLLADA' )[ 0 ];
 
 		// metadata
 
 		var version = collada.getAttribute( 'version' );
-		console.log( 'ColladaLoader: File version', version );
+		console.log( 'ColladaLoader2: File version', version );
 
 		var asset = parseAsset( getElementsByTagName( collada, 'asset' )[ 0 ] );
 		var textureLoader = new THREE.TextureLoader( this.manager ).setPath( resourceDirectory );
@@ -2667,7 +2667,7 @@ ColladaLoader.prototype = {
 			visualScenes: {}
 		};
 
-		console.time( 'ColladaLoader: Parse' );
+		console.time( 'ColladaLoader2: Parse' );
 
 		parseLibrary( collada, 'library_animations', 'animation', parseAnimation );
 		parseLibrary( collada, 'library_animation_clips', 'animation_clip', parseAnimationClip );
@@ -2681,9 +2681,9 @@ ColladaLoader.prototype = {
 		parseLibrary( collada, 'library_nodes', 'node', parseNode );
 		parseLibrary( collada, 'library_visual_scenes', 'visual_scene', parseVisualScene );
 
-		console.timeEnd( 'ColladaLoader: Parse' );
+		console.timeEnd( 'ColladaLoader2: Parse' );
 
-		console.time( 'ColladaLoader: Build' );
+		console.time( 'ColladaLoader2: Build' );
 
 		buildLibrary( library.animations, buildAnimation );
 		buildLibrary( library.clips, buildAnimationClip );
@@ -2696,7 +2696,7 @@ ColladaLoader.prototype = {
 		buildLibrary( library.geometries, buildGeometry );
 		buildLibrary( library.visualScenes, buildVisualScene );
 
-		console.timeEnd( 'ColladaLoader: Build' );
+		console.timeEnd( 'ColladaLoader2: Build' );
 
 		setupAnimations();
 
@@ -2710,7 +2710,7 @@ ColladaLoader.prototype = {
 
 		scene.scale.multiplyScalar( asset.unit );
 
-		console.timeEnd( 'ColladaLoader' );
+		console.timeEnd( 'ColladaLoader2' );
 
 		return {
 			animations: animations,

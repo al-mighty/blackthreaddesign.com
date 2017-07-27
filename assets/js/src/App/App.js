@@ -249,8 +249,6 @@ function App( canvas ) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject( object );
 
-    console.log( boundingBox )
-
     const center = boundingBox.getCenter();
 
     const size = boundingBox.getSize();

@@ -47,6 +47,14 @@ export default class AnimationControls {
 
     object.animations.forEach( ( animation ) => {
 
+      if ( !( animation instanceof THREE.AnimationClip ) ) {
+
+        console.warn( 'Some animations are not valid THREE.AnimationClips. Skipping these.' );
+
+        return;
+
+      }
+
       const mixer = new THREE.AnimationMixer( object );
 
       const action = mixer.clipAction( animation );
@@ -59,6 +67,9 @@ export default class AnimationControls {
       this.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
 
     } );
+
+    // If all animations have been skipped, return
+    if ( this.animationNames.length === 0 ) return;
 
     this.selectCurrentAnimation( this.animationNames[ 0 ] );
 

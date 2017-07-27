@@ -1,13 +1,20 @@
 // Simple error handling function - customize as necessary
 
+
+const cachedMessages = {};
+
 const errorHandler = ( msg ) => {
 
-  if ( !( msg instanceof String ) ) {
+  // cache the message to prevent it being displayed multiple times
+  if ( cachedMessages[ msg ] === true ) return;
+  cachedMessages[ msg ] = true;
 
-    console.log( msg );
-    return;
+  // if ( !( msg instanceof String ) ) {
 
-  }
+  //   console.log( msg );
+  //   return;
+
+  // }
 
   // bug in three.js or WebGL returns this error on Chrome
   if ( msg.indexOf( 'gl.getProgramInfoLog()' ) !== -1 ) return;

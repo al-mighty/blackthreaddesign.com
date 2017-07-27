@@ -2,6 +2,10 @@ import manager from './loadingManager.js';
 
 import OnLoadCallbacks from './OnLoadCallbacks.js';
 
+import Loaders from './Loaders.js';
+
+const loaders = new Loaders();
+
 // Check support for the File API support
 const checkForFileAPI = () => {
 
@@ -140,6 +144,10 @@ const processMultipleFiles = ( files ) => {
 
   }
 
+  // for use with obj + mtl files
+  const mtls = {};
+  const objs = [];
+
   fetch( '/php/upload.php', {
     method: 'post',
     body: data,
@@ -153,7 +161,7 @@ const processMultipleFiles = ( files ) => {
 
           // create a temp unresolved promise so that promises are not resolved to early
           // without this JSON files can be deleted before they are read
-          let promise = new Promise( ( resolve = () => {}, reject = () => {} ) => {} );
+          let promise = new Promise( ( resolve, reject ) => {} );
 
           const type = file.split( '.' ).pop().toLowerCase();
 
@@ -179,6 +187,22 @@ const processMultipleFiles = ( files ) => {
 
               } );
 
+          } else if ( type === 'mtl' ) {
+
+            promise = loaders.mtlLoader( '/php/uploads/' + file );
+            promise.then( ( materials ) => {
+
+              materials.preload();
+              Object.assign( mtls, materials.materials );
+
+            } );
+
+          } else if ( type === 'obj' ) {
+
+            promise = Promise.resolve();
+
+            objs.push( file );
+
           } else {
 
             promise = loadFileFromUrl( '/php/uploads/' + file, type );
@@ -189,14 +213,36 @@ const processMultipleFiles = ( files ) => {
 
         } );
 
-        Promise.all( promises ).then( () => {
+        Promise.all( promises )
+          // once all files are uploaded, first process and  .obj files
+          .then( () => {
 
-          fetch( '/php/deleteUploadedFiles.php', {
-            method: 'post',
-            body: data,
+            // console.log( mtls, objs )
+
+            // console.log( 'Promise.all( promises )' );
+
+            loaders.assignObjectLoaderMtls( mtls );
+
+            if ( objs.length > 0 ) {
+
+              objs.map( ( obj ) => {
+
+                loadFileFromUrl( '/php/uploads/' + obj, 'obj' );
+
+              } );
+
+            }
+
+          } )
+          // then delete all the files to prevent clutter
+          .then( () => {
+
+            fetch( '/php/deleteUploadedFiles.php', {
+              method: 'post',
+              body: data,
+            } );
+
           } );
-
-        } );
 
 
       } else {
