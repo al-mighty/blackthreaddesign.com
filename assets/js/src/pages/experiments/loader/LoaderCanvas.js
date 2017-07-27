@@ -7,6 +7,7 @@ import addModelInfo from './utilities/addModelInfo.js';
 import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 import LightingSetup from './utilities/LightingSetup.js';
 import ScreenshotHandler from './utilities/ScreenshotHandler.js';
+import reset from './utilities/reset.js';
 
 import './utilities/fileReader.js';
 
@@ -52,6 +53,8 @@ class LoaderCanvas {
 
     this.screenshotHandler = new ScreenshotHandler( this.app );
 
+    this.initReset();
+
   }
 
   addObjectToScene( object ) {
@@ -67,17 +70,23 @@ class LoaderCanvas {
 
     this.app.scene.add( object );
 
-    // fit camera to whole scene in case multiple object are added
+    // fit camera to whole scene in case multiple object are loaded
     this.app.fitCameraToObject( this.app.scene );
 
     this.app.play();
 
     addModelInfo( this.app.renderer );
 
-    document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-    document.querySelector( '#screenshot-controls' ).classList.remove( 'hide' );
-    document.querySelector( '#model-info' ).classList.remove( 'hide' );
-  
+  }
+
+  initReset() {
+
+    document.querySelector( '#reset' ).addEventListener( 'click', () => {
+
+      reset( this.app );
+
+    } );
+
   }
 
 }

@@ -97,7 +97,7 @@ function App( canvas ) {
 
         if ( _camera === undefined ) {
 
-          _camera = new THREE.PerspectiveCamera( 50, this.canvas.clientWidth / this.canvas.clientHeight, 1, 1000 );
+          _camera = new THREE.PerspectiveCamera( 50, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 1000 );
 
         }
 
@@ -249,6 +249,8 @@ function App( canvas ) {
     // get bounding box of object - this will be used to setup controls and camera
     boundingBox.setFromObject( object );
 
+    console.log( boundingBox )
+
     const center = boundingBox.getCenter();
 
     const size = boundingBox.getSize();
@@ -293,9 +295,9 @@ function App( canvas ) {
       this.camera.updateProjectionMatrix();
       this.renderer.setSize( width, height, false );
 
-      // render scene 
+      // render scene
       this.renderer.render( this.scene, this.camera, null, false );
-      
+
       img.src = this.renderer.domElement.toDataURL();
 
       // reset the renderer and camera to original size
@@ -305,7 +307,7 @@ function App( canvas ) {
 
     } else {
 
-      // render scene 
+      // render scene
       this.renderer.render( this.scene, this.camera, null, false );
 
       img.src = this.renderer.domElement.toDataURL();

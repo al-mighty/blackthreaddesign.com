@@ -25,10 +25,15 @@ const loadFileFromUrl = ( url, type ) => {
 
   switch ( type ) {
 
-    case 'json':
-    case 'js':
+    case 'buffergeometry':
       manager.onStart();
-      return OnLoadCallbacks.onJSONLoad( url );
+      return OnLoadCallbacks.onJSONBufferGeometryLoad( url );
+    case 'object':
+      manager.onStart();
+      return OnLoadCallbacks.onJSONObjectLoad( url );
+    case 'geometry':
+      manager.onStart();
+      return OnLoadCallbacks.onJSONGeometryLoad( url );
     case 'fbx':
       manager.onStart();
       return OnLoadCallbacks.onFBXLoad( url );
@@ -49,6 +54,41 @@ const loadFileFromUrl = ( url, type ) => {
 
 };
 
+const processJSON = ( file ) => {
+
+  const fileReader = new FileReader();
+
+  fileReader.readAsText( file );
+
+  fileReader.onload = ( e ) => {
+
+    const json = JSON.parse( e.target.result );
+
+    let type;
+
+    if ( json.metadata && json.metadata.type ) {
+
+      type = json.metadata.type.toLowerCase();
+
+      const fileReader2 = new FileReader();
+      fileReader2.readAsDataURL( file );
+
+      fileReader2.onload = ( e ) => {
+
+        loadFileFromUrl( e.target.result, type );
+
+      };
+
+    } else {
+
+      console.error( file.name + ': invalid JSON.' );
+
+    }
+
+  };
+
+};
+
 const processSingleFile = ( files ) => {
 
   const fileReader = new FileReader();
@@ -64,13 +104,23 @@ const processSingleFile = ( files ) => {
 
   }
 
-  fileReader.readAsDataURL( file );
+  // json files can contain either geometry / buffergeometry or a whole scene.
+  // these are processed by different loaders
+  if ( type === 'json' || type === 'js' ) {
 
-  fileReader.onload = ( e ) => {
+    processJSON( file );
 
-    loadFileFromUrl( e.target.result, type );
+  } else {
 
-  };
+    fileReader.readAsDataURL( file );
+
+    fileReader.onload = ( e ) => {
+
+      loadFileFromUrl( e.target.result, type );
+
+    };
+
+  }
 
 };
 
@@ -99,10 +149,43 @@ const processMultipleFiles = ( files ) => {
 
       if ( response.status === 'success' ) {
 
-        const promises = response.data.map( ( name ) => {
+        const promises = response.data.map( ( file ) => {
 
-          const type = name.split( '.' ).pop().toLowerCase();
-          return loadFileFromUrl( '/php/uploads/' + name, type );
+          // create a temp unresolved promise so that promises are not resolved to early
+          // without this JSON files can be deleted before they are read
+          let promise = new Promise( ( resolve = () => {}, reject = () => {} ) => {} );
+
+          const type = file.split( '.' ).pop().toLowerCase();
+
+          // JSON files are preloaded to get the type. Not the most efficient, but it works
+          if ( type === 'json' || type === 'js' ) {
+
+            fetch( '/php/uploads/' + file )
+              .then( res => res.json() )
+              .then( ( json ) => {
+
+                if ( json.metadata && json.metadata.type ) {
+
+                  const jsonType = json.metadata.type.toLowerCase();
+
+                  promise = loadFileFromUrl( '/php/uploads/' + file, jsonType );
+
+                } else {
+
+                  console.error( file.name + ': invalid JSON.' );
+                  promise = Promise.resolve();
+
+                }
+
+              } );
+
+          } else {
+
+            promise = loadFileFromUrl( '/php/uploads/' + file, type );
+
+          }
+
+          return promise;
 
         } );
 

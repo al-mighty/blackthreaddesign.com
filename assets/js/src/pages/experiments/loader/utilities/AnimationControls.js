@@ -47,26 +47,16 @@ export default class AnimationControls {
 
     object.animations.forEach( ( animation ) => {
 
-      // lots of models have tiny < .1 second animations that cause
-      // flickering / stuttering - ignore these
-      if ( animation.duration < 0.1 ) {
+      const mixer = new THREE.AnimationMixer( object );
 
-        console.warn( 'Skipping animation with duration < 0.1 seconds: ' + animation.name );
+      const action = mixer.clipAction( animation );
 
-      } else {
+      this.clips.push( animation );
+      this.mixers.push( mixer );
+      this.actions.push( action );
+      this.animationNames.push( animation.name );
 
-        const mixer = new THREE.AnimationMixer( object );
-
-        const action = mixer.clipAction( animation );
-
-        this.clips.push( animation );
-        this.mixers.push( mixer );
-        this.actions.push( action );
-        this.animationNames.push( animation.name );
-
-        this.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
-
-      }
+      this.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
 
     } );
 

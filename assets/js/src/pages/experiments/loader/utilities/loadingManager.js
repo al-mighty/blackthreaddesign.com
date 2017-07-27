@@ -12,9 +12,9 @@ manager.onStart = () => {
 
 manager.onLoad = function ( ) {
 
-  // this doesn't fire when loading objects with a single file
-
-  // document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+  document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
+  document.querySelector( '#reveal-on-load' ).classList.remove( 'hide' );
+  document.querySelector( '.hide-on-load' ).classList.add( 'hide' );
 
 };
 
@@ -25,9 +25,9 @@ manager.onProgress = ( url, currentFile, totalFiles ) => {
   progress.style.width = percentComplete + '%';
 
 };
- 
+
 manager.onError = ( msg ) => {
-  console.error( 'THREE.LoadingManager error: ' + msg );
+  if ( msg instanceof String && msg !== '' ) console.error( 'THREE.LoadingManager error: ' + msg );
 };
 
 export default manager;

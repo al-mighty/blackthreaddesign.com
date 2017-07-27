@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import errorHandler from './utilities/errorHandler.js';
+import './utilities/initDemos.js';
 
 const revElem = document.querySelector( '.three-rev' );
 

@@ -1,114 +1,66 @@
 import * as THREE from 'three';
 
-import Loaders from './Loaders.js';
-
 import loaderCanvas from 'pages/experiments/loader/LoaderCanvas.js';
+
+import Loaders from './Loaders.js';
 
 const loaders = new Loaders();
 const defaultMat = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x000000 } );
 
 export default class OnLoadCallbacks {
 
-  static onJSONLoad( file ) {
+  static onJSONBufferGeometryLoad( file ) {
 
-    let promise;
+    console.log( 'Using THREE.BufferGeometryLoader' );
 
-    try {
+    const promise = loaders.bufferGeometryLoader( file );
+    promise.then( ( geometry ) => {
 
-      console.log( 'Attempting to load JSON with THREE.BufferGeometryLoader' );
-      
-      promise = loaders.bufferGeometryLoader( file );
-      promise.then( ( geometry ) => {
+      const object = new THREE.Mesh( geometry, defaultMat );
+      loaderCanvas.addObjectToScene( object );
 
-        console.log( 'Success!' );
+    } );
 
-        const object = new THREE.Mesh( geometry, defaultMat );
-        loaderCanvas.addObjectToScene( object );
+    return promise;
 
-      } ).catch( ( err ) => {} );
-      return promise;
+  }
 
-    } catch ( err ) {
+  static onJSONGeometryLoad( file ) {
 
-      console.log( 'Failed...' );
+    console.log( 'Using THREE.JSONLoader' );
 
-      try {
+    const promise = loaders.jsonLoader( file );
+    promise.then( ( geometry ) => {
 
-        console.log( 'Attempting to load JSON with THREE.JSONLoader' );
+      const object = new THREE.Mesh( geometry, defaultMat );
+      loaderCanvas.addObjectToScene( object );
 
-        promise = loaders.jsonLoader( file );
-        promise.then( ( geometry ) => {
+    } );
 
-          console.log( 'Success!' );
+    return promise;
 
-          const object = new THREE.Mesh( geometry, defaultMat );
-          loaderCanvas.addObjectToScene( object );
+  }
 
-        } ).catch( ( err ) => {} );
-        return promise;
-        
-      } catch ( err ) {
+  static onJSONObjectLoad( file ) {
 
-        console.log( 'Failed...' );
+    console.log( 'Using THREE.ObjectLoader' );
 
-        try {
+    console.log( file )
 
-          console.log( 'Attempting to load JSON with THREE.ObjectLoader' );
+    const promise = loaders.objectLoader( file );
+    promise.then( ( object ) => {
 
-          promise = loaders.objectLoader( file );
-          promise.then( ( result ) => {
+      loaderCanvas.addObjectToScene( object );
 
-            console.log( 'Success!' );
+    } );
 
-            loaderCanvas.addObjectToScene( result );
-
-          } ).catch( ( err ) => {} );
-          return promise;
-
-        } catch ( err ) {
-
-          console.log( 'Failed...' );
-
-          console.error( err );
-
-        }
-
-      }
-      
-    }
-    // switch ( type ) {
-
-    //   case 'buffergeometry':
-    //     promise = loaders.bufferGeometryLoader( file );
-    //     promise.then( ( geometry ) => {
-
-    //       object = new THREE.Mesh( geometry, defaultMat );
-    //       loaderCanvas.addObjectToScene( object );
-
-    //     } );
-    //     return promise;
-    //   case 'geometry':
-    //     promise = loaders.jsonLoader( file );
-    //     promise.then( ( geometry ) => {
-
-    //       object = new THREE.Mesh( geometry, defaultMat );
-    //       loaderCanvas.addObjectToScene( object );
-
-    //     } );
-    //     return promise;
-    //   default:
-    //     promise = loaders.objectLoader( file );
-    //     promise.then( ( result ) => {
-    //       loaderCanvas.addObjectToScene( object );
-
-    //     } );
-    //     return promise;
-
-    // }
+    return promise;
 
   }
 
   static onFBXLoad( file ) {
+
+    console.log( 'Using THREE.FBXLoader' );
 
     const promise = loaders.fbxLoader( file );
 
@@ -123,6 +75,8 @@ export default class OnLoadCallbacks {
   }
 
   static onGLTFLoad( file ) {
+
+    console.log( 'Using THREE.GLTF2Loader' );
 
     const promise = loaders.gltf2Loader( file );
 
@@ -156,6 +110,8 @@ export default class OnLoadCallbacks {
 
   static onOBJLoad( file ) {
 
+    console.log( 'Using THREE.ObjLoader2' );
+
     const promise = loaders.objLoader2( file );
 
     promise.then( ( result ) => {
@@ -170,14 +126,19 @@ export default class OnLoadCallbacks {
 
   static onDAELoad( file ) {
 
+    console.log( 'Using THREE.ColladaLoader' );
+
     const promise = loaders.colladaLoader( file );
 
     promise.then( ( result ) => {
+
+      console.log( result )
 
       const object = result.scene;
 
       if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
 
+      console.log( object )
       loaderCanvas.addObjectToScene( object );
 
     } );

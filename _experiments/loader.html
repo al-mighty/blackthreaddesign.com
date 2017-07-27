@@ -8,7 +8,7 @@ js:
   loader
 css:
   loader
-vendor-js: 
+vendor-js:
   [ "/zip/inflate.min" ]
 ---
 
@@ -18,14 +18,14 @@ vendor-js:
   <div id="top-controls">
     <div id="lighting-controls">
       <span id="light-symbol" class="fa fa-lg fa-lightbulb-o" aria-hidden="true"></span>
-      <input id="lighting-slider" type="range" min="0" max="15" step="0.1" value="0" class="loader-slider"/>
+      <input id="lighting-slider" type="range" min="0" max="8" step="0.1" value="0" class="loader-slider"/>
     </div>
-    
+
 
   </div>
 
   <div id="bottom-controls" class="control-panel">
-  
+
     <div id="animation-controls" class="hide">
 
       <select id="animation-clips">
@@ -74,20 +74,27 @@ vendor-js:
 
 <div id="info">
 
-  <div id="screenshot-controls" class="hide">
-    <h3>Take a screenshot</h3>
-    <span>Width: </span><input id="screenshot-width" type="number" value="800">
-    <span>Height: </span><input id="screenshot-height" type="number" value="600">
-    <button id="screenshot-button" alt="Opens screenshot in new window"> <span class="fa fa-lg fa-camera" aria-hidden="true"></span></button>  
-  </div>
+  <div id="reveal-on-load" class="hide">
+    <br><button id="reset">Reset</button>
+    <div id="screenshot-controls">
+      <h3>Take a screenshot</h3>
+      <span>Width: </span><input id="screenshot-width" type="number" value="800">
+      <span>Height: </span><input id="screenshot-height" type="number" value="600">
+      <button id="screenshot-button" alt="Opens screenshot in new window"> <span class="fa fa-lg fa-camera" aria-hidden="true"></span></button>
+    </div>
 
-  <div id="model-info" class="hide">
-    <h3>Model Info</h3>
-    <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
-    <p>Note that this is the number of faces / vertices as rendered by three.js, which may
-      be different from the numbers reported in modelling programs. This is especially true if the model 
-      has quads (4-sided polygons) or higher, as these are automatically subdivied into triangles on load.
-    </p>
+    <div id="model-info">
+      <h3>Model Info</h3>
+      <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
+      <p>Note that this is the number of faces / vertices as rendered by three.js, which may
+        be different from the numbers reported in modelling programs. This is especially true if the model
+        has quads (4-sided polygons) or higher, as these are automatically subdivied into triangles on load.
+      </p>
+      <div id="load-info">
+
+      </div>
+    </div>
+
   </div>
 
   <div id="error-overlay" class="hide notice--info">
@@ -97,11 +104,11 @@ vendor-js:
 
   <h3>About</h3>
   <p>
-    There are many 3d object loaders on the internet, so why create another one? Well, this one uses the loaders 
-    directly from the three.js github repo - either plugin type loaders from the 
-    <a href="https://github.com/mrdoob/three.js/tree/dev/examples/js/loaders">examples</a> directory (FBX, DAE, OBJ, MTL and GLTF loaders), or directly 
+    There are many 3d object loaders on the internet, so why create another one? Well, this one uses the loaders
+    directly from the three.js github repo - either plugin type loaders from the
+    <a href="https://github.com/mrdoob/three.js/tree/dev/examples/js/loaders">examples</a> directory (FBX, DAE, OBJ, MTL and GLTF loaders), or directly
     from the three.js <a href="https://github.com/mrdoob/three.js/tree/dev/src/loaders">core</a> (JSON file loaders - bufferGeometryLoader, ObjectLoader, JSONLoader).
-    Current loaders are taken from three.js version <span class="three-rev"></span>. 
+    Current loaders are taken from three.js version <span class="three-rev"></span>.
   </p>
   <p>
     Plugins from the examples directory have been minimally adapted for use as ES6 modules, but are otherwise unchanged.
@@ -111,6 +118,18 @@ vendor-js:
     Any errors encountered during the load will be displayed above this section.
   </p>
 
+  <div id="demos" class="hide-on-load">
+    <h3>Demos</h3>
+    <p>
+      <a href="#" id="demo1">FBX</a><br>
+      <a href="#" id="demo2">GLTF</a><br>
+      <a href="#" id="demo3">JSON - BufferGeometry</a><br>
+      <a href="#" id="demo4">JSON - Scene</a><br>
+      <a href="#" id="demo5">Collada (DAE)</a><br>
+      <a href="#" id="demo6">OBJ + MTL</a><br>
+    </p>
+  </div>
+
   <h3>Controls</h3>
   <p>Left mouse / touch: Rotate camera</p>
   <p>Middle mouse / Pinch: zoom</p>
@@ -119,7 +138,7 @@ vendor-js:
   <h3>Currently supported formats</h3>
 
   <p>
-    Three.js native JSON format: Complete scene, or a file containing and geometry or buffer geometry. 
+    Three.js native JSON format: Complete scene, or a file containing and geometry or buffer geometry.
     Files containing only geometries will be rendered in wireframe.
   </p>
 
@@ -135,19 +154,5 @@ vendor-js:
 
   <p>JPG, PNG, GIF, BMP, DDS</p>
 
-  <h3>Archive support</h3>
-
-  <p>Models can be loaded in ZIP format, where the ZIP archive contains a single scene and associated textures. The directory structure of the zip does not matter. 
-
-  <p>Limitations of archive support:</p>
-
-  <ul>
-    <li>Currently only supports FBX</li>
-    <li>Only one model / scene per zip</li>
-    <li>All textures must have a unique name, duplicate textures will be ignored.</li>
-  </ul> 
-
-  <h3>Demos</h3>
-  <p><a href="#" id="demo1">1</a>, <a href="#" id="demo1">2</a>, <a href="#" id="demo1">3</a></p>
 
 </div>
