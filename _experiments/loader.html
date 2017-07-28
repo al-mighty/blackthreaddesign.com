@@ -22,7 +22,6 @@ vendor-js:
       <input id="lighting-slider" type="range" min="0" max="8" step="0.1" value="0" class="loader-slider"/>
     </div>
 
-
   </div>
 
   <div id="bottom-controls" class="control-panel">
@@ -58,7 +57,7 @@ vendor-js:
 
     <div id="file-upload-form">
       Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.</br>
-      Max size for each file is 100m.
+      Max size for each file is 100MB.
       <input id="file-upload-input" type="file" name="files[]" multiple="" class="hide">
       <input type="submit" class="" value="Upload Files" id="file-upload-button"/>
     </div>
@@ -109,19 +108,13 @@ vendor-js:
     <div id="error-message"></div>
   </div>
 
-  <h3>About</h3>
   <p>
-    There are many 3d object loaders on the internet, so why create another one? Well, this one uses the loaders
-    directly from the three.js github repo - either plugin type loaders from the
-    <a href="https://github.com/mrdoob/three.js/tree/dev/examples/js/loaders">examples</a> directory (FBX, DAE, OBJ, MTL and GLTF loaders), or directly
-    from the three.js <a href="https://github.com/mrdoob/three.js/tree/dev/src/loaders">core</a> (JSON file loaders - bufferGeometryLoader, ObjectLoader, JSONLoader).
-    Current loaders are taken from three.js version <span class="three-rev"></span>.
+    Test your models directly with the loaders three.js version <span class="three-rev"></span>.
   </p>
   <p>
     Plugins from the examples directory have been minimally adapted for use as ES6 modules, but are otherwise unchanged.
   </p>
   <p>
-    This means that if you want to quickly test models for use in a three.js project, you can load them here.
     Any errors encountered during the load will be displayed above this section.
   </p>
 
