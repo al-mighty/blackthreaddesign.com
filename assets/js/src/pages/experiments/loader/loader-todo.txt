@@ -1,8 +1,8 @@
 Fix reset button
+go over instructions / descriptions
 
 Do later:
-- go over instrunctions / descriptions
-- better demos
+
 - work on progress bar
 - make JSON format work for blender exporter
 - Add optional grid
