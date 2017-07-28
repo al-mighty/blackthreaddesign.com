@@ -1,9 +1,4 @@
-
-Add demo for collada type
-Add demo for obj + mtl type
 Fix reset button
-Make obj + mtl work
-
 
 Do later:
 - go over instrunctions / descriptions
@@ -14,3 +9,4 @@ Do later:
 - Add option to switch between loader version
 - Add info re loading time
 - GLTFLoader1 is not working
+- OBJLoader1 is not working

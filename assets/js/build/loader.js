@@ -44785,12 +44785,14 @@ var manager = new LoadingManager();
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = function () {
 
+  // console.log( 'manager.onstart' )
   document.querySelector('#file-upload-form').classList.add('hide');
   document.querySelector('#loading-bar').classList.remove('hide');
 };
 
 manager.onLoad = function () {
 
+  // console.log( 'manager.onload' );
   document.querySelector('#loading-overlay').classList.add('hide');
   document.querySelector('#reveal-on-load').classList.remove('hide');
   document.querySelector('.hide-on-load').classList.add('hide');
@@ -64075,6 +64077,13 @@ var mtlLoader = null;
 var colladaLoader = null; // todo
 var colladaLoader2 = null;
 
+// object loaders require access to .setMaterials function
+var oLoader = new OBJLoader(manager);
+var oLoader2 = new OBJLoader2(manager);
+// don't use manager here as this is called early to preload materials
+// required for access to .setPath
+var mtlLdr = new MTLLoader();
+
 var defaultReject = function (err) {
   console.log(err);
 };
@@ -64091,13 +64100,8 @@ var promisifyLoader = function (loader) {
 };
 
 var Loaders = function Loaders() {
-  var _this = this;
-
   classCallCheck(this, Loaders);
 
-
-  this.oLoader = new OBJLoader(manager);
-  this.oLoader2 = new OBJLoader2(manager);
 
   return {
 
@@ -64145,30 +64149,35 @@ var Loaders = function Loaders() {
 
     get objLoader() {
       if (objLoader === null) {
-        objLoader = promisifyLoader(this.oLoader);
+        objLoader = promisifyLoader(oLoader);
       }
       return objLoader;
     },
 
     get objLoader2() {
       if (objLoader2 === null) {
-        objLoader2 = promisifyLoader(this.oLoader2);
+        objLoader2 = promisifyLoader(oLoader2);
       }
       return objLoader2;
     },
 
     assignObjectLoaderMtls: function (mtls) {
 
-      _this.oLoader.setMaterials(mtls);
-      _this.oLoader2.setMaterials(mtls);
+      oLoader.setMaterials(mtls);
+      oLoader2.setMaterials(mtls);
     },
 
     get mtlLoader() {
       if (mtlLoader === null) {
-        mtlLoader = promisifyLoader(new MTLLoader(manager));
+        mtlLoader = promisifyLoader(mtlLdr);
       }
       return mtlLoader;
     },
+
+    setMtlLoaderPath: function (path) {
+      mtlLdr.setPath(path);
+    },
+
 
     get colladaLoader() {
       if (colladaLoader === null) {
@@ -64187,7 +64196,7 @@ var Loaders = function Loaders() {
   };
 };
 
-var loaders$2 = new Loaders();
+var loaders$3 = new Loaders();
 var defaultMat$1 = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
 var selectLoader$1 = function (loader1Name, loader2Name, type, callback) {
@@ -64230,7 +64239,7 @@ var OnLoadCallbacks$1 = function () {
 
     console.log('Using THREE.BufferGeometryLoader');
 
-    var promise = loaders$2.bufferGeometryLoader(file);
+    var promise = loaders$3.bufferGeometryLoader(file);
     promise.then(function (geometry) {
 
       var object = new Mesh(geometry, defaultMat$1);
@@ -64244,7 +64253,7 @@ var OnLoadCallbacks$1 = function () {
 
     console.log('Using THREE.JSONLoader');
 
-    var promise = loaders$2.jsonLoader(file);
+    var promise = loaders$3.jsonLoader(file);
     promise.then(function (geometry) {
 
       var object = new Mesh(geometry, defaultMat$1);
@@ -64260,7 +64269,7 @@ var OnLoadCallbacks$1 = function () {
 
     console.log(file);
 
-    var promise = loaders$2.objectLoader(file);
+    var promise = loaders$3.objectLoader(file);
     promise.then(function (object) {
 
       loaderCanvas.addObjectToScene(object);
@@ -64273,7 +64282,7 @@ var OnLoadCallbacks$1 = function () {
 
     console.log('Using THREE.FBXLoader');
 
-    var promise = loaders$2.fbxLoader(file);
+    var promise = loaders$3.fbxLoader(file);
 
     promise.then(function (result) {
 
@@ -64287,82 +64296,87 @@ var OnLoadCallbacks$1 = function () {
 
     var promise = new Promise(function (resolve, reject) {});
 
-    selectLoader$1('GLTFLoader', 'GLTFLoader2', 'gltf', function (loader) {
+    // selectLoader( 'GLTFLoader', 'GLTFLoader2', 'gltf', ( loader ) => {
 
-      // Only GLTF2Loader seems to work
+    // Only GLTF2Loader seems to work
 
 
-      // if ( loader === 1 ) {
+    // if ( loader === 1 ) {
 
-      //   console.log( 'Using THREE.GLTFLoader' );
+    //   console.log( 'Using THREE.GLTFLoader' );
 
-      //   promise = loaders.gltfLoader( file );
+    //   promise = loaders.gltfLoader( file );
 
-      // } else {
+    // } else {
 
-      //   console.log( 'Using THREE.OBJLoader2' );
+    //   console.log( 'Using THREE.OBJLoader2' );
 
-      //   promise = loaders.gltf2Loader( file );
+    //   promise = loaders.gltf2Loader( file );
 
-      // }
+    // }
 
-      console.log('Using THREE.OBJLoader2');
+    console.log('Using THREE.OBJLoader2');
 
-      promise = loaders$2.gltf2Loader(file);
+    promise = loaders$3.gltf2Loader(file);
 
-      promise.then(function (gltf) {
+    promise.then(function (gltf) {
 
-        console.log(gltf);
+      console.log(gltf);
 
-        if (gltf.scenes.length > 1) {
+      if (gltf.scenes.length > 1) {
 
-          gltf.scenes.forEach(function (scene) {
+        gltf.scenes.forEach(function (scene) {
 
-            if (gltf.animations) scene.animations = gltf.animations;
-            loaderCanvas.addObjectToScene(scene);
-          });
-        } else if (gltf.scene) {
+          if (gltf.animations) scene.animations = gltf.animations;
+          loaderCanvas.addObjectToScene(scene);
+        });
+      } else if (gltf.scene) {
 
-          if (gltf.animations) gltf.scene.animations = gltf.animations;
-          loaderCanvas.addObjectToScene(gltf.scene);
-        } else {
+        if (gltf.animations) gltf.scene.animations = gltf.animations;
+        loaderCanvas.addObjectToScene(gltf.scene);
+      } else {
 
-          console.error('No scene found in GLTF file.');
-        }
-      });
+        console.error('No scene found in GLTF file.');
+      }
     });
+
+    // } );
 
     return promise;
   };
 
   OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
 
-    console.log(file);
-
+    // only objLoader2 is working
     var promise = new Promise(function (resolve, reject) {});
 
-    selectLoader$1('OBJLoader', 'OBJLoader2', 'obj', function (loader) {
+    // selectLoader( 'OBJLoader', 'OBJLoader2', 'obj', ( loader ) => {
 
-      if (loader === 1) {
 
-        console.log('Using THREE.OBJLoader');
+    // if ( loader === 1 ) {
 
-        promise = loaders$2.objLoader(file);
-      } else {
+    //   console.log( 'Using THREE.OBJLoader' );
 
-        console.log('Using THREE.OBJLoader2');
+    //   promise = loaders.objLoader( file );
 
-        promise = loaders$2.objLoader2(file);
-      }
+    // } else {
 
-      promise.then(function (object) {
+    console.log('Using THREE.OBJLoader2');
 
-        loaderCanvas.addObjectToScene(object);
+    promise = loaders$3.objLoader2(file);
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        // if ( loader === 1 ) manager.onLoad();
-      });
+    // }
+
+
+    promise.then(function (object) {
+
+      loaderCanvas.addObjectToScene(object);
+
+      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
+      // if ( loader === 1 ) manager.onLoad();
     });
+
+    // } );
 
     return promise;
   };
@@ -64378,12 +64392,12 @@ var OnLoadCallbacks$1 = function () {
         console.log('Using THREE.ColladaLoader');
         console.warn('THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.');
 
-        promise = loaders$2.colladaLoader(file);
+        promise = loaders$3.colladaLoader(file);
       } else {
 
         console.log('Using THREE.ColladaLoader2');
 
-        promise = loaders$2.colladaLoader2(file);
+        promise = loaders$3.colladaLoader2(file);
       }
 
       promise.then(function (result) {
@@ -64405,7 +64419,7 @@ var OnLoadCallbacks$1 = function () {
   return OnLoadCallbacks;
 }();
 
-var loaders$1 = new Loaders();
+var loaders$2 = new Loaders();
 
 // Check support for the File API support
 var checkForFileAPI = function () {
@@ -64517,7 +64531,7 @@ var processSingleFile = function (files) {
 
 var processMultipleFiles = function (files) {
 
-  var data = new FormData();
+  var filesList = new FormData();
 
   for (var i = 0; i < files.length; i++) {
 
@@ -64525,7 +64539,7 @@ var processMultipleFiles = function (files) {
 
     if (!checkValidType(type)) {
 
-      data.append('files[]', files[i]);
+      filesList.append('files[]', files[i]);
     }
   }
 
@@ -64535,7 +64549,7 @@ var processMultipleFiles = function (files) {
 
   fetch('/php/upload.php', {
     method: 'post',
-    body: data
+    body: filesList
   }).then(function (response) {
     return response.json();
   }).then(function (response) {
@@ -64570,7 +64584,10 @@ var processMultipleFiles = function (files) {
           });
         } else if (type === 'mtl') {
 
-          promise = loaders$1.mtlLoader('/php/uploads/' + file);
+          loaders$2.setMtlLoaderPath('/php/uploads/');
+
+          promise = loaders$2.mtlLoader(file);
+
           promise.then(function (materials) {
 
             materials.preload();
@@ -64593,26 +64610,28 @@ var processMultipleFiles = function (files) {
       // once all files are uploaded, first process and  .obj files
       .then(function () {
 
-        // console.log( mtls, objs )
+        var objPromises = void 0;
 
-        // console.log( 'Promise.all( promises )' );
-
-        loaders$1.assignObjectLoaderMtls(mtls);
+        loaders$2.assignObjectLoaderMtls(mtls);
 
         if (objs.length > 0) {
 
-          objs.map(function (obj) {
+          objPromises = objs.map(function (obj) {
 
-            loadFileFromUrl('/php/uploads/' + obj, 'obj');
+            return loadFileFromUrl('/php/uploads/' + obj, 'obj');
           });
-        }
-      })
-      // then delete all the files to prevent clutter
-      .then(function () {
+        } else {
 
-        fetch('/php/deleteUploadedFiles.php', {
-          method: 'post',
-          body: data
+          objPromises = [Promise.resolve()];
+        }
+
+        // then delete all the files to prevent clutter
+        Promise.all(objPromises).then(function () {
+
+          fetch('/php/deleteUploadedFiles.php', {
+            method: 'post',
+            body: filesList
+          });
         });
       });
     } else {
@@ -64720,7 +64739,7 @@ var canvas = document.querySelector('#viewer-canvas');
 
 var loaderCanvas = new LoaderCanvas(canvas);
 
-var loaders = new Loaders();
+var loaders$1 = new Loaders();
 var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
 var selectLoader = function (loader1Name, loader2Name, type, callback) {
@@ -64763,7 +64782,7 @@ var OnLoadCallbacks = function () {
 
     console.log('Using THREE.BufferGeometryLoader');
 
-    var promise = loaders.bufferGeometryLoader(file);
+    var promise = loaders$1.bufferGeometryLoader(file);
     promise.then(function (geometry) {
 
       var object = new Mesh(geometry, defaultMat);
@@ -64777,7 +64796,7 @@ var OnLoadCallbacks = function () {
 
     console.log('Using THREE.JSONLoader');
 
-    var promise = loaders.jsonLoader(file);
+    var promise = loaders$1.jsonLoader(file);
     promise.then(function (geometry) {
 
       var object = new Mesh(geometry, defaultMat);
@@ -64793,7 +64812,7 @@ var OnLoadCallbacks = function () {
 
     console.log(file);
 
-    var promise = loaders.objectLoader(file);
+    var promise = loaders$1.objectLoader(file);
     promise.then(function (object) {
 
       loaderCanvas.addObjectToScene(object);
@@ -64806,7 +64825,7 @@ var OnLoadCallbacks = function () {
 
     console.log('Using THREE.FBXLoader');
 
-    var promise = loaders.fbxLoader(file);
+    var promise = loaders$1.fbxLoader(file);
 
     promise.then(function (result) {
 
@@ -64820,82 +64839,87 @@ var OnLoadCallbacks = function () {
 
     var promise = new Promise(function (resolve, reject) {});
 
-    selectLoader('GLTFLoader', 'GLTFLoader2', 'gltf', function (loader) {
+    // selectLoader( 'GLTFLoader', 'GLTFLoader2', 'gltf', ( loader ) => {
 
-      // Only GLTF2Loader seems to work
+    // Only GLTF2Loader seems to work
 
 
-      // if ( loader === 1 ) {
+    // if ( loader === 1 ) {
 
-      //   console.log( 'Using THREE.GLTFLoader' );
+    //   console.log( 'Using THREE.GLTFLoader' );
 
-      //   promise = loaders.gltfLoader( file );
+    //   promise = loaders.gltfLoader( file );
 
-      // } else {
+    // } else {
 
-      //   console.log( 'Using THREE.OBJLoader2' );
+    //   console.log( 'Using THREE.OBJLoader2' );
 
-      //   promise = loaders.gltf2Loader( file );
+    //   promise = loaders.gltf2Loader( file );
 
-      // }
+    // }
 
-      console.log('Using THREE.OBJLoader2');
+    console.log('Using THREE.OBJLoader2');
 
-      promise = loaders.gltf2Loader(file);
+    promise = loaders$1.gltf2Loader(file);
 
-      promise.then(function (gltf) {
+    promise.then(function (gltf) {
 
-        console.log(gltf);
+      console.log(gltf);
 
-        if (gltf.scenes.length > 1) {
+      if (gltf.scenes.length > 1) {
 
-          gltf.scenes.forEach(function (scene) {
+        gltf.scenes.forEach(function (scene) {
 
-            if (gltf.animations) scene.animations = gltf.animations;
-            loaderCanvas.addObjectToScene(scene);
-          });
-        } else if (gltf.scene) {
+          if (gltf.animations) scene.animations = gltf.animations;
+          loaderCanvas.addObjectToScene(scene);
+        });
+      } else if (gltf.scene) {
 
-          if (gltf.animations) gltf.scene.animations = gltf.animations;
-          loaderCanvas.addObjectToScene(gltf.scene);
-        } else {
+        if (gltf.animations) gltf.scene.animations = gltf.animations;
+        loaderCanvas.addObjectToScene(gltf.scene);
+      } else {
 
-          console.error('No scene found in GLTF file.');
-        }
-      });
+        console.error('No scene found in GLTF file.');
+      }
     });
+
+    // } );
 
     return promise;
   };
 
   OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
 
-    console.log(file);
-
+    // only objLoader2 is working
     var promise = new Promise(function (resolve, reject) {});
 
-    selectLoader('OBJLoader', 'OBJLoader2', 'obj', function (loader) {
+    // selectLoader( 'OBJLoader', 'OBJLoader2', 'obj', ( loader ) => {
 
-      if (loader === 1) {
 
-        console.log('Using THREE.OBJLoader');
+    // if ( loader === 1 ) {
 
-        promise = loaders.objLoader(file);
-      } else {
+    //   console.log( 'Using THREE.OBJLoader' );
 
-        console.log('Using THREE.OBJLoader2');
+    //   promise = loaders.objLoader( file );
 
-        promise = loaders.objLoader2(file);
-      }
+    // } else {
 
-      promise.then(function (object) {
+    console.log('Using THREE.OBJLoader2');
 
-        loaderCanvas.addObjectToScene(object);
+    promise = loaders$1.objLoader2(file);
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        // if ( loader === 1 ) manager.onLoad();
-      });
+    // }
+
+
+    promise.then(function (object) {
+
+      loaderCanvas.addObjectToScene(object);
+
+      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
+      // if ( loader === 1 ) manager.onLoad();
     });
+
+    // } );
 
     return promise;
   };
@@ -64911,12 +64935,12 @@ var OnLoadCallbacks = function () {
         console.log('Using THREE.ColladaLoader');
         console.warn('THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.');
 
-        promise = loaders.colladaLoader(file);
+        promise = loaders$1.colladaLoader(file);
       } else {
 
         console.log('Using THREE.ColladaLoader2');
 
-        promise = loaders.colladaLoader2(file);
+        promise = loaders$1.colladaLoader2(file);
       }
 
       promise.then(function (result) {
@@ -64937,6 +64961,8 @@ var OnLoadCallbacks = function () {
 
   return OnLoadCallbacks;
 }();
+
+var loaders = new Loaders();
 
 document.querySelector('#demo1').addEventListener('click', throttle(function () {
 
@@ -64961,7 +64987,22 @@ document.querySelector('#demo4').addEventListener('click', throttle(function () 
 
 document.querySelector('#demo5').addEventListener('click', throttle(function () {
 
-  OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
+  OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
+}, 3000));
+
+document.querySelector('#demo6').addEventListener('click', throttle(function () {
+
+  loaders.setMtlLoaderPath('/assets/models/loader/');
+
+  var promise = loaders.mtlLoader('male02_dds.mtl');
+
+  promise.then(function (materials) {
+
+    materials.preload();
+    loaders.assignObjectLoaderMtls(materials.materials);
+
+    OnLoadCallbacks.onOBJLoad('/assets/models/loader/male02_dds.obj');
+  });
 }, 3000));
 
 var revElem = document.querySelector('.three-rev');

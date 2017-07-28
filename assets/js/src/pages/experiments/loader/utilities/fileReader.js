@@ -130,7 +130,7 @@ const processSingleFile = ( files ) => {
 
 const processMultipleFiles = ( files ) => {
 
-  const data = new FormData();
+  const filesList = new FormData();
 
   for ( let i = 0; i < files.length; i++ ) {
 
@@ -138,7 +138,7 @@ const processMultipleFiles = ( files ) => {
 
     if ( !checkValidType( type ) ) {
 
-      data.append( 'files[]', files[i] );
+      filesList.append( 'files[]', files[i] );
 
     }
 
@@ -150,7 +150,7 @@ const processMultipleFiles = ( files ) => {
 
   fetch( '/php/upload.php', {
     method: 'post',
-    body: data,
+    body: filesList,
   } )
     .then( response => response.json() )
     .then( ( response ) => {
@@ -189,7 +189,10 @@ const processMultipleFiles = ( files ) => {
 
           } else if ( type === 'mtl' ) {
 
-            promise = loaders.mtlLoader( '/php/uploads/' + file );
+            loaders.setMtlLoaderPath( '/php/uploads/' );
+
+            promise = loaders.mtlLoader( file );
+
             promise.then( ( materials ) => {
 
               materials.preload();
@@ -217,33 +220,36 @@ const processMultipleFiles = ( files ) => {
           // once all files are uploaded, first process and  .obj files
           .then( () => {
 
-            // console.log( mtls, objs )
-
-            // console.log( 'Promise.all( promises )' );
+            let objPromises;
 
             loaders.assignObjectLoaderMtls( mtls );
 
             if ( objs.length > 0 ) {
 
-              objs.map( ( obj ) => {
+              objPromises = objs.map( ( obj ) => {
 
-                loadFileFromUrl( '/php/uploads/' + obj, 'obj' );
+                return loadFileFromUrl( '/php/uploads/' + obj, 'obj' );
 
               } );
 
+            } else {
+
+              objPromises = [ Promise.resolve() ];
+
             }
 
-          } )
-          // then delete all the files to prevent clutter
-          .then( () => {
+            // then delete all the files to prevent clutter
+            Promise.all( objPromises )
+              .then( () => {
 
-            fetch( '/php/deleteUploadedFiles.php', {
-              method: 'post',
-              body: data,
-            } );
+                fetch( '/php/deleteUploadedFiles.php', {
+                  method: 'post',
+                  body: filesList,
+                } );
+
+              } );
 
           } );
-
 
       } else {
 

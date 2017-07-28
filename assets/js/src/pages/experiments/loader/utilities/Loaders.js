@@ -24,11 +24,17 @@ let mtlLoader = null;
 let colladaLoader = null;  // todo
 let colladaLoader2 = null;
 
+// object loaders require access to .setMaterials function
+const oLoader = new OBJLoader( manager );
+const oLoader2 = new OBJLoader2( manager );
+// don't use manager here as this is called early to preload materials
+// required for access to .setPath
+const mtlLdr = new MTLLoader();
 
-const defaultReject = ( err ) => { console.log( err ); }
+const defaultReject = ( err ) => { console.log( err ); };
 
-const promisifyLoader = ( loader ) =>
-  ( url ) => new Promise( ( resolve, reject = defaultReject ) => {
+const promisifyLoader = loader =>
+  url => new Promise( ( resolve, reject = defaultReject ) => {
 
     loader.load( url, resolve );
 
@@ -38,9 +44,6 @@ const promisifyLoader = ( loader ) =>
 export default class Loaders {
 
   constructor() {
-
-    this.oLoader = new OBJLoader( manager );
-    this.oLoader2 = new OBJLoader2( manager );
 
     return {
 
@@ -88,30 +91,34 @@ export default class Loaders {
 
       get objLoader() {
         if ( objLoader === null ) {
-          objLoader = promisifyLoader( this.oLoader );
+          objLoader = promisifyLoader( oLoader );
         }
         return objLoader;
       },
 
       get objLoader2() {
         if ( objLoader2 === null ) {
-          objLoader2 = promisifyLoader( this.oLoader2 );
+          objLoader2 = promisifyLoader( oLoader2 );
         }
         return objLoader2;
       },
 
       assignObjectLoaderMtls: ( mtls ) => {
 
-        this.oLoader.setMaterials( mtls );
-        this.oLoader2.setMaterials( mtls );
+        oLoader.setMaterials( mtls );
+        oLoader2.setMaterials( mtls );
 
       },
 
       get mtlLoader() {
         if ( mtlLoader === null ) {
-          mtlLoader = promisifyLoader( new MTLLoader( manager ) );
+          mtlLoader = promisifyLoader( mtlLdr );
         }
         return mtlLoader;
+      },
+
+      setMtlLoaderPath( path ) {
+        mtlLdr.setPath( path );
       },
 
       get colladaLoader() {

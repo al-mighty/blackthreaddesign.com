@@ -1,5 +1,8 @@
 import throttle from 'lodash.throttle';
 import OnLoadCallbacks from './onLoadCallbacks.js';
+import Loaders from './Loaders';
+
+const loaders = new Loaders();
 
 document.querySelector( '#demo1' ).addEventListener( 'click', throttle( () => {
 
@@ -28,7 +31,24 @@ document.querySelector( '#demo4' ).addEventListener( 'click', throttle( () => {
 
 document.querySelector( '#demo5' ).addEventListener( 'click', throttle( () => {
 
-  OnLoadCallbacks.onJSONObjectLoad( '/assets/models/loader/pump.json' );
+  OnLoadCallbacks.onDAELoad( '/assets/models/loader/avatar.dae' );
+
+}, 3000 ) );
+
+document.querySelector( '#demo6' ).addEventListener( 'click', throttle( () => {
+
+  loaders.setMtlLoaderPath( '/assets/models/loader/' );
+
+  const promise = loaders.mtlLoader( 'male02_dds.mtl' );
+
+  promise.then( ( materials ) => {
+
+    materials.preload();
+    loaders.assignObjectLoaderMtls( materials.materials );
+
+    OnLoadCallbacks.onOBJLoad( '/assets/models/loader/male02_dds.obj' );
+
+  } );
 
 }, 3000 ) );
 

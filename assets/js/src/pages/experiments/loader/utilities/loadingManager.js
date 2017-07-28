@@ -5,6 +5,7 @@ const manager = new THREE.LoadingManager();
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = () => {
 
+  // console.log( 'manager.onstart' )
   document.querySelector( '#file-upload-form' ).classList.add( 'hide' );
   document.querySelector( '#loading-bar' ).classList.remove( 'hide' );
 
@@ -12,6 +13,7 @@ manager.onStart = () => {
 
 manager.onLoad = function ( ) {
 
+  // console.log( 'manager.onload' );
   document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
   document.querySelector( '#reveal-on-load' ).classList.remove( 'hide' );
   document.querySelector( '.hide-on-load' ).classList.add( 'hide' );

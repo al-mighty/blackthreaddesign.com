@@ -115,7 +115,7 @@ export default class OnLoadCallbacks {
 
     let promise = new Promise( ( resolve, reject ) => {} );
 
-    selectLoader( 'GLTFLoader', 'GLTFLoader2', 'gltf', ( loader ) => {
+    // selectLoader( 'GLTFLoader', 'GLTFLoader2', 'gltf', ( loader ) => {
 
       // Only GLTF2Loader seems to work
 
@@ -134,37 +134,37 @@ export default class OnLoadCallbacks {
 
       // }
 
-      console.log( 'Using THREE.OBJLoader2' );
+    console.log( 'Using THREE.OBJLoader2' );
 
-      promise = loaders.gltf2Loader( file );
+    promise = loaders.gltf2Loader( file );
 
-      promise.then( ( gltf ) => {
+    promise.then( ( gltf ) => {
 
-        console.log( gltf )
+      console.log( gltf )
 
-        if ( gltf.scenes.length > 1 ) {
+      if ( gltf.scenes.length > 1 ) {
 
-          gltf.scenes.forEach( ( scene ) => {
+        gltf.scenes.forEach( ( scene ) => {
 
-            if ( gltf.animations ) scene.animations = gltf.animations;
-            loaderCanvas.addObjectToScene( scene );
+          if ( gltf.animations ) scene.animations = gltf.animations;
+          loaderCanvas.addObjectToScene( scene );
 
-          } );
+        } );
 
-        } else if ( gltf.scene ) {
+      } else if ( gltf.scene ) {
 
-          if ( gltf.animations ) gltf.scene.animations = gltf.animations;
-          loaderCanvas.addObjectToScene( gltf.scene );
+        if ( gltf.animations ) gltf.scene.animations = gltf.animations;
+        loaderCanvas.addObjectToScene( gltf.scene );
 
-        } else {
+      } else {
 
-          console.error( 'No scene found in GLTF file.' );
+        console.error( 'No scene found in GLTF file.' );
 
-        }
-
-      } );
+      }
 
     } );
+
+    // } );
 
     return promise;
 
@@ -172,26 +172,25 @@ export default class OnLoadCallbacks {
 
   static onOBJLoad( file ) {
 
-    console.log( file );
-
+    // only objLoader2 is working
     let promise = new Promise( ( resolve, reject ) => {} );
 
-    selectLoader( 'OBJLoader', 'OBJLoader2', 'obj', ( loader ) => {
+    // selectLoader( 'OBJLoader', 'OBJLoader2', 'obj', ( loader ) => {
 
 
-      if ( loader === 1 ) {
+      // if ( loader === 1 ) {
 
-        console.log( 'Using THREE.OBJLoader' );
+      //   console.log( 'Using THREE.OBJLoader' );
 
-        promise = loaders.objLoader( file );
+      //   promise = loaders.objLoader( file );
 
-      } else {
+      // } else {
 
         console.log( 'Using THREE.OBJLoader2' );
 
         promise = loaders.objLoader2( file );
 
-      }
+      // }
 
 
       promise.then( ( object ) => {
@@ -203,7 +202,7 @@ export default class OnLoadCallbacks {
 
       } );
 
-    } );
+    // } );
 
     return promise;
   }

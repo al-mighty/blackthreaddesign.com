@@ -39,7 +39,7 @@ twitter:
 facebook:
   username               : "lewy.blue"
   app_id                 : "103246253626280"
-#  publisher              : 
+#  publisher              :
 og_image                 : /assets/images/default-teaser.jpg # Open Graph/Twitter default site image
 # For specifying social profiles
 # - https://developers.google.com/structured-data/customize/social-profiles
@@ -76,7 +76,7 @@ include:
   - .htaccess
   - _pages
 exclude:
-  - vendor
+#  - vendor
   - .asset-cache
   - .bundle
   - .jekyll-assets-cache
@@ -93,6 +93,10 @@ exclude:
   - info
   - structure
   - build.js
+  - minify-builds.js
+  - "*.BAK"
+  - "*.txt"
+  - "*.scss"
   - node_modules
   - package.json
   - Rakefile
@@ -164,13 +168,13 @@ whitelist:
 # tag_archive:
 #   type: jekyll-archives
 #   path: /tags/
-jekyll-archives:
-  layouts:
-    category: archive-taxonomy
-    tag: archive-taxonomy
-  permalinks:
-    category: /categories/:name/
-    tag: /tags/:name/
+#jekyll-archives:
+#  layouts:
+#    category: archive-taxonomy
+#    tag: archive-taxonomy
+#  permalinks:
+#    category: /categories/:name/
+#    tag: /tags/:name/
 
 
 # HTML Compression
