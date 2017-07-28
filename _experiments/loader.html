@@ -81,7 +81,7 @@ vendor-js:
 <div id="info">
 
   <div id="reveal-on-load" class="hide">
-    <br><button id="reset">Reset</button>
+    <br><button id="reset">Reset (Buggy!)</button>
     <div id="screenshot-controls">
       <h3>Take a screenshot</h3>
       <span>Width: </span><input id="screenshot-width" type="number" value="800">
@@ -108,20 +108,30 @@ vendor-js:
     <div id="error-message"></div>
   </div>
 
+  <h3>About</h3>
+
   <p>
-    Test your models directly with the loaders three.js version <span class="three-rev"></span>.
+    Test your models directly with the loaders from three.js version <span class="three-rev"></span>.
   </p>
   <p>
-    Plugins from the examples directory have been minimally adapted for use as ES6 modules, but are otherwise unchanged.
+    Loaders from the examples directory (FBX, GLTF, OBJ, MTL, Collada, DDS) have been minimally adapted for use as ES6 modules, but are otherwise unchanged, while
+    loaders from the three.js core (JSON, Object, BufferGeometry, Texture) are used directly.
   </p>
   <p>
-    Any errors encountered during the load will be displayed above this section.
+    Any errors encountered during the loading process will be displayed above this section.
+  </p>
+  <p>
+    You can load either single files with embedded textures, or multiple files with associated textures.
+    You can even load multiple model files of different formats at once and they will display together
+    (although they must be set up with correct transforms / scales so that they don't just get placed on top of each other)
+    Note that loading multiple files can be slow as texture files must be uploaded to the server due to the way
+    loaders expect to be passed textures. Single files are processed locally so will load faster.
   </p>
 
   <div id="demos" class="hide-on-load">
     <h3>Demos</h3>
     <p>
-      <a href="#" id="demo1">FBX</a><br>
+      <a href="#" id="demo1">Multiple FBX models (nurbs curves and skinned Xsi man)</a><br>
       <a href="#" id="demo2">GLTF</a><br>
       <a href="#" id="demo3">JSON - BufferGeometry</a><br>
       <a href="#" id="demo4">JSON - Scene</a><br>
@@ -139,16 +149,17 @@ vendor-js:
 
   <p>
     Three.js native JSON format: Complete scene, or a file containing and geometry or buffer geometry.
-    Files containing only geometries will be rendered in wireframe.
+    Files containing only geometries or buffer geometries will be rendered in wireframe.
   </p>
 
   <p>FBX: Binary higher than version 6.1 and ASCII higher than version 7.0</p>
 
-  <p>GLTF:.gltf or .glb file, only embedded textures supported for now.</p>
+  <p>GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files. </p>
 
-  <p>OBJ: Using THREE.OBJLoader2. MTL material file not supported yet.</p>
+  <p>OBJ: Using THREE.OBJLoader2. Load either a single .obj file, or any number of .obj and .mtl files and their associated textures.</p>
 
-  <p>DAE: Using THREE.ColladaLoader2, so skinned meshes are not yet supported. Textures not yet supported. </p>
+  <p>DAE: You will be asked to choose whether to use THREE.ColladaLoader or THREE.ColladaLoader2,
+    Note that ColladaLoader animations are not supported.</p>
 
   <h3>Supported texture formats</h3>
 
