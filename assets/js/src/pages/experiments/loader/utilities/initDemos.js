@@ -19,23 +19,29 @@ document.querySelector( '#demo2' ).addEventListener( 'click', throttle( () => {
 
 document.querySelector( '#demo3' ).addEventListener( 'click', throttle( () => {
 
-  OnLoadCallbacks.onJSONBufferGeometryLoad( '/assets/models/loader/suzanne.json' );
+  OnLoadCallbacks.onJSONGeometryLoad( '/assets/models/loader/platform_geo.json' );
 
 }, 3000 ) );
 
 document.querySelector( '#demo4' ).addEventListener( 'click', throttle( () => {
 
-  OnLoadCallbacks.onJSONObjectLoad( '/assets/models/loader/pump.json' );
+  OnLoadCallbacks.onJSONBufferGeometryLoad( '/assets/models/loader/suzanne.json' );
 
 }, 3000 ) );
 
 document.querySelector( '#demo5' ).addEventListener( 'click', throttle( () => {
 
-  OnLoadCallbacks.onDAELoad( '/assets/models/loader/avatar.dae' );
+  OnLoadCallbacks.onJSONObjectLoad( '/assets/models/loader/pump.json' );
 
 }, 3000 ) );
 
 document.querySelector( '#demo6' ).addEventListener( 'click', throttle( () => {
+
+  OnLoadCallbacks.onDAELoad( '/assets/models/loader/avatar.dae' );
+
+}, 3000 ) );
+
+document.querySelector( '#demo7' ).addEventListener( 'click', throttle( () => {
 
   loaders.setMtlLoaderPath( '/assets/models/loader/' );
 

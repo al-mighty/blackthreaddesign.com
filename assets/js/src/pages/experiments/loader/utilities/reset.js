@@ -16,42 +16,45 @@ const clearChildren = ( object ) => {
 
   for ( let i = 0; i < object.children.length; i++ ) {
 
-    const node = object.children[ i ];
+    let child = object.children[ i ];
 
-    // console.log( node );
+    object.remove( child );
+    child = null;
 
-    if ( node.userData.keepOnReset !== true ) {
+    // console.log( child );
 
-      if ( node.children.length > 0 ) {
+    // if ( child.userData.keepOnReset !== true ) {
 
-        clearChildren( node );
+    //   if ( child.children.length > 0 ) {
 
-      }
+    //     clearChildren( child );
 
-      if ( node.geometry !== undefined ) {
+    //   }
 
-        node.geometry.dispose();
+    //   if ( child.geometry !== undefined ) {
 
-      }
-      if ( node.material !== undefined ) {
+    //     child.geometry.dispose();
 
-        // add check for multimaterials array here
+    //   }
+    //   if ( child.material !== undefined ) {
 
-        // textureDispose( node.material );
-        // node.material.dispose();
+    //     // add check for multimaterials array here
 
-      }
+    //     // textureDispose( node.material );
+    //     // node.material.dispose();
+
+    //   }
 
 
-      object.remove( node );
+    //   object.remove( node );
 
-    }
+    // }
 
   }
 
 };
 
-export default ( app ) => {
+export default ( loadedModels ) => {
 
   // console.log( 'WebGLRenderer.info before calling reset' );
   // console.log( app.renderer.info );
@@ -63,7 +66,7 @@ export default ( app ) => {
   document.querySelector( '#loading-bar' ).classList.add( 'hide' );
   document.querySelector( '.hide-on-load' ).classList.remove( 'hide' );
 
-  clearChildren( app.scene );
+  clearChildren( loadedModels );
 
   // console.log( 'WebGLRenderer.info after calling reset' );
   // console.log( app.renderer.info );

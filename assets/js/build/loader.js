@@ -44836,53 +44836,60 @@ var ScreenshotHandler = function () {
 
 var clearChildren = function (object) {
 
-  for (var i = 0; i < object.children.length; i++) {
+    for (var i = 0; i < object.children.length; i++) {
 
-    var node = object.children[i];
+        var child = object.children[i];
 
-    // console.log( node );
+        object.remove(child);
+        child = null;
 
-    if (node.userData.keepOnReset !== true) {
+        // console.log( child );
 
-      if (node.children.length > 0) {
+        // if ( child.userData.keepOnReset !== true ) {
 
-        clearChildren(node);
-      }
+        //   if ( child.children.length > 0 ) {
 
-      if (node.geometry !== undefined) {
+        //     clearChildren( child );
 
-        node.geometry.dispose();
-      }
-      if (node.material !== undefined) {
+        //   }
 
-        // add check for multimaterials array here
+        //   if ( child.geometry !== undefined ) {
 
-        // textureDispose( node.material );
-        // node.material.dispose();
+        //     child.geometry.dispose();
 
-      }
+        //   }
+        //   if ( child.material !== undefined ) {
 
-      object.remove(node);
+        //     // add check for multimaterials array here
+
+        //     // textureDispose( node.material );
+        //     // node.material.dispose();
+
+        //   }
+
+
+        //   object.remove( node );
+
+        // }
     }
-  }
 };
 
-var reset = (function (app) {
+var reset = (function (loadedModels) {
 
-  // console.log( 'WebGLRenderer.info before calling reset' );
-  // console.log( app.renderer.info );
+    // console.log( 'WebGLRenderer.info before calling reset' );
+    // console.log( app.renderer.info );
 
-  document.querySelector('#loading-overlay').classList.remove('hide');
-  document.querySelector('#reveal-on-load').classList.add('hide');
+    document.querySelector('#loading-overlay').classList.remove('hide');
+    document.querySelector('#reveal-on-load').classList.add('hide');
 
-  document.querySelector('#file-upload-form').classList.remove('hide');
-  document.querySelector('#loading-bar').classList.add('hide');
-  document.querySelector('.hide-on-load').classList.remove('hide');
+    document.querySelector('#file-upload-form').classList.remove('hide');
+    document.querySelector('#loading-bar').classList.add('hide');
+    document.querySelector('.hide-on-load').classList.remove('hide');
 
-  clearChildren(app.scene);
+    clearChildren(loadedModels);
 
-  // console.log( 'WebGLRenderer.info after calling reset' );
-  // console.log( app.renderer.info );
+    // console.log( 'WebGLRenderer.info after calling reset' );
+    // console.log( app.renderer.info );
 });
 
 var Grid = function () {
@@ -64944,7 +64951,7 @@ var LoaderCanvas = function () {
 
     document.querySelector('#reset').addEventListener('click', function () {
 
-      reset(_this.app);
+      reset(_this.loadedObjects);
     });
   };
 
@@ -65193,20 +65200,25 @@ document.querySelector('#demo2').addEventListener('click', throttle(function () 
 
 document.querySelector('#demo3').addEventListener('click', throttle(function () {
 
-  OnLoadCallbacks.onJSONBufferGeometryLoad('/assets/models/loader/suzanne.json');
+  OnLoadCallbacks.onJSONGeometryLoad('/assets/models/loader/platform_geo.json');
 }, 3000));
 
 document.querySelector('#demo4').addEventListener('click', throttle(function () {
 
-  OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
+  OnLoadCallbacks.onJSONBufferGeometryLoad('/assets/models/loader/suzanne.json');
 }, 3000));
 
 document.querySelector('#demo5').addEventListener('click', throttle(function () {
 
-  OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
+  OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
 }, 3000));
 
 document.querySelector('#demo6').addEventListener('click', throttle(function () {
+
+  OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
+}, 3000));
+
+document.querySelector('#demo7').addEventListener('click', throttle(function () {
 
   loaders.setMtlLoaderPath('/assets/models/loader/');
 

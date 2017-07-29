@@ -97,7 +97,7 @@ class LoaderCanvas {
 
     document.querySelector( '#reset' ).addEventListener( 'click', () => {
 
-      reset( this.app );
+      reset( this.loadedObjects );
 
     } );
 

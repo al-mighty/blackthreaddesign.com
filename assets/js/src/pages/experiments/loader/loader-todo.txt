@@ -1,9 +1,10 @@
 Fix reset button
 Set up so that only textures are uploaded where possible
-
+Add json - geometry example
 
 Do later:
-
+- add text to grid: "each grid line is one unit wide"
+- make lighting and grid sliders logarithmic
 - work on progress bar
 - make JSON format work for blender exporter
 - Add optional grid
