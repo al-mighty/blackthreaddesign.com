@@ -8,6 +8,7 @@ import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 import LightingSetup from './utilities/LightingSetup.js';
 import ScreenshotHandler from './utilities/ScreenshotHandler.js';
 import reset from './utilities/reset.js';
+import Grid from './utilities/Grid.js';
 
 import './utilities/fileReader.js';
 
@@ -47,6 +48,13 @@ class LoaderCanvas {
 
     this.lighting = new LightingSetup( this.app );
 
+    this.grid = new Grid();
+
+    this.app.scene.add( this.grid.helpers );
+
+    this.loadedObjects = new THREE.Group();
+    this.app.scene.add( this.loadedObjects );
+
     this.app.initControls();
 
     backgroundColorChanger( this.app );
@@ -68,10 +76,16 @@ class LoaderCanvas {
 
     this.animationControls.initAnimation( object );
 
-    this.app.scene.add( object );
+    this.loadedObjects.add( object );
 
-    // fit camera to whole scene in case multiple object are loaded
-    this.app.fitCameraToObject( this.app.scene );
+    // fit camera to all loaded objects
+    this.boundingBox = this.app.fitCameraToObject( this.loadedObjects );
+
+    // set grid to correct size
+    const size = this.boundingBox.getSize();
+    const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
+    this.grid.setSize( maxEdge );
+    // this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
 
     this.app.play();
 

@@ -40478,6 +40478,52 @@ HemisphereLightHelper.prototype.update = function () {
  * @author mrdoob / http://mrdoob.com/
  */
 
+function GridHelper( size, divisions, color1, color2 ) {
+
+	size = size || 10;
+	divisions = divisions || 10;
+	color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
+	color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
+
+	var center = divisions / 2;
+	var step = size / divisions;
+	var halfSize = size / 2;
+
+	var vertices = [], colors = [];
+
+	for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
+
+		vertices.push( - halfSize, 0, k, halfSize, 0, k );
+		vertices.push( k, 0, - halfSize, k, 0, halfSize );
+
+		var color = i === center ? color1 : color2;
+
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+
+	}
+
+	var geometry = new BufferGeometry();
+	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
+
+	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
+
+	LineSegments.call( this, geometry, material );
+
+}
+
+GridHelper.prototype = Object.create( LineSegments.prototype );
+GridHelper.prototype.constructor = GridHelper;
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / http://github.com/Mugen87
+ * @author Hectate / http://www.github.com/Hectate
+ */
+
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
 	// FaceNormalsHelper only supports THREE.Geometry
@@ -41073,6 +41119,57 @@ ArrowHelper.prototype.setColor = function ( color ) {
  * @author mrdoob / http://mrdoob.com/
  */
 
+function AxisHelper( size ) {
+
+	size = size || 1;
+
+	var vertices = [
+		0, 0, 0,  size, 0, 0,
+		0, 0, 0,  0, size, 0,
+		0, 0, 0,  0, 0, size
+	];
+
+	var colors = [
+		1, 0, 0,  1, 0.6, 0,
+		0, 1, 0,  0.6, 1, 0,
+		0, 0, 1,  0, 0.6, 1
+	];
+
+	var geometry = new BufferGeometry();
+	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
+
+	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
+
+	LineSegments.call( this, geometry, material );
+
+}
+
+AxisHelper.prototype = Object.create( LineSegments.prototype );
+AxisHelper.prototype.constructor = AxisHelper;
+
+/**
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
+ */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
+
 function CubicPoly() {
 
 	var c0 = 0, c1 = 0, c2 = 0, c3 = 0;
@@ -41329,6 +41426,12 @@ Object.assign( Spline.prototype, {
 } );
 
 //
+GridHelper.prototype.setColors = function () {
+
+	console.error( 'THREE.GridHelper: setColors() has been deprecated, pass them in the constructor instead.' );
+
+};
+
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
@@ -44203,6 +44306,8 @@ function App(canvas) {
       // prevent camera from zooming out far enough to create far plane cutoff
       this.controls.maxDistance = cameraToFarEdge * 2;
     }
+
+    return boundingBox;
   };
 
   // take a screenshot at a given width and height
@@ -44779,6 +44884,104 @@ var reset = (function (app) {
   // console.log( 'WebGLRenderer.info after calling reset' );
   // console.log( app.renderer.info );
 });
+
+var Grid = function () {
+  function Grid(size) {
+    classCallCheck(this, Grid);
+
+
+    this.size = size === undefined ? 5 : size;
+
+    this.gridHelper = new GridHelper(this.size, this.size);
+
+    this.axisHelper = new AxisHelper(this.size / 2);
+
+    this.helpers = new Group();
+
+    this.helpers.add(this.gridHelper, this.axisHelper);
+    this.helpers.visible = false;
+
+    this.initCheckBox();
+    // this.initSlider();
+  }
+
+  // setMaxSize( size ) {
+
+  //   this.slider.max = String( size );
+
+  // }
+
+  Grid.prototype.setSize = function setSize(size) {
+
+    this.size = size;
+    this.update();
+  };
+
+  Grid.prototype.update = function update() {
+
+    this.updateGrid();
+    this.updateAxes();
+  };
+
+  Grid.prototype.updateGrid = function updateGrid() {
+
+    var gridHelper = new GridHelper(this.size, this.size);
+    this.helpers.remove(this.gridHelper);
+    this.gridHelper = gridHelper;
+    this.helpers.add(this.gridHelper);
+  };
+
+  Grid.prototype.updateAxes = function updateAxes() {
+
+    var axisHelper = new AxisHelper(this.size / 2);
+    this.helpers.remove(this.axisHelper);
+    this.axisHelper = axisHelper;
+    this.helpers.add(this.axisHelper);
+  };
+
+  // initSlider() {
+
+  //   this.slider = document.querySelector( '#grid-slider' );
+
+  //   this.slider.value = String( this.size );
+
+  //   this.slider.addEventListener( 'input', throttle( ( e ) => {
+
+  //     e.preventDefault();
+
+  //     if ( this.slider.value === 0 ) {
+
+  //       this.helpers.visible = false;
+
+  //     } else {
+
+  //       this.helpers.visible = true;
+
+  //       this.size = this.slider.value;
+
+  //       this.update();
+
+  //     }
+
+  //   }, 250 ), false );
+
+  // }
+
+  Grid.prototype.initCheckBox = function initCheckBox() {
+    var _this = this;
+
+    var checkBox = document.querySelector('#show-grid');
+
+    checkBox.addEventListener('change', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this.helpers.visible = checkBox.checked;
+    }, 750), false);
+  };
+
+  return Grid;
+}();
 
 var manager = new LoadingManager();
 
@@ -64694,6 +64897,13 @@ var LoaderCanvas = function () {
 
     this.lighting = new LightingSetup(this.app);
 
+    this.grid = new Grid();
+
+    this.app.scene.add(this.grid.helpers);
+
+    this.loadedObjects = new Group();
+    this.app.scene.add(this.loadedObjects);
+
     this.app.initControls();
 
     backgroundColorChanger(this.app);
@@ -64713,10 +64923,16 @@ var LoaderCanvas = function () {
 
     this.animationControls.initAnimation(object);
 
-    this.app.scene.add(object);
+    this.loadedObjects.add(object);
 
-    // fit camera to whole scene in case multiple object are loaded
-    this.app.fitCameraToObject(this.app.scene);
+    // fit camera to all loaded objects
+    this.boundingBox = this.app.fitCameraToObject(this.loadedObjects);
+
+    // set grid to correct size
+    var size = this.boundingBox.getSize();
+    var maxEdge = Math.ceil(Math.max(size.x, size.y));
+    this.grid.setSize(maxEdge);
+    // this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
 
     this.app.play();
 

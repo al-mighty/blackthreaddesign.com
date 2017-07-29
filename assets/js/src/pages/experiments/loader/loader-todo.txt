@@ -1,5 +1,6 @@
 Fix reset button
-go over instructions / descriptions
+Set up so that only textures are uploaded where possible
+
 
 Do later:
 

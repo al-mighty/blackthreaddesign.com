@@ -16,15 +16,17 @@ vendor-js:
 <div id="view-container" class="control-panel">
   <canvas id="viewer-canvas"></canvas>
 
-  <div id="top-controls">
+  <div id="controls">
+
+    <div id="grid-controls">
+      <!-- <input id="grid-slider" type="range" min="0" max="50" step="2" value="5" class="loader-slider"/> -->
+      <input type="checkbox" id="show-grid"><span class="fa fa-lg fa-th" aria-hidden="true"></span>
+    </div>
+
     <div id="lighting-controls">
       <span id="light-symbol" class="fa fa-lg fa-lightbulb-o" aria-hidden="true"></span>
       <input id="lighting-slider" type="range" min="0" max="8" step="0.1" value="0" class="loader-slider"/>
     </div>
-
-  </div>
-
-  <div id="bottom-controls" class="control-panel">
 
     <div id="animation-controls" class="hide">
 
@@ -51,7 +53,11 @@ vendor-js:
         <span class="fa fa-lg fa-arrows-alt" aria-hidden="true"></span>
       </a>
     </div>
+
   </div>
+
+
+
 
   <div id="loading-overlay">
 
@@ -145,6 +151,9 @@ vendor-js:
   <p>Middle mouse / Pinch: zoom</p>
   <p>Right mouse / Two finger touch: Pan camera</p>
 
+  <h3>Grid</h3>
+  <p>Each grid line is one unit - use this to get check the scale of your models.</p>
+
   <h3>Currently supported formats</h3>
 
   <p>
@@ -159,7 +168,8 @@ vendor-js:
   <p>OBJ: Using THREE.OBJLoader2. Load either a single .obj file, or any number of .obj and .mtl files and their associated textures.</p>
 
   <p>DAE: You will be asked to choose whether to use THREE.ColladaLoader or THREE.ColladaLoader2,
-    Note that ColladaLoader animations are not supported.</p>
+    Note that THREE.ColladaLoader animations are not supported as they use an older system (you can
+    still use that system yourself of course, it's just not implemented here.</p>
 
   <h3>Supported texture formats</h3>
 

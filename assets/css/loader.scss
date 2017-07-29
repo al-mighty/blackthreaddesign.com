@@ -110,23 +110,65 @@
   text-align: center;
 }
 
-#top-controls{
+#controls {
   position: absolute;
-  top: 0.5em;
+  top: 0;
+  left: 0;
+  width: 96%;
+  height: 96%;
+  margin: 2%;
 
-  width: 100%;
-  height: 5%;
+  color: black;
 
   span {
+    color: black;
     display: block;
-
   }
+
+  a {
+		color: black;
+    transform: translate( -50%, 50% );
+  }
+
+  // disable pointer events for controls overlay
+  pointer-events: none;
+
+  // renable for sub elements as needed
+  a, span, input, select {
+    pointer-events: all;
+  }
+}
+
+
+#grid-controls {
+  position: relative;
+  float: left;
+  max-width: 50%;
+
+  span {
+    float: right;
+    // margin-left: -1em;
+  }
+
+  input[type=range] {
+    position: relative;
+    float: left;
+    width: 60%;
+    margin-top: 0.4em;
+  }
+
+  input[type=checkbox] {
+    float: left;
+    // margin-left: 1em;
+    margin-right: 0.5em;
+  }
+
 }
 
 #lighting-controls {
   position: relative;
   float: right;
-  right: 1em;
+  max-width: 50%;
 }
 
 #lighting-slider {
@@ -141,23 +183,6 @@
   color: black;
   position: absolute;
   top: 20%;
-}
-
-#bottom-controls {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 5%;
-
-	a {
-		color: black;
-    // bottom: 50%;
-    transform: translate( -50%, 50% );
-	}
-
-  span {
-    display: block;
-  }
 }
 
 #playback-control {
@@ -181,15 +206,14 @@
 #animation-controls {
   position: absolute;
   width: 90%;
-  height: 100%;
-  left: 0.5em;
+  bottom: 2em;
 }
 
 #right-buttons{
-  position: relative;
-  float: right;
+  position: absolute;
   width: 3em;
-  right: 0.5em;
+  right: 0em;
+  bottom: 1em;
 }
 
 #toggle-background {

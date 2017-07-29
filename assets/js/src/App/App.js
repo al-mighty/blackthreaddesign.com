@@ -278,6 +278,8 @@ function App( canvas ) {
 
     }
 
+    return boundingBox;
+
   };
 
   // take a screenshot at a given width and height
