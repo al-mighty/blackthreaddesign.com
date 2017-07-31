@@ -79,13 +79,13 @@ class LoaderCanvas {
     this.loadedObjects.add( object );
 
     // fit camera to all loaded objects
-    this.boundingBox = this.app.fitCameraToObject( this.loadedObjects );
+    this.app.fitCameraToObject( this.loadedObjects );
 
     // set grid to correct size
-    const size = this.boundingBox.getSize();
-    const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
-    this.grid.setSize( maxEdge );
-    // this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
+    // const size = this.boundingBox.getSize();
+    // const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
+    // this.grid.setSize( maxEdge );
+    this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
 
     this.app.play();
 

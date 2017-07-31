@@ -44893,101 +44893,81 @@ var reset = (function (loadedModels) {
 });
 
 var Grid = function () {
-  function Grid(size) {
-    classCallCheck(this, Grid);
+    function Grid(size) {
+        classCallCheck(this, Grid);
 
 
-    this.size = size === undefined ? 5 : size;
+        this.size = size === undefined ? 5 : size;
 
-    this.gridHelper = new GridHelper(this.size, this.size);
+        this.gridHelper = new GridHelper(this.size, this.size);
 
-    this.axisHelper = new AxisHelper(this.size / 2);
+        this.axisHelper = new AxisHelper(this.size / 2);
 
-    this.helpers = new Group();
+        this.helpers = new Group();
 
-    this.helpers.add(this.gridHelper, this.axisHelper);
-    this.helpers.visible = false;
+        this.helpers.add(this.gridHelper, this.axisHelper);
+        this.helpers.visible = false;
 
-    this.initCheckBox();
-    // this.initSlider();
-  }
+        this.initSlider();
+    }
 
-  // setMaxSize( size ) {
+    Grid.prototype.setMaxSize = function setMaxSize(size) {
 
-  //   this.slider.max = String( size );
+        if (size % 2 !== 0) size++;
 
-  // }
+        this.slider.max = String(size);
+    };
 
-  Grid.prototype.setSize = function setSize(size) {
+    Grid.prototype.setSize = function setSize(size) {
 
-    this.size = size;
-    this.update();
-  };
+        this.size = size;
+        this.update();
+    };
 
-  Grid.prototype.update = function update() {
+    Grid.prototype.update = function update() {
 
-    this.updateGrid();
-    this.updateAxes();
-  };
+        this.updateGrid();
+        this.updateAxes();
+    };
 
-  Grid.prototype.updateGrid = function updateGrid() {
+    Grid.prototype.updateGrid = function updateGrid() {
 
-    var gridHelper = new GridHelper(this.size, this.size);
-    this.helpers.remove(this.gridHelper);
-    this.gridHelper = gridHelper;
-    this.helpers.add(this.gridHelper);
-  };
+        var gridHelper = new GridHelper(this.size, this.size);
+        this.helpers.remove(this.gridHelper);
+        this.gridHelper = gridHelper;
+        this.helpers.add(this.gridHelper);
+    };
 
-  Grid.prototype.updateAxes = function updateAxes() {
+    Grid.prototype.updateAxes = function updateAxes() {
 
-    var axisHelper = new AxisHelper(this.size / 2);
-    this.helpers.remove(this.axisHelper);
-    this.axisHelper = axisHelper;
-    this.helpers.add(this.axisHelper);
-  };
+        var axisHelper = new AxisHelper(this.size / 2);
+        this.helpers.remove(this.axisHelper);
+        this.axisHelper = axisHelper;
+        this.helpers.add(this.axisHelper);
+    };
 
-  // initSlider() {
+    Grid.prototype.initSlider = function initSlider() {
+        var _this = this;
 
-  //   this.slider = document.querySelector( '#grid-slider' );
+        this.slider = document.querySelector('#grid-slider');
 
-  //   this.slider.value = String( this.size );
+        this.slider.addEventListener('input', throttle(function (e) {
 
-  //   this.slider.addEventListener( 'input', throttle( ( e ) => {
+            e.preventDefault();
 
-  //     e.preventDefault();
+            if (_this.slider.value === 0) {
 
-  //     if ( this.slider.value === 0 ) {
+                _this.helpers.visible = false;
+            } else {
 
-  //       this.helpers.visible = false;
+                _this.helpers.visible = true;
 
-  //     } else {
+                _this.setSize(_this.slider.value);
+            }
+        }, 250), false);
+    };
 
-  //       this.helpers.visible = true;
-
-  //       this.size = this.slider.value;
-
-  //       this.update();
-
-  //     }
-
-  //   }, 250 ), false );
-
-  // }
-
-  Grid.prototype.initCheckBox = function initCheckBox() {
-    var _this = this;
-
-    var checkBox = document.querySelector('#show-grid');
-
-    checkBox.addEventListener('change', throttle(function (e) {
-
-      e.preventDefault();
-
-      _this.helpers.visible = checkBox.checked;
-    }, 750), false);
-  };
-
-  return Grid;
+    return Grid;
 }();
 
 var manager = new LoadingManager();
@@ -64933,13 +64913,13 @@ var LoaderCanvas = function () {
     this.loadedObjects.add(object);
 
     // fit camera to all loaded objects
-    this.boundingBox = this.app.fitCameraToObject(this.loadedObjects);
+    this.app.fitCameraToObject(this.loadedObjects);
 
     // set grid to correct size
-    var size = this.boundingBox.getSize();
-    var maxEdge = Math.ceil(Math.max(size.x, size.y));
-    this.grid.setSize(maxEdge);
-    // this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
+    // const size = this.boundingBox.getSize();
+    // const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
+    // this.grid.setSize( maxEdge );
+    this.grid.setMaxSize(Math.floor(this.app.camera.far * 0.75));
 
     this.app.play();
 

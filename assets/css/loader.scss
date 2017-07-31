@@ -147,20 +147,12 @@
 
   span {
     float: right;
-    // margin-left: -1em;
   }
 
   input[type=range] {
-    position: relative;
     float: left;
-    width: 60%;
+    width: 75%;
     margin-top: 0.4em;
-  }
-
-  input[type=checkbox] {
-    float: left;
-    // margin-left: 1em;
-    margin-right: 0.5em;
   }
 
 }
@@ -180,9 +172,7 @@
 }
 
 #light-symbol{
-  color: black;
-  position: absolute;
-  top: 20%;
+  float: left;
 }
 
 #playback-control {
@@ -199,8 +189,7 @@
 }
 
 #play-button, #pause-button {
-  top: 25%;
-  position: absolute;
+  margin-left: 50%;
 }
 
 #animation-controls {
