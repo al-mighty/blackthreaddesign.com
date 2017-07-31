@@ -1,12 +1,5 @@
-Fix reset button
-Set up so that only textures are uploaded where possible
-Set up HTML state
-Bug in grid.js doesn't remove axis helper
-
+Create exporter
 
 Do later:
-- move three.js .rev-elem setup to main.js and use across site
 - work on progress bar
 - make JSON format work for blender exporter
-- Add info re loading time
-- deal with imported cameras / lights

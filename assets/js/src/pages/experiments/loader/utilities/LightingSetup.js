@@ -11,6 +11,11 @@ export default class LightingSetup {
     this.initLights();
 
     this.initSlider();
+
+    this.initialStrength = this.pointLight.intensity;
+
+    HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
+
   }
 
   initLights() {
@@ -49,24 +54,33 @@ export default class LightingSetup {
 
   initSlider() {
 
-    const initialStrength = this.pointLight.intensity;
-
-    HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
-
-    HTMLControl.lighting.slider.addEventListener( 'input', throttle( ( e ) => {
+    this.sliderInputEvent = throttle( ( e ) => {
 
       e.preventDefault();
       this.pointLight.intensity = HTMLControl.lighting.slider.value;
 
-    }, 100 ), false );
+    }, 100 );
 
-    HTMLControl.lighting.symbol.addEventListener( 'click', throttle( ( e ) => {
+    HTMLControl.lighting.slider.addEventListener( 'input', this.sliderInputEvent, false );
+
+    this.symbolClickEvent = throttle( ( e ) => {
 
       e.preventDefault();
-      this.pointLight.intensity = initialStrength;
-      HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
+      this.reset();
 
-    }, 100 ), false );
+    }, 100 );
+
+    HTMLControl.lighting.symbol.addEventListener( 'click', this.symbolClickEvent, false );
+
+  }
+
+  reset( ) {
+
+    this.pointLight.intensity = this.initialStrength;
+    HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
+
+    // HTMLControl.lighting.slider.removeEventListener( 'input', this.sliderInputEvent, false );
+    // HTMLControl.lighting.symbol.removeEventListener( 'click', this.symbolClickEvent, false );
 
   }
 

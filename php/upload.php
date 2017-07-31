@@ -21,13 +21,13 @@
   }
 
   $cwd = getcwd();
-  $path = $cwd."\\uploads\\";
+  $path = $cwd."/uploads/";
 
   if( isset( $_POST ) and $_SERVER['REQUEST_METHOD'] == "POST" ){
-      
+
     $filenames = array();
     $num = 0;
-    foreach ($_FILES['files']['name'] as $f => $name) { 
+    foreach ($_FILES['files']['name'] as $f => $name) {
 
       if( check_file_uploaded_name ($name) ) continue;
       if( check_file_uploaded_length ($name) ) continue;
@@ -36,11 +36,11 @@
           unlink( $path . $name );
 
       }
-      
+
       if( move_uploaded_file( $_FILES["files"]["tmp_name"][$f], $path.$name ) ) {
 
         $filenames[ $num ] = $name;
-        $num++; 
+        $num++;
 
       }
 
@@ -48,7 +48,7 @@
     }
 
     outputJSON($filenames, 'success' );
-      
+
   }
 
 

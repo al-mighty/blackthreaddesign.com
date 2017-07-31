@@ -10,7 +10,7 @@ import MTLLoader from 'modules/loaders/MTLLoader.module.js';
 import ColladaLoader from 'modules/loaders/ColladaLoader.module.js';
 import ColladaLoader2 from 'modules/loaders/ColladaLoader2.module.js';
 
-import manager from './loadingManager.js';
+import loadingManager from './loadingManager.js';
 
 let objectLoader = null;
 let bufferGeometryLoader = null;
@@ -25,9 +25,9 @@ let colladaLoader = null;  // todo
 let colladaLoader2 = null;
 
 // object loaders require access to .setMaterials function
-const oLoader = new OBJLoader( manager );
-const oLoader2 = new OBJLoader2( manager );
-// don't use manager here as this is called early to preload materials
+const oLoader = new OBJLoader( loadingManager );
+const oLoader2 = new OBJLoader2( loadingManager );
+// don't use loadingManager here as this is called early to preload materials
 // required for access to .setPath
 const mtlLdr = new MTLLoader();
 
@@ -36,7 +36,7 @@ const defaultReject = ( err ) => { console.log( err ); };
 const promisifyLoader = loader =>
   url => new Promise( ( resolve, reject = defaultReject ) => {
 
-    loader.load( url, resolve );
+    loader.load( url, resolve, loadingManager.onProgress, loadingManager.onError );
 
   } );
 
@@ -49,42 +49,42 @@ export default class Loaders {
 
       get objectLoader() {
         if ( objectLoader === null ) {
-          objectLoader = promisifyLoader( new THREE.ObjectLoader( manager ) );
+          objectLoader = promisifyLoader( new THREE.ObjectLoader( loadingManager ) );
         }
         return objectLoader;
       },
 
       get bufferGeometryLoader() {
         if ( bufferGeometryLoader === null ) {
-          bufferGeometryLoader = promisifyLoader( new THREE.BufferGeometryLoader( manager ) );
+          bufferGeometryLoader = promisifyLoader( new THREE.BufferGeometryLoader( loadingManager ) );
         }
         return bufferGeometryLoader;
       },
 
       get jsonLoader() {
         if ( jsonLoader === null ) {
-          jsonLoader = promisifyLoader( new THREE.JSONLoader( manager ) );
+          jsonLoader = promisifyLoader( new THREE.JSONLoader( loadingManager ) );
         }
         return jsonLoader;
       },
 
       get fbxLoader() {
         if ( fbxLoader === null ) {
-          fbxLoader = promisifyLoader( new FBXLoader( manager ) );
+          fbxLoader = promisifyLoader( new FBXLoader( loadingManager ) );
         }
         return fbxLoader;
       },
 
       get gltfLoader() {
         if ( gltfLoader === null ) {
-          gltfLoader = promisifyLoader( new GLTFLoader( manager ) );
+          gltfLoader = promisifyLoader( new GLTFLoader( loadingManager ) );
         }
         return gltfLoader;
       },
 
       get gltf2Loader() {
         if ( gltf2Loader === null ) {
-          gltf2Loader = promisifyLoader( new GLTF2Loader( manager ) );
+          gltf2Loader = promisifyLoader( new GLTF2Loader( loadingManager ) );
         }
         return gltf2Loader;
       },
@@ -123,14 +123,14 @@ export default class Loaders {
 
       get colladaLoader() {
         if ( colladaLoader === null ) {
-          colladaLoader = promisifyLoader( new ColladaLoader( manager ) );
+          colladaLoader = promisifyLoader( new ColladaLoader( loadingManager ) );
         }
         return colladaLoader;
       },
 
       get colladaLoader2() {
         if ( colladaLoader2 === null ) {
-          colladaLoader2 = promisifyLoader( new ColladaLoader2( manager ) );
+          colladaLoader2 = promisifyLoader( new ColladaLoader2( loadingManager ) );
         }
         return colladaLoader2;
       },

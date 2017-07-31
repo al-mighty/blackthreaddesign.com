@@ -1,4 +1,4 @@
-import manager from './loadingManager.js';
+import loadingManager from './loadingManager.js';
 import OnLoadCallbacks from './OnLoadCallbacks.js';
 import Loaders from './Loaders.js';
 import HTMLControl from './HTMLControl.js';
@@ -29,26 +29,26 @@ const loadFileFromUrl = ( url, type ) => {
   switch ( type ) {
 
     case 'buffergeometry':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onJSONBufferGeometryLoad( url );
     case 'object':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onJSONObjectLoad( url );
     case 'geometry':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onJSONGeometryLoad( url );
     case 'fbx':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onFBXLoad( url );
     case 'gltf':
     case 'glb':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onGLTFLoad( url );
     case 'obj':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onOBJLoad( url );
     case 'dae':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks.onDAELoad( url );
     default:
       if ( checkValidType( type ) ) console.error( 'Unsupported file type ' + type + '- please load one of the supported model formats.' );
@@ -130,6 +130,8 @@ const processSingleFile = ( files ) => {
 const processMultipleFiles = ( files ) => {
 
   const filesList = new FormData();
+
+  loadingManager.totalFiles = files.length;
 
   for ( let i = 0; i < files.length; i++ ) {
 

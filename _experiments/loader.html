@@ -1,7 +1,7 @@
 ---
 layout: single
-title: "Three.js loader"
-excerpt: "Test models for use with three.js. Supports a variety of formats"
+title: "Three.js loader / converter"
+excerpt: "Test models for use with three.js, and convert them to native three.js JSON format"
 categories: work
 permalink: /experiments/loader/
 comments: true
@@ -88,7 +88,7 @@ vendor-js:
 <div id="info">
 
   <div class="hide reveal-on-load">
-    <br><button id="reset">Reset</button>
+    <br><button id="reset">Reset</button><button id="export">Export as JSON</button>
     <div id="screenshot-controls">
       <h3>Take a screenshot</h3>
       <span>Width: </span><input id="screenshot-width" type="number" value="800">
@@ -118,7 +118,8 @@ vendor-js:
   <h3>About</h3>
 
   <p>
-    Test your models directly with the loaders from three.js version <span class="three-rev"></span>.
+    Test your models directly with the loaders from three.js version <span class="three-rev"></span>, and convert them to
+    the native three.js JSON format.
   </p>
   <p>
     Loaders from the examples directory (FBX, GLTF, OBJ, MTL, Collada, DDS) have been minimally adapted for use as ES6 modules, but are otherwise unchanged, while
@@ -148,10 +149,22 @@ vendor-js:
     </p>
   </div>
 
+  Here Be Dragons
+  Gouse 315, Group 14, Road 159,
+  Rattanak Village, Romchecka Commune,
+  Battambang City, Battambang Province, Cambodia
+
   <h3>Controls</h3>
   <p>Left mouse / touch: Rotate camera</p>
   <p>Middle mouse / Pinch: zoom</p>
   <p>Right mouse / Two finger touch: Pan camera</p>
+
+  <h3>Exporting as JSON</h3>
+  <p>
+    Loaded models can be exported to native three.js JSON format - this uses the build in
+    three.js exporter, which has certain limitations (may not export animations for skinned meshes for example).
+    JSON format is very fast to load, at the expense of larger file size.
+  </p>
 
   <h3>Grid</h3>
   <p>Each grid line is one unit - use this to get check the scale of your models.</p>

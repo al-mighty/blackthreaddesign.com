@@ -27,6 +27,13 @@ export default class AnimationControls {
     this.currentMixer = null;
     this.currentAction = null;
     this.isPaused = false;
+    this.pauseButtonActive = false;
+
+    HTMLControl.animation.playbackControl.removeEventListener( 'click', this.playPause, false );
+    HTMLControl.animation.slider.removeEventListener( 'mousedown', this.sliderMouseDownEvent, false );
+    HTMLControl.animation.slider.removeEventListener( 'input', this.sliderInputEvent, false );
+    HTMLControl.animation.slider.removeEventListener( 'mouseup', this.sliderMouseupEvent, false );
+    HTMLControl.animation.clipsSelection.removeEventListener( 'change', this.clipsChangeEvent, false );
 
   }
 
@@ -37,8 +44,8 @@ export default class AnimationControls {
 
       this.currentMixer.update( delta / 1000 );
 
-      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time increases modulo
-      // the animation duration, so set the slider value from that
+      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time
+      // increases modulo the animation duration, so set the slider value from that
       this.setSliderValue( this.currentAction.time );
 
     }
@@ -80,7 +87,7 @@ export default class AnimationControls {
 
     HTMLControl.animation.controls.classList.remove( 'hide' );
 
-    this.initPlaybackControls();
+    this.initPlayPauseControls();
 
     this.initSlider();
 
@@ -121,25 +128,17 @@ export default class AnimationControls {
 
   }
 
-  initPlaybackControls() {
+  initPlayPauseControls() {
 
-    HTMLControl.animation.playbackControl.addEventListener( 'click', ( e ) => {
+    this.playPause = ( e ) => {
 
       e.preventDefault();
 
-      if ( !this.isPaused ) {
-
-        this.pauseButtonActive = true;
-
-      } else {
-
-        this.pauseButtonActive = false;
-
-      }
-
       this.togglePause();
 
-    }, false );
+    };
+
+    HTMLControl.animation.playbackControl.addEventListener( 'click', this.playPause, false );
 
   }
 
@@ -147,10 +146,12 @@ export default class AnimationControls {
 
     if ( !this.isPaused ) {
 
+      this.pauseButtonActive = true;
       this.pause();
 
     } else {
 
+      this.pauseButtonActive = false;
       this.play();
 
     }
@@ -175,29 +176,32 @@ export default class AnimationControls {
 
   initSlider() {
 
-    HTMLControl.animation.slider.addEventListener( 'mousedown', ( e ) => {
+    this.sliderMouseDownEvent = ( e ) => {
 
-      // e.preventDefault();
       if ( !this.pauseButtonActive ) this.pause();
 
-    } );
+    };
 
-    HTMLControl.animation.slider.addEventListener( 'input', throttle( ( e ) => {
+    HTMLControl.animation.slider.addEventListener( 'mousedown', this.sliderMouseDownEvent, false );
 
-      // e.preventDefault();
+    this.sliderInputEvent = throttle( ( e ) => {
+
       const oldTime = this.currentMixer.time;
       const newTime = HTMLControl.animation.slider.value;
 
       this.currentMixer.update( newTime - oldTime );
 
-    }, 17 ), false ); // throttling at ~17 ms will give approx 60fps while sliding the controls
+    }, 17 );
 
-    HTMLControl.animation.slider.addEventListener( 'mouseup', ( e ) => {
+    HTMLControl.animation.slider.addEventListener( 'input', this.sliderInputEvent, false ); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-      // e.preventDefault();
+    this.sliderMouseupEvent = ( e ) => {
+
       if ( !this.pauseButtonActive ) this.play();
 
-    }, false );
+    };
+
+    HTMLControl.animation.slider.addEventListener( 'mouseup', this.sliderMouseupEvent, false );
 
   }
 
@@ -205,7 +209,7 @@ export default class AnimationControls {
 
     HTMLControl.animation.clipsSelection.selectedIndex = 1;
 
-    HTMLControl.animation.clipsSelection.addEventListener( 'change', ( e ) => {
+    this.clipsChangeEvent = ( e ) => {
 
       e.preventDefault();
       if ( e.target.value === 'static' ) {
@@ -218,7 +222,9 @@ export default class AnimationControls {
 
       }
 
-    }, false );
+    };
+
+    HTMLControl.animation.clipsSelection.addEventListener( 'change', this.clipsChangeEvent, false );
 
   }
 

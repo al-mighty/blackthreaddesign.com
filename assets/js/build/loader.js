@@ -42658,6 +42658,7 @@ var classCallCheck = function (instance, Constructor) {
 // const loadOverlay =
 var canvas = document.querySelector('#viewer-canvas');
 var reset = document.querySelector('#reset');
+var exportButton = document.querySelector('#export');
 var fullscreenButton = document.querySelector('#fullscreen-button');
 var faces = document.querySelector('#faces');
 var vertices = document.querySelector('#vertices');
@@ -42734,6 +42735,9 @@ var HTMLControl = function () {
 
     error.overlay.classList.add('hide');
     error.messages.innerHTML = '';
+
+    animation.playButton.classList.add('hide');
+    animation.pauseButton.classList.remove('hide');
 
     for (var i = 0; i < loading.hideOnLoad.length; i++) {
 
@@ -42815,7 +42819,7 @@ HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
 HTMLControl.screenshot = screenshot;
 HTMLControl.controls = controls;
-// HTMLControl.
+HTMLControl.export = exportButton;
 // HTMLControl.
 // HTMLControl.
 // HTMLControl.
@@ -44649,6 +44653,13 @@ var AnimationControls = function () {
     this.currentMixer = null;
     this.currentAction = null;
     this.isPaused = false;
+    this.pauseButtonActive = false;
+
+    HTMLControl.animation.playbackControl.removeEventListener('click', this.playPause, false);
+    HTMLControl.animation.slider.removeEventListener('mousedown', this.sliderMouseDownEvent, false);
+    HTMLControl.animation.slider.removeEventListener('input', this.sliderInputEvent, false);
+    HTMLControl.animation.slider.removeEventListener('mouseup', this.sliderMouseupEvent, false);
+    HTMLControl.animation.clipsSelection.removeEventListener('change', this.clipsChangeEvent, false);
   };
 
   AnimationControls.prototype.update = function update(delta) {
@@ -44658,8 +44669,8 @@ var AnimationControls = function () {
 
       this.currentMixer.update(delta / 1000);
 
-      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time increases modulo
-      // the animation duration, so set the slider value from that
+      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time
+      // increases modulo the animation duration, so set the slider value from that
       this.setSliderValue(this.currentAction.time);
     }
   };
@@ -44698,7 +44709,7 @@ var AnimationControls = function () {
 
     HTMLControl.animation.controls.classList.remove('hide');
 
-    this.initPlaybackControls();
+    this.initPlayPauseControls();
 
     this.initSlider();
 
@@ -44734,32 +44745,28 @@ var AnimationControls = function () {
     HTMLControl.animation.slider.value = String(val);
   };
 
-  AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
+  AnimationControls.prototype.initPlayPauseControls = function initPlayPauseControls() {
     var _this2 = this;
 
-    HTMLControl.animation.playbackControl.addEventListener('click', function (e) {
+    this.playPause = function (e) {
 
       e.preventDefault();
 
-      if (!_this2.isPaused) {
-
-        _this2.pauseButtonActive = true;
-      } else {
-
-        _this2.pauseButtonActive = false;
-      }
-
       _this2.togglePause();
-    }, false);
+    };
+
+    HTMLControl.animation.playbackControl.addEventListener('click', this.playPause, false);
   };
 
   AnimationControls.prototype.togglePause = function togglePause() {
 
     if (!this.isPaused) {
 
+      this.pauseButtonActive = true;
       this.pause();
     } else {
 
+      this.pauseButtonActive = false;
       this.play();
     }
   };
@@ -44781,26 +44788,29 @@ var AnimationControls = function () {
   AnimationControls.prototype.initSlider = function initSlider() {
     var _this3 = this;
 
-    HTMLControl.animation.slider.addEventListener('mousedown', function (e) {
+    this.sliderMouseDownEvent = function (e) {
 
-      // e.preventDefault();
       if (!_this3.pauseButtonActive) _this3.pause();
-    });
+    };
 
-    HTMLControl.animation.slider.addEventListener('input', throttle(function (e) {
+    HTMLControl.animation.slider.addEventListener('mousedown', this.sliderMouseDownEvent, false);
 
-      // e.preventDefault();
+    this.sliderInputEvent = throttle(function (e) {
+
       var oldTime = _this3.currentMixer.time;
       var newTime = HTMLControl.animation.slider.value;
 
       _this3.currentMixer.update(newTime - oldTime);
-    }, 17), false); // throttling at ~17 ms will give approx 60fps while sliding the controls
+    }, 17);
 
-    HTMLControl.animation.slider.addEventListener('mouseup', function (e) {
+    HTMLControl.animation.slider.addEventListener('input', this.sliderInputEvent, false); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-      // e.preventDefault();
+    this.sliderMouseupEvent = function (e) {
+
       if (!_this3.pauseButtonActive) _this3.play();
-    }, false);
+    };
+
+    HTMLControl.animation.slider.addEventListener('mouseup', this.sliderMouseupEvent, false);
   };
 
   AnimationControls.prototype.initSelectionMenu = function initSelectionMenu() {
@@ -44808,7 +44818,7 @@ var AnimationControls = function () {
 
     HTMLControl.animation.clipsSelection.selectedIndex = 1;
 
-    HTMLControl.animation.clipsSelection.addEventListener('change', function (e) {
+    this.clipsChangeEvent = function (e) {
 
       e.preventDefault();
       if (e.target.value === 'static') {
@@ -44818,7 +44828,9 @@ var AnimationControls = function () {
 
         _this4.selectCurrentAnimation(e.target.value);
       }
-    }, false);
+    };
+
+    HTMLControl.animation.clipsSelection.addEventListener('change', this.clipsChangeEvent, false);
   };
 
   return AnimationControls;
@@ -44855,6 +44867,10 @@ var LightingSetup = function () {
         this.initLights();
 
         this.initSlider();
+
+        this.initialStrength = this.pointLight.intensity;
+
+        HTMLControl.lighting.slider.value = String(this.pointLight.intensity);
     }
 
     LightingSetup.prototype.initLights = function initLights() {
@@ -44894,22 +44910,30 @@ var LightingSetup = function () {
     LightingSetup.prototype.initSlider = function initSlider() {
         var _this = this;
 
-        var initialStrength = this.pointLight.intensity;
-
-        HTMLControl.lighting.slider.value = String(this.pointLight.intensity);
-
-        HTMLControl.lighting.slider.addEventListener('input', throttle(function (e) {
+        this.sliderInputEvent = throttle(function (e) {
 
             e.preventDefault();
             _this.pointLight.intensity = HTMLControl.lighting.slider.value;
-        }, 100), false);
+        }, 100);
 
-        HTMLControl.lighting.symbol.addEventListener('click', throttle(function (e) {
+        HTMLControl.lighting.slider.addEventListener('input', this.sliderInputEvent, false);
+
+        this.symbolClickEvent = throttle(function (e) {
 
             e.preventDefault();
-            _this.pointLight.intensity = initialStrength;
-            HTMLControl.lighting.slider.value = String(_this.pointLight.intensity);
-        }, 100), false);
+            _this.reset();
+        }, 100);
+
+        HTMLControl.lighting.symbol.addEventListener('click', this.symbolClickEvent, false);
+    };
+
+    LightingSetup.prototype.reset = function reset() {
+
+        this.pointLight.intensity = this.initialStrength;
+        HTMLControl.lighting.slider.value = String(this.pointLight.intensity);
+
+        // HTMLControl.lighting.slider.removeEventListener( 'input', this.sliderInputEvent, false );
+        // HTMLControl.lighting.symbol.removeEventListener( 'click', this.symbolClickEvent, false );
     };
 
     return LightingSetup;
@@ -44955,104 +44979,146 @@ var ScreenshotHandler = function () {
 }();
 
 var Grid = function () {
-    function Grid(size) {
-        classCallCheck(this, Grid);
+  function Grid(size) {
+    classCallCheck(this, Grid);
 
 
-        this.size = size === undefined ? 5 : size;
+    this.size = size === undefined ? 5 : size;
 
-        this.gridHelper = new GridHelper(this.size, this.size);
+    this.gridHelper = new GridHelper(this.size, this.size);
 
-        this.axisHelper = new AxisHelper(this.size / 2);
+    this.axisHelper = new AxisHelper(this.size / 2);
 
-        this.helpers = new Group();
+    this.helpers = new Group();
 
-        this.helpers.add(this.gridHelper, this.axisHelper);
-        this.helpers.visible = false;
+    this.helpers.add(this.gridHelper, this.axisHelper);
+    this.helpers.visible = false;
 
-        this.initSlider();
-    }
+    this.initSlider();
+  }
 
-    Grid.prototype.setMaxSize = function setMaxSize(size) {
+  Grid.prototype.setMaxSize = function setMaxSize(size) {
 
-        if (size % 2 !== 0) size++;
+    if (size % 2 !== 0) size++;
 
-        HTMLControl.grid.slider.max = String(size);
-    };
+    HTMLControl.grid.slider.max = String(size);
+  };
 
-    Grid.prototype.setSize = function setSize(size) {
+  Grid.prototype.setSize = function setSize(size) {
 
-        this.size = size;
-        this.update();
-    };
+    this.size = size;
+    this.update();
+  };
 
-    Grid.prototype.update = function update() {
+  Grid.prototype.reset = function reset() {
 
-        this.updateGrid();
-        this.updateAxes();
-    };
+    this.size = 0;
+    this.helpers.visible = false;
+    HTMLControl.grid.slider.max = String(0);
+  };
 
-    Grid.prototype.updateGrid = function updateGrid() {
+  Grid.prototype.update = function update() {
 
-        var gridHelper = new GridHelper(this.size, this.size);
-        this.helpers.remove(this.gridHelper);
-        this.gridHelper = gridHelper;
-        this.helpers.add(this.gridHelper);
-    };
+    this.updateGrid();
+    this.updateAxes();
+  };
 
-    Grid.prototype.updateAxes = function updateAxes() {
+  Grid.prototype.updateGrid = function updateGrid() {
 
-        var axisHelper = new AxisHelper(this.size / 2);
-        this.helpers.remove(this.axisHelper);
-        this.axisHelper = axisHelper;
-        this.helpers.add(this.axisHelper);
-    };
+    var gridHelper = new GridHelper(this.size, this.size);
+    this.helpers.remove(this.gridHelper);
+    this.gridHelper = gridHelper;
+    this.helpers.add(this.gridHelper);
+  };
 
-    Grid.prototype.initSlider = function initSlider() {
-        var _this = this;
+  Grid.prototype.updateAxes = function updateAxes() {
 
-        HTMLControl.grid.slider.addEventListener('input', throttle(function (e) {
+    var axisHelper = new AxisHelper(this.size / 2);
+    this.helpers.remove(this.axisHelper);
+    this.axisHelper = axisHelper;
+    this.helpers.add(this.axisHelper);
+  };
 
-            e.preventDefault();
+  Grid.prototype.initSlider = function initSlider() {
+    var _this = this;
 
-            if (HTMLControl.grid.slider.value === 0) {
+    HTMLControl.grid.slider.addEventListener('input', throttle(function (e) {
 
-                _this.helpers.visible = false;
-                // seems to be neccessary - bug?
-                _this.axisHelper.visible = false;
-            } else {
+      e.preventDefault();
 
-                _this.helpers.visible = true;
-                _this.axisHelper.visible = true;
+      if (HTMLControl.grid.slider.value === '0') {
 
-                _this.setSize(HTMLControl.grid.slider.value);
-            }
-        }, 250), false);
-    };
+        _this.helpers.visible = false;
+      } else {
 
-    return Grid;
+        _this.helpers.visible = true;
+        _this.setSize(HTMLControl.grid.slider.value);
+      }
+    }, 250), false);
+  };
+
+  return Grid;
 }();
 
-var manager = new LoadingManager();
+var link = document.createElement('a');
+link.style.display = 'none';
+document.body.appendChild(link); // Firefox workaround, see #6594
+
+var save = function (blob, filename) {
+
+  link.href = URL.createObjectURL(blob);
+  link.download = filename || 'data.json';
+  link.click();
+};
+
+var saveString = function (text, filename) {
+
+  save(new Blob([text], { type: 'text/plain' }), filename);
+};
+
+var exportAsJSON = function (object) {
+
+  var output = object.toJSON();
+
+  output.metadata = {
+    type: 'Object',
+    generator: 'Three.js',
+    version: '4'
+  };
+
+  output = JSON.stringify(output, null, '\t');
+  // output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
+
+  saveString(output, 'blackThreadConversion.json');
+};
+
+var loadingManager = new LoadingManager();
+
+var percentComplete = 0;
 
 // hide the upload form when loading starts so that the progress bar can be shown
-manager.onStart = function () {
+loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
 
+  percentComplete = 0;
   HTMLControl.setOnLoadStartState();
 };
 
-manager.onLoad = function () {
+loadingManager.onLoad = function () {
 
   HTMLControl.setOnLoadEndState();
 };
 
-manager.onProgress = function (url, currentFile, totalFiles) {
+loadingManager.onProgress = function (url, currentFile, totalFiles) {
 
-  var percentComplete = currentFile / totalFiles * 100;
-  HTMLControl.loading.progress.style.width = percentComplete + '%';
+  // console.log( 'on progress ', percentComplete)
+  if (percentComplete < 100) {
+
+    percentComplete += 10;
+    HTMLControl.loading.progress.style.width = percentComplete + '%';
+  }
 };
 
-manager.onError = function (msg) {
+loadingManager.onError = function (msg) {
 
   if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
 };
@@ -64326,9 +64392,9 @@ var colladaLoader = null; // todo
 var colladaLoader2 = null;
 
 // object loaders require access to .setMaterials function
-var oLoader = new OBJLoader(manager);
-var oLoader2 = new OBJLoader2(manager);
-// don't use manager here as this is called early to preload materials
+var oLoader = new OBJLoader(loadingManager);
+var oLoader2 = new OBJLoader2(loadingManager);
+// don't use loadingManager here as this is called early to preload materials
 // required for access to .setPath
 var mtlLdr = new MTLLoader();
 
@@ -64342,7 +64408,7 @@ var promisifyLoader = function (loader) {
       var reject = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultReject;
 
 
-      loader.load(url, resolve);
+      loader.load(url, resolve, loadingManager.onProgress, loadingManager.onError);
     });
   };
 };
@@ -64355,42 +64421,42 @@ var Loaders = function Loaders() {
 
     get objectLoader() {
       if (objectLoader === null) {
-        objectLoader = promisifyLoader(new ObjectLoader(manager));
+        objectLoader = promisifyLoader(new ObjectLoader(loadingManager));
       }
       return objectLoader;
     },
 
     get bufferGeometryLoader() {
       if (bufferGeometryLoader === null) {
-        bufferGeometryLoader = promisifyLoader(new BufferGeometryLoader(manager));
+        bufferGeometryLoader = promisifyLoader(new BufferGeometryLoader(loadingManager));
       }
       return bufferGeometryLoader;
     },
 
     get jsonLoader() {
       if (jsonLoader === null) {
-        jsonLoader = promisifyLoader(new JSONLoader(manager));
+        jsonLoader = promisifyLoader(new JSONLoader(loadingManager));
       }
       return jsonLoader;
     },
 
     get fbxLoader() {
       if (fbxLoader === null) {
-        fbxLoader = promisifyLoader(new FBXLoader(manager));
+        fbxLoader = promisifyLoader(new FBXLoader(loadingManager));
       }
       return fbxLoader;
     },
 
     get gltfLoader() {
       if (gltfLoader === null) {
-        gltfLoader = promisifyLoader(new GLTFLoader(manager));
+        gltfLoader = promisifyLoader(new GLTFLoader(loadingManager));
       }
       return gltfLoader;
     },
 
     get gltf2Loader() {
       if (gltf2Loader === null) {
-        gltf2Loader = promisifyLoader(new GLTF2Loader(manager));
+        gltf2Loader = promisifyLoader(new GLTF2Loader(loadingManager));
       }
       return gltf2Loader;
     },
@@ -64429,14 +64495,14 @@ var Loaders = function Loaders() {
 
     get colladaLoader() {
       if (colladaLoader === null) {
-        colladaLoader = promisifyLoader(new ColladaLoader(manager));
+        colladaLoader = promisifyLoader(new ColladaLoader(loadingManager));
       }
       return colladaLoader;
     },
 
     get colladaLoader2() {
       if (colladaLoader2 === null) {
-        colladaLoader2 = promisifyLoader(new ColladaLoader2(manager));
+        colladaLoader2 = promisifyLoader(new ColladaLoader2(loadingManager));
       }
       return colladaLoader2;
     }
@@ -64620,8 +64686,8 @@ var OnLoadCallbacks$1 = function () {
 
       loaderCanvas.addObjectToScene(object);
 
-      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-      // if ( loader === 1 ) manager.onLoad();
+      // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+      // if ( loader === 1 ) loadingManager.onLoad();
     });
 
     // } );
@@ -64659,8 +64725,8 @@ var OnLoadCallbacks$1 = function () {
 
       loaderCanvas.addObjectToScene(object);
 
-      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-      // if ( loader === 1 ) manager.onLoad();
+      // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+      // if ( loader === 1 ) loadingManager.onLoad();
     });
 
     // } );
@@ -64694,26 +64760,26 @@ var loadFileFromUrl = function (url, type) {
   switch (type) {
 
     case 'buffergeometry':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onJSONBufferGeometryLoad(url);
     case 'object':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onJSONObjectLoad(url);
     case 'geometry':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onJSONGeometryLoad(url);
     case 'fbx':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onFBXLoad(url);
     case 'gltf':
     case 'glb':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onGLTFLoad(url);
     case 'obj':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onOBJLoad(url);
     case 'dae':
-      manager.onStart();
+      loadingManager.onStart();
       return OnLoadCallbacks$1.onDAELoad(url);
     default:
       if (checkValidType(type)) console.error('Unsupported file type ' + type + '- please load one of the supported model formats.');
@@ -64784,6 +64850,8 @@ var processSingleFile = function (files) {
 var processMultipleFiles = function (files) {
 
   var filesList = new FormData();
+
+  loadingManager.totalFiles = files.length;
 
   for (var i = 0; i < files.length; i++) {
 
@@ -64958,6 +65026,8 @@ var LoaderCanvas = function () {
     this.screenshotHandler = new ScreenshotHandler(this.app);
 
     this.initReset();
+
+    this.initExport();
   }
 
   LoaderCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
@@ -64986,7 +65056,7 @@ var LoaderCanvas = function () {
     var _this = this;
 
     HTMLControl.reset.addEventListener('click', function () {
-      console.log('before reset ', _this.loadedObjects.children.length);
+
       while (_this.loadedObjects.children.length > 0) {
 
         var child = _this.loadedObjects.children[0];
@@ -64996,10 +65066,24 @@ var LoaderCanvas = function () {
       }
 
       _this.animationControls.reset();
+      _this.grid.reset();
+      _this.lighting.reset();
       HTMLControl.setInitialState();
-
-      console.log('after reset ', _this.loadedObjects.children.length);
     });
+  };
+
+  LoaderCanvas.prototype.initExport = function initExport() {
+    var _this2 = this;
+
+    HTMLControl.export.addEventListener('click', function (e) {
+
+      e.preventDefault();
+      console.log('c');
+      if (_this2.loadedObjects.children.length === 0) return;
+
+      console.log('click');
+      exportAsJSON(_this2.loadedObjects);
+    }, false);
   };
 
   return LoaderCanvas;
@@ -65183,8 +65267,8 @@ var OnLoadCallbacks = function () {
 
       loaderCanvas.addObjectToScene(object);
 
-      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-      // if ( loader === 1 ) manager.onLoad();
+      // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+      // if ( loader === 1 ) loadingManager.onLoad();
     });
 
     // } );
@@ -65222,8 +65306,8 @@ var OnLoadCallbacks = function () {
 
       loaderCanvas.addObjectToScene(object);
 
-      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-      // if ( loader === 1 ) manager.onLoad();
+      // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+      // if ( loader === 1 ) loadingManager.onLoad();
     });
 
     // } );
@@ -65324,7 +65408,7 @@ var goFullscreen = function (elem) {
 HTMLControl.fullscreenButton.addEventListener('click', function (e) {
 
   e.preventDefault();
-  goFullscreen(HTMLControl);
+  goFullscreen(HTMLControl.canvas);
 }, false);
 
 // override console functions to show errors and warnings on the page

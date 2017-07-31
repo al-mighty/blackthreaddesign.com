@@ -1,6 +1,7 @@
 // const loadOverlay =
 const canvas = document.querySelector( '#viewer-canvas' );
 const reset = document.querySelector( '#reset' );
+const exportButton = document.querySelector( '#export' );
 const fullscreenButton = document.querySelector( '#fullscreen-button' );
 const faces = document.querySelector( '#faces' );
 const vertices = document.querySelector( '#vertices' );
@@ -75,6 +76,9 @@ export default class HTMLControl {
 
     error.overlay.classList.add( 'hide' );
     error.messages.innerHTML = '';
+
+    animation.playButton.classList.add( 'hide' );
+    animation.pauseButton.classList.remove( 'hide' );
 
     for ( let i = 0; i < loading.hideOnLoad.length; i++ ) {
 
@@ -164,7 +168,7 @@ HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
 HTMLControl.screenshot = screenshot;
 HTMLControl.controls = controls;
-// HTMLControl.
+HTMLControl.export = exportButton;
 // HTMLControl.
 // HTMLControl.
 // HTMLControl.

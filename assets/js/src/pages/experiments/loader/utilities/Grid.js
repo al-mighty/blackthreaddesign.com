@@ -37,6 +37,14 @@ export default class Grid {
 
   }
 
+  reset() {
+
+    this.size = 0;
+    this.helpers.visible = false;
+    HTMLControl.grid.slider.max = String( 0 );
+
+  }
+
   update() {
 
     this.updateGrid();
@@ -68,17 +76,13 @@ export default class Grid {
 
       e.preventDefault();
 
-      if ( HTMLControl.grid.slider.value === 0 ) {
+      if ( HTMLControl.grid.slider.value === '0' ) {
 
         this.helpers.visible = false;
-        // seems to be neccessary - bug?
-        this.axisHelper.visible = false;
 
       } else {
 
         this.helpers.visible = true;
-        this.axisHelper.visible = true;
-
         this.setSize( HTMLControl.grid.slider.value );
 
       }

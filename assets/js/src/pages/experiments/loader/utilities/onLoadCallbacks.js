@@ -191,8 +191,8 @@ export default class OnLoadCallbacks {
 
         loaderCanvas.addObjectToScene( object );
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        // if ( loader === 1 ) manager.onLoad();
+        // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+        // if ( loader === 1 ) loadingManager.onLoad();
 
       } );
 
@@ -231,8 +231,8 @@ export default class OnLoadCallbacks {
 
         loaderCanvas.addObjectToScene( object );
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        // if ( loader === 1 ) manager.onLoad();
+        // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
+        // if ( loader === 1 ) loadingManager.onLoad();
 
       } );
 

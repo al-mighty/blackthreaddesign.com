@@ -34,7 +34,7 @@ const goFullscreen = ( elem ) => {
 HTMLControl.fullscreenButton.addEventListener( 'click', ( e ) => {
 
   e.preventDefault();
-  goFullscreen( HTMLControl );
+  goFullscreen( HTMLControl.canvas );
 
 }, false );
 

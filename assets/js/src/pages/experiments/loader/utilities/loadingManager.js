@@ -2,33 +2,41 @@ import * as THREE from 'three';
 
 import HTMLControl from './HTMLControl.js';
 
-const manager = new THREE.LoadingManager();
+const loadingManager = new THREE.LoadingManager();
+
+let percentComplete = 0;
 
 // hide the upload form when loading starts so that the progress bar can be shown
-manager.onStart = () => {
+loadingManager.onStart = ( url, itemsLoaded, itemsTotal ) => {
 
+  percentComplete = 0;
   HTMLControl.setOnLoadStartState();
 
 };
 
-manager.onLoad = function ( ) {
+loadingManager.onLoad = function ( ) {
 
   HTMLControl.setOnLoadEndState();
 
 };
 
-manager.onProgress = ( url, currentFile, totalFiles ) => {
+loadingManager.onProgress = ( url, currentFile, totalFiles ) => {
 
-  const percentComplete = currentFile / totalFiles * 100;
-  HTMLControl.loading.progress.style.width = percentComplete + '%';
+  // console.log( 'on progress ', percentComplete)
+  if ( percentComplete < 100 ) {
+
+    percentComplete += 10;
+    HTMLControl.loading.progress.style.width = percentComplete + '%';
+
+  }
 
 };
 
-manager.onError = ( msg ) => {
+loadingManager.onError = ( msg ) => {
 
   if ( msg instanceof String && msg !== '' ) console.error( 'THREE.LoadingManager error: ' + msg );
   else console.log( msg );
 
 };
 
-export default manager;
+export default loadingManager;

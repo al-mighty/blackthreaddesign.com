@@ -8,6 +8,7 @@ import LightingSetup from './utilities/LightingSetup.js';
 import ScreenshotHandler from './utilities/ScreenshotHandler.js';
 import Grid from './utilities/Grid.js';
 import HTMLControl from './utilities/HTMLControl.js';
+import exportAsJSON from './utilities/exportAsJSON.js';
 
 import './utilities/fileReader.js';
 
@@ -62,6 +63,8 @@ class LoaderCanvas {
 
     this.initReset();
 
+    this.initExport();
+
   }
 
   addObjectToScene( object ) {
@@ -91,7 +94,7 @@ class LoaderCanvas {
   initReset() {
 
     HTMLControl.reset.addEventListener( 'click', () => {
-      console.log( 'before reset ', this.loadedObjects.children.length)
+
       while ( this.loadedObjects.children.length > 0 ) {
 
         let child = this.loadedObjects.children[ 0 ];
@@ -102,11 +105,26 @@ class LoaderCanvas {
       }
 
       this.animationControls.reset();
+      this.grid.reset();
+      this.lighting.reset();
       HTMLControl.setInitialState();
 
-      console.log( 'after reset ', this.loadedObjects.children.length)
-
     } );
+
+  }
+
+  initExport() {
+
+    HTMLControl.export.addEventListener( 'click', ( e ) => {
+
+      e.preventDefault();
+      console.log( 'c')
+      if ( this.loadedObjects.children.length === 0 ) return;
+
+      console.log( 'click')
+      exportAsJSON( this.loadedObjects );
+
+    }, false );
 
   }
 
