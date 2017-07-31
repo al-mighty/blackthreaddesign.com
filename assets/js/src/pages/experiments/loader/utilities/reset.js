@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import HTMLControl from './HTMLControl.js';
+
 const textureDispose = ( mat ) => {
 
   Object.keys( mat ).forEach( ( key ) => {

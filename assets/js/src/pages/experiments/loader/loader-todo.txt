@@ -1,14 +1,12 @@
 Fix reset button
 Set up so that only textures are uploaded where possible
-Add json - geometry example
+Set up HTML state
+Bug in grid.js doesn't remove axis helper
+
 
 Do later:
-- add text to grid: "each grid line is one unit wide"
-- make lighting and grid sliders logarithmic
+- move three.js .rev-elem setup to main.js and use across site
 - work on progress bar
 - make JSON format work for blender exporter
-- Add optional grid
-- Add option to switch between loader version
 - Add info re loading time
-- GLTFLoader1 is not working
-- OBJLoader1 is not working
+- remove colladaLoader1

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import throttle from 'lodash.throttle';
 
+import HTMLControl from './HTMLControl.js';
+
 export default class Grid {
 
   constructor( size ) {
@@ -24,7 +26,7 @@ export default class Grid {
 
     if ( size % 2 !== 0 ) size++;
 
-    this.slider.max = String( size );
+    HTMLControl.grid.slider.max = String( size );
 
   }
 
@@ -62,21 +64,22 @@ export default class Grid {
 
   initSlider() {
 
-    this.slider = document.querySelector( '#grid-slider' );
-
-    this.slider.addEventListener( 'input', throttle( ( e ) => {
+    HTMLControl.grid.slider.addEventListener( 'input', throttle( ( e ) => {
 
       e.preventDefault();
 
-      if ( this.slider.value === 0 ) {
+      if ( HTMLControl.grid.slider.value === 0 ) {
 
         this.helpers.visible = false;
+        // seems to be neccessary - bug?
+        this.axisHelper.visible = false;
 
       } else {
 
         this.helpers.visible = true;
+        this.axisHelper.visible = true;
 
-        this.setSize( this.slider.value );
+        this.setSize( HTMLControl.grid.slider.value );
 
       }
 

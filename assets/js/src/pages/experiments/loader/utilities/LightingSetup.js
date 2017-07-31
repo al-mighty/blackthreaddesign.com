@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import throttle from 'lodash.throttle';
+import HTMLControl from './HTMLControl.js';
 
 export default class LightingSetup {
 
   constructor( app ) {
 
     this.app = app;
-    this.strengthSlider = document.querySelector( '#lighting-slider' );
 
     this.initLights();
 
@@ -49,22 +49,22 @@ export default class LightingSetup {
 
   initSlider() {
 
-    const initialStrenth = this.pointLight.intensity;
+    const initialStrength = this.pointLight.intensity;
 
-    this.strengthSlider.value = this.pointLight.intensity;
+    HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
 
-    this.strengthSlider.addEventListener( 'input', throttle( ( e ) => {
+    HTMLControl.lighting.slider.addEventListener( 'input', throttle( ( e ) => {
 
       e.preventDefault();
-      this.pointLight.intensity = this.strengthSlider.value;
+      this.pointLight.intensity = HTMLControl.lighting.slider.value;
 
     }, 100 ), false );
 
-    document.querySelector( '#light-symbol' ).addEventListener( 'click', throttle( ( e ) => {
+    HTMLControl.lighting.symbol.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
-      this.pointLight.intensity = initialStrenth;
-      this.strengthSlider.value = this.pointLight.intensity;
+      this.pointLight.intensity = initialStrength;
+      HTMLControl.lighting.slider.value = String( this.pointLight.intensity );
 
     }, 100 ), false );
 

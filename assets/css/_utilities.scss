@@ -7,6 +7,9 @@
    ========================================================================== */
 
 /* www.456bereastreet.com/archive/200711/screen_readers_sometimes_ignore_displaynone/ */
+.hide {
+	display: none !important;
+}
 
 .hidden {
   display: none;
@@ -22,6 +25,8 @@
 .transparent {
   opacity: 0;
 }
+
+
 
 /* https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html */
 
@@ -154,6 +159,17 @@ body:hover .visually-hidden button {
   @include breakpoint($large){
     margin-right: -1 * span(2.5 of 12) !important;
   }
+}
+
+/* fill parent container */
+.fill {
+  position: absolute;
+	top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+	width: 100%;
+	height: 100%;
 }
 
 /*

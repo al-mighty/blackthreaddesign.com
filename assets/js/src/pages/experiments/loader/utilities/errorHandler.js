@@ -1,5 +1,6 @@
-// Simple error handling function - customize as necessary
+import HTMLControl from './HTMLControl.js';
 
+// Simple error handling function - customize as necessary
 
 const cachedMessages = {};
 
@@ -19,11 +20,11 @@ const errorHandler = ( msg ) => {
   // bug in three.js or WebGL returns this error on Chrome
   if ( msg.indexOf( 'gl.getProgramInfoLog()' ) !== -1 ) return;
 
-  document.querySelector( '#error-overlay' ).classList.remove( 'hide' );
+  HTMLControl.error.overlay.classList.remove( 'hide' );
   const p = document.createElement( 'p' );
   p.innerHTML = msg;
 
-  document.querySelector( '#error-message' ).appendChild( p );
+  HTMLControl.error.messages.appendChild( p );
 
 };
 

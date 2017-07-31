@@ -1,47 +1,60 @@
 import throttle from 'lodash.throttle';
 import OnLoadCallbacks from './onLoadCallbacks.js';
 import Loaders from './Loaders';
+import HTMLControl from './HTMLControl.js';
 
 const loaders = new Loaders();
 
-document.querySelector( '#demo1' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.FBX.addEventListener( 'click', throttle( () => {
 
   OnLoadCallbacks.onFBXLoad( '/assets/models/loader/xsi_man_skinning.fbx' );
   OnLoadCallbacks.onFBXLoad( '/assets/models/loader/nurbs.fbx' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo2' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.GLTF.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onGLTFLoad( '/assets/models/loader/CesiumMan.glb' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo3' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.JSONGeo.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONGeometryLoad( '/assets/models/loader/platform_geo.json' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo4' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.JSONBuffer.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONBufferGeometryLoad( '/assets/models/loader/suzanne.json' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo5' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.JSONScene.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONObjectLoad( '/assets/models/loader/pump.json' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo6' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.Collada.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onDAELoad( '/assets/models/loader/avatar.dae' );
 
-}, 3000 ) );
+}, 3000 ), false );
 
-document.querySelector( '#demo7' ).addEventListener( 'click', throttle( () => {
+HTMLControl.demos.OBJ.addEventListener( 'click', throttle( ( e ) => {
+
+  e.preventDefault();
 
   loaders.setMtlLoaderPath( '/assets/models/loader/' );
 
@@ -56,5 +69,5 @@ document.querySelector( '#demo7' ).addEventListener( 'click', throttle( () => {
 
   } );
 
-}, 3000 ) );
+}, 3000 ), false );
 

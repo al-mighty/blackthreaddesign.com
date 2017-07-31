@@ -42536,8 +42536,231 @@ var ImageUtils = {
 
 //
 
-// Simple error handling function - customize as necessary
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
 
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+// const loadOverlay =
+var canvas = document.querySelector('#viewer-canvas');
+var reset = document.querySelector('#reset');
+var fullscreenButton = document.querySelector('#fullscreen-button');
+var faces = document.querySelector('#faces');
+var vertices = document.querySelector('#vertices');
+
+var error = {
+  overlay: document.querySelector('#error-overlay'),
+  messages: document.querySelector('#error-message')
+};
+
+var animation = {
+  slider: document.querySelector('#animation-slider'),
+  playButton: document.querySelector('#play-button'),
+  pauseButton: document.querySelector('#pause-button'),
+  playbackControl: document.querySelector('#playback-control'),
+  clipsSelection: document.querySelector('#animation-clips'),
+  controls: document.querySelector('#animation-controls')
+};
+
+var fileUpload = {
+  input: document.querySelector('#file-upload-input'),
+  button: document.querySelector('#file-upload-button'),
+  form: document.querySelector('#file-upload-form')
+};
+
+var grid = {
+  slider: document.querySelector('#grid-slider')
+};
+
+var demos = {
+  FBX: document.querySelector('#demo-fbx'),
+  GLTF: document.querySelector('#demo-gltf'),
+  JSONGeo: document.querySelector('#demo-json-geo'),
+  JSONBuffer: document.querySelector('#demo-json-buffer'),
+  JSONScene: document.querySelector('#demo-json-scene'),
+  Collada: document.querySelector('#demo-collada'),
+  OBJ: document.querySelector('#demo-obj')
+};
+
+var lighting = {
+  slider: document.querySelector('#lighting-slider'),
+  symbol: document.querySelector('#light-symbol')
+};
+
+var loading = {
+  bar: document.querySelector('#loading-bar'),
+  overlay: document.querySelector('#loading-overlay'),
+  revealOnLoad: document.querySelector('#reveal-on-load'),
+  hideOnLoad: document.querySelector('.hide-on-load'),
+  progress: document.querySelector('#progress')
+};
+
+var screenshot = {
+  button: document.querySelector('#screenshot-button'),
+  width: document.querySelector('#screenshot-width'),
+  height: document.querySelector('#screenshot-height')
+};
+
+var background = {
+  links: document.querySelectorAll('.fa'),
+  button: document.querySelector('#toggle-background'),
+  sliders: document.querySelectorAll('.loader-slider')
+};
+
+var HTMLControl = function () {
+  function HTMLControl() {
+    classCallCheck(this, HTMLControl);
+  }
+
+  HTMLControl.setInitialState = function setInitialState() {};
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {};
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {};
+
+  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {};
+
+  HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {};
+
+  HTMLControl.addModelInfo = function addModelInfo(renderer) {
+
+    faces.innerHTML = renderer.info.render.faces;
+    vertices.innerHTML = renderer.info.render.vertices;
+  };
+
+  return HTMLControl;
+}();
+
+HTMLControl.canvas = canvas;
+HTMLControl.reset = reset;
+HTMLControl.fullscreenButton = fullscreenButton;
+HTMLControl.error = error;
+HTMLControl.animation = animation;
+HTMLControl.fileUpload = fileUpload;
+HTMLControl.grid = grid;
+HTMLControl.demos = demos;
+HTMLControl.lighting = lighting;
+HTMLControl.loading = loading;
+HTMLControl.screenshot = screenshot;
+HTMLControl.background = background;
+// HTMLControl.
+// HTMLControl.
+// HTMLControl.
+// HTMLControl.
 
 var cachedMessages = {};
 
@@ -42557,11 +42780,11 @@ var errorHandler = function (msg) {
   // bug in three.js or WebGL returns this error on Chrome
   if (msg.indexOf('gl.getProgramInfoLog()') !== -1) return;
 
-  document.querySelector('#error-overlay').classList.remove('hide');
+  HTMLControl.error.overlay.classList.remove('hide');
   var p = document.createElement('p');
   p.innerHTML = msg;
 
-  document.querySelector('#error-message').appendChild(p);
+  HTMLControl.error.messages.appendChild(p);
 };
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {}
@@ -44344,138 +44567,10 @@ function App(canvas) {
   };
 }
 
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
 var AnimationControls = function () {
   function AnimationControls() {
     classCallCheck(this, AnimationControls);
 
-
-    this.slider = document.querySelector('#animation-slider');
-    this.playButton = document.querySelector('#play-button');
-    this.pauseButton = document.querySelector('#pause-button');
-    this.playbackControl = document.querySelector('#playback-control');
-
-    this.clipsSelection = document.querySelector('#animation-clips');
-
-    this.controls = document.querySelector('#animation-controls');
 
     this.isPaused = false;
     this.pauseButtonActive = false;
@@ -44485,6 +44580,14 @@ var AnimationControls = function () {
     this.actions = [];
     this.animationNames = [];
   }
+
+  AnimationControls.prototype.reset = function reset() {
+
+    this.clips = [];
+    this.mixers = [];
+    this.actions = [];
+    this.animationNames = [];
+  };
 
   AnimationControls.prototype.update = function update(delta) {
 
@@ -44523,7 +44626,7 @@ var AnimationControls = function () {
       _this.actions.push(action);
       _this.animationNames.push(animation.name);
 
-      _this.clipsSelection.appendChild(new Option(animation.name, animation.name));
+      HTMLControl.animation.clipsSelection.appendChild(new Option(animation.name, animation.name));
     });
 
     // If all animations have been skipped, return
@@ -44531,7 +44634,7 @@ var AnimationControls = function () {
 
     this.selectCurrentAnimation(this.animationNames[0]);
 
-    document.querySelector('#animation-controls').classList.remove('hide');
+    HTMLControl.animation.controls.classList.remove('hide');
 
     this.initPlaybackControls();
 
@@ -44556,9 +44659,9 @@ var AnimationControls = function () {
       this.currentClip = this.clips[index];
 
       // set animation slider max to length of animation
-      this.slider.max = String(this.currentClip.duration);
+      HTMLControl.animation.slider.max = String(this.currentClip.duration);
 
-      this.slider.step = String(this.currentClip.duration / 150);
+      HTMLControl.animation.slider.step = String(this.currentClip.duration / 150);
 
       this.currentAction.play();
     }
@@ -44566,13 +44669,13 @@ var AnimationControls = function () {
 
   AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
 
-    this.slider.value = String(val);
+    HTMLControl.animation.slider.value = String(val);
   };
 
   AnimationControls.prototype.initPlaybackControls = function initPlaybackControls() {
     var _this2 = this;
 
-    this.playbackControl.addEventListener('click', function (e) {
+    HTMLControl.animation.playbackControl.addEventListener('click', function (e) {
 
       e.preventDefault();
 
@@ -44602,36 +44705,36 @@ var AnimationControls = function () {
   AnimationControls.prototype.pause = function pause() {
 
     this.isPaused = true;
-    this.playButton.classList.remove('hide');
-    this.pauseButton.classList.add('hide');
+    HTMLControl.animation.playButton.classList.remove('hide');
+    HTMLControl.animation.pauseButton.classList.add('hide');
   };
 
   AnimationControls.prototype.play = function play() {
 
     this.isPaused = false;
-    this.playButton.classList.add('hide');
-    this.pauseButton.classList.remove('hide');
+    HTMLControl.animation.playButton.classList.add('hide');
+    HTMLControl.animation.pauseButton.classList.remove('hide');
   };
 
   AnimationControls.prototype.initSlider = function initSlider() {
     var _this3 = this;
 
-    this.slider.addEventListener('mousedown', function (e) {
+    HTMLControl.animation.slider.addEventListener('mousedown', function (e) {
 
       // e.preventDefault();
       if (!_this3.pauseButtonActive) _this3.pause();
     });
 
-    this.slider.addEventListener('input', throttle(function (e) {
+    HTMLControl.animation.slider.addEventListener('input', throttle(function (e) {
 
       // e.preventDefault();
       var oldTime = _this3.currentMixer.time;
-      var newTime = _this3.slider.value;
+      var newTime = HTMLControl.animation.slider.value;
 
       _this3.currentMixer.update(newTime - oldTime);
     }, 17), false); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-    this.slider.addEventListener('mouseup', function (e) {
+    HTMLControl.animation.slider.addEventListener('mouseup', function (e) {
 
       // e.preventDefault();
       if (!_this3.pauseButtonActive) _this3.play();
@@ -44641,9 +44744,9 @@ var AnimationControls = function () {
   AnimationControls.prototype.initSelectionMenu = function initSelectionMenu() {
     var _this4 = this;
 
-    this.clipsSelection.selectedIndex = 1;
+    HTMLControl.animation.clipsSelection.selectedIndex = 1;
 
-    this.clipsSelection.addEventListener('change', function (e) {
+    HTMLControl.animation.clipsSelection.addEventListener('change', function (e) {
 
       e.preventDefault();
       if (e.target.value === 'static') {
@@ -44659,58 +44762,38 @@ var AnimationControls = function () {
   return AnimationControls;
 }();
 
-// Note - this currently get the info from the three.js renderer rather than the model.
-// The number of faces / vertices that aare rendered by three.js may be different than the
-// number in the original model, since quads (4-sided polygons) are not supported in WebGL
-// - these are subdivided into tris 
-
-var vertices = document.querySelector('#vertices');
-var faces = document.querySelector('#faces');
-
-var addModelInfo = function (renderer) {
-
-  faces.innerHTML = renderer.info.render.faces;
-  vertices.innerHTML = renderer.info.render.vertices;
-};
-
 var backgroundColorChanger = function (app) {
-
-  var controlLinks = document.querySelectorAll('.fa');
-
-  var sliders = document.querySelectorAll('.loader-slider');
-
-  var toggle = document.querySelector('#toggle-background');
 
   var toggled = false;
 
-  toggle.addEventListener('click', function (e) {
+  HTMLControl.background.button.addEventListener('click', function (e) {
 
     e.preventDefault();
     if (toggled) {
 
       app.renderer.setClearColor(0x000000, 1.0);
-      for (var i = 0; i < controlLinks.length; i++) {
+      for (var i = 0; i < HTMLControl.background.links.length; i++) {
 
-        controlLinks[i].style.color = 'white';
+        HTMLControl.background.links[i].style.color = 'white';
       }
 
-      for (var _i = 0; _i < sliders.length; _i++) {
+      for (var _i = 0; _i < HTMLControl.background.sliders.length; _i++) {
 
-        sliders[_i].style.backgroundColor = 'white';
-        sliders[_i].classList.remove('white-slider');
+        HTMLControl.background.sliders[_i].style.backgroundColor = 'white';
+        HTMLControl.background.sliders[_i].classList.remove('white-slider');
       }
     } else {
 
       app.renderer.setClearColor(0xf7f7f7, 1.0);
-      for (var _i2 = 0; _i2 < controlLinks.length; _i2++) {
+      for (var _i2 = 0; _i2 < HTMLControl.background.links.length; _i2++) {
 
-        controlLinks[_i2].style.color = 'black';
+        HTMLControl.background.links[_i2].style.color = 'black';
       }
 
-      for (var _i3 = 0; _i3 < sliders.length; _i3++) {
+      for (var _i3 = 0; _i3 < HTMLControl.background.sliders.length; _i3++) {
 
-        sliders[_i3].style.backgroundColor = '#424242';
-        sliders[_i3].classList.add('white-slider');
+        HTMLControl.background.sliders[_i3].style.backgroundColor = '#424242';
+        HTMLControl.background.sliders[_i3].classList.add('white-slider');
       }
     }
 
@@ -44724,7 +44807,6 @@ var LightingSetup = function () {
 
 
         this.app = app;
-        this.strengthSlider = document.querySelector('#lighting-slider');
 
         this.initLights();
 
@@ -44768,21 +44850,21 @@ var LightingSetup = function () {
     LightingSetup.prototype.initSlider = function initSlider() {
         var _this = this;
 
-        var initialStrenth = this.pointLight.intensity;
+        var initialStrength = this.pointLight.intensity;
 
-        this.strengthSlider.value = this.pointLight.intensity;
+        HTMLControl.lighting.slider.value = String(this.pointLight.intensity);
 
-        this.strengthSlider.addEventListener('input', throttle(function (e) {
+        HTMLControl.lighting.slider.addEventListener('input', throttle(function (e) {
 
             e.preventDefault();
-            _this.pointLight.intensity = _this.strengthSlider.value;
+            _this.pointLight.intensity = HTMLControl.lighting.slider.value;
         }, 100), false);
 
-        document.querySelector('#light-symbol').addEventListener('click', throttle(function (e) {
+        HTMLControl.lighting.symbol.addEventListener('click', throttle(function (e) {
 
             e.preventDefault();
-            _this.pointLight.intensity = initialStrenth;
-            _this.strengthSlider.value = _this.pointLight.intensity;
+            _this.pointLight.intensity = initialStrength;
+            HTMLControl.lighting.slider.value = String(_this.pointLight.intensity);
         }, 100), false);
     };
 
@@ -44791,39 +44873,33 @@ var LightingSetup = function () {
 
 var ScreenshotHandler = function () {
     function ScreenshotHandler(app) {
-        var _this = this;
-
         classCallCheck(this, ScreenshotHandler);
 
 
         this.app = app;
 
-        this.button = document.querySelector('#screenshot-button');
-        this.widthSelector = document.querySelector('#screenshot-width');
-        this.heightSelector = document.querySelector('#screenshot-height');
-
-        this.widthSelector.value = app.canvas.clientWidth;
-        this.heightSelector.value = app.canvas.clientHeight;
+        HTMLControl.screenshot.width.value = app.canvas.clientWidth;
+        HTMLControl.screenshot.height.value = app.canvas.clientHeight;
 
         this.initButton();
 
         window.addEventListener('resize', throttle(function () {
 
-            _this.widthSelector.value = app.canvas.clientWidth;
-            _this.heightSelector.value = app.canvas.clientHeight;
+            HTMLControl.screenshot.width.value = app.canvas.clientWidth;
+            HTMLControl.screenshot.height.value = app.canvas.clientHeight;
         }, 250), false);
     }
 
     ScreenshotHandler.prototype.initButton = function initButton() {
-        var _this2 = this;
+        var _this = this;
 
-        this.button.addEventListener('click', throttle(function (e) {
+        HTMLControl.screenshot.button.addEventListener('click', throttle(function (e) {
 
             e.preventDefault();
-            var width = _this2.widthSelector.value;
-            var height = _this2.heightSelector.value;
+            var width = HTMLControl.screenshot.width.value;
+            var height = HTMLControl.screenshot.height.value;
 
-            var img = _this2.app.takeScreenshot(width, height);
+            var img = _this.app.takeScreenshot(width, height);
 
             var w = window.open('');
             w.document.write('<title>Three.js Loader screenshot</title>');
@@ -44874,7 +44950,7 @@ var clearChildren = function (object) {
     }
 };
 
-var reset = (function (loadedModels) {
+var reset$1 = (function (loadedModels) {
 
     // console.log( 'WebGLRenderer.info before calling reset' );
     // console.log( app.renderer.info );
@@ -44915,7 +44991,7 @@ var Grid = function () {
 
         if (size % 2 !== 0) size++;
 
-        this.slider.max = String(size);
+        HTMLControl.grid.slider.max = String(size);
     };
 
     Grid.prototype.setSize = function setSize(size) {
@@ -44949,20 +45025,21 @@ var Grid = function () {
     Grid.prototype.initSlider = function initSlider() {
         var _this = this;
 
-        this.slider = document.querySelector('#grid-slider');
-
-        this.slider.addEventListener('input', throttle(function (e) {
+        HTMLControl.grid.slider.addEventListener('input', throttle(function (e) {
 
             e.preventDefault();
 
-            if (_this.slider.value === 0) {
+            if (HTMLControl.grid.slider.value === 0) {
 
                 _this.helpers.visible = false;
+                // seems to be neccessary - bug?
+                _this.axisHelper.visible = false;
             } else {
 
                 _this.helpers.visible = true;
+                _this.axisHelper.visible = true;
 
-                _this.setSize(_this.slider.value);
+                _this.setSize(HTMLControl.grid.slider.value);
             }
         }, 250), false);
     };
@@ -44975,24 +45052,21 @@ var manager = new LoadingManager();
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = function () {
 
-  // console.log( 'manager.onstart' )
-  document.querySelector('#file-upload-form').classList.add('hide');
-  document.querySelector('#loading-bar').classList.remove('hide');
+  HTMLControl.fileUpload.form.classList.add('hide');
+  HTMLControl.loading.bar.classList.remove('hide');
 };
 
 manager.onLoad = function () {
 
-  // console.log( 'manager.onload' );
-  document.querySelector('#loading-overlay').classList.add('hide');
-  document.querySelector('#reveal-on-load').classList.remove('hide');
-  document.querySelector('.hide-on-load').classList.add('hide');
+  HTMLControl.loading.overlay.classList.add('hide');
+  HTMLControl.loading.revealOnLoad.classList.remove('hide');
+  HTMLControl.loading.hideOnLoad.classList.add('hide');
 };
 
-var progress = document.querySelector('#progress');
 manager.onProgress = function (url, currentFile, totalFiles) {
 
   var percentComplete = currentFile / totalFiles * 100;
-  progress.style.width = percentComplete + '%';
+  HTMLControl.loading.progress.style.width = percentComplete + '%';
 };
 
 manager.onError = function (msg) {
@@ -64389,36 +64463,40 @@ var Loaders = function Loaders() {
 var loaders$3 = new Loaders();
 var defaultMat$1 = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
-var selectLoader$1 = function (loader1Name, loader2Name, type, callback) {
+// const selectLoader = ( loader1Name, loader2Name, type, callback ) => {
 
-  document.querySelector('#loader-select-type').innerHTML = type;
+//   document.querySelector( '#loader-select-type' ).innerHTML = type;
 
-  var button1 = document.querySelector('#loader1');
-  var button2 = document.querySelector('#loader2');
+//   const button1 = document.querySelector( '#loader1' );
+//   const button2 = document.querySelector( '#loader2' );
 
-  button1.innerHTML = loader1Name;
-  button2.innerHTML = loader2Name;
+//   button1.innerHTML = loader1Name;
+//   button2.innerHTML = loader2Name;
 
-  document.querySelector('#loader-choice-form').classList.remove('hide');
+//   document.querySelector( '#loader-choice-form' ).classList.remove( 'hide' );
 
-  button1.addEventListener('click', function (e) {
+//   button1.addEventListener( 'click', ( e ) => {
 
-    e.preventDefault();
+//     e.preventDefault();
 
-    document.querySelector('#loader-choice-form').classList.add('hide');
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
 
-    callback(1);
-  }, false);
+//     callback( 1 );
 
-  button2.addEventListener('click', function (e) {
 
-    e.preventDefault();
+//   }, false );
 
-    document.querySelector('#loader-choice-form').classList.add('hide');
+//   button2.addEventListener( 'click', ( e ) => {
 
-    callback(2);
-  }, false);
-};
+//     e.preventDefault();
+
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
+
+//     callback( 2 );
+
+//   }, false );
+
+// };
 
 var OnLoadCallbacks$1 = function () {
   function OnLoadCallbacks() {
@@ -64573,35 +64651,39 @@ var OnLoadCallbacks$1 = function () {
 
   OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
 
-    var promise = new Promise(function (resolve, reject) {});
+    var promise = new Promise(function (resolve) {});
 
-    selectLoader$1('ColladaLoader', 'ColladaLoader2', 'collada', function (loader) {
+    // selectLoader( 'ColladaLoader', 'ColladaLoader2', 'collada', ( loader ) => {
 
-      if (loader === 1) {
 
-        console.log('Using THREE.ColladaLoader');
-        console.warn('THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.');
+    // if ( loader === 1 ) {
 
-        promise = loaders$3.colladaLoader(file);
-      } else {
+    //   console.log( 'Using THREE.ColladaLoader' );
+    //   console.warn( 'THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.' );
 
-        console.log('Using THREE.ColladaLoader2');
+    //   promise = loaders.colladaLoader( file );
 
-        promise = loaders$3.colladaLoader2(file);
-      }
+    // } else {
 
-      promise.then(function (result) {
+    console.log('Using THREE.ColladaLoader2');
 
-        var object = result.scene;
+    promise = loaders$3.colladaLoader2(file);
 
-        if (result.animations && result.animations.length > 0) object.animations = result.animations;
+    // }
 
-        loaderCanvas.addObjectToScene(object);
+    promise.then(function (result) {
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        if (loader === 1) manager.onLoad();
-      });
+      var object = result.scene;
+
+      if (result.animations && result.animations.length > 0) object.animations = result.animations;
+
+      loaderCanvas.addObjectToScene(object);
+
+      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
+      // if ( loader === 1 ) manager.onLoad();
     });
+
+    // } );
 
     return promise;
   };
@@ -64831,15 +64913,13 @@ var processMultipleFiles = function (files) {
   });
 };
 
-var uploadInput = document.querySelector('#file-upload-input');
-
-document.querySelector('#file-upload-button').addEventListener('click', function (e) {
+HTMLControl.fileUpload.button.addEventListener('click', function (e) {
 
   e.preventDefault();
-  uploadInput.click();
+  HTMLControl.fileUpload.input.click();
 }, false);
 
-uploadInput.addEventListener('change', function (e) {
+HTMLControl.fileUpload.input.addEventListener('change', function (e) {
 
   e.preventDefault();
   var files = e.target.files;
@@ -64915,66 +64995,64 @@ var LoaderCanvas = function () {
     // fit camera to all loaded objects
     this.app.fitCameraToObject(this.loadedObjects);
 
-    // set grid to correct size
-    // const size = this.boundingBox.getSize();
-    // const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
-    // this.grid.setSize( maxEdge );
     this.grid.setMaxSize(Math.floor(this.app.camera.far * 0.75));
 
     this.app.play();
 
-    addModelInfo(this.app.renderer);
+    HTMLControl.addModelInfo(this.app.renderer);
   };
 
   LoaderCanvas.prototype.initReset = function initReset() {
     var _this = this;
 
-    document.querySelector('#reset').addEventListener('click', function () {
+    HTMLControl.reset.addEventListener('click', function () {
 
-      reset(_this.loadedObjects);
+      reset$1(_this.loadedObjects);
     });
   };
 
   return LoaderCanvas;
 }();
 
-var canvas = document.querySelector('#viewer-canvas');
-
-var loaderCanvas = new LoaderCanvas(canvas);
+var loaderCanvas = new LoaderCanvas(HTMLControl.canvas);
 
 var loaders$1 = new Loaders();
 var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
-var selectLoader = function (loader1Name, loader2Name, type, callback) {
+// const selectLoader = ( loader1Name, loader2Name, type, callback ) => {
 
-  document.querySelector('#loader-select-type').innerHTML = type;
+//   document.querySelector( '#loader-select-type' ).innerHTML = type;
 
-  var button1 = document.querySelector('#loader1');
-  var button2 = document.querySelector('#loader2');
+//   const button1 = document.querySelector( '#loader1' );
+//   const button2 = document.querySelector( '#loader2' );
 
-  button1.innerHTML = loader1Name;
-  button2.innerHTML = loader2Name;
+//   button1.innerHTML = loader1Name;
+//   button2.innerHTML = loader2Name;
 
-  document.querySelector('#loader-choice-form').classList.remove('hide');
+//   document.querySelector( '#loader-choice-form' ).classList.remove( 'hide' );
 
-  button1.addEventListener('click', function (e) {
+//   button1.addEventListener( 'click', ( e ) => {
 
-    e.preventDefault();
+//     e.preventDefault();
 
-    document.querySelector('#loader-choice-form').classList.add('hide');
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
 
-    callback(1);
-  }, false);
+//     callback( 1 );
 
-  button2.addEventListener('click', function (e) {
 
-    e.preventDefault();
+//   }, false );
 
-    document.querySelector('#loader-choice-form').classList.add('hide');
+//   button2.addEventListener( 'click', ( e ) => {
 
-    callback(2);
-  }, false);
-};
+//     e.preventDefault();
+
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
+
+//     callback( 2 );
+
+//   }, false );
+
+// };
 
 var OnLoadCallbacks = function () {
   function OnLoadCallbacks() {
@@ -65129,35 +65207,39 @@ var OnLoadCallbacks = function () {
 
   OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
 
-    var promise = new Promise(function (resolve, reject) {});
+    var promise = new Promise(function (resolve) {});
 
-    selectLoader('ColladaLoader', 'ColladaLoader2', 'collada', function (loader) {
+    // selectLoader( 'ColladaLoader', 'ColladaLoader2', 'collada', ( loader ) => {
 
-      if (loader === 1) {
 
-        console.log('Using THREE.ColladaLoader');
-        console.warn('THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.');
+    // if ( loader === 1 ) {
 
-        promise = loaders$1.colladaLoader(file);
-      } else {
+    //   console.log( 'Using THREE.ColladaLoader' );
+    //   console.warn( 'THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.' );
 
-        console.log('Using THREE.ColladaLoader2');
+    //   promise = loaders.colladaLoader( file );
 
-        promise = loaders$1.colladaLoader2(file);
-      }
+    // } else {
 
-      promise.then(function (result) {
+    console.log('Using THREE.ColladaLoader2');
 
-        var object = result.scene;
+    promise = loaders$1.colladaLoader2(file);
 
-        if (result.animations && result.animations.length > 0) object.animations = result.animations;
+    // }
 
-        loaderCanvas.addObjectToScene(object);
+    promise.then(function (result) {
 
-        // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        if (loader === 1) manager.onLoad();
-      });
+      var object = result.scene;
+
+      if (result.animations && result.animations.length > 0) object.animations = result.animations;
+
+      loaderCanvas.addObjectToScene(object);
+
+      // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
+      // if ( loader === 1 ) manager.onLoad();
     });
+
+    // } );
 
     return promise;
   };
@@ -65167,38 +65249,50 @@ var OnLoadCallbacks = function () {
 
 var loaders = new Loaders();
 
-document.querySelector('#demo1').addEventListener('click', throttle(function () {
+HTMLControl.demos.FBX.addEventListener('click', throttle(function () {
 
   OnLoadCallbacks.onFBXLoad('/assets/models/loader/xsi_man_skinning.fbx');
   OnLoadCallbacks.onFBXLoad('/assets/models/loader/nurbs.fbx');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo2').addEventListener('click', throttle(function () {
+HTMLControl.demos.GLTF.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onGLTFLoad('/assets/models/loader/CesiumMan.glb');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo3').addEventListener('click', throttle(function () {
+HTMLControl.demos.JSONGeo.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONGeometryLoad('/assets/models/loader/platform_geo.json');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo4').addEventListener('click', throttle(function () {
+HTMLControl.demos.JSONBuffer.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONBufferGeometryLoad('/assets/models/loader/suzanne.json');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo5').addEventListener('click', throttle(function () {
+HTMLControl.demos.JSONScene.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo6').addEventListener('click', throttle(function () {
+HTMLControl.demos.Collada.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
-}, 3000));
+}, 3000), false);
 
-document.querySelector('#demo7').addEventListener('click', throttle(function () {
+HTMLControl.demos.OBJ.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
 
   loaders.setMtlLoaderPath('/assets/models/loader/');
 
@@ -65211,7 +65305,7 @@ document.querySelector('#demo7').addEventListener('click', throttle(function () 
 
     OnLoadCallbacks.onOBJLoad('/assets/models/loader/male02_dds.obj');
   });
-}, 3000));
+}, 3000), false);
 
 var revElem = document.querySelector('.three-rev');
 
@@ -65240,14 +65334,10 @@ var goFullscreen = function (elem) {
   }
 };
 
-var viewer = document.querySelector('#viewer-canvas');
-
-var fullscreenButton = document.querySelector('#fullscreen-button');
-
-fullscreenButton.addEventListener('click', function (e) {
+HTMLControl.fullscreenButton.addEventListener('click', function (e) {
 
   e.preventDefault();
-  goFullscreen(viewer);
+  goFullscreen(HTMLControl);
 }, false);
 
 // override console functions to show errors and warnings on the page

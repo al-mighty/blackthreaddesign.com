@@ -14,7 +14,7 @@ vendor-js:
 ---
 
 <div id="view-container" class="control-panel">
-  <canvas id="viewer-canvas"></canvas>
+  <canvas id="viewer-canvas" class="fill"></canvas>
 
   <div id="controls">
 
@@ -59,11 +59,11 @@ vendor-js:
 
 
 
-  <div id="loading-overlay">
+  <div id="loading-overlay" class="fill">
 
     <div id="file-upload-form">
       Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.</br>
-      Max size for each file is 100MB.
+
       <input id="file-upload-input" type="file" name="files[]" multiple="" class="hide">
       <input type="submit" class="" value="Upload Files" id="file-upload-button"/>
     </div>
@@ -137,13 +137,13 @@ vendor-js:
   <div id="demos" class="hide-on-load">
     <h3>Demos</h3>
     <p>
-      <a href="#" id="demo1">Multiple FBX models (nurbs curves and skinned Xsi man)</a><br>
-      <a href="#" id="demo2">GLTF</a><br>
-      <a href="#" id="demo3">JSON - Geometry</a><br>
-      <a href="#" id="demo4">JSON - BufferGeometry</a><br>
-      <a href="#" id="demo5">JSON - Scene</a><br>
-      <a href="#" id="demo6">Collada (DAE)</a><br>
-      <a href="#" id="demo7">OBJ + MTL with DDS textures</a><br>
+      <a href="#" id="demo-fbx">Multiple FBX models (nurbs curves and skinned Xsi man)</a><br>
+      <a href="#" id="demo-gltf">GLTF</a><br>
+      <a href="#" id="demo-json-geo">JSON - Geometry</a><br>
+      <a href="#" id="demo-json-buffer">JSON - BufferGeometry</a><br>
+      <a href="#" id="demo-json-scene">JSON - Scene</a><br>
+      <a href="#" id="demo-collada">Collada (DAE)</a><br>
+      <a href="#" id="demo-obj">OBJ + MTL with DDS textures</a><br>
     </p>
   </div>
 

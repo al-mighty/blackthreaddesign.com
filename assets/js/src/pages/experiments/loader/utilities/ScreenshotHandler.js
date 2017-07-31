@@ -1,24 +1,22 @@
 import throttle from 'lodash.throttle';
 
+import HTMLControl from './HTMLControl.js';
+
 export default class ScreenshotHandler {
 
   constructor( app ) {
 
     this.app = app;
 
-    this.button = document.querySelector( '#screenshot-button' );
-    this.widthSelector = document.querySelector( '#screenshot-width' );
-    this.heightSelector = document.querySelector( '#screenshot-height' );
-
-    this.widthSelector.value = app.canvas.clientWidth;
-    this.heightSelector.value = app.canvas.clientHeight;
+    HTMLControl.screenshot.width.value = app.canvas.clientWidth;
+    HTMLControl.screenshot.height.value = app.canvas.clientHeight;
 
     this.initButton();
 
     window.addEventListener( 'resize', throttle( () => {
 
-      this.widthSelector.value = app.canvas.clientWidth;
-      this.heightSelector.value = app.canvas.clientHeight;
+      HTMLControl.screenshot.width.value = app.canvas.clientWidth;
+      HTMLControl.screenshot.height.value = app.canvas.clientHeight;
 
     }, 250 ), false );
 
@@ -26,11 +24,11 @@ export default class ScreenshotHandler {
 
   initButton() {
 
-    this.button.addEventListener( 'click', throttle( ( e ) => {
+    HTMLControl.screenshot.button.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
-      const width = this.widthSelector.value;
-      const height = this.heightSelector.value;
+      const width = HTMLControl.screenshot.width.value;
+      const height = HTMLControl.screenshot.height.value;
 
       const img = this.app.takeScreenshot( width, height );
 

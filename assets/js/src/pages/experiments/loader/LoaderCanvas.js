@@ -3,12 +3,13 @@ import * as THREE from 'three';
 import App from 'App/App.js';
 
 import AnimationControls from './utilities/AnimationControls.js';
-import addModelInfo from './utilities/addModelInfo.js';
+// import addModelInfo from './utilities/addModelInfo.js';
 import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 import LightingSetup from './utilities/LightingSetup.js';
 import ScreenshotHandler from './utilities/ScreenshotHandler.js';
 import reset from './utilities/reset.js';
 import Grid from './utilities/Grid.js';
+import HTMLControl from './utilities/HTMLControl.js';
 
 import './utilities/fileReader.js';
 
@@ -81,21 +82,17 @@ class LoaderCanvas {
     // fit camera to all loaded objects
     this.app.fitCameraToObject( this.loadedObjects );
 
-    // set grid to correct size
-    // const size = this.boundingBox.getSize();
-    // const maxEdge = Math.ceil( Math.max( size.x, size.y ) );
-    // this.grid.setSize( maxEdge );
     this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
 
     this.app.play();
 
-    addModelInfo( this.app.renderer );
+    HTMLControl.addModelInfo( this.app.renderer );
 
   }
 
   initReset() {
 
-    document.querySelector( '#reset' ).addEventListener( 'click', () => {
+    HTMLControl.reset.addEventListener( 'click', () => {
 
       reset( this.loadedObjects );
 
@@ -105,8 +102,6 @@ class LoaderCanvas {
 
 }
 
-const canvas = document.querySelector( '#viewer-canvas' );
-
-const loaderCanvas = new LoaderCanvas( canvas );
+const loaderCanvas = new LoaderCanvas( HTMLControl.canvas );
 
 export default loaderCanvas;

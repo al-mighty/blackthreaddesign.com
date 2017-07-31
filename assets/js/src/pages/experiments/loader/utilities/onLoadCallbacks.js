@@ -1,48 +1,46 @@
 import * as THREE from 'three';
 
 import loaderCanvas from 'pages/experiments/loader/LoaderCanvas.js';
-
 import Loaders from './Loaders.js';
-
-import manager from './loadingManager.js';
+import HTMLControl from './HTMLControl.js';
 
 const loaders = new Loaders();
 const defaultMat = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x000000 } );
 
-const selectLoader = ( loader1Name, loader2Name, type, callback ) => {
+// const selectLoader = ( loader1Name, loader2Name, type, callback ) => {
 
-  document.querySelector( '#loader-select-type' ).innerHTML = type;
+//   document.querySelector( '#loader-select-type' ).innerHTML = type;
 
-  const button1 = document.querySelector( '#loader1' );
-  const button2 = document.querySelector( '#loader2' );
+//   const button1 = document.querySelector( '#loader1' );
+//   const button2 = document.querySelector( '#loader2' );
 
-  button1.innerHTML = loader1Name;
-  button2.innerHTML = loader2Name;
+//   button1.innerHTML = loader1Name;
+//   button2.innerHTML = loader2Name;
 
-  document.querySelector( '#loader-choice-form' ).classList.remove( 'hide' );
+//   document.querySelector( '#loader-choice-form' ).classList.remove( 'hide' );
 
-  button1.addEventListener( 'click', ( e ) => {
+//   button1.addEventListener( 'click', ( e ) => {
 
-    e.preventDefault();
+//     e.preventDefault();
 
-    document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
 
-    callback( 1 );
+//     callback( 1 );
 
 
-  }, false );
+//   }, false );
 
-  button2.addEventListener( 'click', ( e ) => {
+//   button2.addEventListener( 'click', ( e ) => {
 
-    e.preventDefault();
+//     e.preventDefault();
 
-    document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
+//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
 
-    callback( 2 );
+//     callback( 2 );
 
-  }, false );
+//   }, false );
 
-};
+// };
 
 export default class OnLoadCallbacks {
 
@@ -209,25 +207,25 @@ export default class OnLoadCallbacks {
 
   static onDAELoad( file ) {
 
-    let promise = new Promise( ( resolve, reject ) => {} );
+    let promise = new Promise( ( resolve ) => {} );
 
-    selectLoader( 'ColladaLoader', 'ColladaLoader2', 'collada', ( loader ) => {
+    // selectLoader( 'ColladaLoader', 'ColladaLoader2', 'collada', ( loader ) => {
 
 
-      if ( loader === 1 ) {
+      // if ( loader === 1 ) {
 
-        console.log( 'Using THREE.ColladaLoader' );
-        console.warn( 'THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.' );
+      //   console.log( 'Using THREE.ColladaLoader' );
+      //   console.warn( 'THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.' );
 
-        promise = loaders.colladaLoader( file );
+      //   promise = loaders.colladaLoader( file );
 
-      } else {
+      // } else {
 
         console.log( 'Using THREE.ColladaLoader2' );
 
         promise = loaders.colladaLoader2( file );
 
-      }
+      // }
 
       promise.then( ( result ) => {
 
@@ -238,11 +236,11 @@ export default class OnLoadCallbacks {
         loaderCanvas.addObjectToScene( object );
 
         // THREE.ColladaLoader doesn't support loading manager so call onLoad() manually
-        if ( loader === 1 ) manager.onLoad();
+        // if ( loader === 1 ) manager.onLoad();
 
       } );
 
-    } );
+    // } );
 
     return promise;
 

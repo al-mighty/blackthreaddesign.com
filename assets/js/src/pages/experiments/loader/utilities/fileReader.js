@@ -1,8 +1,7 @@
 import manager from './loadingManager.js';
-
 import OnLoadCallbacks from './OnLoadCallbacks.js';
-
 import Loaders from './Loaders.js';
+import HTMLControl from './HTMLControl.js';
 
 const loaders = new Loaders();
 
@@ -262,18 +261,15 @@ const processMultipleFiles = ( files ) => {
 
 };
 
-
-const uploadInput = document.querySelector( '#file-upload-input' );
-
-document.querySelector( '#file-upload-button' ).addEventListener( 'click',
+HTMLControl.fileUpload.button.addEventListener( 'click',
   ( e ) => {
 
     e.preventDefault();
-    uploadInput.click();
+    HTMLControl.fileUpload.input.click();
 
   }, false );
 
-uploadInput.addEventListener( 'change', ( e ) => {
+HTMLControl.fileUpload.input.addEventListener( 'change', ( e ) => {
 
   e.preventDefault();
   const files = e.target.files;

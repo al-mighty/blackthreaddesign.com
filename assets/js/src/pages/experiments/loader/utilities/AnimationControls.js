@@ -1,22 +1,23 @@
 import throttle from 'lodash.throttle';
-
 import * as THREE from 'three';
+
+import HTMLControl from './HTMLControl.js';
 
 export default class AnimationControls {
 
   constructor( ) {
 
-    this.slider = document.querySelector( '#animation-slider' );
-    this.playButton = document.querySelector( '#play-button' );
-    this.pauseButton = document.querySelector( '#pause-button' );
-    this.playbackControl = document.querySelector( '#playback-control' );
-
-    this.clipsSelection = document.querySelector( '#animation-clips' );
-
-    this.controls = document.querySelector( '#animation-controls' );
-
     this.isPaused = false;
     this.pauseButtonActive = false;
+
+    this.clips = [];
+    this.mixers = [];
+    this.actions = [];
+    this.animationNames = [];
+
+  }
+
+  reset() {
 
     this.clips = [];
     this.mixers = [];
@@ -64,7 +65,7 @@ export default class AnimationControls {
       this.actions.push( action );
       this.animationNames.push( animation.name );
 
-      this.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
+      HTMLControl.animation.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
 
     } );
 
@@ -73,7 +74,7 @@ export default class AnimationControls {
 
     this.selectCurrentAnimation( this.animationNames[ 0 ] );
 
-    document.querySelector( '#animation-controls' ).classList.remove( 'hide' );
+    HTMLControl.animation.controls.classList.remove( 'hide' );
 
     this.initPlaybackControls();
 
@@ -100,9 +101,9 @@ export default class AnimationControls {
       this.currentClip = this.clips[ index ];
 
       // set animation slider max to length of animation
-      this.slider.max = String( this.currentClip.duration );
+      HTMLControl.animation.slider.max = String( this.currentClip.duration );
 
-      this.slider.step = String( this.currentClip.duration / 150 );
+      HTMLControl.animation.slider.step = String( this.currentClip.duration / 150 );
 
       this.currentAction.play();
 
@@ -112,13 +113,13 @@ export default class AnimationControls {
 
   setSliderValue( val ) {
 
-    this.slider.value = String( val );
+    HTMLControl.animation.slider.value = String( val );
 
   }
 
   initPlaybackControls() {
 
-    this.playbackControl.addEventListener( 'click', ( e ) => {
+    HTMLControl.animation.playbackControl.addEventListener( 'click', ( e ) => {
 
       e.preventDefault();
 
@@ -155,39 +156,39 @@ export default class AnimationControls {
   pause() {
 
     this.isPaused = true;
-    this.playButton.classList.remove( 'hide' );
-    this.pauseButton.classList.add( 'hide' );
+    HTMLControl.animation.playButton.classList.remove( 'hide' );
+    HTMLControl.animation.pauseButton.classList.add( 'hide' );
 
   }
 
   play() {
 
     this.isPaused = false;
-    this.playButton.classList.add( 'hide' );
-    this.pauseButton.classList.remove( 'hide' );
+    HTMLControl.animation.playButton.classList.add( 'hide' );
+    HTMLControl.animation.pauseButton.classList.remove( 'hide' );
 
   }
 
   initSlider() {
 
-    this.slider.addEventListener( 'mousedown', ( e ) => {
+    HTMLControl.animation.slider.addEventListener( 'mousedown', ( e ) => {
 
       // e.preventDefault();
       if ( !this.pauseButtonActive ) this.pause();
 
     } );
 
-    this.slider.addEventListener( 'input', throttle( ( e ) => {
+    HTMLControl.animation.slider.addEventListener( 'input', throttle( ( e ) => {
 
       // e.preventDefault();
       const oldTime = this.currentMixer.time;
-      const newTime = this.slider.value;
+      const newTime = HTMLControl.animation.slider.value;
 
       this.currentMixer.update( newTime - oldTime );
 
     }, 17 ), false ); // throttling at ~17 ms will give approx 60fps while sliding the controls
 
-    this.slider.addEventListener( 'mouseup', ( e ) => {
+    HTMLControl.animation.slider.addEventListener( 'mouseup', ( e ) => {
 
       // e.preventDefault();
       if ( !this.pauseButtonActive ) this.play();
@@ -198,9 +199,9 @@ export default class AnimationControls {
 
   initSelectionMenu() {
 
-    this.clipsSelection.selectedIndex = 1;
+    HTMLControl.animation.clipsSelection.selectedIndex = 1;
 
-    this.clipsSelection.addEventListener( 'change', ( e ) => {
+    HTMLControl.animation.clipsSelection.addEventListener( 'change', ( e ) => {
 
       e.preventDefault();
       if ( e.target.value === 'static' ) {

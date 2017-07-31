@@ -1,30 +1,29 @@
 import * as THREE from 'three';
 
+import HTMLControl from './HTMLControl.js';
+
 const manager = new THREE.LoadingManager();
 
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = () => {
 
-  // console.log( 'manager.onstart' )
-  document.querySelector( '#file-upload-form' ).classList.add( 'hide' );
-  document.querySelector( '#loading-bar' ).classList.remove( 'hide' );
+  HTMLControl.fileUpload.form.classList.add( 'hide' );
+  HTMLControl.loading.bar.classList.remove( 'hide' );
 
 };
 
 manager.onLoad = function ( ) {
 
-  // console.log( 'manager.onload' );
-  document.querySelector( '#loading-overlay' ).classList.add( 'hide' );
-  document.querySelector( '#reveal-on-load' ).classList.remove( 'hide' );
-  document.querySelector( '.hide-on-load' ).classList.add( 'hide' );
+  HTMLControl.loading.overlay.classList.add( 'hide' );
+  HTMLControl.loading.revealOnLoad.classList.remove( 'hide' );
+  HTMLControl.loading.hideOnLoad.classList.add( 'hide' );
 
 };
 
-const progress = document.querySelector( '#progress' );
 manager.onProgress = ( url, currentFile, totalFiles ) => {
 
   const percentComplete = currentFile / totalFiles * 100;
-  progress.style.width = percentComplete + '%';
+  HTMLControl.loading.progress.style.width = percentComplete + '%';
 
 };
 

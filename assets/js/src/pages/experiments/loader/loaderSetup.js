@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import errorHandler from './utilities/errorHandler.js';
 import './utilities/initDemos.js';
+import HTMLControl from './utilities/HTMLControl.js';
 
 const revElem = document.querySelector( '.three-rev' );
 
@@ -30,14 +31,10 @@ const goFullscreen = ( elem ) => {
 
 };
 
-const viewer = document.querySelector( '#viewer-canvas' );
-
-const fullscreenButton = document.querySelector( '#fullscreen-button' );
-
-fullscreenButton.addEventListener( 'click', ( e ) => {
+HTMLControl.fullscreenButton.addEventListener( 'click', ( e ) => {
 
   e.preventDefault();
-  goFullscreen( viewer );
+  goFullscreen( HTMLControl );
 
 }, false );
 
