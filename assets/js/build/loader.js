@@ -42664,7 +42664,7 @@ var vertices = document.querySelector('#vertices');
 
 var error = {
   overlay: document.querySelector('#error-overlay'),
-  messages: document.querySelector('#error-message')
+  messages: document.querySelector('#error-messages')
 };
 
 var animation = {
@@ -42704,8 +42704,8 @@ var lighting = {
 var loading = {
   bar: document.querySelector('#loading-bar'),
   overlay: document.querySelector('#loading-overlay'),
-  revealOnLoad: document.querySelector('#reveal-on-load'),
-  hideOnLoad: document.querySelector('.hide-on-load'),
+  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
+  hideOnLoad: document.querySelectorAll('.hide-on-load'),
   progress: document.querySelector('#progress')
 };
 
@@ -42715,8 +42715,8 @@ var screenshot = {
   height: document.querySelector('#screenshot-height')
 };
 
-var background = {
-  links: document.querySelectorAll('.fa'),
+var controls = {
+  links: document.querySelector('#controls').querySelectorAll('span'),
   button: document.querySelector('#toggle-background'),
   sliders: document.querySelectorAll('.loader-slider')
 };
@@ -42726,15 +42726,73 @@ var HTMLControl = function () {
     classCallCheck(this, HTMLControl);
   }
 
-  HTMLControl.setInitialState = function setInitialState() {};
+  HTMLControl.setInitialState = function setInitialState() {
+    loading.overlay.classList.remove('hide');
+    fileUpload.form.classList.remove('hide');
+    loading.bar.classList.add('hide');
+    loading.progress.style.width = 0;
 
-  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {};
+    error.overlay.classList.add('hide');
+    error.messages.innerHTML = '';
 
-  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {};
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
 
-  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {};
+      loading.hideOnLoad[i].classList.remove('hide');
+    }
 
-  HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {};
+    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
+
+      loading.revealOnLoad[_i].classList.add('hide');
+    }
+
+    // reset animations options
+    var base = animation.clipsSelection.children[0];
+    animation.clipsSelection.innerHTML = '';
+    animation.clipsSelection.appendChild(base);
+  };
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+    fileUpload.form.classList.add('hide');
+    loading.bar.classList.remove('hide');
+  };
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+    loading.overlay.classList.add('hide');
+
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+
+      loading.hideOnLoad[i].classList.add('hide');
+    }
+
+    for (var _i2 = 0; _i2 < loading.revealOnLoad.length; _i2++) {
+
+      loading.revealOnLoad[_i2].classList.remove('hide');
+    }
+  };
+
+  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
+    for (var i = 0; i < controls.links.length; i++) {
+
+      controls.links[i].style.color = 'white';
+    }
+
+    for (var _i3 = 0; _i3 < controls.sliders.length; _i3++) {
+
+      controls.sliders[_i3].style.backgroundColor = 'white';
+    }
+  };
+
+  HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {
+    for (var i = 0; i < HTMLControl.controls.links.length; i++) {
+
+      controls.links[i].style.color = 'black';
+    }
+
+    for (var _i4 = 0; _i4 < HTMLControl.controls.sliders.length; _i4++) {
+
+      controls.sliders[_i4].style.backgroundColor = '#424242';
+    }
+  };
 
   HTMLControl.addModelInfo = function addModelInfo(renderer) {
 
@@ -42756,7 +42814,7 @@ HTMLControl.demos = demos;
 HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
 HTMLControl.screenshot = screenshot;
-HTMLControl.background = background;
+HTMLControl.controls = controls;
 // HTMLControl.
 // HTMLControl.
 // HTMLControl.
@@ -44587,6 +44645,10 @@ var AnimationControls = function () {
     this.mixers = [];
     this.actions = [];
     this.animationNames = [];
+
+    this.currentMixer = null;
+    this.currentAction = null;
+    this.isPaused = false;
   };
 
   AnimationControls.prototype.update = function update(delta) {
@@ -44764,37 +44826,19 @@ var AnimationControls = function () {
 
 var backgroundColorChanger = function (app) {
 
-  var toggled = false;
+  var toggled = true;
 
-  HTMLControl.background.button.addEventListener('click', function (e) {
+  HTMLControl.controls.button.addEventListener('click', function (e) {
 
     e.preventDefault();
     if (toggled) {
 
       app.renderer.setClearColor(0x000000, 1.0);
-      for (var i = 0; i < HTMLControl.background.links.length; i++) {
-
-        HTMLControl.background.links[i].style.color = 'white';
-      }
-
-      for (var _i = 0; _i < HTMLControl.background.sliders.length; _i++) {
-
-        HTMLControl.background.sliders[_i].style.backgroundColor = 'white';
-        HTMLControl.background.sliders[_i].classList.remove('white-slider');
-      }
+      HTMLControl.setBlackBackgroundState();
     } else {
 
       app.renderer.setClearColor(0xf7f7f7, 1.0);
-      for (var _i2 = 0; _i2 < HTMLControl.background.links.length; _i2++) {
-
-        HTMLControl.background.links[_i2].style.color = 'black';
-      }
-
-      for (var _i3 = 0; _i3 < HTMLControl.background.sliders.length; _i3++) {
-
-        HTMLControl.background.sliders[_i3].style.backgroundColor = '#424242';
-        HTMLControl.background.sliders[_i3].classList.add('white-slider');
-      }
+      HTMLControl.setWhiteBackgroundState();
     }
 
     toggled = !toggled;
@@ -44910,64 +44954,6 @@ var ScreenshotHandler = function () {
     return ScreenshotHandler;
 }();
 
-var clearChildren = function (object) {
-
-    for (var i = 0; i < object.children.length; i++) {
-
-        var child = object.children[i];
-
-        object.remove(child);
-        child = null;
-
-        // console.log( child );
-
-        // if ( child.userData.keepOnReset !== true ) {
-
-        //   if ( child.children.length > 0 ) {
-
-        //     clearChildren( child );
-
-        //   }
-
-        //   if ( child.geometry !== undefined ) {
-
-        //     child.geometry.dispose();
-
-        //   }
-        //   if ( child.material !== undefined ) {
-
-        //     // add check for multimaterials array here
-
-        //     // textureDispose( node.material );
-        //     // node.material.dispose();
-
-        //   }
-
-
-        //   object.remove( node );
-
-        // }
-    }
-};
-
-var reset$1 = (function (loadedModels) {
-
-    // console.log( 'WebGLRenderer.info before calling reset' );
-    // console.log( app.renderer.info );
-
-    document.querySelector('#loading-overlay').classList.remove('hide');
-    document.querySelector('#reveal-on-load').classList.add('hide');
-
-    document.querySelector('#file-upload-form').classList.remove('hide');
-    document.querySelector('#loading-bar').classList.add('hide');
-    document.querySelector('.hide-on-load').classList.remove('hide');
-
-    clearChildren(loadedModels);
-
-    // console.log( 'WebGLRenderer.info after calling reset' );
-    // console.log( app.renderer.info );
-});
-
 var Grid = function () {
     function Grid(size) {
         classCallCheck(this, Grid);
@@ -45052,15 +45038,12 @@ var manager = new LoadingManager();
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = function () {
 
-  HTMLControl.fileUpload.form.classList.add('hide');
-  HTMLControl.loading.bar.classList.remove('hide');
+  HTMLControl.setOnLoadStartState();
 };
 
 manager.onLoad = function () {
 
-  HTMLControl.loading.overlay.classList.add('hide');
-  HTMLControl.loading.revealOnLoad.classList.remove('hide');
-  HTMLControl.loading.hideOnLoad.classList.add('hide');
+  HTMLControl.setOnLoadEndState();
 };
 
 manager.onProgress = function (url, currentFile, totalFiles) {
@@ -45070,7 +45053,8 @@ manager.onProgress = function (url, currentFile, totalFiles) {
 };
 
 manager.onError = function (msg) {
-  if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);
+
+  if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
 };
 
 function DDSLoader() {
@@ -64535,8 +64519,6 @@ var OnLoadCallbacks$1 = function () {
 
     console.log('Using THREE.ObjectLoader');
 
-    console.log(file);
-
     var promise = loaders$3.objectLoader(file);
     promise.then(function (object) {
 
@@ -64588,8 +64570,6 @@ var OnLoadCallbacks$1 = function () {
     promise = loaders$3.gltf2Loader(file);
 
     promise.then(function (gltf) {
-
-      console.log(gltf);
 
       if (gltf.scenes.length > 1) {
 
@@ -65006,8 +64986,19 @@ var LoaderCanvas = function () {
     var _this = this;
 
     HTMLControl.reset.addEventListener('click', function () {
+      console.log('before reset ', _this.loadedObjects.children.length);
+      while (_this.loadedObjects.children.length > 0) {
 
-      reset$1(_this.loadedObjects);
+        var child = _this.loadedObjects.children[0];
+
+        _this.loadedObjects.remove(child);
+        child = null;
+      }
+
+      _this.animationControls.reset();
+      HTMLControl.setInitialState();
+
+      console.log('after reset ', _this.loadedObjects.children.length);
     });
   };
 
@@ -65091,8 +65082,6 @@ var OnLoadCallbacks = function () {
 
     console.log('Using THREE.ObjectLoader');
 
-    console.log(file);
-
     var promise = loaders$1.objectLoader(file);
     promise.then(function (object) {
 
@@ -65144,8 +65133,6 @@ var OnLoadCallbacks = function () {
     promise = loaders$1.gltf2Loader(file);
 
     promise.then(function (gltf) {
-
-      console.log(gltf);
 
       if (gltf.scenes.length > 1) {
 

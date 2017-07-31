@@ -79,15 +79,16 @@
   }
 
   a {
-		color: black;
+    text-decoration: none;
     transform: translate( -50%, 50% );
   }
 
   // disable pointer events for controls overlay
   pointer-events: none;
 
-  // renable for sub elements as needed
   a, span, input, select {
+    transition: all 2s ease-in-out;
+    // renable for sub elements
     pointer-events: all;
   }
 }
@@ -148,14 +149,14 @@
 #animation-controls {
   position: absolute;
   width: 90%;
-  bottom: 2em;
+  bottom: 1.5em;
 }
 
 #right-buttons{
   position: absolute;
   width: 3em;
-  right: 0em;
-  bottom: 1em;
+  right: 0;
+  bottom: 0.5em;
 }
 
 #toggle-background {

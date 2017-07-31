@@ -7,7 +7,7 @@ const vertices = document.querySelector( '#vertices' );
 
 const error = {
   overlay: document.querySelector( '#error-overlay' ),
-  messages: document.querySelector( '#error-message' ),
+  messages: document.querySelector( '#error-messages' ),
 };
 
 const animation = {
@@ -47,8 +47,8 @@ const lighting = {
 const loading = {
   bar: document.querySelector( '#loading-bar' ),
   overlay: document.querySelector( '#loading-overlay' ),
-  revealOnLoad: document.querySelector( '#reveal-on-load' ),
-  hideOnLoad: document.querySelector( '.hide-on-load' ),
+  revealOnLoad: document.querySelectorAll( '.reveal-on-load' ),
+  hideOnLoad: document.querySelectorAll( '.hide-on-load' ),
   progress: document.querySelector( '#progress' ),
 };
 
@@ -58,8 +58,8 @@ const screenshot = {
   height: document.querySelector( '#screenshot-height' ),
 };
 
-const background = {
-  links: document.querySelectorAll( '.fa' ),
+const controls = {
+  links: document.querySelector( '#controls' ).querySelectorAll( 'span' ),
   button: document.querySelector( '#toggle-background' ),
   sliders: document.querySelectorAll( '.loader-slider' ),
 };
@@ -68,23 +68,79 @@ const background = {
 export default class HTMLControl {
 
   static setInitialState() {
+    loading.overlay.classList.remove( 'hide' );
+    fileUpload.form.classList.remove( 'hide' );
+    loading.bar.classList.add( 'hide' );
+    loading.progress.style.width = 0;
 
+    error.overlay.classList.add( 'hide' );
+    error.messages.innerHTML = '';
+
+    for ( let i = 0; i < loading.hideOnLoad.length; i++ ) {
+
+      loading.hideOnLoad[ i ].classList.remove( 'hide' );
+
+    }
+
+    for ( let i = 0; i < loading.revealOnLoad.length; i++ ) {
+
+      loading.revealOnLoad[ i ].classList.add( 'hide' );
+
+    }
+
+    // reset animations options
+    const base = animation.clipsSelection.children[ 0 ];
+    animation.clipsSelection.innerHTML = '';
+    animation.clipsSelection.appendChild( base );
   }
 
   static setOnLoadStartState() {
-
+    fileUpload.form.classList.add( 'hide' );
+    loading.bar.classList.remove( 'hide' );
   }
 
   static setOnLoadEndState() {
+    loading.overlay.classList.add( 'hide' );
 
+    for ( let i = 0; i < loading.hideOnLoad.length; i++ ) {
+
+      loading.hideOnLoad[ i ].classList.add( 'hide' );
+
+    }
+
+    for ( let i = 0; i < loading.revealOnLoad.length; i++ ) {
+
+      loading.revealOnLoad[ i ].classList.remove( 'hide' );
+
+    }
   }
 
   static setBlackBackgroundState() {
+    for ( let i = 0; i < controls.links.length; i++ ) {
 
+      controls.links[ i ].style.color = 'white';
+
+    }
+
+    for ( let i = 0; i < controls.sliders.length; i++ ) {
+
+      controls.sliders[ i ].style.backgroundColor = 'white';
+
+    }
   }
 
   static setWhiteBackgroundState() {
+    for ( let i = 0; i < HTMLControl.controls.links.length; i++ ) {
 
+      controls.links[ i ].style.color = 'black';
+
+    }
+
+    for ( let i = 0; i < HTMLControl.controls.sliders.length; i++ ) {
+
+      controls.sliders[ i ].style.backgroundColor = '#424242';
+
+    }
   }
 
   static addModelInfo( renderer ) {
@@ -107,7 +163,7 @@ HTMLControl.demos = demos;
 HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
 HTMLControl.screenshot = screenshot;
-HTMLControl.background = background;
+HTMLControl.controls = controls;
 // HTMLControl.
 // HTMLControl.
 // HTMLControl.

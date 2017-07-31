@@ -3,11 +3,9 @@ import * as THREE from 'three';
 import App from 'App/App.js';
 
 import AnimationControls from './utilities/AnimationControls.js';
-// import addModelInfo from './utilities/addModelInfo.js';
 import backgroundColorChanger from './utilities/backgroundColorChanger.js';
 import LightingSetup from './utilities/LightingSetup.js';
 import ScreenshotHandler from './utilities/ScreenshotHandler.js';
-import reset from './utilities/reset.js';
 import Grid from './utilities/Grid.js';
 import HTMLControl from './utilities/HTMLControl.js';
 
@@ -93,8 +91,20 @@ class LoaderCanvas {
   initReset() {
 
     HTMLControl.reset.addEventListener( 'click', () => {
+      console.log( 'before reset ', this.loadedObjects.children.length)
+      while ( this.loadedObjects.children.length > 0 ) {
 
-      reset( this.loadedObjects );
+        let child = this.loadedObjects.children[ 0 ];
+
+        this.loadedObjects.remove( child );
+        child = null;
+
+      }
+
+      this.animationControls.reset();
+      HTMLControl.setInitialState();
+
+      console.log( 'after reset ', this.loadedObjects.children.length)
 
     } );
 

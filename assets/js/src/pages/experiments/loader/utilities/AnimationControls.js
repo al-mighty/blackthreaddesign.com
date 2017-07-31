@@ -24,6 +24,10 @@ export default class AnimationControls {
     this.actions = [];
     this.animationNames = [];
 
+    this.currentMixer = null;
+    this.currentAction = null;
+    this.isPaused = false;
+
   }
 
   update( delta ) {

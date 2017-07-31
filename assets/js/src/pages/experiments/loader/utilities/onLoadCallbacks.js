@@ -80,8 +80,6 @@ export default class OnLoadCallbacks {
 
     console.log( 'Using THREE.ObjectLoader' );
 
-    console.log( file );
-
     const promise = loaders.objectLoader( file );
     promise.then( ( object ) => {
 
@@ -137,8 +135,6 @@ export default class OnLoadCallbacks {
     promise = loaders.gltf2Loader( file );
 
     promise.then( ( gltf ) => {
-
-      console.log( gltf )
 
       if ( gltf.scenes.length > 1 ) {
 

@@ -7,16 +7,13 @@ const manager = new THREE.LoadingManager();
 // hide the upload form when loading starts so that the progress bar can be shown
 manager.onStart = () => {
 
-  HTMLControl.fileUpload.form.classList.add( 'hide' );
-  HTMLControl.loading.bar.classList.remove( 'hide' );
+  HTMLControl.setOnLoadStartState();
 
 };
 
 manager.onLoad = function ( ) {
 
-  HTMLControl.loading.overlay.classList.add( 'hide' );
-  HTMLControl.loading.revealOnLoad.classList.remove( 'hide' );
-  HTMLControl.loading.hideOnLoad.classList.add( 'hide' );
+  HTMLControl.setOnLoadEndState();
 
 };
 
@@ -28,7 +25,10 @@ manager.onProgress = ( url, currentFile, totalFiles ) => {
 };
 
 manager.onError = ( msg ) => {
+
   if ( msg instanceof String && msg !== '' ) console.error( 'THREE.LoadingManager error: ' + msg );
+  else console.log( msg );
+
 };
 
 export default manager;

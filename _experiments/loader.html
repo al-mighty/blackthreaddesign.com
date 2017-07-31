@@ -62,8 +62,9 @@ vendor-js:
   <div id="loading-overlay" class="fill">
 
     <div id="file-upload-form">
-      Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.</br>
-
+      Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.
+      </br>
+      </br>
       <input id="file-upload-input" type="file" name="files[]" multiple="" class="hide">
       <input type="submit" class="" value="Upload Files" id="file-upload-button"/>
     </div>
@@ -86,8 +87,8 @@ vendor-js:
 
 <div id="info">
 
-  <div id="reveal-on-load" class="hide">
-    <br><button id="reset">Reset (Buggy!)</button>
+  <div class="hide reveal-on-load">
+    <br><button id="reset">Reset</button>
     <div id="screenshot-controls">
       <h3>Take a screenshot</h3>
       <span>Width: </span><input id="screenshot-width" type="number" value="800">
@@ -111,7 +112,7 @@ vendor-js:
 
   <div id="error-overlay" class="hide notice--info">
     <h2>The following error(s) and warning(s) occurred:</h2>
-    <div id="error-message"></div>
+    <div id="error-messages"></div>
   </div>
 
   <h3>About</h3>
@@ -155,6 +156,9 @@ vendor-js:
   <h3>Grid</h3>
   <p>Each grid line is one unit - use this to get check the scale of your models.</p>
 
+  <h3>Cameras / lights</h3>
+  <p>Any lights / cameras that are loaded are ignored (for now).</p>
+
   <h3>Currently supported formats</h3>
 
   <p>
@@ -164,7 +168,10 @@ vendor-js:
 
   <p>FBX: Binary higher than version 6.1 and ASCII higher than version 7.0</p>
 
-  <p>GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files. </p>
+  <p>
+    GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files. These are loaded with THREE.GLTF2Loader, which
+    supports GLTF v2 files. GLTF v1 is not supported.
+  </p>
 
   <p>OBJ: Using THREE.OBJLoader2. Load either a single .obj file, or any number of .obj and .mtl files and their associated textures.</p>
 

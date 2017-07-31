@@ -9,4 +9,4 @@ Do later:
 - work on progress bar
 - make JSON format work for blender exporter
 - Add info re loading time
-- remove colladaLoader1
+- deal with imported cameras / lights

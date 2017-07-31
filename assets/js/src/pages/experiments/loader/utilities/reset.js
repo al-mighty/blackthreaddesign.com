@@ -58,19 +58,8 @@ const clearChildren = ( object ) => {
 
 export default ( loadedModels ) => {
 
-  // console.log( 'WebGLRenderer.info before calling reset' );
-  // console.log( app.renderer.info );
-
-  document.querySelector( '#loading-overlay' ).classList.remove( 'hide' );
-  document.querySelector( '#reveal-on-load' ).classList.add( 'hide' );
-
-  document.querySelector( '#file-upload-form' ).classList.remove( 'hide' );
-  document.querySelector( '#loading-bar' ).classList.add( 'hide' );
-  document.querySelector( '.hide-on-load' ).classList.remove( 'hide' );
+  HTMLControl.setInitialState();
 
   clearChildren( loadedModels );
-
-  // console.log( 'WebGLRenderer.info after calling reset' );
-  // console.log( app.renderer.info );
 
 };
