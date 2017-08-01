@@ -8,7 +8,6 @@ let percentComplete = 0;
 
 // hide the upload form when loading starts so that the progress bar can be shown
 loadingManager.onStart = ( url, itemsLoaded, itemsTotal ) => {
-
   percentComplete = 0;
   HTMLControl.setOnLoadStartState();
 
@@ -25,7 +24,7 @@ loadingManager.onProgress = ( url, currentFile, totalFiles ) => {
   // console.log( 'on progress ', percentComplete)
   if ( percentComplete < 100 ) {
 
-    percentComplete += 10;
+    percentComplete += ( 10 / totalFiles );
     HTMLControl.loading.progress.style.width = percentComplete + '%';
 
   }

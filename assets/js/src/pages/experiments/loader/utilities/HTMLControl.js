@@ -77,6 +77,7 @@ export default class HTMLControl {
     error.overlay.classList.add( 'hide' );
     error.messages.innerHTML = '';
 
+    animation.controls.classList.add( 'hide' );
     animation.playButton.classList.add( 'hide' );
     animation.pauseButton.classList.remove( 'hide' );
 

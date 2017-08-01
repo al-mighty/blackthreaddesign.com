@@ -234,12 +234,12 @@ function App( canvas ) {
   };
 
   this.initControls = function () {
-    const controls = new OrbitControls( this.camera, this.canvas );
 
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.2;
+    this.controls = new OrbitControls( this.camera, this.canvas );
 
-    this.controls = controls;
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.2;
+
   };
 
   this.fitCameraToObject = function ( object ) {

@@ -91,8 +91,8 @@ vendor-js:
     <br><button id="reset">Reset</button><button id="export">Export as JSON</button>
     <div id="screenshot-controls">
       <h3>Take a screenshot</h3>
-      <span>Width: </span><input id="screenshot-width" type="number" value="800">
-      <span>Height: </span><input id="screenshot-height" type="number" value="600">
+      <span>Width: </span><input id="screenshot-width" type="number" min="2" value="800" max="8192">
+      <span>Height: </span><input id="screenshot-height" type="number" min="2" value="600" max="8192">
       <button id="screenshot-button" alt="Opens screenshot in new window"> <span class="fa fa-lg fa-camera" aria-hidden="true"></span></button>
     </div>
 
@@ -101,7 +101,7 @@ vendor-js:
       <p>Faces: <span id="faces"></span> Vertices: <span id="vertices"></span></p>
       <p>Note that this is the number of faces / vertices as rendered by three.js, which may
         be different from the numbers reported in modelling programs. This is especially true if the model
-        has quads (4-sided polygons) or higher, as these are automatically subdivied into triangles on load.
+        has quads (4-sided polygons) or higher, as these are automatically subdivided into triangles on load.
       </p>
       <div id="load-info">
 
@@ -122,14 +122,7 @@ vendor-js:
     the native three.js JSON format.
   </p>
   <p>
-    Any errors encountered during the loading process will be displayed above this section.
-  </p>
-  <p>
-    You can load either single files with embedded textures, or multiple files with associated textures.
-    You can even load multiple model files of different formats at once and they will display together
-    (although they must be set up with correct transforms / scales so that they don't just get placed on top of each other)
-    Note that loading multiple files can be slow as texture files must be uploaded to the server due to the way
-    loaders expect to be passed textures. Single files are processed locally so will load faster.
+    You can load either single files with embedded textures, or multiple files of any supported format with associated textures.
   </p>
 
   <div id="demos" class="hide-on-load">
@@ -161,7 +154,10 @@ vendor-js:
   <p>Each grid line is one unit - use this to get check the scale of your models.</p>
 
   <h3>Cameras / lights</h3>
-  <p>Any lights / cameras that are loaded are ignored (for now).</p>
+  <p>
+    Any lights / cameras that are loaded are ignored (for now), although they should be
+    included in the exported JSON file.
+  </p>
 
   <h3>Currently supported formats</h3>
 
