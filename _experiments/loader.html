@@ -122,10 +122,6 @@ vendor-js:
     the native three.js JSON format.
   </p>
   <p>
-    Loaders from the examples directory (FBX, GLTF, OBJ, MTL, Collada, DDS) have been minimally adapted for use as ES6 modules, but are otherwise unchanged, while
-    loaders from the three.js core (JSON, Object, BufferGeometry, Texture) are used directly.
-  </p>
-  <p>
     Any errors encountered during the loading process will be displayed above this section.
   </p>
   <p>
@@ -156,7 +152,7 @@ vendor-js:
 
   <h3>Exporting as JSON</h3>
   <p>
-    Loaded models can be exported to native three.js JSON format - this uses the build in
+    Loaded models can be exported to native three.js JSON format - this uses the built in
     three.js exporter, which has certain limitations (may not export animations for skinned meshes for example).
     JSON format is very fast to load, at the expense of larger file size.
   </p>
@@ -170,7 +166,7 @@ vendor-js:
   <h3>Currently supported formats</h3>
 
   <p>
-    Three.js native JSON format: Complete scene, or a file containing and geometry or buffer geometry.
+    Three.js native JSON format: Complete scene, or a file containing a geometry or buffer geometry.
     Files containing only geometries or buffer geometries will be rendered in wireframe.
   </p>
 
@@ -181,11 +177,9 @@ vendor-js:
     supports GLTF v2 files. GLTF v1 is not supported.
   </p>
 
-  <p>OBJ: Using THREE.OBJLoader2. Load either a single .obj file, or any number of .obj and .mtl files and their associated textures.</p>
+  <p>OBJ: Using THREE.OBJLoader2. Load any number of .obj and .mtl files and their associated textures.</p>
 
-  <p>DAE: You will be asked to choose whether to use THREE.ColladaLoader or THREE.ColladaLoader2,
-    Note that THREE.ColladaLoader animations are not supported as they use an older system (you can
-    still use that system yourself of course, it's just not implemented here.</p>
+  <p>DAE: Uses the newer THREE.ColladaLoader2, which supports most Collada features (although it does not yet support skinned meshes).</p>
 
   <h3>Supported texture formats</h3>
 

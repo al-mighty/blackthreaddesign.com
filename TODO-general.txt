@@ -1,5 +1,4 @@
 Write a better about page
 Add continuous animation to landing page
 Finish first section of tutorials
-Finish loader experiment
-tutorialsStill a problem with non www links: https://blackthreaddesign.com/
+Still a problem with non www links: https://blackthreaddesign.com/
