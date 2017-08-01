@@ -11,10 +11,24 @@ const uglifyJSOptions = {
 
   compress: {
 
+    sequences: true,
+    properties: true,
     dead_code: true,
+    drop_debugger: true,
+    unsafe: false,
+    unused: true,
+    hoist_funs: true,
+    hoist_vars: true,
+    if_return: true,
+    join_vars: true,
+    cascade: true,
+    loops: false,
+    negate_iife: true,
+    warnings: true,
 
   },
-  ie8: false,
+  // ie8: false,
+  mangle: true,
 
 };
 
