@@ -276,6 +276,8 @@ function App( canvas ) {
       // prevent camera from zooming out far enough to create far plane cutoff
       this.controls.maxDistance = cameraToFarEdge * 2;
 
+      this.controls.saveState();
+
     }
 
     return boundingBox;

@@ -9082,112 +9082,81 @@ var classCallCheck = function (instance, Constructor) {
 var canvas = document.querySelector('#viewer-canvas');
 var reset = document.querySelector('#reset');
 
-var fullscreenButton = document.querySelector('#fullscreen-button');var faces = document.querySelector('#faces');
+var fullscreenButton = document.querySelector('#fullscreen-button');
+var slope = document.querySelector('#slope');
+var simulate = document.querySelector('#simulate');
 
 var error = {
-    overlay: document.querySelector('#error-overlay'),
-    messages: document.querySelector('#error-messages')
+  overlay: document.querySelector('#error-overlay'),
+  messages: document.querySelector('#error-messages')
 };
 
 var animation = {
-    slider: document.querySelector('#animation-slider'),
-    playButton: document.querySelector('#play-button'),
-    pauseButton: document.querySelector('#pause-button'),
-    playbackControl: document.querySelector('#playback-control'),
-    clipsSelection: document.querySelector('#animation-clips'),
-    controls: document.querySelector('#animation-controls')
+  slider: document.querySelector('#animation-slider'),
+  playButton: document.querySelector('#play-button'),
+  pauseButton: document.querySelector('#pause-button'),
+  playbackControl: document.querySelector('#playback-control'),
+  clipsSelection: document.querySelector('#animation-clips'),
+  controls: document.querySelector('#animation-controls')
 };
 
 var loading = {
-    bar: document.querySelector('#loading-bar'),
-    overlay: document.querySelector('#loading-overlay'),
-    revealOnLoad: document.querySelectorAll('.reveal-on-load'),
-    hideOnLoad: document.querySelectorAll('.hide-on-load'),
-    progress: document.querySelector('#progress')
+  bar: document.querySelector('#loading-bar'),
+  overlay: document.querySelector('#loading-overlay'),
+  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
+  hideOnLoad: document.querySelectorAll('.hide-on-load'),
+  progress: document.querySelector('#progress')
 };
 
 var controls = {
-    links: document.querySelector('#controls').querySelectorAll('span'),
-    button: document.querySelector('#toggle-background'),
-    sliders: document.querySelectorAll('.loader-slider')
+  links: document.querySelector('#controls').querySelectorAll('span'),
+  button: document.querySelector('#toggle-background'),
+  sliders: document.querySelectorAll('.loader-slider')
 };
 
 var HTMLControl = function () {
-    function HTMLControl() {
-        classCallCheck(this, HTMLControl);
+  function HTMLControl() {
+    classCallCheck(this, HTMLControl);
+  }
+
+  HTMLControl.setInitialState = function setInitialState() {
+    slope.value = 0;
+
+    error.overlay.classList.add('hide');
+    error.messages.innerHTML = '';
+  };
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+    loading.bar.classList.remove('hide');
+  };
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+    loading.overlay.classList.add('hide');
+
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+
+      loading.hideOnLoad[i].classList.add('hide');
     }
 
-    HTMLControl.setInitialState = function setInitialState() {
-        loading.overlay.classList.remove('hide');
-        loading.bar.classList.add('hide');
-        loading.progress.style.width = 0;
+    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
 
-        error.overlay.classList.add('hide');
-        error.messages.innerHTML = '';
+      loading.revealOnLoad[_i].classList.remove('hide');
+    }
+  };
 
-        animation.controls.classList.add('hide');
-        animation.playButton.classList.add('hide');
-        animation.pauseButton.classList.remove('hide');
+  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
+    for (var i = 0; i < controls.links.length; i++) {
 
-        for (var i = 0; i < loading.hideOnLoad.length; i++) {
+      controls.links[i].style.color = 'white';
+    }
 
-            loading.hideOnLoad[i].classList.remove('hide');
-        }
+    for (var _i2 = 0; _i2 < controls.sliders.length; _i2++) {
 
-        for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
+      controls.sliders[_i2].style.backgroundColor = 'white';
+    }
+  };
 
-            loading.revealOnLoad[_i].classList.add('hide');
-        }
-
-        // reset animations options
-        var base = animation.clipsSelection.children[0];
-        animation.clipsSelection.innerHTML = '';
-        animation.clipsSelection.appendChild(base);
-    };
-
-    HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
-        loading.bar.classList.remove('hide');
-    };
-
-    HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
-        loading.overlay.classList.add('hide');
-
-        for (var i = 0; i < loading.hideOnLoad.length; i++) {
-
-            loading.hideOnLoad[i].classList.add('hide');
-        }
-
-        for (var _i2 = 0; _i2 < loading.revealOnLoad.length; _i2++) {
-
-            loading.revealOnLoad[_i2].classList.remove('hide');
-        }
-    };
-
-    HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
-        for (var i = 0; i < controls.links.length; i++) {
-
-            controls.links[i].style.color = 'white';
-        }
-
-        for (var _i3 = 0; _i3 < controls.sliders.length; _i3++) {
-
-            controls.sliders[_i3].style.backgroundColor = 'white';
-        }
-    };
-
-    HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {
-        for (var i = 0; i < HTMLControl.controls.links.length; i++) {
-
-            controls.links[i].style.color = 'black';
-        }
-
-        for (var _i4 = 0; _i4 < HTMLControl.controls.sliders.length; _i4++) {
-
-            controls.sliders[_i4].style.backgroundColor = '#424242';
-        }
-    };
-
-    return HTMLControl;
+  return HTMLControl;
 }();
 
 HTMLControl.canvas = canvas;
@@ -9197,6 +9166,8 @@ HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
+HTMLControl.slope = slope;
+HTMLControl.simulate = simulate;
 
 var cachedMessages = {};
 
@@ -52973,6 +52944,8 @@ function App(canvas) {
 
       // prevent camera from zooming out far enough to create far plane cutoff
       this.controls.maxDistance = cameraToFarEdge * 2;
+
+      this.controls.saveState();
     }
 
     return boundingBox;
@@ -53322,16 +53295,8 @@ var RobotCanvas = function () {
     var _this = this;
 
     HTMLControl.reset.addEventListener('click', function () {
-
-      while (_this.loadedObjects.children.length > 0) {
-
-        var child = _this.loadedObjects.children[0];
-
-        _this.loadedObjects.remove(child);
-        child = null;
-      }
-
       _this.animationControls.reset();
+      _this.app.controls.reset();
 
       HTMLControl.setInitialState();
     });
@@ -72801,7 +72766,8 @@ var Simulation = function () {
 
     Simulation.prototype.tempBall = function tempBall() {
 
-        var geo = new SphereBufferGeometry(100, 16, 16);
+        var geo = new SphereBufferGeometry(50, 16, 16);
+        geo.translate(0, 37.5, 0);
 
         var mat = new MeshStandardMaterial({ color: 0xefefef });
 

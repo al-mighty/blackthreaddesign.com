@@ -53,6 +53,7 @@ class RobotCanvas {
 
   }
 
+
   addObjectToScene( object ) {
 
     if ( object === undefined ) {
@@ -73,20 +74,12 @@ class RobotCanvas {
 
   }
 
+
   initReset() {
 
     HTMLControl.reset.addEventListener( 'click', () => {
-
-      while ( this.loadedObjects.children.length > 0 ) {
-
-        let child = this.loadedObjects.children[ 0 ];
-
-        this.loadedObjects.remove( child );
-        child = null;
-
-      }
-
       this.animationControls.reset();
+      this.app.controls.reset();
 
       HTMLControl.setInitialState();
 

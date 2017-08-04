@@ -2,7 +2,9 @@
 const canvas = document.querySelector( '#viewer-canvas' );
 const reset = document.querySelector( '#reset' );
 
-const fullscreenButton = document.querySelector( '#fullscreen-button' );const faces = document.querySelector( '#faces' );
+const fullscreenButton = document.querySelector( '#fullscreen-button' );
+const slope = document.querySelector( '#slope' );
+const simulate = document.querySelector( '#simulate' );
 
 const error = {
   overlay: document.querySelector( '#error-overlay' ),
@@ -36,33 +38,11 @@ const controls = {
 export default class HTMLControl {
 
   static setInitialState() {
-    loading.overlay.classList.remove( 'hide' );
-    loading.bar.classList.add( 'hide' );
-    loading.progress.style.width = 0;
+    slope.value = 0;
 
     error.overlay.classList.add( 'hide' );
     error.messages.innerHTML = '';
 
-    animation.controls.classList.add( 'hide' );
-    animation.playButton.classList.add( 'hide' );
-    animation.pauseButton.classList.remove( 'hide' );
-
-    for ( let i = 0; i < loading.hideOnLoad.length; i++ ) {
-
-      loading.hideOnLoad[ i ].classList.remove( 'hide' );
-
-    }
-
-    for ( let i = 0; i < loading.revealOnLoad.length; i++ ) {
-
-      loading.revealOnLoad[ i ].classList.add( 'hide' );
-
-    }
-
-    // reset animations options
-    const base = animation.clipsSelection.children[ 0 ];
-    animation.clipsSelection.innerHTML = '';
-    animation.clipsSelection.appendChild( base );
   }
 
   static setOnLoadStartState() {
@@ -99,20 +79,6 @@ export default class HTMLControl {
     }
   }
 
-  static setWhiteBackgroundState() {
-    for ( let i = 0; i < HTMLControl.controls.links.length; i++ ) {
-
-      controls.links[ i ].style.color = 'black';
-
-    }
-
-    for ( let i = 0; i < HTMLControl.controls.sliders.length; i++ ) {
-
-      controls.sliders[ i ].style.backgroundColor = '#424242';
-
-    }
-  }
-
 }
 
 HTMLControl.canvas = canvas;
@@ -122,4 +88,6 @@ HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
+HTMLControl.slope = slope;
+HTMLControl.simulate = simulate;
 

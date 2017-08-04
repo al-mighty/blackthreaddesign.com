@@ -20,10 +20,10 @@ export default class Simulation {
 
   }
 
-
   tempBall() {
 
-    const geo = new THREE.SphereBufferGeometry( 100, 16, 16 );
+    const geo = new THREE.SphereBufferGeometry( 50, 16, 16 );
+    geo.translate( 0, 37.5, 0 );
 
     const mat = new THREE.MeshStandardMaterial( { color: 0xefefef } );
 
