@@ -9083,139 +9083,111 @@ var canvas = document.querySelector('#viewer-canvas');
 var reset = document.querySelector('#reset');
 
 var fullscreenButton = document.querySelector('#fullscreen-button');var faces = document.querySelector('#faces');
-var vertices = document.querySelector('#vertices');
 
 var error = {
-  overlay: document.querySelector('#error-overlay'),
-  messages: document.querySelector('#error-messages')
+    overlay: document.querySelector('#error-overlay'),
+    messages: document.querySelector('#error-messages')
 };
 
 var animation = {
-  slider: document.querySelector('#animation-slider'),
-  playButton: document.querySelector('#play-button'),
-  pauseButton: document.querySelector('#pause-button'),
-  playbackControl: document.querySelector('#playback-control'),
-  clipsSelection: document.querySelector('#animation-clips'),
-  controls: document.querySelector('#animation-controls')
-};
-
-var demos = {
-  FBX: document.querySelector('#demo-fbx'),
-  GLTF: document.querySelector('#demo-gltf'),
-  JSONGeo: document.querySelector('#demo-json-geo'),
-  JSONBuffer: document.querySelector('#demo-json-buffer'),
-  JSONScene: document.querySelector('#demo-json-scene'),
-  Collada: document.querySelector('#demo-collada'),
-  OBJ: document.querySelector('#demo-obj')
-};
-
-var lighting = {
-  slider: document.querySelector('#lighting-slider'),
-  symbol: document.querySelector('#light-symbol')
+    slider: document.querySelector('#animation-slider'),
+    playButton: document.querySelector('#play-button'),
+    pauseButton: document.querySelector('#pause-button'),
+    playbackControl: document.querySelector('#playback-control'),
+    clipsSelection: document.querySelector('#animation-clips'),
+    controls: document.querySelector('#animation-controls')
 };
 
 var loading = {
-  bar: document.querySelector('#loading-bar'),
-  overlay: document.querySelector('#loading-overlay'),
-  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
-  hideOnLoad: document.querySelectorAll('.hide-on-load'),
-  progress: document.querySelector('#progress')
-};
-
-var screenshot = {
-  button: document.querySelector('#screenshot-button'),
-  width: document.querySelector('#screenshot-width'),
-  height: document.querySelector('#screenshot-height')
+    bar: document.querySelector('#loading-bar'),
+    overlay: document.querySelector('#loading-overlay'),
+    revealOnLoad: document.querySelectorAll('.reveal-on-load'),
+    hideOnLoad: document.querySelectorAll('.hide-on-load'),
+    progress: document.querySelector('#progress')
 };
 
 var controls = {
-  links: document.querySelector('#controls').querySelectorAll('span'),
-  button: document.querySelector('#toggle-background'),
-  sliders: document.querySelectorAll('.loader-slider')
+    links: document.querySelector('#controls').querySelectorAll('span'),
+    button: document.querySelector('#toggle-background'),
+    sliders: document.querySelectorAll('.loader-slider')
 };
 
 var HTMLControl = function () {
-  function HTMLControl() {
-    classCallCheck(this, HTMLControl);
-  }
-
-  HTMLControl.setInitialState = function setInitialState() {
-    loading.overlay.classList.remove('hide');
-    loading.bar.classList.add('hide');
-    loading.progress.style.width = 0;
-
-    error.overlay.classList.add('hide');
-    error.messages.innerHTML = '';
-
-    animation.controls.classList.add('hide');
-    animation.playButton.classList.add('hide');
-    animation.pauseButton.classList.remove('hide');
-
-    for (var i = 0; i < loading.hideOnLoad.length; i++) {
-
-      loading.hideOnLoad[i].classList.remove('hide');
+    function HTMLControl() {
+        classCallCheck(this, HTMLControl);
     }
 
-    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
+    HTMLControl.setInitialState = function setInitialState() {
+        loading.overlay.classList.remove('hide');
+        loading.bar.classList.add('hide');
+        loading.progress.style.width = 0;
 
-      loading.revealOnLoad[_i].classList.add('hide');
-    }
+        error.overlay.classList.add('hide');
+        error.messages.innerHTML = '';
 
-    // reset animations options
-    var base = animation.clipsSelection.children[0];
-    animation.clipsSelection.innerHTML = '';
-    animation.clipsSelection.appendChild(base);
-  };
+        animation.controls.classList.add('hide');
+        animation.playButton.classList.add('hide');
+        animation.pauseButton.classList.remove('hide');
 
-  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
-    loading.bar.classList.remove('hide');
-  };
+        for (var i = 0; i < loading.hideOnLoad.length; i++) {
 
-  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
-    loading.overlay.classList.add('hide');
+            loading.hideOnLoad[i].classList.remove('hide');
+        }
 
-    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+        for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
 
-      loading.hideOnLoad[i].classList.add('hide');
-    }
+            loading.revealOnLoad[_i].classList.add('hide');
+        }
 
-    for (var _i2 = 0; _i2 < loading.revealOnLoad.length; _i2++) {
+        // reset animations options
+        var base = animation.clipsSelection.children[0];
+        animation.clipsSelection.innerHTML = '';
+        animation.clipsSelection.appendChild(base);
+    };
 
-      loading.revealOnLoad[_i2].classList.remove('hide');
-    }
-  };
+    HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+        loading.bar.classList.remove('hide');
+    };
 
-  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
-    for (var i = 0; i < controls.links.length; i++) {
+    HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+        loading.overlay.classList.add('hide');
 
-      controls.links[i].style.color = 'white';
-    }
+        for (var i = 0; i < loading.hideOnLoad.length; i++) {
 
-    for (var _i3 = 0; _i3 < controls.sliders.length; _i3++) {
+            loading.hideOnLoad[i].classList.add('hide');
+        }
 
-      controls.sliders[_i3].style.backgroundColor = 'white';
-    }
-  };
+        for (var _i2 = 0; _i2 < loading.revealOnLoad.length; _i2++) {
 
-  HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {
-    for (var i = 0; i < HTMLControl.controls.links.length; i++) {
+            loading.revealOnLoad[_i2].classList.remove('hide');
+        }
+    };
 
-      controls.links[i].style.color = 'black';
-    }
+    HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
+        for (var i = 0; i < controls.links.length; i++) {
 
-    for (var _i4 = 0; _i4 < HTMLControl.controls.sliders.length; _i4++) {
+            controls.links[i].style.color = 'white';
+        }
 
-      controls.sliders[_i4].style.backgroundColor = '#424242';
-    }
-  };
+        for (var _i3 = 0; _i3 < controls.sliders.length; _i3++) {
 
-  HTMLControl.addModelInfo = function addModelInfo(renderer) {
+            controls.sliders[_i3].style.backgroundColor = 'white';
+        }
+    };
 
-    faces.innerHTML = renderer.info.render.faces;
-    vertices.innerHTML = renderer.info.render.vertices;
-  };
+    HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {
+        for (var i = 0; i < HTMLControl.controls.links.length; i++) {
 
-  return HTMLControl;
+            controls.links[i].style.color = 'black';
+        }
+
+        for (var _i4 = 0; _i4 < HTMLControl.controls.sliders.length; _i4++) {
+
+            controls.sliders[_i4].style.backgroundColor = '#424242';
+        }
+    };
+
+    return HTMLControl;
 }();
 
 HTMLControl.canvas = canvas;
@@ -9223,10 +9195,7 @@ HTMLControl.reset = reset;
 HTMLControl.fullscreenButton = fullscreenButton;
 HTMLControl.error = error;
 HTMLControl.animation = animation;
-HTMLControl.demos = demos;
-HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
-HTMLControl.screenshot = screenshot;
 HTMLControl.controls = controls;
 
 var cachedMessages = {};
@@ -9253,6 +9222,39 @@ var errorHandler = function (msg) {
 
   HTMLControl.error.messages.appendChild(p);
 };
+
+var goFullscreen = function (elem) {
+
+  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+};
+
+HTMLControl.fullscreenButton.addEventListener('click', function (e) {
+
+  e.preventDefault();
+  goFullscreen(HTMLControl.canvas);
+}, false);
+
+// override console functions to show errors and warnings on the page
+console.warn = errorHandler;
+console.error = errorHandler;
 
 // Polyfills
 
@@ -53231,42 +53233,37 @@ var LightingSetup = function () {
 
         var ambientLight = new AmbientLight(0xffffff, 0.2);
         this.app.scene.add(ambientLight);
-        ambientLight.userData.keepOnReset = true;
 
         // ****  METHOD 1:   3 POINT LIGHTING ***************************
         // Traditional 3 point light setup - slightly more expensive due to
         // two extra lights
 
-        // const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
-        // backLight.position.set( 2.6, 1, 3 );
+        var backLight = new DirectionalLight(0xffffff, 0.325);
+        backLight.position.set(2.6, 1, 3);
 
-        // const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
-        // keyLight.position.set( -2, -1, 0 );
+        var keyLight = new DirectionalLight(0xffffff, 0.475);
+        keyLight.position.set(-2, -1, 0);
 
-        // const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
-        // fillLight.position.set( 3, 3, 2 );
+        var fillLight = new DirectionalLight(0xffffff, 0.65);
+        fillLight.position.set(3, 3, 2);
 
-        // this.app.scene.add( backLight, keyLight, fillLight );
-
+        this.app.scene.add(backLight, keyLight, fillLight);
 
         // ****  METHOD 2:   CAMERA LIGHT ***********************************
         // Visually similar to 3 point lighting, but cheaper as only two lights
         // are needed
 
-        this.pointLight = new PointLight(0xffffff, 0.7, 0, 0);
-        this.pointLight.userData.keepOnReset = true;
-        this.app.camera.add(this.pointLight);
-        this.app.scene.add(this.app.camera);
-
-        this.app.camera.userData.keepOnReset = true;
+        // this.pointLight = new THREE.PointLight( 0xffffff, 0.7, 0, 0 );
+        // this.app.camera.add( this.pointLight );
+        // this.app.scene.add( this.app.camera );
     };
 
     return LightingSetup;
 }();
 
-var LoaderCanvas = function () {
-  function LoaderCanvas(canvas) {
-    classCallCheck(this, LoaderCanvas);
+var RobotCanvas = function () {
+  function RobotCanvas(canvas) {
+    classCallCheck(this, RobotCanvas);
 
 
     var self = this;
@@ -53303,7 +53300,7 @@ var LoaderCanvas = function () {
     this.initReset();
   }
 
-  LoaderCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
+  RobotCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
     if (object === undefined) {
 
@@ -53321,7 +53318,7 @@ var LoaderCanvas = function () {
     this.app.play();
   };
 
-  LoaderCanvas.prototype.initReset = function initReset() {
+  RobotCanvas.prototype.initReset = function initReset() {
     var _this = this;
 
     HTMLControl.reset.addEventListener('click', function () {
@@ -53340,10 +53337,10 @@ var LoaderCanvas = function () {
     });
   };
 
-  return LoaderCanvas;
+  return RobotCanvas;
 }();
 
-var loaderCanvas = new LoaderCanvas(HTMLControl.canvas);
+var robotCanvas = new RobotCanvas(HTMLControl.canvas);
 
 function DDSLoader() {
 
@@ -72762,129 +72759,22 @@ var Loaders = function Loaders() {
   };
 };
 
-var loaders$1 = new Loaders();
-var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
+var loaders = new Loaders();
 
 var OnLoadCallbacks = function () {
   function OnLoadCallbacks() {
     classCallCheck(this, OnLoadCallbacks);
   }
 
-  OnLoadCallbacks.onJSONBufferGeometryLoad = function onJSONBufferGeometryLoad(file) {
-
-    console.log('Using THREE.BufferGeometryLoader');
-
-    var promise = loaders$1.bufferGeometryLoader(file);
-    promise.then(function (geometry) {
-
-      var object = new Mesh(geometry, defaultMat);
-      loaderCanvas.addObjectToScene(object);
-    });
-
-    return promise;
-  };
-
-  OnLoadCallbacks.onJSONGeometryLoad = function onJSONGeometryLoad(file) {
-
-    console.log('Using THREE.JSONLoader');
-
-    var promise = loaders$1.jsonLoader(file);
-    promise.then(function (geometry) {
-
-      var object = new Mesh(geometry, defaultMat);
-      loaderCanvas.addObjectToScene(object);
-    });
-
-    return promise;
-  };
-
-  OnLoadCallbacks.onJSONObjectLoad = function onJSONObjectLoad(file) {
-
-    console.log('Using THREE.ObjectLoader');
-
-    var promise = loaders$1.objectLoader(file);
-    promise.then(function (object) {
-
-      loaderCanvas.addObjectToScene(object);
-    });
-
-    return promise;
-  };
-
   OnLoadCallbacks.onFBXLoad = function onFBXLoad(file) {
 
     console.log('Using THREE.FBXLoader');
 
-    var promise = loaders$1.fbxLoader(file);
+    var promise = loaders.fbxLoader(file);
 
     promise.then(function (result) {
 
-      loaderCanvas.addObjectToScene(result);
-    });
-
-    return promise;
-  };
-
-  OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(file) {
-
-    var promise = new Promise(function (resolve, reject) {});
-
-    promise = loaders$1.gltf2Loader(file);
-
-    promise.then(function (gltf) {
-
-      if (gltf.scenes.length > 1) {
-
-        gltf.scenes.forEach(function (scene) {
-
-          if (gltf.animations) scene.animations = gltf.animations;
-          loaderCanvas.addObjectToScene(scene);
-        });
-      } else if (gltf.scene) {
-
-        if (gltf.animations) gltf.scene.animations = gltf.animations;
-        loaderCanvas.addObjectToScene(gltf.scene);
-      } else {
-
-        console.error('No scene found in GLTF file.');
-      }
-    });
-
-    return promise;
-  };
-
-  OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
-
-    // only objLoader2 is working
-    var promise = new Promise(function (resolve) {});
-
-    console.log('Using THREE.OBJLoader2');
-
-    promise = loaders$1.objLoader2(file);
-
-    promise.then(function (object) {
-
-      loaderCanvas.addObjectToScene(object);
-    });
-
-    return promise;
-  };
-
-  OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
-
-    var promise = new Promise(function (resolve) {});
-
-    console.log('Using THREE.ColladaLoader2');
-
-    promise = loaders$1.colladaLoader2(file);
-
-    promise.then(function (result) {
-
-      var object = result.scene;
-
-      if (result.animations && result.animations.length > 0) object.animations = result.animations;
-
-      loaderCanvas.addObjectToScene(object);
+      robotCanvas.addObjectToScene(result);
     });
 
     return promise;
@@ -72893,99 +72783,38 @@ var OnLoadCallbacks = function () {
   return OnLoadCallbacks;
 }();
 
-var loaders = new Loaders();
+var Simulation = function () {
+    function Simulation() {
+        classCallCheck(this, Simulation);
 
-HTMLControl.demos.FBX.addEventListener('click', throttle(function () {
 
-  OnLoadCallbacks.onFBXLoad('/assets/models/loader/xsi_man_skinning.fbx');
-  OnLoadCallbacks.onFBXLoad('/assets/models/loader/nurbs.fbx');
-}, 3000), false);
+        this.loadModels();
 
-HTMLControl.demos.GLTF.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  OnLoadCallbacks.onGLTFLoad('/assets/models/loader/CesiumMan.glb');
-}, 3000), false);
-
-HTMLControl.demos.JSONGeo.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  OnLoadCallbacks.onJSONGeometryLoad('/assets/models/loader/platform_geo.json');
-}, 3000), false);
-
-HTMLControl.demos.JSONBuffer.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  OnLoadCallbacks.onJSONBufferGeometryLoad('/assets/models/loader/suzanne.json');
-}, 3000), false);
-
-HTMLControl.demos.JSONScene.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
-}, 3000), false);
-
-HTMLControl.demos.Collada.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
-}, 3000), false);
-
-HTMLControl.demos.OBJ.addEventListener('click', throttle(function (e) {
-
-  e.preventDefault();
-
-  loaders.setMtlLoaderPath('/assets/models/loader/');
-
-  var promise = loaders.mtlLoader('male02_dds.mtl');
-
-  promise.then(function (materials) {
-
-    materials.preload();
-    loaders.assignObjectLoaderMtls(materials.materials);
-
-    OnLoadCallbacks.onOBJLoad('/assets/models/loader/male02_dds.obj');
-  });
-}, 3000), false);
-
-var goFullscreen = function (elem) {
-
-  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
+        this.tempBall();
     }
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.msExitFullscreen) {
-    document.msExitFullscreen();
-  } else if (document.mozCancelFullScreen) {
-    document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  }
-};
 
-HTMLControl.fullscreenButton.addEventListener('click', function (e) {
+    Simulation.prototype.loadModels = function loadModels() {
 
-  e.preventDefault();
-  goFullscreen(HTMLControl.canvas);
-}, false);
+        OnLoadCallbacks.onFBXLoad('/assets/models/robot/field_01.fbx');
+        OnLoadCallbacks.onFBXLoad('/assets/models/robot/nao_01.fbx');
+    };
 
-// override console functions to show errors and warnings on the page
-console.warn = errorHandler;
-console.error = errorHandler;
+    Simulation.prototype.tempBall = function tempBall() {
+
+        var geo = new SphereBufferGeometry(100, 16, 16);
+
+        var mat = new MeshStandardMaterial({ color: 0xefefef });
+
+        var ballMesh = new Mesh(geo, mat);
+
+        robotCanvas.addObjectToScene(ballMesh);
+    };
+
+    return Simulation;
+}();
 
 initFooter();
+
+var simulation = new Simulation();
 
 }());
