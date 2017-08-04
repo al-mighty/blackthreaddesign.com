@@ -3,14 +3,10 @@ import * as THREE from 'three';
 import App from 'App/App.js';
 
 import AnimationControls from './utilities/AnimationControls.js';
-import backgroundColorChanger from './utilities/backgroundColorChanger.js';
-import LightingSetup from './utilities/LightingSetup.js';
-import ScreenshotHandler from './utilities/ScreenshotHandler.js';
-import Grid from './utilities/Grid.js';
-import HTMLControl from './utilities/HTMLControl.js';
-import exportAsJSON from './utilities/exportAsJSON.js';
 
-import './utilities/fileReader.js';
+import LightingSetup from './utilities/LightingSetup.js';
+
+import HTMLControl from './utilities/HTMLControl.js';
 
 /* ******************************************************** */
 
@@ -48,22 +44,12 @@ class LoaderCanvas {
 
     this.lighting = new LightingSetup( this.app );
 
-    this.grid = new Grid();
-
-    this.app.scene.add( this.grid.helpers );
-
     this.loadedObjects = new THREE.Group();
     this.app.scene.add( this.loadedObjects );
 
     this.app.initControls();
 
-    backgroundColorChanger( this.app );
-
-    this.screenshotHandler = new ScreenshotHandler( this.app );
-
     this.initReset();
-
-    this.initExport();
 
   }
 
@@ -83,23 +69,7 @@ class LoaderCanvas {
     // fit camera to all loaded objects
     this.app.fitCameraToObject( this.loadedObjects );
 
-    this.grid.setMaxSize( Math.floor( this.app.camera.far * 0.75 ) );
-
     this.app.play();
-
-    HTMLControl.addModelInfo( this.app.renderer );
-
-    this.loadedMaterials = [];
-
-    this.loadedObjects.traverse( ( child ) => {
-
-      if ( child.material !== undefined ) {
-
-        this.loadedMaterials.push( child.material );
-
-      }
-
-    } );
 
   }
 
@@ -117,26 +87,10 @@ class LoaderCanvas {
       }
 
       this.animationControls.reset();
-      this.grid.reset();
-      this.lighting.reset();
+
       HTMLControl.setInitialState();
 
     } );
-
-  }
-
-  initExport() {
-
-    HTMLControl.export.addEventListener( 'click', ( e ) => {
-
-      e.preventDefault();
-      console.log( 'c')
-      if ( this.loadedObjects.children.length === 0 ) return;
-
-      console.log( 'click')
-      exportAsJSON( this.loadedObjects );
-
-    }, false );
 
   }
 

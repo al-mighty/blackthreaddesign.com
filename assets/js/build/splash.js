@@ -11139,6 +11139,7 @@ if (typeof define === 'function' && define.amd) {
 
 var hammer$1 = interopDefault(hammer);
 
+// Set up Hammer as global
 window.Hammer = hammer$1;
 
 var Greedy = function Greedy(options) {
@@ -13250,7 +13251,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -24309,8 +24313,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -24340,6 +24342,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -35681,7 +35687,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -35710,6 +35716,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -47383,10 +47390,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -51356,8 +51360,9 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
- */
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -51702,6 +51707,7 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -51774,7 +51780,8 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
+ * @author WestLangley / http://github.com/WestLangley
+*/
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -52367,9 +52374,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -52526,6 +52550,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -52561,9 +52589,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -52610,12 +52636,13 @@ Object.assign( Spline.prototype, {
 
 } );
 
-//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
+
+//
 
 Object.assign( Box2.prototype, {
 
@@ -53663,8 +53690,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -53713,8 +53738,6 @@ var ImageUtils = {
 
 };
 
-//
-
 /* ****************************************
 Keep track of mouse / pointer position
 use something like
@@ -53754,6 +53777,8 @@ var pointerPosToCanvasCentre = function (canvas) {
   };
 };
 
+// compute the centroid of a triangular face
+
 var v = new Vector3();
 
 var computeCentroid = function (geometry, face) {
@@ -53768,6 +53793,8 @@ var computeCentroid = function (geometry, face) {
   return v;
 };
 
+// Add an attribute to a bufferGeometry and return a reference to the attribute
+
 var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
   var buffer = new Float32Array(count * itemSize);
   var attribute = new BufferAttribute(buffer, itemSize);
@@ -53777,6 +53804,7 @@ var createBufferAttribute = function (bufferGeometry, name, itemSize, count) {
   return attribute;
 };
 
+// set the .index property of a bufferGeometry from faces
 var setBufferGeometryIndicesFromFaces = function (bufferGeometry, faceCount, faces) {
   var indexBuffer = new Uint32Array(faceCount * 3);
 
@@ -53791,6 +53819,7 @@ var setBufferGeometryIndicesFromFaces = function (bufferGeometry, faceCount, fac
   }
 };
 
+// create an attribute 'positions' from a set of vertices
 var createBufferPositionsAttribute = function (bufferGeometry, vertices) {
   var vertexCount = vertices.length;
   var positionBuffer = createBufferAttribute(bufferGeometry, 'position', 3, vertexCount).array;
@@ -55905,6 +55934,7 @@ PNLTRI.Triangulator.prototype = {
 
 };
 
+//Use PNLTRI for triangualtion
 ShapeUtils.triangulateShape = function () {
   var pnlTriangulator = new PNLTRI.Triangulator();
   function removeDupEndPts(points) {
@@ -56041,6 +56071,21 @@ function Time() {
     this.paused = true;
   };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -57289,6 +57334,11 @@ var explodeModifier = function (geometry) {
       geometry.vertices = vertices;
 };
 
+/**
+ * Break faces with edges longer than maxEdgeLength.
+ * copied from  THREE.TessellateModifier.
+
+*/
 var tesselate = function (geometry, maxEdgeLength) {
           var edge = void 0;
 
@@ -57499,6 +57549,7 @@ var tesselate = function (geometry, maxEdgeLength) {
           geometry.faceVertexUvs = faceVertexUvs;
 };
 
+// recursive version of tesselate
 var tessellateRecursive = function (geometry, maxEdgeLength, depth) {
   for (var i = 0; i < depth; i++) {
     tesselate(geometry, maxEdgeLength);
@@ -57926,6 +57977,7 @@ var SplashCanvas = function () {
   return SplashCanvas;
 }();
 
+// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
 initLoader();
 initNav();
 

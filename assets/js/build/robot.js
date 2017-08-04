@@ -1,4 +1,4 @@
-this.bottle = this.bottle || {};
+this.robot = this.robot || {};
 (function () {
 'use strict';
 
@@ -8491,129 +8491,6 @@ define(String.prototype, "padRight", "".padEnd);
 
 interopDefault(index);
 
-var Greedy = function Greedy(options) {
-  this.element = document.querySelector(options.element);
-  this.counter = options.counter || false;
-  this.visibleLinks = this.element.querySelector('.visible-links');
-  this.toggleButton = this.element.querySelector('.toggle-links');
-  this.breakpoints = [];
-  this.init();
-};
-
-// window.Greedy = Greedy;
-
-Greedy.prototype.init = function () {
-  this.setupMenu();
-
-  this.updateMenu();
-  this.addBindings();
-};
-
-/*
-  Creates/returns a method bounded with 'this'. Used for creating
-  named event listeners that can easily be removed
-*/
-Greedy.prototype.bindMethod = function (name) {
-  return this['_' + name + '_'] || Object.defineProperty(this, '_' + name + '_', { value: this[name].bind(this) })['_' + name + '_'];
-};
-
-/*
-  Creates the necessary markup and adds the necessary classes
-*/
-Greedy.prototype.setupMenu = function () {
-  this.hiddenLinks = document.createElement('ul');
-  this.hiddenLinks.classList.add('hidden-links');
-  this.hiddenLinks.classList.add('links-invisible');
-  this.element.appendChild(this.hiddenLinks);
-  this.visibleLinks.classList.add('visible-links');
-
-  if (this.counter) {
-    this.toggleButton.classList.add('counter');
-  } else {
-    this.toggleButton.classList.add('no-counter');
-  }
-};
-
-/*
-  For each navigation item, calculate how much space is needed
-  to accomodate it
-*/
-Greedy.prototype.calculateBreakpoints = function () {
-  var childrenWidth = 0;
-
-  for (var i = 0; i < this.visibleLinks.children.length; i++) {
-    childrenWidth += this.visibleLinks.children[i].offsetWidth;
-    this.breakpoints[i] = childrenWidth;
-  }
-};
-
-Greedy.prototype.addBindings = function () {
-  window.addEventListener('resize', this.bindMethod('updateMenu'));
-  this.toggleButton.addEventListener('click', this.bindMethod('toggleHiddenLinks'));
-};
-
-Greedy.prototype.updateMenu = function () {
-  this.calculateBreakpoints();
-  var availableSpace = this.element.offsetWidth - this.toggleButton.offsetWidth;
-  var itemsVisible = this.visibleLinks.children.length;
-  var requiredSpace = this.breakpoints[itemsVisible - 1];
-
-  /*
-    Check if there is not enough space for the visible links or
-    if there is space available for the hidden link
-  */
-  if (availableSpace < this.breakpoints[itemsVisible - 1]) {
-    this.toggleButton.classList.remove('hidden');
-    this.hiddenLinks.classList.remove('hidden');
-
-    while (availableSpace < this.breakpoints[itemsVisible - 1]) {
-      this.hiddenLinks.insertBefore(this.visibleLinks.children[itemsVisible - 1], this.hiddenLinks.firstChild);
-      itemsVisible--;
-    }
-  } else if (availableSpace > this.breakpoints[itemsVisible]) {
-    while (availableSpace > this.breakpoints[itemsVisible]) {
-      this.visibleLinks.appendChild(this.hiddenLinks.removeChild(this.hiddenLinks.firstChild));
-      itemsVisible++;
-    }
-  }
-
-  if (this.counter) {
-    this.toggleButton.setAttribute('data-count', this.hiddenLinks.children.length);
-    if (!this.hiddenLinks.children.length) {
-      this.toggleButton.classList.add('hidden');
-      this.hiddenLinks.classList.add('hidden');
-    }
-  }
-};
-
-Greedy.prototype.toggleHiddenLinks = function () {
-  this.hiddenLinks.classList.toggle('links-invisible');
-  this.toggleButton.classList.toggle('links-displayed');
-};
-
-var addActiveToCurrentNavLink = function () {
-  var menuItems = Array.prototype.slice.call(document.querySelectorAll('.masthead__menu-item'));
-  menuItems.shift();
-
-  var loc = location.href.split('/')[3];
-
-  menuItems.forEach(function (item) {
-    var href = item.firstChild.href.split('/')[3];
-
-    if (href === loc) item.classList.add('active');
-  });
-};
-
-// Initialise menu
-function initNav () {
-  addActiveToCurrentNavLink();
-
-  var menu = new Greedy({
-    element: '.masthead__menu',
-    counter: true
-  });
-}
-
 var index$2 = createCommonjsModule(function (module) {
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -9058,26 +8935,324 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-var calculateCanvasDims = function () {
-  var dim = window.innerWidth < window.innerHeight ? window.innerWidth * 0.9 : window.innerHeight * 0.9;
+function outerHeight(el) {
+  var height = el.offsetHeight;
+  var style = getComputedStyle(el);
 
-  return Math.min(1280, dim);
+  height += parseInt(style.marginTop) + parseInt(style.marginBottom);
+  return height;
+}
+
+var footer = document.querySelector('.page__footer');
+
+// Sticky footer
+var setBodyMargin = function setBodyMargin() {
+  var height = outerHeight(footer);
+  document.querySelector('body').style.marginBottom = height + 'px';
 };
 
-function bottleLayout() {
-  var canvasContainer = document.querySelector('.canvas-container');
+function initFooter () {
+  if (footer) {
+    setBodyMargin();
 
-  var canvasContainerDim = calculateCanvasDims();
-
-  canvasContainer.style.height = canvasContainerDim + 'px';
-  canvasContainer.style.width = canvasContainerDim + 'px';
-
-  window.addEventListener('resize', throttle(function () {
-    canvasContainerDim = calculateCanvasDims();
-    canvasContainer.style.height = canvasContainerDim + 'px';
-    canvasContainer.style.width = canvasContainerDim + 'px';
-  }), 250);
+    window.addEventListener('resize', throttle(setBodyMargin, 250));
+  }
 }
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+// const loadOverlay =
+var canvas = document.querySelector('#viewer-canvas');
+var reset = document.querySelector('#reset');
+
+var fullscreenButton = document.querySelector('#fullscreen-button');var faces = document.querySelector('#faces');
+var vertices = document.querySelector('#vertices');
+
+var error = {
+  overlay: document.querySelector('#error-overlay'),
+  messages: document.querySelector('#error-messages')
+};
+
+var animation = {
+  slider: document.querySelector('#animation-slider'),
+  playButton: document.querySelector('#play-button'),
+  pauseButton: document.querySelector('#pause-button'),
+  playbackControl: document.querySelector('#playback-control'),
+  clipsSelection: document.querySelector('#animation-clips'),
+  controls: document.querySelector('#animation-controls')
+};
+
+var demos = {
+  FBX: document.querySelector('#demo-fbx'),
+  GLTF: document.querySelector('#demo-gltf'),
+  JSONGeo: document.querySelector('#demo-json-geo'),
+  JSONBuffer: document.querySelector('#demo-json-buffer'),
+  JSONScene: document.querySelector('#demo-json-scene'),
+  Collada: document.querySelector('#demo-collada'),
+  OBJ: document.querySelector('#demo-obj')
+};
+
+var lighting = {
+  slider: document.querySelector('#lighting-slider'),
+  symbol: document.querySelector('#light-symbol')
+};
+
+var loading = {
+  bar: document.querySelector('#loading-bar'),
+  overlay: document.querySelector('#loading-overlay'),
+  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
+  hideOnLoad: document.querySelectorAll('.hide-on-load'),
+  progress: document.querySelector('#progress')
+};
+
+var screenshot = {
+  button: document.querySelector('#screenshot-button'),
+  width: document.querySelector('#screenshot-width'),
+  height: document.querySelector('#screenshot-height')
+};
+
+var controls = {
+  links: document.querySelector('#controls').querySelectorAll('span'),
+  button: document.querySelector('#toggle-background'),
+  sliders: document.querySelectorAll('.loader-slider')
+};
+
+var HTMLControl = function () {
+  function HTMLControl() {
+    classCallCheck(this, HTMLControl);
+  }
+
+  HTMLControl.setInitialState = function setInitialState() {
+    loading.overlay.classList.remove('hide');
+    loading.bar.classList.add('hide');
+    loading.progress.style.width = 0;
+
+    error.overlay.classList.add('hide');
+    error.messages.innerHTML = '';
+
+    animation.controls.classList.add('hide');
+    animation.playButton.classList.add('hide');
+    animation.pauseButton.classList.remove('hide');
+
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+
+      loading.hideOnLoad[i].classList.remove('hide');
+    }
+
+    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
+
+      loading.revealOnLoad[_i].classList.add('hide');
+    }
+
+    // reset animations options
+    var base = animation.clipsSelection.children[0];
+    animation.clipsSelection.innerHTML = '';
+    animation.clipsSelection.appendChild(base);
+  };
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+    loading.bar.classList.remove('hide');
+  };
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+    loading.overlay.classList.add('hide');
+
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+
+      loading.hideOnLoad[i].classList.add('hide');
+    }
+
+    for (var _i2 = 0; _i2 < loading.revealOnLoad.length; _i2++) {
+
+      loading.revealOnLoad[_i2].classList.remove('hide');
+    }
+  };
+
+  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
+    for (var i = 0; i < controls.links.length; i++) {
+
+      controls.links[i].style.color = 'white';
+    }
+
+    for (var _i3 = 0; _i3 < controls.sliders.length; _i3++) {
+
+      controls.sliders[_i3].style.backgroundColor = 'white';
+    }
+  };
+
+  HTMLControl.setWhiteBackgroundState = function setWhiteBackgroundState() {
+    for (var i = 0; i < HTMLControl.controls.links.length; i++) {
+
+      controls.links[i].style.color = 'black';
+    }
+
+    for (var _i4 = 0; _i4 < HTMLControl.controls.sliders.length; _i4++) {
+
+      controls.sliders[_i4].style.backgroundColor = '#424242';
+    }
+  };
+
+  HTMLControl.addModelInfo = function addModelInfo(renderer) {
+
+    faces.innerHTML = renderer.info.render.faces;
+    vertices.innerHTML = renderer.info.render.vertices;
+  };
+
+  return HTMLControl;
+}();
+
+HTMLControl.canvas = canvas;
+HTMLControl.reset = reset;
+HTMLControl.fullscreenButton = fullscreenButton;
+HTMLControl.error = error;
+HTMLControl.animation = animation;
+HTMLControl.demos = demos;
+HTMLControl.lighting = lighting;
+HTMLControl.loading = loading;
+HTMLControl.screenshot = screenshot;
+HTMLControl.controls = controls;
+
+var cachedMessages = {};
+
+var errorHandler = function (msg) {
+
+  // cache the message to prevent it being displayed multiple times
+  if (cachedMessages[msg] === true) return;
+  cachedMessages[msg] = true;
+
+  // if ( !( msg instanceof String ) ) {
+
+  //   console.log( msg );
+  //   return;
+
+  // }
+
+  // bug in three.js or WebGL returns this error on Chrome
+  if (msg.indexOf('gl.getProgramInfoLog()') !== -1) return;
+
+  HTMLControl.error.overlay.classList.remove('hide');
+  var p = document.createElement('p');
+  p.innerHTML = msg;
+
+  HTMLControl.error.messages.appendChild(p);
+};
 
 // Polyfills
 
@@ -11029,10 +11204,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -22091,6 +22263,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -22120,10 +22294,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -33465,7 +33635,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -33494,22 +33664,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- */
-
-function CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy ) {
-
-	Texture.call( this, canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
-
-	this.needsUpdate = true;
-
-}
-
-CanvasTexture.prototype = Object.create( Texture.prototype );
-CanvasTexture.prototype.constructor = CanvasTexture;
-
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -45183,7 +45337,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -49153,9 +49310,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -49500,7 +49656,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -49573,8 +49728,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -50167,26 +50321,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -50343,10 +50480,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -50382,7 +50515,25 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
+function MultiMaterial( materials ) {
+
+	if ( materials === undefined ) materials = [];
+
+	console.warn( 'THREE.MultiMaterial has been removed. Use an Array instead.' );
+	materials.isMultiMaterial = true;
+	materials.materials = materials;
+	materials.clone = function () {
+
+		return materials.slice();
+
+	};
+	return materials;
+
+}
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -50429,13 +50580,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -51483,6 +51633,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -51531,15 +51683,7 @@ var ImageUtils = {
 
 };
 
-var stats_min = createCommonjsModule(function (module) {
-// stats.js - http://github.com/mrdoob/stats.js
-var Stats=function(){function h(a){c.appendChild(a.dom);return a}function k(a){for(var d=0;d<c.children.length;d++)c.children[d].style.display=d===a?"block":"none";l=a}var l=0,c=document.createElement("div");c.style.cssText="position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000";c.addEventListener("click",function(a){a.preventDefault();k(++l%c.children.length)},!1);var g=(performance||Date).now(),e=g,a=0,r=h(new Stats.Panel("FPS","#0ff","#002")),f=h(new Stats.Panel("MS","#0f0","#020"));
-if(self.performance&&self.performance.memory)var t=h(new Stats.Panel("MB","#f08","#201"));k(0);return{REVISION:16,dom:c,addPanel:h,showPanel:k,begin:function(){g=(performance||Date).now()},end:function(){a++;var c=(performance||Date).now();f.update(c-g,200);if(c>e+1E3&&(r.update(1E3*a/(c-e),100),e=c,a=0,t)){var d=performance.memory;t.update(d.usedJSHeapSize/1048576,d.jsHeapSizeLimit/1048576)}return c},update:function(){g=this.end()},domElement:c,setMode:k}};
-Stats.Panel=function(h,k,l){var c=Infinity,g=0,e=Math.round,a=e(window.devicePixelRatio||1),r=80*a,f=48*a,t=3*a,u=2*a,d=3*a,m=15*a,n=74*a,p=30*a,q=document.createElement("canvas");q.width=r;q.height=f;q.style.cssText="width:80px;height:48px";var b=q.getContext("2d");b.font="bold "+9*a+"px Helvetica,Arial,sans-serif";b.textBaseline="top";b.fillStyle=l;b.fillRect(0,0,r,f);b.fillStyle=k;b.fillText(h,t,u);b.fillRect(d,m,n,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d,m,n,p);return{dom:q,update:function(f,
-v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
-});
-
-var Stats = interopDefault(stats_min);
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -51662,21 +51806,6 @@ function Time() {
     this.paused = true;
   };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -52606,11 +52735,6 @@ Object.defineProperties(OrbitControls.prototype, {
 
 });
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -52886,427 +53010,19982 @@ function App(canvas) {
   };
 }
 
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
+var AnimationControls = function () {
+  function AnimationControls() {
+    classCallCheck(this, AnimationControls);
+
+
+    this.isPaused = false;
+    this.pauseButtonActive = false;
+
+    this.clips = [];
+    this.mixers = [];
+    this.actions = [];
+    this.animationNames = [];
   }
 
-  function AsyncGenerator(gen) {
-    var front, back;
+  AnimationControls.prototype.reset = function reset() {
 
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
+    this.clips = [];
+    this.mixers = [];
+    this.actions = [];
+    this.animationNames = [];
 
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
+    this.currentMixer = null;
+    this.currentAction = null;
+    this.isPaused = false;
+    this.pauseButtonActive = false;
+
+    HTMLControl.animation.playbackControl.removeEventListener('click', this.playPause, false);
+    HTMLControl.animation.slider.removeEventListener('mousedown', this.sliderMouseDownEvent, false);
+    HTMLControl.animation.slider.removeEventListener('input', this.sliderInputEvent, false);
+    HTMLControl.animation.slider.removeEventListener('mouseup', this.sliderMouseupEvent, false);
+    HTMLControl.animation.clipsSelection.removeEventListener('change', this.clipsChangeEvent, false);
+  };
+
+  AnimationControls.prototype.update = function update(delta) {
+
+    // delta is in seconds while animations are in milliseconds so convert here
+    if (this.currentMixer && this.currentAction && !this.isPaused) {
+
+      this.currentMixer.update(delta / 1000);
+
+      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time
+      // increases modulo the animation duration, so set the slider value from that
+      this.setSliderValue(this.currentAction.time);
     }
+  };
 
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
+  AnimationControls.prototype.initAnimation = function initAnimation(object) {
+    var _this = this;
 
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
+    // don't do anything if the object has no animations
+    if (!object.animations || object.animations.length === 0) return;
 
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
+    object.animations.forEach(function (animation) {
 
-        case "throw":
-          front.reject(value);
-          break;
+      if (!(animation instanceof AnimationClip)) {
 
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
+        console.warn('Some animations are not valid THREE.AnimationClips. Skipping these.');
+
+        return;
       }
 
-      front = front.next;
+      var mixer = new AnimationMixer(object);
 
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
+      var action = mixer.clipAction(animation);
+
+      _this.clips.push(animation);
+      _this.mixers.push(mixer);
+      _this.actions.push(action);
+      _this.animationNames.push(animation.name);
+
+      HTMLControl.animation.clipsSelection.appendChild(new Option(animation.name, animation.name));
+    });
+
+    // If all animations have been skipped, return
+    if (this.animationNames.length === 0) return;
+
+    this.selectCurrentAnimation(this.animationNames[0]);
+
+    HTMLControl.animation.controls.classList.remove('hide');
+
+    this.initPlayPauseControls();
+
+    this.initSlider();
+
+    this.initSelectionMenu();
+  };
+
+  AnimationControls.prototype.selectCurrentAnimation = function selectCurrentAnimation(name) {
+
+    var index = this.animationNames.indexOf(name);
+
+    if (index === -1) {
+
+      console.warn('Animation ' + name + ' not found.');
+    } else {
+
+      if (this.currentAction) this.currentAction.stop();
+
+      this.currentMixer = this.mixers[index];
+      this.currentAction = this.actions[index];
+      this.currentClip = this.clips[index];
+
+      // set animation slider max to length of animation
+      HTMLControl.animation.slider.max = String(this.currentClip.duration);
+
+      HTMLControl.animation.slider.step = String(this.currentClip.duration / 150);
+
+      this.currentAction.play();
     }
+  };
 
-    this._invoke = send;
+  AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
 
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
+    HTMLControl.animation.slider.value = String(val);
+  };
 
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
+  AnimationControls.prototype.initPlayPauseControls = function initPlayPauseControls() {
+    var _this2 = this;
+
+    this.playPause = function (e) {
+
+      e.preventDefault();
+
+      _this2.togglePause();
     };
-  }
 
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
+    HTMLControl.animation.playbackControl.addEventListener('click', this.playPause, false);
   };
 
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
+  AnimationControls.prototype.togglePause = function togglePause() {
 
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
+    if (!this.isPaused) {
 
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
+      this.pauseButtonActive = true;
+      this.pause();
+    } else {
+
+      this.pauseButtonActive = false;
+      this.play();
     }
   };
+
+  AnimationControls.prototype.pause = function pause() {
+
+    this.isPaused = true;
+    HTMLControl.animation.playButton.classList.remove('hide');
+    HTMLControl.animation.pauseButton.classList.add('hide');
+  };
+
+  AnimationControls.prototype.play = function play() {
+
+    this.isPaused = false;
+    HTMLControl.animation.playButton.classList.add('hide');
+    HTMLControl.animation.pauseButton.classList.remove('hide');
+  };
+
+  AnimationControls.prototype.initSlider = function initSlider() {
+    var _this3 = this;
+
+    this.sliderMouseDownEvent = function (e) {
+
+      if (!_this3.pauseButtonActive) _this3.pause();
+    };
+
+    HTMLControl.animation.slider.addEventListener('mousedown', this.sliderMouseDownEvent, false);
+
+    this.sliderInputEvent = throttle(function (e) {
+
+      var oldTime = _this3.currentMixer.time;
+      var newTime = HTMLControl.animation.slider.value;
+
+      _this3.currentMixer.update(newTime - oldTime);
+    }, 17);
+
+    HTMLControl.animation.slider.addEventListener('input', this.sliderInputEvent, false); // throttling at ~17 ms will give approx 60fps while sliding the controls
+
+    this.sliderMouseupEvent = function (e) {
+
+      if (!_this3.pauseButtonActive) _this3.play();
+    };
+
+    HTMLControl.animation.slider.addEventListener('mouseup', this.sliderMouseupEvent, false);
+  };
+
+  AnimationControls.prototype.initSelectionMenu = function initSelectionMenu() {
+    var _this4 = this;
+
+    HTMLControl.animation.clipsSelection.selectedIndex = 1;
+
+    this.clipsChangeEvent = function (e) {
+
+      e.preventDefault();
+      if (e.target.value === 'static') {
+
+        _this4.currentAction.stop();
+      } else {
+
+        _this4.selectCurrentAnimation(e.target.value);
+      }
+    };
+
+    HTMLControl.animation.clipsSelection.addEventListener('change', this.clipsChangeEvent, false);
+  };
+
+  return AnimationControls;
 }();
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
+var LightingSetup = function () {
+    function LightingSetup(app) {
+        classCallCheck(this, LightingSetup);
 
-var jsonLoader = new JSONLoader();
-var textureLoader = new TextureLoader();
-var fileLoader = new FileLoader();
-fileLoader.setResponseType('json');
 
-var stats = new Stats();
-stats.dom.style = 'position: absolute;\n  top: 0;\n  right: 0;\n  cursor: pointer;\n  opacity: 0.9;\n  z-index: 1;\n  width: 100px;';
+        this.app = app;
 
-document.body.appendChild(stats.dom);
+        this.initLights();
+    }
 
-var BottleCanvas = function () {
-  function BottleCanvas(canvas) {
-    var labelCanvas = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    var backgroundColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0xffffff;
-    var quality = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'high';
-    classCallCheck(this, BottleCanvas);
+    LightingSetup.prototype.initLights = function initLights() {
+
+        var ambientLight = new AmbientLight(0xffffff, 0.2);
+        this.app.scene.add(ambientLight);
+        ambientLight.userData.keepOnReset = true;
+
+        // ****  METHOD 1:   3 POINT LIGHTING ***************************
+        // Traditional 3 point light setup - slightly more expensive due to
+        // two extra lights
+
+        // const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
+        // backLight.position.set( 2.6, 1, 3 );
+
+        // const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+        // keyLight.position.set( -2, -1, 0 );
+
+        // const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
+        // fillLight.position.set( 3, 3, 2 );
+
+        // this.app.scene.add( backLight, keyLight, fillLight );
+
+
+        // ****  METHOD 2:   CAMERA LIGHT ***********************************
+        // Visually similar to 3 point lighting, but cheaper as only two lights
+        // are needed
+
+        this.pointLight = new PointLight(0xffffff, 0.7, 0, 0);
+        this.pointLight.userData.keepOnReset = true;
+        this.app.camera.add(this.pointLight);
+        this.app.scene.add(this.app.camera);
+
+        this.app.camera.userData.keepOnReset = true;
+    };
+
+    return LightingSetup;
+}();
+
+var LoaderCanvas = function () {
+  function LoaderCanvas(canvas) {
+    classCallCheck(this, LoaderCanvas);
 
 
     var self = this;
 
     this.canvas = canvas;
-    this.labelCanvas = labelCanvas;
 
     this.app = new App(this.canvas);
 
-    this.app.camera.position.set(0, 20, 320);
-    this.app.camera.near = 100;
-    this.app.camera.far = 500;
-    this.app.camera.updateProjectionMatrix();
+    this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
-    this.app.renderer.setClearColor(backgroundColor, 1.0);
-
-    // NOTE: uncomment these lines to render a transparent background - i.e. to draw
-    // again the background color of the containing element
-    // this.app.renderer.setClearColor( backgroundColor, 0.0 );
-    // this.app.renderer.alpha = true;
-
-    // NOTE: this means that the order in which the objects are added determines the render
-    // order (for transparency), since the built in method was failing (does not render liquid)
-    // *may* also marginally improve performance
-    this.app.renderer.sortObjects = false;
+    this.animationControls = new AnimationControls();
 
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
 
-      self.bottleGroup.rotateY(-self.app.delta * 0.001);
-
-      // required if using 'damping' in controls
-      self.controls.update();
-
-      // remove if no longer using stats
-      if (stats) stats.update();
-
-      if (this.labelMap) this.labelMap.needsUpdate = true;
-
-      // Helper Extended test
-      // console.log( self.spot.name );
+      self.animationControls.update(self.app.delta);
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
     this.app.onWindowResize = function () {
+
       // NB: use self inside this function
+
     };
 
-    this.initLights();
+    this.lighting = new LightingSetup(this.app);
 
-    this.initTextures();
+    this.loadedObjects = new Group();
+    this.app.scene.add(this.loadedObjects);
 
-    switch (quality) {
-      case 'high':
-        this.initMaterialsHigh();
-        break;
-      default:
-        // "low""
-        this.initMaterialsLow();
-    }
+    this.app.initControls();
 
-    this.initBottle();
-
-    // this.initSmiley();
-    // this.initLabel();
-
-    this.initControls();
-
-    // App has play / pause / stop functions
-    this.app.play();
+    this.initReset();
   }
 
-  BottleCanvas.prototype.initLights = function initLights() {
-    var spot = new SpotLight(0xffffff, 7, 500, Math.PI / 5, 0.9, 2.5);
-    spot.position.set(-15, 130, -180);
-    this.app.scene.add(spot, spot.target);
-    // const lhSpot = new LightHelperExtended( spot, true, true );
+  LoaderCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
-    // this.spot = spot;
+    if (object === undefined) {
 
-    var hemi = new HemisphereLight(0x000000, 0xffffff, 0.75);
-    this.app.scene.add(hemi);
-    // const lhHemi = new LightHelperExtended( hemi, true, true );
+      console.error('Oops! An unspecified error occurred :(');
+      return;
+    }
 
-    // const ambient = new THREE.AmbientLight( 0x404040, 1.0 );
-    // this.app.scene.add( ambient );
-    // const lhAmbient = new LightHelperExtended( ambient, true, true );
+    this.animationControls.initAnimation(object);
 
-    // const directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    // this.app.scene.add( directional );
-    // const lhHemi = new LightHelperExtended( directional, true, true );
+    this.loadedObjects.add(object);
 
-    // const point = new THREE.PointLight( 0xff0000, 1, 100, 2 );
-    // this.app.scene.add( point );
-    // const lhPoint = new LightHelperExtended( point, true, true );
+    // fit camera to all loaded objects
+    this.app.fitCameraToObject(this.loadedObjects);
 
-    // const rectArea = new THREE.RectAreaLight( 0xffffff, 1.0, 100, 200 );
-    // this.app.scene.add( rectArea );
-    // const lhPoint = new LightHelperExtended( rectArea, true, true );
+    this.app.play();
   };
 
-  BottleCanvas.prototype.initTextures = function initTextures() {
-    this.envMap = textureLoader.load('/assets/images/textures/env_maps/grey_room.jpg');
-    this.envMap.mapping = EquirectangularRefractionMapping;
-
-    this.smileyTexture = textureLoader.load('/assets/images/textures/work/bottle/carlsberg-smiley-dark.png');
-
-    this.labelMap = this.labelCanvas ? new CanvasTexture(this.labelCanvas) : null;
-  };
-
-  BottleCanvas.prototype.initBottle = function initBottle() {
+  LoaderCanvas.prototype.initReset = function initReset() {
     var _this = this;
 
-    this.bottleGroup = new Group();
-    this.bottleGroup.position.set(0, -1, 0);
-    this.bottleGroup.scale.set(20, 20, 20);
-    this.app.scene.add(this.bottleGroup);
+    HTMLControl.reset.addEventListener('click', function () {
 
-    fileLoader.load('/assets/models/work/bottle/bottle.json', function (json) {
-      var geometries = {};
+      while (_this.loadedObjects.children.length > 0) {
 
-      json.geometries.forEach(function (obj) {
-        var name = obj.data.name;
-        var geometry = jsonLoader.parse(obj).geometry;
-        geometry.scale(1, -1, 1);
-        geometries[name] = geometry;
-      });
+        var child = _this.loadedObjects.children[0];
 
-      geometries.cap.translate(0, 6.5, 0);
+        _this.loadedObjects.remove(child);
+        child = null;
+      }
 
-      var cap = new Mesh(geometries.cap, _this.capMat);
-      var capBack = new Mesh(geometries.cap, _this.capBackMat);
+      _this.animationControls.reset();
 
-      var bottle = new Mesh(geometries.bottle, _this.bottleMat);
-      var bottleInterior = new Mesh(geometries.bottle_interior, _this.bottleMatInterior);
-
-      var liquid = new Mesh(geometries.liquid, _this.liquidMat);
-      var liquidTop = new Mesh(geometries.liquidTop, _this.liquidMat);
-
-      _this.bottleGroup.add(cap, capBack, liquidTop, liquid, bottle, bottleInterior);
+      HTMLControl.setInitialState();
     });
   };
 
-  BottleCanvas.prototype.initSmiley = function initSmiley() {
-    var geometry = new PlaneBufferGeometry(1.1, 1.1);
-
-    var smiley = new Mesh(geometry, this.smileyMat);
-    smiley.rotation.x = -Math.PI / 2;
-    smiley.position.set(-0.025, 6.7, 0.1);
-
-    this.bottleGroup.add(smiley);
-  };
-
-  BottleCanvas.prototype.initLabel = function initLabel() {
-    var geometry = new CylinderBufferGeometry(1.71, 1.71, 5.5, 64, 1, true);
-
-    var label = new Mesh(geometry, this.labelmat);
-
-    var labelBack = new Mesh(geometry, this.labelBackMat);
-
-    label.position.y = labelBack.position.y = -2.6;
-
-    // this rotation was in the old scene - leaving it here in case it is needed for some reason
-    // label.rotation.y = labelBack.rotation.y = 4 * Math.PI / 3;
-
-    this.bottleGroup.add(label, labelBack);
-  };
-
-  BottleCanvas.prototype.initControls = function initControls() {
-    var controls = new OrbitControls(this.app.camera, this.canvas);
-
-    controls.enableZoom = false;
-    controls.enablePan = false;
-
-    // controls.autoRotate = true;
-    // controls.autoRotateSpeed = -1.0;
-
-    // How far you can orbit horizontally, upper and lower limits.
-    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    controls.minAzimuthAngle = 0; // radians
-    controls.maxAzimuthAngle = 0; // radians
-
-    controls.maxPolarAngle = Math.PI * 0.75;
-
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
-
-    this.controls = controls;
-  };
-
-  BottleCanvas.prototype.initMaterialsHigh = function initMaterialsHigh() {
-    var glassColor = 0x371805;
-
-    this.capMat = new MeshLambertMaterial({
-      color: 0xffffff,
-      emissive: 0x606060,
-      envMap: this.envMap,
-      side: BackSide,
-
-      // Lambert
-      reflectivity: 0.15
-    });
-
-    this.capBackMat = new MeshBasicMaterial({
-      color: 0x505050
-    });
-
-    this.bottleMat = new MeshLambertMaterial({
-      color: glassColor,
-      opacity: 0.85,
-      transparent: true
-    });
-
-    this.bottleMatInterior = new MeshStandardMaterial({
-      color: glassColor,
-      envMap: this.envMap,
-      envMapIntensity: 0.1,
-      opacity: 0.7,
-      refractionRatio: 1.9,
-      transparent: true,
-
-      // STANDARD
-      metalness: 0.4,
-      roughness: 0.15
-    });
-
-    this.liquidMat = new MeshLambertMaterial({
-      color: 0x8c3e13, // 0x8c3e13 0x58360d 0xd15c1a
-      opacity: 0.8,
-      transparent: true
-    });
-  };
-
-  BottleCanvas.prototype.initMaterialsLow = function initMaterialsLow() {
-    var glassColor = 0x371805;
-
-    this.capMat = new MeshLambertMaterial({
-      color: 0xffffff,
-      emissive: 0x808080,
-      envMap: this.envMap,
-      side: BackSide,
-
-      // Lambert
-      reflectivity: 0.15
-    });
-
-    this.capBackMat = new MeshBasicMaterial({
-      color: 0x505050
-    });
-
-    this.bottleMat = new MeshLambertMaterial({
-      color: glassColor,
-      opacity: 0.85,
-      transparent: true
-    });
-
-    this.bottleMatInterior = new MeshLambertMaterial({
-      color: glassColor,
-      envMap: this.envMap,
-      opacity: 0.7,
-
-      transparent: true,
-
-      // LAMBERT
-      reflectivity: 0.3
-    });
-
-    this.liquidMat = new MeshLambertMaterial({
-      color: 0x8c3e13,
-      opacity: 0.8,
-      transparent: true
-    });
-  };
-
-  return BottleCanvas;
+  return LoaderCanvas;
 }();
 
-// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
-// import '../utilities/init/initHammer.js';
+var loaderCanvas = new LoaderCanvas(HTMLControl.canvas);
 
-initNav();
+function DDSLoader() {
 
-bottleLayout();
+  this._parser = DDSLoader.parse;
+}
 
-var canvas = document.querySelector('#bottle-canvas');
-var bottleCanvas = new BottleCanvas(canvas, null, 0xcccccc);
+DDSLoader.prototype = Object.create(CompressedTextureLoader.prototype);
+DDSLoader.prototype.constructor = DDSLoader;
+
+DDSLoader.parse = function (buffer, loadMipmaps) {
+
+  var dds = { mipmaps: [], width: 0, height: 0, format: null, mipmapCount: 1 };
+
+  // Adapted from @toji's DDS utils
+  // https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
+
+  // All values and structures referenced from:
+  // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
+
+  var DDS_MAGIC = 0x20534444;
+
+  var DDSD_CAPS = 0x1,
+      DDSD_HEIGHT = 0x2,
+      DDSD_WIDTH = 0x4,
+      DDSD_PITCH = 0x8,
+      DDSD_PIXELFORMAT = 0x1000,
+      DDSD_MIPMAPCOUNT = 0x20000,
+      DDSD_LINEARSIZE = 0x80000,
+      DDSD_DEPTH = 0x800000;
+
+  var DDSCAPS_COMPLEX = 0x8,
+      DDSCAPS_MIPMAP = 0x400000,
+      DDSCAPS_TEXTURE = 0x1000;
+
+  var DDSCAPS2_CUBEMAP = 0x200,
+      DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
+      DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
+      DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
+      DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
+      DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
+      DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
+      DDSCAPS2_VOLUME = 0x200000;
+
+  var DDPF_ALPHAPIXELS = 0x1,
+      DDPF_ALPHA = 0x2,
+      DDPF_FOURCC = 0x4,
+      DDPF_RGB = 0x40,
+      DDPF_YUV = 0x200,
+      DDPF_LUMINANCE = 0x20000;
+
+  function fourCCToInt32(value) {
+
+    return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
+  }
+
+  function int32ToFourCC(value) {
+
+    return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
+  }
+
+  function loadARGBMip(buffer, dataOffset, width, height) {
+
+    var dataLength = width * height * 4;
+    var srcBuffer = new Uint8Array(buffer, dataOffset, dataLength);
+    var byteArray = new Uint8Array(dataLength);
+    var dst = 0;
+    var src = 0;
+    for (var y = 0; y < height; y++) {
+
+      for (var x = 0; x < width; x++) {
+
+        var b = srcBuffer[src];src++;
+        var g = srcBuffer[src];src++;
+        var r = srcBuffer[src];src++;
+        var a = srcBuffer[src];src++;
+        byteArray[dst] = r;dst++; // r
+        byteArray[dst] = g;dst++; // g
+        byteArray[dst] = b;dst++; // b
+        byteArray[dst] = a;dst++; // a
+      }
+    }
+    return byteArray;
+  }
+
+  var FOURCC_DXT1 = fourCCToInt32('DXT1');
+  var FOURCC_DXT3 = fourCCToInt32('DXT3');
+  var FOURCC_DXT5 = fourCCToInt32('DXT5');
+  var FOURCC_ETC1 = fourCCToInt32('ETC1');
+
+  var headerLengthInt = 31; // The header length in 32 bit ints
+
+  // Offsets into the header array
+
+  var off_magic = 0;
+
+  var off_size = 1;
+  var off_flags = 2;
+  var off_height = 3;
+  var off_width = 4;
+
+  var off_mipmapCount = 7;
+
+  var off_pfFlags = 20;
+  var off_pfFourCC = 21;
+  var off_RGBBitCount = 22;
+  var off_RBitMask = 23;
+  var off_GBitMask = 24;
+  var off_BBitMask = 25;
+  var off_ABitMask = 26;
+
+  var off_caps = 27;
+  var off_caps2 = 28;
+  var off_caps3 = 29;
+  var off_caps4 = 30;
+
+  // Parse header
+
+  var header = new Int32Array(buffer, 0, headerLengthInt);
+
+  if (header[off_magic] !== DDS_MAGIC) {
+
+    console.error('DDSLoader.parse: Invalid magic number in DDS header.');
+    return dds;
+  }
+
+  if (!header[off_pfFlags] & DDPF_FOURCC) {
+
+    console.error('DDSLoader.parse: Unsupported format, must contain a FourCC code.');
+    return dds;
+  }
+
+  var blockBytes = void 0;
+
+  var fourCC = header[off_pfFourCC];
+
+  var isRGBAUncompressed = false;
+
+  switch (fourCC) {
+
+    case FOURCC_DXT1:
+
+      blockBytes = 8;
+      dds.format = RGB_S3TC_DXT1_Format;
+      break;
+
+    case FOURCC_DXT3:
+
+      blockBytes = 16;
+      dds.format = RGBA_S3TC_DXT3_Format;
+      break;
+
+    case FOURCC_DXT5:
+
+      blockBytes = 16;
+      dds.format = RGBA_S3TC_DXT5_Format;
+      break;
+
+    case FOURCC_ETC1:
+
+      blockBytes = 8;
+      dds.format = RGB_ETC1_Format;
+      break;
+
+    default:
+
+      if (header[off_RGBBitCount] === 32 && header[off_RBitMask] & 0xff0000 && header[off_GBitMask] & 0xff00 && header[off_BBitMask] & 0xff && header[off_ABitMask] & 0xff000000) {
+
+        isRGBAUncompressed = true;
+        blockBytes = 64;
+        dds.format = RGBAFormat;
+      } else {
+
+        console.error('DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+        return dds;
+      }
+  }
+
+  dds.mipmapCount = 1;
+
+  if (header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
+
+    dds.mipmapCount = Math.max(1, header[off_mipmapCount]);
+  }
+
+  var caps2 = header[off_caps2];
+  dds.isCubemap = !!(caps2 & DDSCAPS2_CUBEMAP);
+  if (dds.isCubemap && (!(caps2 & DDSCAPS2_CUBEMAP_POSITIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEZ) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEZ))) {
+
+    console.error('DDSLoader.parse: Incomplete cubemap faces');
+    return dds;
+  }
+
+  dds.width = header[off_width];
+  dds.height = header[off_height];
+
+  var dataOffset = header[off_size] + 4;
+
+  // Extract mipmaps buffers
+
+  var faces = dds.isCubemap ? 6 : 1;
+
+  for (var face = 0; face < faces; face++) {
+
+    var width = dds.width;
+    var height = dds.height;
+
+    for (var i = 0; i < dds.mipmapCount; i++) {
+
+      if (isRGBAUncompressed) {
+
+        var byteArray = loadARGBMip(buffer, dataOffset, width, height);
+        var dataLength = byteArray.length;
+      } else {
+
+        var dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+        var byteArray = new Uint8Array(buffer, dataOffset, dataLength);
+      }
+
+      var mipmap = { data: byteArray, width: width, height: height };
+      dds.mipmaps.push(mipmap);
+
+      dataOffset += dataLength;
+
+      width = Math.max(width >> 1, 1);
+      height = Math.max(height >> 1, 1);
+    }
+  }
+
+  return dds;
+};
+
+// With this line you can now just do import 'DDSLoader.js' and it should work
+Loader.Handlers.add(/\.dds$/i, new DDSLoader());
+
+var NURBSUtils = {
+
+	/*
+ Finds knot vector span.
+ 	p : degree
+ u : parametric value
+ U : knot vector
+ 
+ returns the span
+ */
+	findSpan: function (p, u, U) {
+
+		var n = U.length - p - 1;
+
+		if (u >= U[n]) {
+
+			return n - 1;
+		}
+
+		if (u <= U[p]) {
+
+			return p;
+		}
+
+		var low = p;
+		var high = n;
+		var mid = Math.floor((low + high) / 2);
+
+		while (u < U[mid] || u >= U[mid + 1]) {
+
+			if (u < U[mid]) {
+
+				high = mid;
+			} else {
+
+				low = mid;
+			}
+
+			mid = Math.floor((low + high) / 2);
+		}
+
+		return mid;
+	},
+
+	/*
+ Calculate basis functions. See The NURBS Book, page 70, algorithm A2.2
+   
+ span : span in which u lies
+ u    : parametric point
+ p    : degree
+ U    : knot vector
+ 
+ returns array[p+1] with basis functions values.
+ */
+	calcBasisFunctions: function (span, u, p, U) {
+
+		var N = [];
+		var left = [];
+		var right = [];
+		N[0] = 1.0;
+
+		for (var j = 1; j <= p; ++j) {
+
+			left[j] = u - U[span + 1 - j];
+			right[j] = U[span + j] - u;
+
+			var saved = 0.0;
+
+			for (var r = 0; r < j; ++r) {
+
+				var rv = right[r + 1];
+				var lv = left[j - r];
+				var temp = N[r] / (rv + lv);
+				N[r] = saved + rv * temp;
+				saved = lv * temp;
+			}
+
+			N[j] = saved;
+		}
+
+		return N;
+	},
+
+	/*
+ Calculate B-Spline curve points. See The NURBS Book, page 82, algorithm A3.1.
+ 
+ p : degree of B-Spline
+ U : knot vector
+ P : control points (x, y, z, w)
+ u : parametric point
+ 	returns point for given u
+ */
+	calcBSplinePoint: function (p, U, P, u) {
+
+		var span = this.findSpan(p, u, U);
+		var N = this.calcBasisFunctions(span, u, p, U);
+		var C = new Vector4(0, 0, 0, 0);
+
+		for (var j = 0; j <= p; ++j) {
+
+			var point = P[span - p + j];
+			var Nj = N[j];
+			var wNj = point.w * Nj;
+			C.x += point.x * wNj;
+			C.y += point.y * wNj;
+			C.z += point.z * wNj;
+			C.w += point.w * Nj;
+		}
+
+		return C;
+	},
+
+	/*
+ Calculate basis functions derivatives. See The NURBS Book, page 72, algorithm A2.3.
+ 	span : span in which u lies
+ u    : parametric point
+ p    : degree
+ n    : number of derivatives to calculate
+ U    : knot vector
+ 	returns array[n+1][p+1] with basis functions derivatives
+ */
+	calcBasisFunctionDerivatives: function (span, u, p, n, U) {
+
+		var zeroArr = [];
+		for (var i = 0; i <= p; ++i) {
+			zeroArr[i] = 0.0;
+		}var ders = [];
+		for (var i = 0; i <= n; ++i) {
+			ders[i] = zeroArr.slice(0);
+		}var ndu = [];
+		for (var i = 0; i <= p; ++i) {
+			ndu[i] = zeroArr.slice(0);
+		}ndu[0][0] = 1.0;
+
+		var left = zeroArr.slice(0);
+		var right = zeroArr.slice(0);
+
+		for (var j = 1; j <= p; ++j) {
+
+			left[j] = u - U[span + 1 - j];
+			right[j] = U[span + j] - u;
+
+			var saved = 0.0;
+
+			for (var r = 0; r < j; ++r) {
+
+				var rv = right[r + 1];
+				var lv = left[j - r];
+				ndu[j][r] = rv + lv;
+
+				var temp = ndu[r][j - 1] / ndu[j][r];
+				ndu[r][j] = saved + rv * temp;
+				saved = lv * temp;
+			}
+
+			ndu[j][j] = saved;
+		}
+
+		for (var j = 0; j <= p; ++j) {
+
+			ders[0][j] = ndu[j][p];
+		}
+
+		for (var r = 0; r <= p; ++r) {
+
+			var s1 = 0;
+			var s2 = 1;
+
+			var a = [];
+			for (var i = 0; i <= p; ++i) {
+
+				a[i] = zeroArr.slice(0);
+			}
+			a[0][0] = 1.0;
+
+			for (var k = 1; k <= n; ++k) {
+
+				var d = 0.0;
+				var rk = r - k;
+				var pk = p - k;
+
+				if (r >= k) {
+
+					a[s2][0] = a[s1][0] / ndu[pk + 1][rk];
+					d = a[s2][0] * ndu[rk][pk];
+				}
+
+				var j1 = rk >= -1 ? 1 : -rk;
+				var j2 = r - 1 <= pk ? k - 1 : p - r;
+
+				for (var j = j1; j <= j2; ++j) {
+
+					a[s2][j] = (a[s1][j] - a[s1][j - 1]) / ndu[pk + 1][rk + j];
+					d += a[s2][j] * ndu[rk + j][pk];
+				}
+
+				if (r <= pk) {
+
+					a[s2][k] = -a[s1][k - 1] / ndu[pk + 1][r];
+					d += a[s2][k] * ndu[r][pk];
+				}
+
+				ders[k][r] = d;
+
+				var j = s1;
+				s1 = s2;
+				s2 = j;
+			}
+		}
+
+		var r = p;
+
+		for (var k = 1; k <= n; ++k) {
+
+			for (var j = 0; j <= p; ++j) {
+
+				ders[k][j] *= r;
+			}
+			r *= p - k;
+		}
+
+		return ders;
+	},
+
+	/*
+ 	Calculate derivatives of a B-Spline. See The NURBS Book, page 93, algorithm A3.2.
+ 		p  : degree
+ 	U  : knot vector
+ 	P  : control points
+ 	u  : Parametric points
+ 	nd : number of derivatives
+ 		returns array[d+1] with derivatives
+ 	*/
+	calcBSplineDerivatives: function (p, U, P, u, nd) {
+
+		var du = nd < p ? nd : p;
+		var CK = [];
+		var span = this.findSpan(p, u, U);
+		var nders = this.calcBasisFunctionDerivatives(span, u, p, du, U);
+		var Pw = [];
+
+		for (var i = 0; i < P.length; ++i) {
+
+			var point = P[i].clone();
+			var w = point.w;
+
+			point.x *= w;
+			point.y *= w;
+			point.z *= w;
+
+			Pw[i] = point;
+		}
+		for (var k = 0; k <= du; ++k) {
+
+			var point = Pw[span - p].clone().multiplyScalar(nders[k][0]);
+
+			for (var j = 1; j <= p; ++j) {
+
+				point.add(Pw[span - p + j].clone().multiplyScalar(nders[k][j]));
+			}
+
+			CK[k] = point;
+		}
+
+		for (var k = du + 1; k <= nd + 1; ++k) {
+
+			CK[k] = new Vector4(0, 0, 0);
+		}
+
+		return CK;
+	},
+
+	/*
+ Calculate "K over I"
+ 	returns k!/(i!(k-i)!)
+ */
+	calcKoverI: function (k, i) {
+
+		var nom = 1;
+
+		for (var j = 2; j <= k; ++j) {
+
+			nom *= j;
+		}
+
+		var denom = 1;
+
+		for (var j = 2; j <= i; ++j) {
+
+			denom *= j;
+		}
+
+		for (var j = 2; j <= k - i; ++j) {
+
+			denom *= j;
+		}
+
+		return nom / denom;
+	},
+
+	/*
+ Calculate derivatives (0-nd) of rational curve. See The NURBS Book, page 127, algorithm A4.2.
+ 	Pders : result of function calcBSplineDerivatives
+ 	returns array with derivatives for rational curve.
+ */
+	calcRationalCurveDerivatives: function (Pders) {
+
+		var nd = Pders.length;
+		var Aders = [];
+		var wders = [];
+
+		for (var i = 0; i < nd; ++i) {
+
+			var point = Pders[i];
+			Aders[i] = new Vector3(point.x, point.y, point.z);
+			wders[i] = point.w;
+		}
+
+		var CK = [];
+
+		for (var k = 0; k < nd; ++k) {
+
+			var v = Aders[k].clone();
+
+			for (var i = 1; i <= k; ++i) {
+
+				v.sub(CK[k - i].clone().multiplyScalar(this.calcKoverI(k, i) * wders[i]));
+			}
+
+			CK[k] = v.divideScalar(wders[0]);
+		}
+
+		return CK;
+	},
+
+	/*
+ Calculate NURBS curve derivatives. See The NURBS Book, page 127, algorithm A4.2.
+ 	p  : degree
+ U  : knot vector
+ P  : control points in homogeneous space
+ u  : parametric points
+ nd : number of derivatives
+ 	returns array with derivatives.
+ */
+	calcNURBSDerivatives: function (p, U, P, u, nd) {
+
+		var Pders = this.calcBSplineDerivatives(p, U, P, u, nd);
+		return this.calcRationalCurveDerivatives(Pders);
+	},
+
+	/*
+ Calculate rational B-Spline surface point. See The NURBS Book, page 134, algorithm A4.3.
+ 
+ p1, p2 : degrees of B-Spline surface
+ U1, U2 : knot vectors
+ P      : control points (x, y, z, w)
+ u, v   : parametric values
+ 	returns point for given (u, v)
+ */
+	calcSurfacePoint: function (p, q, U, V, P, u, v) {
+
+		var uspan = this.findSpan(p, u, U);
+		var vspan = this.findSpan(q, v, V);
+		var Nu = this.calcBasisFunctions(uspan, u, p, U);
+		var Nv = this.calcBasisFunctions(vspan, v, q, V);
+		var temp = [];
+
+		for (var l = 0; l <= q; ++l) {
+
+			temp[l] = new Vector4(0, 0, 0, 0);
+			for (var k = 0; k <= p; ++k) {
+
+				var point = P[uspan - p + k][vspan - q + l].clone();
+				var w = point.w;
+				point.x *= w;
+				point.y *= w;
+				point.z *= w;
+				temp[l].add(point.multiplyScalar(Nu[k]));
+			}
+		}
+
+		var Sw = new Vector4(0, 0, 0, 0);
+		for (var l = 0; l <= q; ++l) {
+
+			Sw.add(temp[l].multiplyScalar(Nv[l]));
+		}
+
+		Sw.divideScalar(Sw.w);
+		return new Vector3(Sw.x, Sw.y, Sw.z);
+	}
+
+};
+
+function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
+
+	Curve.call(this);
+
+	this.degree = degree;
+	this.knots = knots;
+	this.controlPoints = [];
+	// Used by periodic NURBS to remove hidden spans
+	this.startKnot = startKnot || 0;
+	this.endKnot = endKnot || this.knots.length - 1;
+	for (var i = 0; i < controlPoints.length; ++i) {
+
+		// ensure Vector4 for control points
+		var point = controlPoints[i];
+		this.controlPoints[i] = new Vector4(point.x, point.y, point.z, point.w);
+	}
+};
+
+NURBSCurve.prototype = Object.create(Curve.prototype);
+NURBSCurve.prototype.constructor = NURBSCurve;
+
+NURBSCurve.prototype.getPoint = function (t) {
+
+	var u = this.knots[this.startKnot] + t * (this.knots[this.endKnot] - this.knots[this.startKnot]); // linear mapping t->u
+
+	// following results in (wx, wy, wz, w) homogeneous point
+	var hpoint = NURBSUtils.calcBSplinePoint(this.degree, this.knots, this.controlPoints, u);
+
+	if (hpoint.w != 1.0) {
+
+		// project to 3D space: (wx, wy, wz, w) -> (x, y, z, 1)
+		hpoint.divideScalar(hpoint.w);
+	}
+
+	return new Vector3(hpoint.x, hpoint.y, hpoint.z);
+};
+
+NURBSCurve.prototype.getTangent = function (t) {
+
+	var u = this.knots[0] + t * (this.knots[this.knots.length - 1] - this.knots[0]);
+	var ders = NURBSUtils.calcNURBSDerivatives(this.degree, this.knots, this.controlPoints, u, 1);
+	var tangent = ders[1].clone();
+	tangent.normalize();
+
+	return tangent;
+};
+
+function FBXLoader(manager) {
+
+  this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+}
+
+Object.assign(FBXLoader.prototype, {
+
+  /**
+   * Loads an ASCII/Binary FBX file from URL and parses into a THREE.Group.
+   * THREE.Group will have an animations property of AnimationClips
+   * of the different animations exported with the FBX.
+   * @param {string} url - URL of the FBX file.
+   * @param {function(THREE.Group):void} onLoad - Callback for when FBX file is loaded and parsed.
+   * @param {function(ProgressEvent):void} onProgress - Callback fired periodically when file is being retrieved from server.
+   * @param {function(Event):void} onError - Callback fired when error occurs (Currently only with retrieving file, not with parsing errors).
+   */
+  load: function (url, onLoad, onProgress, onError) {
+
+    var self = this;
+
+    var resourceDirectory = url.split(/[\\\/]/);
+    resourceDirectory.pop();
+    resourceDirectory = resourceDirectory.join('/') + '/';
+
+    var loader = new FileLoader(this.manager);
+    loader.setResponseType('arraybuffer');
+    loader.load(url, function (buffer) {
+
+      try {
+
+        var scene = self.parse(buffer, resourceDirectory);
+
+        onLoad(scene);
+      } catch (error) {
+
+        window.setTimeout(function () {
+
+          if (onError) onError(error);
+
+          self.manager.itemError(url);
+        }, 0);
+      }
+    }, onProgress, onError);
+  },
+
+
+  /**
+   * Parses an ASCII/Binary FBX file and returns a THREE.Group.
+   * THREE.Group will have an animations property of AnimationClips
+   * of the different animations within the FBX file.
+   * @param {ArrayBuffer} FBXBuffer - Contents of FBX file to parse.
+   * @param {string} resourceDirectory - Directory to load external assets (e.g. textures ) from.
+   * @returns {THREE.Group}
+   */
+  parse: function (FBXBuffer, resourceDirectory) {
+
+    var FBXTree = void 0;
+
+    if (isFbxFormatBinary(FBXBuffer)) {
+
+      FBXTree = new BinaryParser().parse(FBXBuffer);
+    } else {
+
+      var FBXText = convertArrayBufferToString(FBXBuffer);
+
+      if (!isFbxFormatASCII(FBXText)) {
+
+        throw new Error('FBXLoader: Unknown format.');
+      }
+
+      if (getFbxVersion(FBXText) < 7000) {
+
+        throw new Error('FBXLoader: FBX version not supported, FileVersion: ' + getFbxVersion(FBXText));
+      }
+
+      FBXTree = new TextParser().parse(FBXText);
+    }
+
+    // console.log( FBXTree );
+
+    var connections = parseConnections(FBXTree);
+    var images = parseImages(FBXTree);
+    var textures = parseTextures(FBXTree, new TextureLoader(this.manager).setPath(resourceDirectory), images, connections);
+    var materials = parseMaterials(FBXTree, textures, connections);
+    var deformers = parseDeformers(FBXTree, connections);
+    var geometryMap = parseGeometries(FBXTree, connections, deformers);
+    var sceneGraph = parseScene(FBXTree, connections, deformers, geometryMap, materials);
+
+    return sceneGraph;
+  }
+});
+
+/**
+ * Parses map of relationships between objects.
+ * @param {{Connections: { properties: { connections: [number, number, string][]}}}} FBXTree
+ * @returns {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>}
+ */
+function parseConnections(FBXTree) {
+
+  /**
+   * @type {Map<number, { parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>}
+   */
+  var connectionMap = new Map();
+
+  if ('Connections' in FBXTree) {
+
+    /**
+     * @type {[number, number, string][]}
+     */
+    var connectionArray = FBXTree.Connections.properties.connections;
+    for (var connectionArrayIndex = 0, connectionArrayLength = connectionArray.length; connectionArrayIndex < connectionArrayLength; ++connectionArrayIndex) {
+
+      var connection = connectionArray[connectionArrayIndex];
+
+      if (!connectionMap.has(connection[0])) {
+
+        connectionMap.set(connection[0], {
+          parents: [],
+          children: []
+        });
+      }
+
+      var parentRelationship = { ID: connection[1], relationship: connection[2] };
+      connectionMap.get(connection[0]).parents.push(parentRelationship);
+
+      if (!connectionMap.has(connection[1])) {
+
+        connectionMap.set(connection[1], {
+          parents: [],
+          children: []
+        });
+      }
+
+      var childRelationship = { ID: connection[0], relationship: connection[2] };
+      connectionMap.get(connection[1]).children.push(childRelationship);
+    }
+  }
+
+  return connectionMap;
+}
+
+/**
+ * Parses map of images referenced in FBXTree.
+ * @param {{Objects: {subNodes: {Texture: Object.<string, FBXTextureNode>}}}} FBXTree
+ * @returns {Map<number, string(image blob URL)>}
+ */
+function parseImages(FBXTree) {
+
+  /**
+   * @type {Map<number, string(image blob URL)>}
+   */
+  var imageMap = new Map();
+
+  if ('Video' in FBXTree.Objects.subNodes) {
+
+    var videoNodes = FBXTree.Objects.subNodes.Video;
+
+    for (var nodeID in videoNodes) {
+
+      var videoNode = videoNodes[nodeID];
+
+      // raw image data is in videoNode.properties.Content
+      if ('Content' in videoNode.properties) {
+
+        var image = parseImage(videoNodes[nodeID]);
+        imageMap.set(parseInt(nodeID), image);
+      }
+    }
+  }
+
+  return imageMap;
+}
+
+/**
+ * @param {videoNode} videoNode - Node to get texture image information from.
+ * @returns {string} - image blob URL
+ */
+function parseImage(videoNode) {
+
+  var buffer = videoNode.properties.Content;
+  var array = new Uint8Array(buffer);
+  var fileName = videoNode.properties.RelativeFilename || videoNode.properties.Filename;
+  var extension = fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+  var type = void 0;
+
+  switch (extension) {
+
+    case 'bmp':
+
+      type = 'image/bmp';
+      break;
+
+    case 'jpg':
+
+      type = 'image/jpeg';
+      break;
+
+    case 'png':
+
+      type = 'image/png';
+      break;
+
+    case 'tif':
+
+      type = 'image/tiff';
+      break;
+
+    default:
+
+      console.warn('FBXLoader: No support image type ' + extension);
+      return;
+
+  }
+
+  return window.URL.createObjectURL(new Blob([array], { type: type }));
+}
+
+/**
+ * Parses map of textures referenced in FBXTree.
+ * @param {{Objects: {subNodes: {Texture: Object.<string, FBXTextureNode>}}}} FBXTree
+ * @param {THREE.TextureLoader} loader
+ * @param {Map<number, string(image blob URL)>} imageMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {Map<number, THREE.Texture>}
+ */
+function parseTextures(FBXTree, loader, imageMap, connections) {
+
+  /**
+   * @type {Map<number, THREE.Texture>}
+   */
+  var textureMap = new Map();
+
+  if ('Texture' in FBXTree.Objects.subNodes) {
+
+    var textureNodes = FBXTree.Objects.subNodes.Texture;
+    for (var nodeID in textureNodes) {
+
+      var texture = parseTexture(textureNodes[nodeID], loader, imageMap, connections);
+      textureMap.set(parseInt(nodeID), texture);
+    }
+  }
+
+  return textureMap;
+}
+
+/**
+ * @param {textureNode} textureNode - Node to get texture information from.
+ * @param {THREE.TextureLoader} loader
+ * @param {Map<number, string(image blob URL)>} imageMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {THREE.Texture}
+ */
+function parseTexture(textureNode, loader, imageMap, connections) {
+
+  var FBX_ID = textureNode.id;
+
+  var name = textureNode.name;
+
+  var fileName = void 0;
+
+  var filePath = textureNode.properties.FileName;
+  var relativeFilePath = textureNode.properties.RelativeFilename;
+
+  var children = connections.get(FBX_ID).children;
+
+  if (children !== undefined && children.length > 0 && imageMap.has(children[0].ID)) {
+
+    fileName = imageMap.get(children[0].ID);
+  } else if (relativeFilePath !== undefined && relativeFilePath[0] !== '/' && relativeFilePath.match(/^[a-zA-Z]:/) === null) {
+
+    // use textureNode.properties.RelativeFilename
+    // if it exists and it doesn't seem an absolute path
+
+    fileName = relativeFilePath;
+  } else {
+
+    var split = filePath.split(/[\\\/]/);
+
+    if (split.length > 0) {
+
+      fileName = split[split.length - 1];
+    } else {
+
+      fileName = filePath;
+    }
+  }
+
+  var currentPath = loader.path;
+
+  if (fileName.indexOf('blob:') === 0) {
+
+    loader.setPath(undefined);
+  }
+
+  /**
+   * @type {THREE.Texture}
+   */
+  var texture = loader.load(fileName);
+  texture.name = name;
+  texture.FBX_ID = FBX_ID;
+
+  var wrapModeU = textureNode.properties.WrapModeU;
+  var wrapModeV = textureNode.properties.WrapModeV;
+
+  var valueU = wrapModeU !== undefined ? wrapModeU.value : 0;
+  var valueV = wrapModeV !== undefined ? wrapModeV.value : 0;
+
+  // http://download.autodesk.com/us/fbx/SDKdocs/FBX_SDK_Help/files/fbxsdkref/class_k_fbx_texture.html#889640e63e2e681259ea81061b85143a
+  // 0: repeat(default), 1: clamp
+
+  texture.wrapS = valueU === 0 ? RepeatWrapping : ClampToEdgeWrapping;
+  texture.wrapT = valueV === 0 ? RepeatWrapping : ClampToEdgeWrapping;
+
+  loader.setPath(currentPath);
+
+  return texture;
+}
+
+/**
+ * Parses map of Material information.
+ * @param {{Objects: {subNodes: {Material: Object.<number, FBXMaterialNode>}}}} FBXTree
+ * @param {Map<number, THREE.Texture>} textureMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {Map<number, THREE.Material>}
+ */
+function parseMaterials(FBXTree, textureMap, connections) {
+
+  var materialMap = new Map();
+
+  if ('Material' in FBXTree.Objects.subNodes) {
+
+    var materialNodes = FBXTree.Objects.subNodes.Material;
+    for (var nodeID in materialNodes) {
+
+      var material = parseMaterial(materialNodes[nodeID], textureMap, connections);
+      materialMap.set(parseInt(nodeID), material);
+    }
+  }
+
+  return materialMap;
+}
+
+/**
+ * Takes information from Material node and returns a generated THREE.Material
+ * @param {FBXMaterialNode} materialNode
+ * @param {Map<number, THREE.Texture>} textureMap
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {THREE.Material}
+ */
+function parseMaterial(materialNode, textureMap, connections) {
+
+  var FBX_ID = materialNode.id;
+  var name = materialNode.attrName;
+  var type = materialNode.properties.ShadingModel;
+
+  // Case where FBXs wrap shading model in property object.
+  if (typeof type === 'object') {
+
+    type = type.value;
+  }
+
+  var children = connections.get(FBX_ID).children;
+
+  var parameters = parseParameters(materialNode.properties, textureMap, children);
+
+  var material = void 0;
+
+  switch (type.toLowerCase()) {
+
+    case 'phong':
+      material = new MeshPhongMaterial();
+      break;
+    case 'lambert':
+      material = new MeshLambertMaterial();
+      break;
+    default:
+      console.warn('No implementation given for material type ' + type + ' in FBXLoader.js.  Defaulting to basic material');
+      material = new MeshBasicMaterial({ color: 0x3300ff });
+      break;
+
+  }
+
+  material.setValues(parameters);
+  material.name = name;
+
+  return material;
+}
+
+/**
+ * @typedef {{Diffuse: FBXVector3, Specular: FBXVector3, Shininess: FBXValue, Emissive: FBXVector3, EmissiveFactor: FBXValue, Opacity: FBXValue}} FBXMaterialProperties
+ */
+/**
+ * @typedef {{color: THREE.Color=, specular: THREE.Color=, shininess: number=, emissive: THREE.Color=, emissiveIntensity: number=, opacity: number=, transparent: boolean=, map: THREE.Texture=}} THREEMaterialParameterPack
+ */
+/**
+ * @param {FBXMaterialProperties} properties
+ * @param {Map<number, THREE.Texture>} textureMap
+ * @param {{ID: number, relationship: string}[]} childrenRelationships
+ * @returns {THREEMaterialParameterPack}
+ */
+function parseParameters(properties, textureMap, childrenRelationships) {
+
+  var parameters = {};
+
+  if (properties.Diffuse) {
+
+    parameters.color = parseColor(properties.Diffuse);
+  }
+  if (properties.Specular) {
+
+    parameters.specular = parseColor(properties.Specular);
+  }
+  if (properties.Shininess) {
+
+    parameters.shininess = properties.Shininess.value;
+  }
+  if (properties.Emissive) {
+
+    parameters.emissive = parseColor(properties.Emissive);
+  }
+  if (properties.EmissiveFactor) {
+
+    parameters.emissiveIntensity = properties.EmissiveFactor.value;
+  }
+  if (properties.Opacity) {
+
+    parameters.opacity = properties.Opacity.value;
+  }
+  if (parameters.opacity < 1.0) {
+
+    parameters.transparent = true;
+  }
+
+  for (var childrenRelationshipsIndex = 0, childrenRelationshipsLength = childrenRelationships.length; childrenRelationshipsIndex < childrenRelationshipsLength; ++childrenRelationshipsIndex) {
+
+    var relationship = childrenRelationships[childrenRelationshipsIndex];
+
+    var type = relationship.relationship;
+
+    switch (type) {
+
+      case 'DiffuseColor':
+      case ' "DiffuseColor':
+        parameters.map = textureMap.get(relationship.ID);
+        break;
+
+      case 'Bump':
+      case ' "Bump':
+        parameters.bumpMap = textureMap.get(relationship.ID);
+        break;
+
+      case 'NormalMap':
+      case ' "NormalMap':
+        parameters.normalMap = textureMap.get(relationship.ID);
+        break;
+
+      case ' "AmbientColor':
+      case ' "EmissiveColor':
+      case 'AmbientColor':
+      case 'EmissiveColor':
+      default:
+        console.warn('Unknown texture application of type ' + type + ', skipping texture');
+        break;
+
+    }
+  }
+
+  return parameters;
+}
+
+/**
+ * Generates map of Skeleton-like objects for use later when generating and binding skeletons.
+ * @param {{Objects: {subNodes: {Deformer: Object.<number, FBXSubDeformerNode>}}}} FBXTree
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @returns {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}>}
+ */
+function parseDeformers(FBXTree, connections) {
+
+  var deformers = {};
+
+  if ('Deformer' in FBXTree.Objects.subNodes) {
+
+    var DeformerNodes = FBXTree.Objects.subNodes.Deformer;
+
+    for (var nodeID in DeformerNodes) {
+
+      var deformerNode = DeformerNodes[nodeID];
+
+      if (deformerNode.attrType === 'Skin') {
+
+        var conns = connections.get(parseInt(nodeID));
+        var skeleton = parseSkeleton(conns, DeformerNodes);
+        skeleton.FBX_ID = parseInt(nodeID);
+
+        deformers[nodeID] = skeleton;
+      }
+    }
+  }
+
+  return deformers;
+}
+
+/**
+ * Generates a "Skeleton Representation" of FBX nodes based on an FBX Skin Deformer's connections and an object containing SubDeformer nodes.
+ * @param {{parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}} connections
+ * @param {Object.<number, FBXSubDeformerNode>} DeformerNodes
+ * @returns {{map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}}
+ */
+function parseSkeleton(connections, DeformerNodes) {
+
+  var subDeformers = {};
+  var children = connections.children;
+
+  for (var i = 0, l = children.length; i < l; ++i) {
+
+    var child = children[i];
+
+    var subDeformerNode = DeformerNodes[child.ID];
+
+    var subDeformer = {
+      FBX_ID: child.ID,
+      index: i,
+      indices: [],
+      weights: [],
+      transform: parseMatrixArray(subDeformerNode.subNodes.Transform.properties.a),
+      transformLink: parseMatrixArray(subDeformerNode.subNodes.TransformLink.properties.a),
+      linkMode: subDeformerNode.properties.Mode
+    };
+
+    if ('Indexes' in subDeformerNode.subNodes) {
+
+      subDeformer.indices = parseIntArray(subDeformerNode.subNodes.Indexes.properties.a);
+      subDeformer.weights = parseFloatArray(subDeformerNode.subNodes.Weights.properties.a);
+    }
+
+    subDeformers[child.ID] = subDeformer;
+  }
+
+  return {
+    map: subDeformers,
+    bones: []
+  };
+}
+
+/**
+ * Generates Buffer geometries from geometry information in FBXTree, and generates map of THREE.BufferGeometries
+ * @param {{Objects: {subNodes: {Geometry: Object.<number, FBXGeometryNode}}}} FBXTree
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @param {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}>} deformers
+ * @returns {Map<number, THREE.BufferGeometry>}
+ */
+function parseGeometries(FBXTree, connections, deformers) {
+
+  var geometryMap = new Map();
+
+  if ('Geometry' in FBXTree.Objects.subNodes) {
+
+    var geometryNodes = FBXTree.Objects.subNodes.Geometry;
+
+    for (var nodeID in geometryNodes) {
+
+      var relationships = connections.get(parseInt(nodeID));
+      var geo = parseGeometry(geometryNodes[nodeID], relationships, deformers);
+      geometryMap.set(parseInt(nodeID), geo);
+    }
+  }
+
+  return geometryMap;
+}
+
+/**
+ * Generates BufferGeometry from FBXGeometryNode.
+ * @param {FBXGeometryNode} geometryNode
+ * @param {{parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}} relationships
+ * @param {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[]}>} deformers
+ * @returns {THREE.BufferGeometry}
+ */
+function parseGeometry(geometryNode, relationships, deformers) {
+
+  switch (geometryNode.attrType) {
+
+    case 'Mesh':
+      return parseMeshGeometry(geometryNode, relationships, deformers);
+      break;
+
+    case 'NurbsCurve':
+      return parseNurbsGeometry(geometryNode);
+      break;
+
+  }
+}
+
+/**
+ * Specialty function for parsing Mesh based Geometry Nodes.
+ * @param {FBXGeometryNode} geometryNode
+ * @param {{parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}} relationships - Object representing relationships between specific geometry node and other nodes.
+ * @param {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[]}>} deformers - Map object of deformers and subDeformers by ID.
+ * @returns {THREE.BufferGeometry}
+ */
+function parseMeshGeometry(geometryNode, relationships, deformers) {
+
+  for (var i = 0; i < relationships.children.length; ++i) {
+
+    var deformer = deformers[relationships.children[i].ID];
+    if (deformer !== undefined) break;
+  }
+
+  return genGeometry(geometryNode, deformer);
+}
+
+/**
+ * @param {{map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[]}} deformer - Skeleton representation for geometry instance.
+ * @returns {THREE.BufferGeometry}
+ */
+function genGeometry(geometryNode, deformer) {
+
+  var geometry = new Geometry$1();
+
+  var subNodes = geometryNode.subNodes;
+
+  // First, each index is going to be its own vertex.
+
+  var vertexBuffer = parseFloatArray(subNodes.Vertices.properties.a);
+  var indexBuffer = parseIntArray(subNodes.PolygonVertexIndex.properties.a);
+
+  if (subNodes.LayerElementNormal) {
+
+    var normalInfo = getNormals(subNodes.LayerElementNormal[0]);
+  }
+
+  if (subNodes.LayerElementUV) {
+
+    var uvInfo = getUVs(subNodes.LayerElementUV[0]);
+  }
+
+  if (subNodes.LayerElementColor) {
+
+    var colorInfo = getColors(subNodes.LayerElementColor[0]);
+  }
+
+  if (subNodes.LayerElementMaterial) {
+
+    var materialInfo = getMaterials(subNodes.LayerElementMaterial[0]);
+  }
+
+  var weightTable = {};
+
+  if (deformer) {
+
+    var subDeformers = deformer.map;
+
+    for (var key in subDeformers) {
+
+      var subDeformer = subDeformers[key];
+      var indices = subDeformer.indices;
+
+      for (var j = 0; j < indices.length; j++) {
+
+        var index = indices[j];
+        var weight = subDeformer.weights[j];
+
+        if (weightTable[index] === undefined) weightTable[index] = [];
+
+        weightTable[index].push({
+          id: subDeformer.index,
+          weight: weight
+        });
+      }
+    }
+  }
+
+  var faceVertexBuffer = [];
+  var polygonIndex = 0;
+  var displayedWeightsWarning = false;
+
+  for (var polygonVertexIndex = 0; polygonVertexIndex < indexBuffer.length; polygonVertexIndex++) {
+
+    var vertexIndex = indexBuffer[polygonVertexIndex];
+
+    var endOfFace = false;
+
+    if (vertexIndex < 0) {
+
+      vertexIndex ^= -1;
+      indexBuffer[polygonVertexIndex] = vertexIndex;
+      endOfFace = true;
+    }
+
+    var vertex = new Vertex$1();
+    var weightIndices = [];
+    var weights = [];
+
+    vertex.position.fromArray(vertexBuffer, vertexIndex * 3);
+
+    if (deformer) {
+
+      if (weightTable[vertexIndex] !== undefined) {
+
+        var array = weightTable[vertexIndex];
+
+        for (var j = 0, jl = array.length; j < jl; j++) {
+
+          weights.push(array[j].weight);
+          weightIndices.push(array[j].id);
+        }
+      }
+
+      if (weights.length > 4) {
+
+        if (!displayedWeightsWarning) {
+
+          console.warn('FBXLoader: Vertex has more than 4 skinning weights assigned to vertex.  Deleting additional weights.');
+          displayedWeightsWarning = true;
+        }
+
+        var WIndex = [0, 0, 0, 0];
+        var Weight = [0, 0, 0, 0];
+
+        weights.forEach(function (weight, weightIndex) {
+
+          var currentWeight = weight;
+          var currentIndex = weightIndices[weightIndex];
+
+          Weight.forEach(function (comparedWeight, comparedWeightIndex, comparedWeightArray) {
+
+            if (currentWeight > comparedWeight) {
+
+              comparedWeightArray[comparedWeightIndex] = currentWeight;
+              currentWeight = comparedWeight;
+
+              var tmp = WIndex[comparedWeightIndex];
+              WIndex[comparedWeightIndex] = currentIndex;
+              currentIndex = tmp;
+            }
+          });
+        });
+
+        weightIndices = WIndex;
+        weights = Weight;
+      }
+
+      for (var i = weights.length; i < 4; ++i) {
+
+        weights[i] = 0;
+        weightIndices[i] = 0;
+      }
+
+      vertex.skinWeights.fromArray(weights);
+      vertex.skinIndices.fromArray(weightIndices);
+    }
+
+    if (normalInfo) {
+
+      vertex.normal.fromArray(getData(polygonVertexIndex, polygonIndex, vertexIndex, normalInfo));
+    }
+
+    if (uvInfo) {
+
+      vertex.uv.fromArray(getData(polygonVertexIndex, polygonIndex, vertexIndex, uvInfo));
+    }
+
+    if (colorInfo) {
+
+      vertex.color.fromArray(getData(polygonVertexIndex, polygonIndex, vertexIndex, colorInfo));
+    }
+
+    faceVertexBuffer.push(vertex);
+
+    if (endOfFace) {
+
+      var face = new Face();
+      face.genTrianglesFromVertices(faceVertexBuffer);
+
+      if (materialInfo !== undefined) {
+
+        var materials = getData(polygonVertexIndex, polygonIndex, vertexIndex, materialInfo);
+        face.materialIndex = materials[0];
+      } else {
+
+        // Seems like some models don't have materialInfo(subNodes.LayerElementMaterial).
+        // Set 0 in such a case.
+        face.materialIndex = 0;
+      }
+
+      geometry.faces.push(face);
+      faceVertexBuffer = [];
+      polygonIndex++;
+
+      endOfFace = false;
+    }
+  }
+
+  /**
+   * @type {{vertexBuffer: number[], normalBuffer: number[], uvBuffer: number[], skinIndexBuffer: number[], skinWeightBuffer: number[], materialIndexBuffer: number[]}}
+   */
+  var bufferInfo = geometry.flattenToBuffers();
+
+  var geo = new BufferGeometry();
+  geo.name = geometryNode.name;
+  geo.addAttribute('position', new Float32BufferAttribute(bufferInfo.vertexBuffer, 3));
+
+  if (bufferInfo.normalBuffer.length > 0) {
+
+    geo.addAttribute('normal', new Float32BufferAttribute(bufferInfo.normalBuffer, 3));
+  }
+  if (bufferInfo.uvBuffer.length > 0) {
+
+    geo.addAttribute('uv', new Float32BufferAttribute(bufferInfo.uvBuffer, 2));
+  }
+  if (subNodes.LayerElementColor) {
+
+    geo.addAttribute('color', new Float32BufferAttribute(bufferInfo.colorBuffer, 3));
+  }
+
+  if (deformer) {
+
+    geo.addAttribute('skinIndex', new Float32BufferAttribute(bufferInfo.skinIndexBuffer, 4));
+
+    geo.addAttribute('skinWeight', new Float32BufferAttribute(bufferInfo.skinWeightBuffer, 4));
+
+    geo.FBX_Deformer = deformer;
+  }
+
+  // Convert the material indices of each vertex into rendering groups on the geometry.
+
+  var materialIndexBuffer = bufferInfo.materialIndexBuffer;
+  var prevMaterialIndex = materialIndexBuffer[0];
+  var startIndex = 0;
+
+  for (var i = 0; i < materialIndexBuffer.length; ++i) {
+
+    if (materialIndexBuffer[i] !== prevMaterialIndex) {
+
+      geo.addGroup(startIndex, i - startIndex, prevMaterialIndex);
+
+      prevMaterialIndex = materialIndexBuffer[i];
+      startIndex = i;
+    }
+  }
+
+  return geo;
+}
+
+/**
+ * Parses normal information for geometry.
+ * @param {FBXGeometryNode} geometryNode
+ * @returns {{dataSize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}}
+ */
+function getNormals(NormalNode) {
+
+  var mappingType = NormalNode.properties.MappingInformationType;
+  var referenceType = NormalNode.properties.ReferenceInformationType;
+  var buffer = parseFloatArray(NormalNode.subNodes.Normals.properties.a);
+  var indexBuffer = [];
+  if (referenceType === 'IndexToDirect') {
+
+    if ('NormalIndex' in NormalNode.subNodes) {
+
+      indexBuffer = parseIntArray(NormalNode.subNodes.NormalIndex.properties.a);
+    } else if ('NormalsIndex' in NormalNode.subNodes) {
+
+      indexBuffer = parseIntArray(NormalNode.subNodes.NormalsIndex.properties.a);
+    }
+  }
+
+  return {
+    dataSize: 3,
+    buffer: buffer,
+    indices: indexBuffer,
+    mappingType: mappingType,
+    referenceType: referenceType
+  };
+}
+
+/**
+ * Parses UV information for geometry.
+ * @param {FBXGeometryNode} geometryNode
+ * @returns {{dataSize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}}
+ */
+function getUVs(UVNode) {
+
+  var mappingType = UVNode.properties.MappingInformationType;
+  var referenceType = UVNode.properties.ReferenceInformationType;
+  var buffer = parseFloatArray(UVNode.subNodes.UV.properties.a);
+  var indexBuffer = [];
+  if (referenceType === 'IndexToDirect') {
+
+    indexBuffer = parseIntArray(UVNode.subNodes.UVIndex.properties.a);
+  }
+
+  return {
+    dataSize: 2,
+    buffer: buffer,
+    indices: indexBuffer,
+    mappingType: mappingType,
+    referenceType: referenceType
+  };
+}
+
+/**
+ * Parses Vertex Color information for geometry.
+ * @param {FBXGeometryNode} geometryNode
+ * @returns {{dataSize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}}
+ */
+function getColors(ColorNode) {
+
+  var mappingType = ColorNode.properties.MappingInformationType;
+  var referenceType = ColorNode.properties.ReferenceInformationType;
+  var buffer = parseFloatArray(ColorNode.subNodes.Colors.properties.a);
+  var indexBuffer = [];
+  if (referenceType === 'IndexToDirect') {
+
+    indexBuffer = parseFloatArray(ColorNode.subNodes.ColorIndex.properties.a);
+  }
+
+  return {
+    dataSize: 4,
+    buffer: buffer,
+    indices: indexBuffer,
+    mappingType: mappingType,
+    referenceType: referenceType
+  };
+}
+
+/**
+ * Parses material application information for geometry.
+ * @param {FBXGeometryNode}
+ * @returns {{dataSize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}}
+ */
+function getMaterials(MaterialNode) {
+
+  var mappingType = MaterialNode.properties.MappingInformationType;
+  var referenceType = MaterialNode.properties.ReferenceInformationType;
+
+  if (mappingType === 'NoMappingInformation') {
+
+    return {
+      dataSize: 1,
+      buffer: [0],
+      indices: [0],
+      mappingType: 'AllSame',
+      referenceType: referenceType
+    };
+  }
+
+  var materialIndexBuffer = parseIntArray(MaterialNode.subNodes.Materials.properties.a);
+
+  // Since materials are stored as indices, there's a bit of a mismatch between FBX and what
+  // we expect.  So we create an intermediate buffer that points to the index in the buffer,
+  // for conforming with the other functions we've written for other data.
+  var materialIndices = [];
+
+  for (var materialIndexBufferIndex = 0, materialIndexBufferLength = materialIndexBuffer.length; materialIndexBufferIndex < materialIndexBufferLength; ++materialIndexBufferIndex) {
+
+    materialIndices.push(materialIndexBufferIndex);
+  }
+
+  return {
+    dataSize: 1,
+    buffer: materialIndexBuffer,
+    indices: materialIndices,
+    mappingType: mappingType,
+    referenceType: referenceType
+  };
+}
+
+/**
+ * Function uses the infoObject and given indices to return value array of object.
+ * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+ * @param {number} polygonIndex - Index of polygon in geometry.
+ * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+ * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+ * @returns {number[]}
+ */
+
+var dataArray = [];
+
+var GetData = {
+
+  ByPolygonVertex: {
+
+    /**
+     * Function uses the infoObject and given indices to return value array of object.
+     * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+     * @param {number} polygonIndex - Index of polygon in geometry.
+     * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+     * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+     * @returns {number[]}
+     */
+    Direct: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var from = polygonVertexIndex * infoObject.dataSize;
+      var to = polygonVertexIndex * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    },
+
+
+    /**
+     * Function uses the infoObject and given indices to return value array of object.
+     * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+     * @param {number} polygonIndex - Index of polygon in geometry.
+     * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+     * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+     * @returns {number[]}
+     */
+    IndexToDirect: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var index = infoObject.indices[polygonVertexIndex];
+      var from = index * infoObject.dataSize;
+      var to = index * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    }
+  },
+
+  ByPolygon: {
+
+    /**
+     * Function uses the infoObject and given indices to return value array of object.
+     * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+     * @param {number} polygonIndex - Index of polygon in geometry.
+     * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+     * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+     * @returns {number[]}
+     */
+    Direct: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var from = polygonIndex * infoObject.dataSize;
+      var to = polygonIndex * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    },
+
+
+    /**
+     * Function uses the infoObject and given indices to return value array of object.
+     * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+     * @param {number} polygonIndex - Index of polygon in geometry.
+     * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+     * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+     * @returns {number[]}
+     */
+    IndexToDirect: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var index = infoObject.indices[polygonIndex];
+      var from = index * infoObject.dataSize;
+      var to = index * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    }
+  },
+
+  ByVertice: {
+    Direct: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var from = vertexIndex * infoObject.dataSize;
+      var to = vertexIndex * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    }
+  },
+
+  AllSame: {
+
+    /**
+     * Function uses the infoObject and given indices to return value array of object.
+     * @param {number} polygonVertexIndex - Index of vertex in draw order (which index of the index buffer refers to this vertex).
+     * @param {number} polygonIndex - Index of polygon in geometry.
+     * @param {number} vertexIndex - Index of vertex inside vertex buffer (used because some data refers to old index buffer that we don't use anymore).
+     * @param {{datasize: number, buffer: number[], indices: number[], mappingType: string, referenceType: string}} infoObject - Object containing data and how to access data.
+     * @returns {number[]}
+     */
+    IndexToDirect: function (polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+      var from = infoObject.indices[0] * infoObject.dataSize;
+      var to = infoObject.indices[0] * infoObject.dataSize + infoObject.dataSize;
+
+      // return infoObject.buffer.slice( from, to );
+      return slice(dataArray, infoObject.buffer, from, to);
+    }
+  }
+
+};
+
+function getData(polygonVertexIndex, polygonIndex, vertexIndex, infoObject) {
+
+  return GetData[infoObject.mappingType][infoObject.referenceType](polygonVertexIndex, polygonIndex, vertexIndex, infoObject);
+}
+
+/**
+ * Specialty function for parsing NurbsCurve based Geometry Nodes.
+ * @param {FBXGeometryNode} geometryNode
+ * @param {{parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}} relationships
+ * @returns {THREE.BufferGeometry}
+ */
+function parseNurbsGeometry(geometryNode) {
+
+  if (NURBSCurve === undefined) {
+
+    console.error('THREE.FBXLoader relies on NURBSCurve for any nurbs present in the model.  Nurbs will show up as empty geometry.');
+    return new BufferGeometry();
+  }
+
+  var order = parseInt(geometryNode.properties.Order);
+
+  if (isNaN(order)) {
+
+    console.error('FBXLoader: Invalid Order ' + geometryNode.properties.Order + ' given for geometry ID: ' + geometryNode.id);
+    return new BufferGeometry();
+  }
+
+  var degree = order - 1;
+
+  var knots = parseFloatArray(geometryNode.subNodes.KnotVector.properties.a);
+  var controlPoints = [];
+  var pointsValues = parseFloatArray(geometryNode.subNodes.Points.properties.a);
+
+  for (var i = 0, l = pointsValues.length; i < l; i += 4) {
+
+    controlPoints.push(new Vector4().fromArray(pointsValues, i));
+  }
+
+  var startKnot = void 0,
+      endKnot = void 0;
+
+  if (geometryNode.properties.Form === 'Closed') {
+
+    controlPoints.push(controlPoints[0]);
+  } else if (geometryNode.properties.Form === 'Periodic') {
+
+    startKnot = degree;
+    endKnot = knots.length - 1 - startKnot;
+
+    for (var i = 0; i < degree; ++i) {
+
+      controlPoints.push(controlPoints[i]);
+    }
+  }
+
+  var curve = new NURBSCurve(degree, knots, controlPoints, startKnot, endKnot);
+  var vertices = curve.getPoints(controlPoints.length * 7);
+
+  var positions = new Float32Array(vertices.length * 3);
+
+  for (var i = 0, l = vertices.length; i < l; ++i) {
+
+    vertices[i].toArray(positions, i * 3);
+  }
+
+  var geometry = new BufferGeometry();
+  geometry.addAttribute('position', new BufferAttribute(positions, 3));
+
+  return geometry;
+}
+
+/**
+ * Finally generates Scene graph and Scene graph Objects.
+ * @param {{Objects: {subNodes: {Model: Object.<number, FBXModelNode>}}}} FBXTree
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @param {Map<number, {map: Map<number, {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}>, array: {FBX_ID: number, indices: number[], weights: number[], transform: number[], transformLink: number[], linkMode: string}[], skeleton: THREE.Skeleton|null}>} deformers
+ * @param {Map<number, THREE.BufferGeometry>} geometryMap
+ * @param {Map<number, THREE.Material>} materialMap
+ * @returns {THREE.Group}
+ */
+function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
+
+  var sceneGraph = new Group();
+
+  var ModelNode = FBXTree.Objects.subNodes.Model;
+
+  /**
+   * @type {Array.<THREE.Object3D>}
+   */
+  var modelArray = [];
+
+  /**
+   * @type {Map.<number, THREE.Object3D>}
+   */
+  var modelMap = new Map();
+
+  for (var nodeID in ModelNode) {
+
+    var id = parseInt(nodeID);
+    var node = ModelNode[nodeID];
+    var conns = connections.get(id);
+    var model = null;
+
+    for (var i = 0; i < conns.parents.length; ++i) {
+
+      for (var FBX_ID in deformers) {
+
+        var deformer = deformers[FBX_ID];
+        var subDeformers = deformer.map;
+        var subDeformer = subDeformers[conns.parents[i].ID];
+
+        if (subDeformer) {
+
+          var model2 = model;
+          model = new Bone();
+          deformer.bones[subDeformer.index] = model;
+
+          // seems like we need this not to make non-connected bone, maybe?
+          // TODO: confirm
+          if (model2 !== null) model.add(model2);
+        }
+      }
+    }
+
+    if (!model) {
+
+      switch (node.attrType) {
+
+        case 'Mesh':
+          /**
+           * @type {?THREE.BufferGeometry}
+           */
+          var geometry = null;
+
+          /**
+           * @type {THREE.MultiMaterial|THREE.Material}
+           */
+          var material = null;
+
+          /**
+           * @type {Array.<THREE.Material>}
+           */
+          var materials = [];
+
+          for (var childrenIndex = 0, childrenLength = conns.children.length; childrenIndex < childrenLength; ++childrenIndex) {
+
+            var child = conns.children[childrenIndex];
+
+            if (geometryMap.has(child.ID)) {
+
+              geometry = geometryMap.get(child.ID);
+            }
+
+            if (materialMap.has(child.ID)) {
+
+              materials.push(materialMap.get(child.ID));
+            }
+          }
+          if (materials.length > 1) {
+
+            material = materials;
+          } else if (materials.length > 0) {
+
+            material = materials[0];
+          } else {
+
+            material = new MeshBasicMaterial({ color: 0x3300ff });
+            materials.push(material);
+          }
+          if ('color' in geometry.attributes) {
+
+            for (var materialIndex = 0, numMaterials = materials.length; materialIndex < numMaterials; ++materialIndex) {
+
+              materials[materialIndex].vertexColors = VertexColors;
+            }
+          }
+          if (geometry.FBX_Deformer) {
+
+            for (var materialsIndex = 0, materialsLength = materials.length; materialsIndex < materialsLength; ++materialsIndex) {
+
+              materials[materialsIndex].skinning = true;
+            }
+            model = new SkinnedMesh(geometry, material);
+          } else {
+
+            model = new Mesh(geometry, material);
+          }
+          break;
+
+        case 'NurbsCurve':
+          var geometry = null;
+
+          for (var childrenIndex = 0, childrenLength = conns.children.length; childrenIndex < childrenLength; ++childrenIndex) {
+
+            var child = conns.children[childrenIndex];
+
+            if (geometryMap.has(child.ID)) {
+
+              geometry = geometryMap.get(child.ID);
+            }
+          }
+
+          // FBX does not list materials for Nurbs lines, so we'll just put our own in here.
+          material = new LineBasicMaterial({ color: 0x3300ff, linewidth: 5 });
+          model = new Line(geometry, material);
+          break;
+
+        default:
+          model = new Object3D();
+          break;
+
+      }
+    }
+
+    model.name = node.attrName.replace(/:/, '').replace(/_/, '').replace(/-/, '');
+    model.FBX_ID = id;
+
+    modelArray.push(model);
+    modelMap.set(id, model);
+  }
+
+  for (var modelArrayIndex = 0, modelArrayLength = modelArray.length; modelArrayIndex < modelArrayLength; ++modelArrayIndex) {
+
+    var model = modelArray[modelArrayIndex];
+
+    var node = ModelNode[model.FBX_ID];
+
+    if ('Lcl_Translation' in node.properties) {
+
+      model.position.fromArray(parseFloatArray(node.properties.Lcl_Translation.value));
+    }
+
+    if ('Lcl_Rotation' in node.properties) {
+
+      var rotation = parseFloatArray(node.properties.Lcl_Rotation.value).map(degreeToRadian);
+      rotation.push('ZYX');
+      model.rotation.fromArray(rotation);
+    }
+
+    if ('Lcl_Scaling' in node.properties) {
+
+      model.scale.fromArray(parseFloatArray(node.properties.Lcl_Scaling.value));
+    }
+
+    if ('PreRotation' in node.properties) {
+
+      var preRotations = new Euler().setFromVector3(parseVector3(node.properties.PreRotation).multiplyScalar(DEG2RAD), 'ZYX');
+      preRotations = new Quaternion().setFromEuler(preRotations);
+      var currentRotation = new Quaternion().setFromEuler(model.rotation);
+      preRotations.multiply(currentRotation);
+      model.rotation.setFromQuaternion(preRotations, 'ZYX');
+    }
+
+    var conns = connections.get(model.FBX_ID);
+    for (var parentIndex = 0; parentIndex < conns.parents.length; parentIndex++) {
+
+      var pIndex = findIndex(modelArray, function (mod) {
+
+        return mod.FBX_ID === conns.parents[parentIndex].ID;
+      });
+      if (pIndex > -1) {
+
+        modelArray[pIndex].add(model);
+        break;
+      }
+    }
+    if (model.parent === null) {
+
+      sceneGraph.add(model);
+    }
+  }
+
+  // Now with the bones created, we can update the skeletons and bind them to the skinned meshes.
+  sceneGraph.updateMatrixWorld(true);
+
+  // Put skeleton into bind pose.
+  var BindPoseNode = FBXTree.Objects.subNodes.Pose;
+  for (var nodeID in BindPoseNode) {
+
+    if (BindPoseNode[nodeID].attrType === 'BindPose') {
+
+      BindPoseNode = BindPoseNode[nodeID];
+      break;
+    }
+  }
+  if (BindPoseNode) {
+
+    var PoseNode = BindPoseNode.subNodes.PoseNode;
+    var worldMatrices = new Map();
+
+    for (var PoseNodeIndex = 0, PoseNodeLength = PoseNode.length; PoseNodeIndex < PoseNodeLength; ++PoseNodeIndex) {
+
+      var node = PoseNode[PoseNodeIndex];
+
+      var rawMatWrd = parseMatrixArray(node.subNodes.Matrix.properties.a);
+
+      worldMatrices.set(parseInt(node.id), rawMatWrd);
+    }
+  }
+
+  for (var FBX_ID in deformers) {
+
+    var deformer = deformers[FBX_ID];
+    var subDeformers = deformer.map;
+
+    for (var key in subDeformers) {
+
+      var subDeformer = subDeformers[key];
+      var subDeformerIndex = subDeformer.index;
+
+      /**
+       * @type {THREE.Bone}
+       */
+      var bone = deformer.bones[subDeformerIndex];
+      if (!worldMatrices.has(bone.FBX_ID)) {
+
+        break;
+      }
+      var mat = worldMatrices.get(bone.FBX_ID);
+      bone.matrixWorld.copy(mat);
+    }
+
+    // Now that skeleton is in bind pose, bind to model.
+    deformer.skeleton = new Skeleton(deformer.bones);
+
+    var conns = connections.get(deformer.FBX_ID);
+    var parents = conns.parents;
+
+    for (var parentsIndex = 0, parentsLength = parents.length; parentsIndex < parentsLength; ++parentsIndex) {
+
+      var parent = parents[parentsIndex];
+
+      if (geometryMap.has(parent.ID)) {
+
+        var geoID = parent.ID;
+        var geoConns = connections.get(geoID);
+
+        for (var i = 0; i < geoConns.parents.length; ++i) {
+
+          if (modelMap.has(geoConns.parents[i].ID)) {
+
+            var model = modelMap.get(geoConns.parents[i].ID);
+            // ASSERT model typeof SkinnedMesh
+            model.bind(deformer.skeleton, model.matrixWorld);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Skeleton is now bound, return objects to starting
+  // world positions.
+  sceneGraph.updateMatrixWorld(true);
+
+  // Silly hack with the animation parsing.  We're gonna pretend the scene graph has a skeleton
+  // to attach animations to, since FBXs treat animations as animations for the entire scene,
+  // not just for individual objects.
+  sceneGraph.skeleton = {
+    bones: modelArray
+  };
+
+  var animations = parseAnimations(FBXTree, connections, sceneGraph);
+
+  addAnimations(sceneGraph, animations);
+
+  return sceneGraph;
+}
+
+/**
+ * Parses animation information from FBXTree and generates an AnimationInfoObject.
+ * @param {{Objects: {subNodes: {AnimationCurveNode: any, AnimationCurve: any, AnimationLayer: any, AnimationStack: any}}}} FBXTree
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ */
+function parseAnimations(FBXTree, connections, sceneGraph) {
+
+  var rawNodes = FBXTree.Objects.subNodes.AnimationCurveNode;
+  var rawCurves = FBXTree.Objects.subNodes.AnimationCurve;
+  var rawLayers = FBXTree.Objects.subNodes.AnimationLayer;
+  var rawStacks = FBXTree.Objects.subNodes.AnimationStack;
+
+  /**
+   * @type {{
+  		 curves: Map<number, {
+  		 T: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			};
+  		},
+  			R: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			};
+  		},
+  			S: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			};
+  		}
+  		}>,
+  		layers: Map<number, {
+  		T: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			},
+  		},
+  		R: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			},
+  		},
+  		S: {
+  			id: number;
+  			attr: string;
+  			internalID: number;
+  			attrX: boolean;
+  			attrY: boolean;
+  			attrZ: boolean;
+  			containerBoneID: number;
+  			containerID: number;
+  			curves: {
+  				x: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				y: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  				z: {
+  					version: any;
+  					id: number;
+  					internalID: number;
+  					times: number[];
+  					values: number[];
+  					attrFlag: number[];
+  					attrData: number[];
+  				};
+  			},
+  		}
+  		}[]>,
+  		stacks: Map<number, {
+  			name: string,
+  			layers: {
+  			T: {
+  				id: number;
+  				attr: string;
+  				internalID: number;
+  				attrX: boolean;
+  				attrY: boolean;
+  				attrZ: boolean;
+  				containerBoneID: number;
+  				containerID: number;
+  				curves: {
+  					x: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					y: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					z: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  				};
+  			};
+  			R: {
+  				id: number;
+  				attr: string;
+  				internalID: number;
+  				attrX: boolean;
+  				attrY: boolean;
+  				attrZ: boolean;
+  				containerBoneID: number;
+  				containerID: number;
+  				curves: {
+  					x: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					y: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					z: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  				};
+  			};
+  			S: {
+  				id: number;
+  				attr: string;
+  				internalID: number;
+  				attrX: boolean;
+  				attrY: boolean;
+  				attrZ: boolean;
+  				containerBoneID: number;
+  				containerID: number;
+  				curves: {
+  					x: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					y: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  					z: {
+  						version: any;
+  						id: number;
+  						internalID: number;
+  						times: number[];
+  						values: number[];
+  						attrFlag: number[];
+  						attrData: number[];
+  					};
+  				};
+  			};
+  		}[][],
+  		length: number,
+  		frames: number }>,
+  		length: number,
+  		fps: number,
+  		frames: number
+  	}}
+  	*/
+  var returnObject = {
+    curves: new Map(),
+    layers: {},
+    stacks: {},
+    length: 0,
+    fps: 30,
+    frames: 0
+  };
+
+  /**
+   * @type {Array.<{
+  		id: number;
+  		attr: string;
+  		internalID: number;
+  		attrX: boolean;
+  		attrY: boolean;
+  		attrZ: boolean;
+  		containerBoneID: number;
+  		containerID: number;
+  	}>}
+  	*/
+  var animationCurveNodes = [];
+  for (var nodeID in rawNodes) {
+
+    if (nodeID.match(/\d+/)) {
+
+      var animationNode = parseAnimationNode(FBXTree, rawNodes[nodeID], connections, sceneGraph);
+      animationCurveNodes.push(animationNode);
+    }
+  }
+
+  /**
+   * @type {Map.<number, {
+  		id: number,
+  		attr: string,
+  		internalID: number,
+  		attrX: boolean,
+  		attrY: boolean,
+  		attrZ: boolean,
+  		containerBoneID: number,
+  		containerID: number,
+  		curves: {
+  			x: {
+  				version: any,
+  				id: number,
+  				internalID: number,
+  				times: number[],
+  				values: number[],
+  				attrFlag: number[],
+  				attrData: number[],
+  			},
+  			y: {
+  				version: any,
+  				id: number,
+  				internalID: number,
+  				times: number[],
+  				values: number[],
+  				attrFlag: number[],
+  				attrData: number[],
+  			},
+  			z: {
+  				version: any,
+  				id: number,
+  				internalID: number,
+  				times: number[],
+  				values: number[],
+  				attrFlag: number[],
+  				attrData: number[],
+  			}
+  		}
+  	}>}
+  	*/
+  var tmpMap = new Map();
+  for (var animationCurveNodeIndex = 0; animationCurveNodeIndex < animationCurveNodes.length; ++animationCurveNodeIndex) {
+
+    if (animationCurveNodes[animationCurveNodeIndex] === null) {
+
+      continue;
+    }
+    tmpMap.set(animationCurveNodes[animationCurveNodeIndex].id, animationCurveNodes[animationCurveNodeIndex]);
+  }
+
+  /**
+   * @type {{
+  		version: any,
+  		id: number,
+  		internalID: number,
+  		times: number[],
+  		values: number[],
+  		attrFlag: number[],
+  		attrData: number[],
+  	}[]}
+  	*/
+  var animationCurves = [];
+  for (nodeID in rawCurves) {
+
+    if (nodeID.match(/\d+/)) {
+
+      var animationCurve = parseAnimationCurve(rawCurves[nodeID]);
+
+      // seems like this check would be necessary?
+      if (!connections.has(animationCurve.id)) continue;
+
+      animationCurves.push(animationCurve);
+
+      var firstParentConn = connections.get(animationCurve.id).parents[0];
+      var firstParentID = firstParentConn.ID;
+      var firstParentRelationship = firstParentConn.relationship;
+      var axis = '';
+
+      if (firstParentRelationship.match(/X/)) {
+
+        axis = 'x';
+      } else if (firstParentRelationship.match(/Y/)) {
+
+        axis = 'y';
+      } else if (firstParentRelationship.match(/Z/)) {
+
+        axis = 'z';
+      } else {
+
+        continue;
+      }
+
+      tmpMap.get(firstParentID).curves[axis] = animationCurve;
+    }
+  }
+
+  tmpMap.forEach(function (curveNode) {
+
+    var id = curveNode.containerBoneID;
+    if (!returnObject.curves.has(id)) {
+
+      returnObject.curves.set(id, { T: null, R: null, S: null });
+    }
+    returnObject.curves.get(id)[curveNode.attr] = curveNode;
+    if (curveNode.attr === 'R') {
+
+      var curves = curveNode.curves;
+
+      // Seems like some FBX files have AnimationCurveNode
+      // which doesn't have any connected AnimationCurve.
+      // Setting animation parameter for them here.
+
+      if (curves.x === null) {
+
+        curves.x = {
+          version: null,
+          times: [0.0],
+          values: [0.0]
+        };
+      }
+
+      if (curves.y === null) {
+
+        curves.y = {
+          version: null,
+          times: [0.0],
+          values: [0.0]
+        };
+      }
+
+      if (curves.z === null) {
+
+        curves.z = {
+          version: null,
+          times: [0.0],
+          values: [0.0]
+        };
+      }
+
+      curves.x.values = curves.x.values.map(degreeToRadian);
+      curves.y.values = curves.y.values.map(degreeToRadian);
+      curves.z.values = curves.z.values.map(degreeToRadian);
+
+      if (curveNode.preRotations !== null) {
+
+        var preRotations = new Euler().setFromVector3(curveNode.preRotations, 'ZYX');
+        preRotations = new Quaternion().setFromEuler(preRotations);
+        var frameRotation = new Euler();
+        var frameRotationQuaternion = new Quaternion();
+        for (var frame = 0; frame < curves.x.times.length; ++frame) {
+
+          frameRotation.set(curves.x.values[frame], curves.y.values[frame], curves.z.values[frame], 'ZYX');
+          frameRotationQuaternion.setFromEuler(frameRotation).premultiply(preRotations);
+          frameRotation.setFromQuaternion(frameRotationQuaternion, 'ZYX');
+          curves.x.values[frame] = frameRotation.x;
+          curves.y.values[frame] = frameRotation.y;
+          curves.z.values[frame] = frameRotation.z;
+        }
+      }
+    }
+  });
+
+  for (var nodeID in rawLayers) {
+
+    /**
+     * @type {{
+    	T: {
+    		id: number;
+    		attr: string;
+    		internalID: number;
+    		attrX: boolean;
+    		attrY: boolean;
+    		attrZ: boolean;
+    		containerBoneID: number;
+    		containerID: number;
+    		curves: {
+    			x: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			y: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			z: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    		},
+    	},
+    	R: {
+    		id: number;
+    		attr: string;
+    		internalID: number;
+    		attrX: boolean;
+    		attrY: boolean;
+    		attrZ: boolean;
+    		containerBoneID: number;
+    		containerID: number;
+    		curves: {
+    			x: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			y: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			z: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    		},
+    	},
+    	S: {
+    		id: number;
+    		attr: string;
+    		internalID: number;
+    		attrX: boolean;
+    		attrY: boolean;
+    		attrZ: boolean;
+    		containerBoneID: number;
+    		containerID: number;
+    		curves: {
+    			x: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			y: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    			z: {
+    				version: any;
+    				id: number;
+    				internalID: number;
+    				times: number[];
+    				values: number[];
+    				attrFlag: number[];
+    				attrData: number[];
+    			};
+    		},
+    	}
+    	}[]}
+    	*/
+    var layer = [];
+    var children = connections.get(parseInt(nodeID)).children;
+
+    for (var childIndex = 0; childIndex < children.length; childIndex++) {
+
+      // Skip lockInfluenceWeights
+      if (tmpMap.has(children[childIndex].ID)) {
+
+        var curveNode = tmpMap.get(children[childIndex].ID);
+        var boneID = curveNode.containerBoneID;
+        if (layer[boneID] === undefined) {
+
+          layer[boneID] = {
+            T: null,
+            R: null,
+            S: null
+          };
+        }
+
+        layer[boneID][curveNode.attr] = curveNode;
+      }
+    }
+
+    returnObject.layers[nodeID] = layer;
+  }
+
+  for (var nodeID in rawStacks) {
+
+    var layers = [];
+    var children = connections.get(parseInt(nodeID)).children;
+    var timestamps = { max: 0, min: Number.MAX_VALUE };
+
+    for (var childIndex = 0; childIndex < children.length; ++childIndex) {
+
+      var currentLayer = returnObject.layers[children[childIndex].ID];
+
+      if (currentLayer !== undefined) {
+
+        layers.push(currentLayer);
+
+        for (var currentLayerIndex = 0, currentLayerLength = currentLayer.length; currentLayerIndex < currentLayerLength; ++currentLayerIndex) {
+
+          var layer = currentLayer[currentLayerIndex];
+
+          if (layer) {
+
+            getCurveNodeMaxMinTimeStamps(layer, timestamps);
+          }
+        }
+      }
+    }
+
+    // Do we have an animation clip with actual length?
+    if (timestamps.max > timestamps.min) {
+
+      returnObject.stacks[nodeID] = {
+        name: rawStacks[nodeID].attrName,
+        layers: layers,
+        length: timestamps.max - timestamps.min,
+        frames: (timestamps.max - timestamps.min) * 30
+      };
+    }
+  }
+
+  return returnObject;
+}
+
+/**
+ * @param {Object} FBXTree
+ * @param {{id: number, attrName: string, properties: Object<string, any>}} animationCurveNode
+ * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
+ * @param {{skeleton: {bones: {FBX_ID: number}[]}}} sceneGraph
+ */
+function parseAnimationNode(FBXTree, animationCurveNode, connections, sceneGraph) {
+
+  var rawModels = FBXTree.Objects.subNodes.Model;
+
+  var returnObject = {
+    /**
+     * @type {number}
+     */
+    id: animationCurveNode.id,
+
+    /**
+     * @type {string}
+     */
+    attr: animationCurveNode.attrName,
+
+    /**
+     * @type {number}
+     */
+    internalID: animationCurveNode.id,
+
+    /**
+     * @type {boolean}
+     */
+    attrX: false,
+
+    /**
+     * @type {boolean}
+     */
+    attrY: false,
+
+    /**
+     * @type {boolean}
+     */
+    attrZ: false,
+
+    /**
+     * @type {number}
+     */
+    containerBoneID: -1,
+
+    /**
+     * @type {number}
+     */
+    containerID: -1,
+
+    curves: {
+      x: null,
+      y: null,
+      z: null
+    },
+
+    /**
+     * @type {number[]}
+     */
+    preRotations: null
+  };
+
+  if (returnObject.attr.match(/S|R|T/)) {
+
+    for (var attributeKey in animationCurveNode.properties) {
+
+      if (attributeKey.match(/X/)) {
+
+        returnObject.attrX = true;
+      }
+      if (attributeKey.match(/Y/)) {
+
+        returnObject.attrY = true;
+      }
+      if (attributeKey.match(/Z/)) {
+
+        returnObject.attrZ = true;
+      }
+    }
+  } else {
+
+    return null;
+  }
+
+  var conns = connections.get(returnObject.id);
+  var containerIndices = conns.parents;
+
+  for (var containerIndicesIndex = containerIndices.length - 1; containerIndicesIndex >= 0; --containerIndicesIndex) {
+
+    var boneID = findIndex(sceneGraph.skeleton.bones, function (bone) {
+
+      return bone.FBX_ID === containerIndices[containerIndicesIndex].ID;
+    });
+    if (boneID > -1) {
+
+      returnObject.containerBoneID = boneID;
+      returnObject.containerID = containerIndices[containerIndicesIndex].ID;
+      var model = rawModels[returnObject.containerID.toString()];
+      if ('PreRotation' in model.properties) {
+
+        returnObject.preRotations = parseVector3(model.properties.PreRotation).multiplyScalar(Math.PI / 180);
+      }
+      break;
+    }
+  }
+
+  return returnObject;
+}
+
+/**
+ * @param {{id: number, subNodes: {KeyTime: {properties: {a: string}}, KeyValueFloat: {properties: {a: string}}, KeyAttrFlags: {properties: {a: string}}, KeyAttrDataFloat: {properties: {a: string}}}}} animationCurve
+ */
+function parseAnimationCurve(animationCurve) {
+
+  return {
+    version: null,
+    id: animationCurve.id,
+    internalID: animationCurve.id,
+    times: parseFloatArray(animationCurve.subNodes.KeyTime.properties.a).map(convertFBXTimeToSeconds),
+    values: parseFloatArray(animationCurve.subNodes.KeyValueFloat.properties.a),
+
+    attrFlag: parseIntArray(animationCurve.subNodes.KeyAttrFlags.properties.a),
+    attrData: parseFloatArray(animationCurve.subNodes.KeyAttrDataFloat.properties.a)
+  };
+}
+
+/**
+ * Sets the maxTimeStamp and minTimeStamp variables if it has timeStamps that are either larger or smaller
+ * than the max or min respectively.
+ * @param {{
+			T: {
+					id: number,
+					attr: string,
+					internalID: number,
+					attrX: boolean,
+					attrY: boolean,
+					attrZ: boolean,
+					containerBoneID: number,
+					containerID: number,
+					curves: {
+							x: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							y: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							z: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+					},
+			},
+			R: {
+					id: number,
+					attr: string,
+					internalID: number,
+					attrX: boolean,
+					attrY: boolean,
+					attrZ: boolean,
+					containerBoneID: number,
+					containerID: number,
+					curves: {
+							x: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							y: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							z: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+					},
+			},
+			S: {
+					id: number,
+					attr: string,
+					internalID: number,
+					attrX: boolean,
+					attrY: boolean,
+					attrZ: boolean,
+					containerBoneID: number,
+					containerID: number,
+					curves: {
+							x: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							y: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+							z: {
+									version: any,
+									id: number,
+									internalID: number,
+									times: number[],
+									values: number[],
+									attrFlag: number[],
+									attrData: number[],
+							},
+					},
+			},
+	}} layer
+	*/
+function getCurveNodeMaxMinTimeStamps(layer, timestamps) {
+
+  if (layer.R) {
+
+    getCurveMaxMinTimeStamp(layer.R.curves, timestamps);
+  }
+  if (layer.S) {
+
+    getCurveMaxMinTimeStamp(layer.S.curves, timestamps);
+  }
+  if (layer.T) {
+
+    getCurveMaxMinTimeStamp(layer.T.curves, timestamps);
+  }
+}
+
+/**
+ * Sets the maxTimeStamp and minTimeStamp if one of the curve's time stamps
+ * exceeds the maximum or minimum.
+ * @param {{
+			x: {
+					version: any,
+					id: number,
+					internalID: number,
+					times: number[],
+					values: number[],
+					attrFlag: number[],
+					attrData: number[],
+			},
+			y: {
+					version: any,
+					id: number,
+					internalID: number,
+					times: number[],
+					values: number[],
+					attrFlag: number[],
+					attrData: number[],
+			},
+			z: {
+					version: any,
+					id: number,
+					internalID: number,
+					times: number[],
+					values: number[],
+					attrFlag: number[],
+					attrData: number[],
+			}
+	}} curve
+	*/
+function getCurveMaxMinTimeStamp(curve, timestamps) {
+
+  if (curve.x) {
+
+    getCurveAxisMaxMinTimeStamps(curve.x, timestamps);
+  }
+  if (curve.y) {
+
+    getCurveAxisMaxMinTimeStamps(curve.y, timestamps);
+  }
+  if (curve.z) {
+
+    getCurveAxisMaxMinTimeStamps(curve.z, timestamps);
+  }
+}
+
+/**
+ * Sets the maxTimeStamp and minTimeStamp if one of its timestamps exceeds the maximum or minimum.
+ * @param {{times: number[]}} axis
+ */
+function getCurveAxisMaxMinTimeStamps(axis, timestamps) {
+
+  timestamps.max = axis.times[axis.times.length - 1] > timestamps.max ? axis.times[axis.times.length - 1] : timestamps.max;
+  timestamps.min = axis.times[0] < timestamps.min ? axis.times[0] : timestamps.min;
+}
+
+/**
+ * @param {{
+	curves: Map<number, {
+		T: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+		R: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+		S: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+	}>;
+	layers: Map<number, {
+		T: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+		R: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+		S: {
+			id: number;
+			attr: string;
+			internalID: number;
+			attrX: boolean;
+			attrY: boolean;
+			attrZ: boolean;
+			containerBoneID: number;
+			containerID: number;
+			curves: {
+				x: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				y: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+				z: {
+					version: any;
+					id: number;
+					internalID: number;
+					times: number[];
+					values: number[];
+					attrFlag: number[];
+					attrData: number[];
+				};
+			};
+		};
+	}[]>;
+	stacks: Map<number, {
+		name: string;
+		layers: {
+			T: {
+				id: number;
+				attr: string;
+				internalID: number;
+				attrX: boolean;
+				attrY: boolean;
+				attrZ: boolean;
+				containerBoneID: number;
+				containerID: number;
+				curves: {
+					x: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					y: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					z: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+				};
+			};
+			R: {
+				id: number;
+				attr: string;
+				internalID: number;
+				attrX: boolean;
+				attrY: boolean;
+				attrZ: boolean;
+				containerBoneID: number;
+				containerID: number;
+				curves: {
+					x: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					y: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					z: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+				};
+			};
+			S: {
+				id: number;
+				attr: string;
+				internalID: number;
+				attrX: boolean;
+				attrY: boolean;
+				attrZ: boolean;
+				containerBoneID: number;
+				containerID: number;
+				curves: {
+					x: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					y: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+					z: {
+						version: any;
+						id: number;
+						internalID: number;
+						times: number[];
+						values: number[];
+						attrFlag: number[];
+						attrData: number[];
+					};
+				};
+			};
+		}[][];
+		length: number;
+		frames: number;
+	}>;
+	length: number;
+	fps: number;
+	frames: number;
+}} animations,
+	* @param {{skeleton: { bones: THREE.Bone[]}}} group
+	*/
+function addAnimations(group, animations) {
+
+  if (group.animations === undefined) {
+
+    group.animations = [];
+  }
+
+  var stacks = animations.stacks;
+
+  for (var key in stacks) {
+
+    var stack = stacks[key];
+
+    /**
+     * @type {{
+     * name: string,
+     * fps: number,
+     * length: number,
+     * hierarchy: Array.<{
+     * 	parent: number,
+     * 	name: string,
+     * 	keys: Array.<{
+     * 		time: number,
+     * 		pos: Array.<number>,
+     * 		rot: Array.<number>,
+     * 		scl: Array.<number>
+     * 	}>
+     * }>
+     * }}
+     */
+    var animationData = {
+      name: stack.name,
+      fps: 30,
+      length: stack.length,
+      hierarchy: []
+    };
+
+    var bones = group.skeleton.bones;
+
+    for (var bonesIndex = 0, bonesLength = bones.length; bonesIndex < bonesLength; ++bonesIndex) {
+
+      var bone = bones[bonesIndex];
+
+      var name = bone.name.replace(/.*:/, '');
+      var parentIndex = findIndex(bones, function (parentBone) {
+
+        return bone.parent === parentBone;
+      });
+      animationData.hierarchy.push({ parent: parentIndex, name: name, keys: [] });
+    }
+
+    for (var frame = 0; frame <= stack.frames; frame++) {
+
+      for (var bonesIndex = 0, bonesLength = bones.length; bonesIndex < bonesLength; ++bonesIndex) {
+
+        var bone = bones[bonesIndex];
+        var boneIndex = bonesIndex;
+
+        var animationNode = stack.layers[0][boneIndex];
+
+        for (var hierarchyIndex = 0, hierarchyLength = animationData.hierarchy.length; hierarchyIndex < hierarchyLength; ++hierarchyIndex) {
+
+          var node = animationData.hierarchy[hierarchyIndex];
+
+          if (node.name === bone.name) {
+
+            node.keys.push(generateKey(animations, animationNode, bone, frame));
+          }
+        }
+      }
+    }
+
+    group.animations.push(AnimationClip.parseAnimation(animationData, bones));
+  }
+}
+
+var euler = new Euler();
+var quaternion = new Quaternion();
+
+/**
+ * @param {THREE.Bone} bone
+ */
+function generateKey(animations, animationNode, bone, frame) {
+
+  var key = {
+    time: frame / animations.fps,
+    pos: bone.position.toArray(),
+    rot: bone.quaternion.toArray(),
+    scl: bone.scale.toArray()
+  };
+
+  if (animationNode === undefined) return key;
+
+  try {
+
+    if (hasCurve(animationNode, 'T') && hasKeyOnFrame(animationNode.T, frame)) {
+
+      key.pos = [animationNode.T.curves.x.values[frame], animationNode.T.curves.y.values[frame], animationNode.T.curves.z.values[frame]];
+    }
+
+    if (hasCurve(animationNode, 'R') && hasKeyOnFrame(animationNode.R, frame)) {
+
+      var rotationX = animationNode.R.curves.x.values[frame];
+      var rotationY = animationNode.R.curves.y.values[frame];
+      var rotationZ = animationNode.R.curves.z.values[frame];
+
+      quaternion.setFromEuler(euler.set(rotationX, rotationY, rotationZ, 'ZYX'));
+      key.rot = quaternion.toArray();
+    }
+
+    if (hasCurve(animationNode, 'S') && hasKeyOnFrame(animationNode.S, frame)) {
+
+      key.scl = [animationNode.S.curves.x.values[frame], animationNode.S.curves.y.values[frame], animationNode.S.curves.z.values[frame]];
+    }
+  } catch (error) {
+
+    // Curve is not fully plotted.
+    console.log(bone);
+    console.log(error);
+  }
+
+  return key;
+}
+
+var AXES = ['x', 'y', 'z'];
+
+function hasCurve(animationNode, attribute) {
+
+  if (animationNode === undefined) {
+
+    return false;
+  }
+
+  var attributeNode = animationNode[attribute];
+
+  if (!attributeNode) {
+
+    return false;
+  }
+
+  return AXES.every(function (key) {
+
+    return attributeNode.curves[key] !== null;
+  });
+}
+
+function hasKeyOnFrame(attributeNode, frame) {
+
+  return AXES.every(function (key) {
+
+    return isKeyExistOnFrame(attributeNode.curves[key], frame);
+  });
+}
+
+function isKeyExistOnFrame(curve, frame) {
+
+  return curve.values[frame] !== undefined;
+}
+
+/**
+ * An instance of a Vertex with data for drawing vertices to the screen.
+ * @constructor
+ */
+function Vertex$1() {
+
+  /**
+   * Position of the vertex.
+   * @type {THREE.Vector3}
+   */
+  this.position = new Vector3();
+
+  /**
+   * Normal of the vertex
+   * @type {THREE.Vector3}
+   */
+  this.normal = new Vector3();
+
+  /**
+   * UV coordinates of the vertex.
+   * @type {THREE.Vector2}
+   */
+  this.uv = new Vector2();
+
+  /**
+   * Color of the vertex
+   * @type {THREE.Vector3}
+   */
+  this.color = new Vector3();
+
+  /**
+   * Indices of the bones vertex is influenced by.
+   * @type {THREE.Vector4}
+   */
+  this.skinIndices = new Vector4(0, 0, 0, 0);
+
+  /**
+   * Weights that each bone influences the vertex.
+   * @type {THREE.Vector4}
+   */
+  this.skinWeights = new Vector4(0, 0, 0, 0);
+}
+
+Object.assign(Vertex$1.prototype, {
+  copy: function (target) {
+
+    var returnVar = target || new Vertex$1();
+
+    returnVar.position.copy(this.position);
+    returnVar.normal.copy(this.normal);
+    returnVar.uv.copy(this.uv);
+    returnVar.skinIndices.copy(this.skinIndices);
+    returnVar.skinWeights.copy(this.skinWeights);
+
+    return returnVar;
+  },
+  flattenToBuffers: function (vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer) {
+
+    this.position.toArray(vertexBuffer, vertexBuffer.length);
+    this.normal.toArray(normalBuffer, normalBuffer.length);
+    this.uv.toArray(uvBuffer, uvBuffer.length);
+    this.color.toArray(colorBuffer, colorBuffer.length);
+    this.skinIndices.toArray(skinIndexBuffer, skinIndexBuffer.length);
+    this.skinWeights.toArray(skinWeightBuffer, skinWeightBuffer.length);
+  }
+});
+
+/**
+ * @constructor
+ */
+function Triangle$1() {
+
+  /**
+   * @type {{position: THREE.Vector3, normal: THREE.Vector3, uv: THREE.Vector2, skinIndices: THREE.Vector4, skinWeights: THREE.Vector4}[]}
+   */
+  this.vertices = [];
+}
+
+Object.assign(Triangle$1.prototype, {
+  copy: function (target) {
+
+    var returnVar = target || new Triangle$1();
+
+    for (var i = 0; i < this.vertices.length; ++i) {
+
+      this.vertices[i].copy(returnVar.vertices[i]);
+    }
+
+    return returnVar;
+  },
+  flattenToBuffers: function (vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer) {
+
+    var vertices = this.vertices;
+
+    for (var i = 0, l = vertices.length; i < l; ++i) {
+
+      vertices[i].flattenToBuffers(vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer);
+    }
+  }
+});
+
+/**
+ * @constructor
+ */
+function Face() {
+
+  /**
+   * @type {{vertices: {position: THREE.Vector3, normal: THREE.Vector3, uv: THREE.Vector2, skinIndices: THREE.Vector4, skinWeights: THREE.Vector4}[]}[]}
+   */
+  this.triangles = [];
+  this.materialIndex = 0;
+}
+
+Object.assign(Face.prototype, {
+  copy: function (target) {
+
+    var returnVar = target || new Face();
+
+    for (var i = 0; i < this.triangles.length; ++i) {
+
+      this.triangles[i].copy(returnVar.triangles[i]);
+    }
+
+    returnVar.materialIndex = this.materialIndex;
+
+    return returnVar;
+  },
+  genTrianglesFromVertices: function (vertexArray) {
+
+    for (var i = 2; i < vertexArray.length; ++i) {
+
+      var triangle = new Triangle$1();
+      triangle.vertices[0] = vertexArray[0];
+      triangle.vertices[1] = vertexArray[i - 1];
+      triangle.vertices[2] = vertexArray[i];
+      this.triangles.push(triangle);
+    }
+  },
+  flattenToBuffers: function (vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer, materialIndexBuffer) {
+
+    var triangles = this.triangles;
+    var materialIndex = this.materialIndex;
+
+    for (var i = 0, l = triangles.length; i < l; ++i) {
+
+      triangles[i].flattenToBuffers(vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer);
+      append(materialIndexBuffer, [materialIndex, materialIndex, materialIndex]);
+    }
+  }
+});
+
+/**
+ * @constructor
+ */
+function Geometry$1() {
+
+  /**
+   * @type {{triangles: {vertices: {position: THREE.Vector3, normal: THREE.Vector3, uv: THREE.Vector2, skinIndices: THREE.Vector4, skinWeights: THREE.Vector4}[]}[], materialIndex: number}[]}
+   */
+  this.faces = [];
+
+  /**
+   * @type {{}|THREE.Skeleton}
+   */
+  this.skeleton = null;
+}
+
+Object.assign(Geometry$1.prototype, {
+
+  /**
+   * @returns	{{vertexBuffer: number[], normalBuffer: number[], uvBuffer: number[], skinIndexBuffer: number[], skinWeightBuffer: number[], materialIndexBuffer: number[]}}
+   */
+  flattenToBuffers: function () {
+
+    var vertexBuffer = [];
+    var normalBuffer = [];
+    var uvBuffer = [];
+    var colorBuffer = [];
+    var skinIndexBuffer = [];
+    var skinWeightBuffer = [];
+
+    var materialIndexBuffer = [];
+
+    var faces = this.faces;
+
+    for (var i = 0, l = faces.length; i < l; ++i) {
+
+      faces[i].flattenToBuffers(vertexBuffer, normalBuffer, uvBuffer, colorBuffer, skinIndexBuffer, skinWeightBuffer, materialIndexBuffer);
+    }
+
+    return {
+      vertexBuffer: vertexBuffer,
+      normalBuffer: normalBuffer,
+      uvBuffer: uvBuffer,
+      colorBuffer: colorBuffer,
+      skinIndexBuffer: skinIndexBuffer,
+      skinWeightBuffer: skinWeightBuffer,
+      materialIndexBuffer: materialIndexBuffer
+    };
+  }
+});
+
+function TextParser() {}
+
+Object.assign(TextParser.prototype, {
+  getPrevNode: function () {
+
+    return this.nodeStack[this.currentIndent - 2];
+  },
+  getCurrentNode: function () {
+
+    return this.nodeStack[this.currentIndent - 1];
+  },
+  getCurrentProp: function () {
+
+    return this.currentProp;
+  },
+  pushStack: function (node) {
+
+    this.nodeStack.push(node);
+    this.currentIndent += 1;
+  },
+  popStack: function () {
+
+    this.nodeStack.pop();
+    this.currentIndent -= 1;
+  },
+  setCurrentProp: function (val, name) {
+
+    this.currentProp = val;
+    this.currentPropName = name;
+  },
+
+
+  // ----------parse ---------------------------------------------------
+  parse: function (text) {
+
+    this.currentIndent = 0;
+    this.allNodes = new FBXTree();
+    this.nodeStack = [];
+    this.currentProp = [];
+    this.currentPropName = '';
+
+    var split = text.split('\n');
+
+    for (var line in split) {
+
+      var l = split[line];
+
+      // short cut
+      if (l.match(/^[\s\t]*;/)) {
+
+        continue;
+      } // skip comment line
+      if (l.match(/^[\s\t]*$/)) {
+
+        continue;
+      } // skip empty line
+
+      // beginning of node
+      var beginningOfNodeExp = new RegExp('^\\t{' + this.currentIndent + '}(\\w+):(.*){', '');
+      var match = l.match(beginningOfNodeExp);
+      if (match) {
+
+        var nodeName = match[1].trim().replace(/^"/, '').replace(/"$/, '');
+        var nodeAttrs = match[2].split(',');
+
+        for (var i = 0, l = nodeAttrs.length; i < l; i++) {
+          nodeAttrs[i] = nodeAttrs[i].trim().replace(/^"/, '').replace(/"$/, '');
+        }
+
+        this.parseNodeBegin(l, nodeName, nodeAttrs || null);
+        continue;
+      }
+
+      // node's property
+      var propExp = new RegExp('^\\t{' + this.currentIndent + '}(\\w+):[\\s\\t\\r\\n](.*)');
+      var match = l.match(propExp);
+      if (match) {
+
+        var propName = match[1].replace(/^"/, '').replace(/"$/, '').trim();
+        var propValue = match[2].replace(/^"/, '').replace(/"$/, '').trim();
+
+        this.parseNodeProperty(l, propName, propValue);
+        continue;
+      }
+
+      // end of node
+      var endOfNodeExp = new RegExp('^\\t{' + (this.currentIndent - 1) + '}}');
+      if (l.match(endOfNodeExp)) {
+
+        this.nodeEnd();
+        continue;
+      }
+
+      // for special case,
+      //
+      //	  Vertices: *8670 {
+      //		  a: 0.0356229953467846,13.9599733352661,-0.399196773.....(snip)
+      // -0.0612030513584614,13.960485458374,-0.409748703241348,-0.10.....
+      // 0.12490539252758,13.7450733184814,-0.454119384288788,0.09272.....
+      // 0.0836158767342567,13.5432004928589,-0.435397416353226,0.028.....
+      //
+      // these case the lines must contiue with previous line
+      if (l.match(/^[^\s\t}]/)) {
+
+        this.parseNodePropertyContinued(l);
+      }
+    }
+
+    return this.allNodes;
+  },
+  parseNodeBegin: function (line, nodeName, nodeAttrs) {
+
+    // var nodeName = match[1];
+    var node = { name: nodeName, properties: {}, subNodes: {} };
+    var attrs = this.parseNodeAttr(nodeAttrs);
+    var currentNode = this.getCurrentNode();
+
+    // a top node
+    if (this.currentIndent === 0) {
+
+      this.allNodes.add(nodeName, node);
+    } else {
+
+      // a subnode
+
+      // already exists subnode, then append it
+      if (nodeName in currentNode.subNodes) {
+
+        var tmp = currentNode.subNodes[nodeName];
+
+        // console.log( "duped entry found\nkey: " + nodeName + "\nvalue: " + propValue );
+        if (this.isFlattenNode(currentNode.subNodes[nodeName])) {
+
+          if (attrs.id === '') {
+
+            currentNode.subNodes[nodeName] = [];
+            currentNode.subNodes[nodeName].push(tmp);
+          } else {
+
+            currentNode.subNodes[nodeName] = {};
+            currentNode.subNodes[nodeName][tmp.id] = tmp;
+          }
+        }
+
+        if (attrs.id === '') {
+
+          currentNode.subNodes[nodeName].push(node);
+        } else {
+
+          currentNode.subNodes[nodeName][attrs.id] = node;
+        }
+      } else if (typeof attrs.id === 'number' || attrs.id.match(/^\d+$/)) {
+
+        currentNode.subNodes[nodeName] = {};
+        currentNode.subNodes[nodeName][attrs.id] = node;
+      } else {
+
+        currentNode.subNodes[nodeName] = node;
+      }
+    }
+
+    // for this		  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    // NodeAttribute: 1001463072, "NodeAttribute::", "LimbNode" {
+    if (nodeAttrs) {
+
+      node.id = attrs.id;
+      node.attrName = attrs.name;
+      node.attrType = attrs.type;
+    }
+
+    this.pushStack(node);
+  },
+  parseNodeAttr: function (attrs) {
+
+    var id = attrs[0];
+
+    if (attrs[0] !== '') {
+
+      id = parseInt(attrs[0]);
+
+      if (isNaN(id)) {
+
+        // PolygonVertexIndex: *16380 {
+        id = attrs[0];
+      }
+    }
+
+    var name = '',
+        type = '';
+
+    if (attrs.length > 1) {
+
+      name = attrs[1].replace(/^(\w+)::/, '');
+      type = attrs[2];
+    }
+
+    return { id: id, name: name, type: type };
+  },
+  parseNodeProperty: function (line, propName, propValue) {
+
+    var currentNode = this.getCurrentNode();
+    var parentName = currentNode.name;
+
+    // special case parent node's is like "Properties70"
+    // these chilren nodes must treat with careful
+    if (parentName !== undefined) {
+
+      var propMatch = parentName.match(/Properties(\d)+/);
+      if (propMatch) {
+
+        this.parseNodeSpecialProperty(line, propName, propValue);
+        return;
+      }
+    }
+
+    // special case Connections
+    if (propName == 'C') {
+
+      var connProps = propValue.split(',').slice(1);
+      var from = parseInt(connProps[0]);
+      var to = parseInt(connProps[1]);
+
+      var rest = propValue.split(',').slice(3);
+
+      propName = 'connections';
+      propValue = [from, to];
+      append(propValue, rest);
+
+      if (currentNode.properties[propName] === undefined) {
+
+        currentNode.properties[propName] = [];
+      }
+    }
+
+    // special case Connections
+    if (propName == 'Node') {
+
+      var id = parseInt(propValue);
+      currentNode.properties.id = id;
+      currentNode.id = id;
+    }
+
+    // already exists in properties, then append this
+    if (propName in currentNode.properties) {
+
+      // console.log( "duped entry found\nkey: " + propName + "\nvalue: " + propValue );
+      if (Array.isArray(currentNode.properties[propName])) {
+
+        currentNode.properties[propName].push(propValue);
+      } else {
+
+        currentNode.properties[propName] += propValue;
+      }
+    } else {
+
+      // console.log( propName + ":  " + propValue );
+      if (Array.isArray(currentNode.properties[propName])) {
+
+        currentNode.properties[propName].push(propValue);
+      } else {
+
+        currentNode.properties[propName] = propValue;
+      }
+    }
+
+    this.setCurrentProp(currentNode.properties, propName);
+  },
+
+
+  // TODO:
+  parseNodePropertyContinued: function (line) {
+
+    this.currentProp[this.currentPropName] += line;
+  },
+  parseNodeSpecialProperty: function (line, propName, propValue) {
+
+    // split this
+    // P: "Lcl Scaling", "Lcl Scaling", "", "A",1,1,1
+    // into array like below
+    // ["Lcl Scaling", "Lcl Scaling", "", "A", "1,1,1" ]
+    var props = propValue.split('",');
+
+    for (var i = 0, l = props.length; i < l; i++) {
+      props[i] = props[i].trim().replace(/^\"/, '').replace(/\s/, '_');
+    }
+
+    var innerPropName = props[0];
+    var innerPropType1 = props[1];
+    var innerPropType2 = props[2];
+    var innerPropFlag = props[3];
+    var innerPropValue = props[4];
+
+    /*
+    if ( innerPropValue === undefined ) {
+    	innerPropValue = props[3];
+    }
+    */
+
+    // cast value in its type
+    switch (innerPropType1) {
+
+      case 'int':
+        innerPropValue = parseInt(innerPropValue);
+        break;
+
+      case 'double':
+        innerPropValue = parseFloat(innerPropValue);
+        break;
+
+      case 'ColorRGB':
+      case 'Vector3D':
+        innerPropValue = parseFloatArray(innerPropValue);
+        break;
+
+    }
+
+    // CAUTION: these props must append to parent's parent
+    this.getPrevNode().properties[innerPropName] = {
+
+      type: innerPropType1,
+      type2: innerPropType2,
+      flag: innerPropFlag,
+      value: innerPropValue
+
+    };
+
+    this.setCurrentProp(this.getPrevNode().properties, innerPropName);
+  },
+  nodeEnd: function () {
+
+    this.popStack();
+  },
+
+
+  /* ---------------------------------------------------------------- */
+  /*		util													  */
+  isFlattenNode: function (node) {
+
+    return !!('subNodes' in node && 'properties' in node);
+  }
+});
+
+// Binary format specification:
+//   https://code.blender.org/2013/08/fbx-binary-file-format-specification/
+//   https://wiki.rogiken.org/specifications/file-format/fbx/ (more detail but Japanese)
+function BinaryParser() {}
+
+Object.assign(BinaryParser.prototype, {
+
+  /**
+   * Parses binary data and builds FBXTree as much compatible as possible with the one built by TextParser.
+   * @param {ArrayBuffer} buffer
+   * @returns {THREE.FBXTree}
+   */
+  parse: function (buffer) {
+
+    var reader = new BinaryReader(buffer);
+    reader.skip(23); // skip magic 23 bytes
+
+    var version = reader.getUint32();
+
+    console.log('FBX binary version: ' + version);
+
+    var allNodes = new FBXTree();
+
+    while (!this.endOfContent(reader)) {
+
+      var node = this.parseNode(reader, version);
+      if (node !== null) allNodes.add(node.name, node);
+    }
+
+    return allNodes;
+  },
+
+
+  /**
+   * Checks if reader has reached the end of content.
+   * @param {BinaryReader} reader
+   * @returns {boolean}
+   */
+  endOfContent: function (reader) {
+
+    // footer size: 160bytes + 16-byte alignment padding
+    // - 16bytes: magic
+    // - padding til 16-byte alignment (at least 1byte?)
+    //   (seems like some exporters embed fixed 15bytes?)
+    // - 4bytes: magic
+    // - 4bytes: version
+    // - 120bytes: zero
+    // - 16bytes: magic
+    if (reader.size() % 16 === 0) {
+
+      return (reader.getOffset() + 160 + 16 & ~0xf) >= reader.size();
+    }
+
+    return reader.getOffset() + 160 + 15 >= reader.size();
+  },
+
+
+  /**
+   * Parses Node as much compatible as possible with the one parsed by TextParser
+   * TODO: could be optimized more?
+   * @param {BinaryReader} reader
+   * @param {number} version
+   * @returns {Object} - Returns an Object as node, or null if NULL-record.
+   */
+  parseNode: function (reader, version) {
+
+    // The first three data sizes depends on version.
+    var endOffset = version >= 7500 ? reader.getUint64() : reader.getUint32();
+    var numProperties = version >= 7500 ? reader.getUint64() : reader.getUint32();
+    var propertyListLen = version >= 7500 ? reader.getUint64() : reader.getUint32();
+    var nameLen = reader.getUint8();
+    var name = reader.getString(nameLen);
+
+    // Regards this node as NULL-record if endOffset is zero
+    if (endOffset === 0) return null;
+
+    var propertyList = [];
+
+    for (var i = 0; i < numProperties; i++) {
+
+      propertyList.push(this.parseProperty(reader));
+    }
+
+    // Regards the first three elements in propertyList as id, attrName, and attrType
+    var id = propertyList.length > 0 ? propertyList[0] : '';
+    var attrName = propertyList.length > 1 ? propertyList[1] : '';
+    var attrType = propertyList.length > 2 ? propertyList[2] : '';
+
+    var subNodes = {};
+    var properties = {};
+
+    var isSingleProperty = false;
+
+    // if this node represents just a single property
+    // like (name, 0) set or (name2, [0, 1, 2]) set of {name: 0, name2: [0, 1, 2]}
+    if (numProperties === 1 && reader.getOffset() === endOffset) {
+
+      isSingleProperty = true;
+    }
+
+    while (endOffset > reader.getOffset()) {
+
+      var node = this.parseNode(reader, version);
+
+      if (node === null) continue;
+
+      // special case: child node is single property
+      if (node.singleProperty === true) {
+
+        var value = node.propertyList[0];
+
+        if (Array.isArray(value)) {
+
+          // node represents
+          //	Vertices: *3 {
+          //		a: 0.01, 0.02, 0.03
+          //	}
+          // of text format here.
+
+          node.properties[node.name] = node.propertyList[0];
+          subNodes[node.name] = node;
+
+          // Later phase expects single property array is in node.properties.a as String.
+          // TODO: optimize
+          node.properties.a = value.toString();
+        } else {
+
+          // node represents
+          // 	Version: 100
+          // of text format here.
+
+          properties[node.name] = value;
+        }
+
+        continue;
+      }
+
+      // special case: connections
+      if (name === 'Connections' && node.name === 'C') {
+
+        var array = [];
+
+        // node.propertyList would be like
+        // ["OO", 111264976, 144038752, "d|x"] (?, from, to, additional values)
+        for (var i = 1, il = node.propertyList.length; i < il; i++) {
+
+          array[i - 1] = node.propertyList[i];
+        }
+
+        if (properties.connections === undefined) {
+
+          properties.connections = [];
+        }
+
+        properties.connections.push(array);
+
+        continue;
+      }
+
+      // special case: child node is Properties\d+
+      if (node.name.match(/^Properties\d+$/)) {
+
+        // move child node's properties to this node.
+
+        var keys = Object.keys(node.properties);
+
+        for (var i = 0, il = keys.length; i < il; i++) {
+
+          var key = keys[i];
+          properties[key] = node.properties[key];
+        }
+
+        continue;
+      }
+
+      // special case: properties
+      if (name.match(/^Properties\d+$/) && node.name === 'P') {
+
+        var innerPropName = node.propertyList[0];
+        var innerPropType1 = node.propertyList[1];
+        var innerPropType2 = node.propertyList[2];
+        var innerPropFlag = node.propertyList[3];
+        var innerPropValue;
+
+        if (innerPropName.indexOf('Lcl ') === 0) innerPropName = innerPropName.replace('Lcl ', 'Lcl_');
+        if (innerPropType1.indexOf('Lcl ') === 0) innerPropType1 = innerPropType1.replace('Lcl ', 'Lcl_');
+
+        if (innerPropType1 === 'ColorRGB' || innerPropType1 === 'Vector' || innerPropType1 === 'Vector3D' || innerPropType1.indexOf('Lcl_') === 0) {
+
+          innerPropValue = [node.propertyList[4], node.propertyList[5], node.propertyList[6]];
+        } else {
+
+          innerPropValue = node.propertyList[4];
+        }
+
+        if (innerPropType1.indexOf('Lcl_') === 0) {
+
+          innerPropValue = innerPropValue.toString();
+        }
+
+        // this will be copied to parent. see above.
+        properties[innerPropName] = {
+
+          type: innerPropType1,
+          type2: innerPropType2,
+          flag: innerPropFlag,
+          value: innerPropValue
+
+        };
+
+        continue;
+      }
+
+      // standard case
+      // follows TextParser's manner.
+      if (subNodes[node.name] === undefined) {
+
+        if (typeof node.id === 'number') {
+
+          subNodes[node.name] = {};
+          subNodes[node.name][node.id] = node;
+        } else {
+
+          subNodes[node.name] = node;
+        }
+      } else if (node.id === '') {
+
+        if (!Array.isArray(subNodes[node.name])) {
+
+          subNodes[node.name] = [subNodes[node.name]];
+        }
+
+        subNodes[node.name].push(node);
+      } else if (subNodes[node.name][node.id] === undefined) {
+
+        subNodes[node.name][node.id] = node;
+      } else {
+
+        // conflict id. irregular?
+
+        if (!Array.isArray(subNodes[node.name][node.id])) {
+
+          subNodes[node.name][node.id] = [subNodes[node.name][node.id]];
+        }
+
+        subNodes[node.name][node.id].push(node);
+      }
+    }
+
+    return {
+
+      singleProperty: isSingleProperty,
+      id: id,
+      attrName: attrName,
+      attrType: attrType,
+      name: name,
+      properties: properties,
+      propertyList: propertyList, // raw property list, would be used by parent
+      subNodes: subNodes
+
+    };
+  },
+  parseProperty: function (reader) {
+
+    var type = reader.getChar();
+
+    switch (type) {
+
+      case 'F':
+        return reader.getFloat32();
+
+      case 'D':
+        return reader.getFloat64();
+
+      case 'L':
+        return reader.getInt64();
+
+      case 'I':
+        return reader.getInt32();
+
+      case 'Y':
+        return reader.getInt16();
+
+      case 'C':
+        return reader.getBoolean();
+
+      case 'f':
+      case 'd':
+      case 'l':
+      case 'i':
+      case 'b':
+
+        var arrayLength = reader.getUint32();
+        var encoding = reader.getUint32(); // 0: non-compressed, 1: compressed
+        var compressedLength = reader.getUint32();
+
+        if (encoding === 0) {
+
+          switch (type) {
+
+            case 'f':
+              return reader.getFloat32Array(arrayLength);
+
+            case 'd':
+              return reader.getFloat64Array(arrayLength);
+
+            case 'l':
+              return reader.getInt64Array(arrayLength);
+
+            case 'i':
+              return reader.getInt32Array(arrayLength);
+
+            case 'b':
+              return reader.getBooleanArray(arrayLength);
+
+          }
+        }
+
+        if (window.Zlib === undefined) {
+
+          throw new Error('FBXLoader: Import inflate.min.js from https://github.com/imaya/zlib.js');
+        }
+
+        var inflate = new Zlib.Inflate(new Uint8Array(reader.getArrayBuffer(compressedLength)));
+        var reader2 = new BinaryReader(inflate.decompress().buffer);
+
+        switch (type) {
+
+          case 'f':
+            return reader2.getFloat32Array(arrayLength);
+
+          case 'd':
+            return reader2.getFloat64Array(arrayLength);
+
+          case 'l':
+            return reader2.getInt64Array(arrayLength);
+
+          case 'i':
+            return reader2.getInt32Array(arrayLength);
+
+          case 'b':
+            return reader2.getBooleanArray(arrayLength);
+
+        }
+
+      case 'S':
+        var length = reader.getUint32();
+        return reader.getString(length);
+
+      case 'R':
+        var length = reader.getUint32();
+        return reader.getArrayBuffer(length);
+
+      default:
+        console.error('FBX contains an unknown property type ' + type);
+
+    }
+  }
+});
+
+function BinaryReader(buffer, littleEndian) {
+
+  this.dv = new DataView(buffer);
+  this.offset = 0;
+  this.littleEndian = littleEndian !== undefined ? littleEndian : true;
+}
+
+Object.assign(BinaryReader.prototype, {
+  getOffset: function () {
+
+    return this.offset;
+  },
+  size: function () {
+
+    return this.dv.buffer.byteLength;
+  },
+  skip: function (length) {
+
+    this.offset += length;
+  },
+
+
+  // seems like true/false representation depends on exporter.
+  //   true: 1 or 'Y'(=0x59), false: 0 or 'T'(=0x54)
+  // then sees LSB.
+  getBoolean: function () {
+
+    return (this.getUint8() & 1) === 1;
+  },
+  getBooleanArray: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getBoolean());
+    }
+
+    return a;
+  },
+  getInt8: function () {
+
+    var value = this.dv.getInt8(this.offset);
+    this.offset += 1;
+    return value;
+  },
+  getInt8Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getInt8());
+    }
+
+    return a;
+  },
+  getUint8: function () {
+
+    var value = this.dv.getUint8(this.offset);
+    this.offset += 1;
+    return value;
+  },
+  getUint8Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getUint8());
+    }
+
+    return a;
+  },
+  getInt16: function () {
+
+    var value = this.dv.getInt16(this.offset, this.littleEndian);
+    this.offset += 2;
+    return value;
+  },
+  getInt16Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getInt16());
+    }
+
+    return a;
+  },
+  getUint16: function () {
+
+    var value = this.dv.getUint16(this.offset, this.littleEndian);
+    this.offset += 2;
+    return value;
+  },
+  getUint16Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getUint16());
+    }
+
+    return a;
+  },
+  getInt32: function () {
+
+    var value = this.dv.getInt32(this.offset, this.littleEndian);
+    this.offset += 4;
+    return value;
+  },
+  getInt32Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getInt32());
+    }
+
+    return a;
+  },
+  getUint32: function () {
+
+    var value = this.dv.getUint32(this.offset, this.littleEndian);
+    this.offset += 4;
+    return value;
+  },
+  getUint32Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getUint32());
+    }
+
+    return a;
+  },
+
+
+  // JavaScript doesn't support 64-bit integer so attempting to calculate by ourselves.
+  // 1 << 32 will return 1 so using multiply operation instead here.
+  // There'd be a possibility that this method returns wrong value if the value
+  // is out of the range between Number.MAX_SAFE_INTEGER and Number.MIN_SAFE_INTEGER.
+  // TODO: safely handle 64-bit integer
+  getInt64: function () {
+
+    var low = void 0,
+        high = void 0;
+
+    if (this.littleEndian) {
+
+      low = this.getUint32();
+      high = this.getUint32();
+    } else {
+
+      high = this.getUint32();
+      low = this.getUint32();
+    }
+
+    // calculate negative value
+    if (high & 0x80000000) {
+
+      high = ~high & 0xFFFFFFFF;
+      low = ~low & 0xFFFFFFFF;
+
+      if (low === 0xFFFFFFFF) high = high + 1 & 0xFFFFFFFF;
+
+      low = low + 1 & 0xFFFFFFFF;
+
+      return -(high * 0x100000000 + low);
+    }
+
+    return high * 0x100000000 + low;
+  },
+  getInt64Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getInt64());
+    }
+
+    return a;
+  },
+
+
+  // Note: see getInt64() comment
+  getUint64: function () {
+
+    var low = void 0,
+        high = void 0;
+
+    if (this.littleEndian) {
+
+      low = this.getUint32();
+      high = this.getUint32();
+    } else {
+
+      high = this.getUint32();
+      low = this.getUint32();
+    }
+
+    return high * 0x100000000 + low;
+  },
+  getUint64Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getUint64());
+    }
+
+    return a;
+  },
+  getFloat32: function () {
+
+    var value = this.dv.getFloat32(this.offset, this.littleEndian);
+    this.offset += 4;
+    return value;
+  },
+  getFloat32Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getFloat32());
+    }
+
+    return a;
+  },
+  getFloat64: function () {
+
+    var value = this.dv.getFloat64(this.offset, this.littleEndian);
+    this.offset += 8;
+    return value;
+  },
+  getFloat64Array: function (size) {
+
+    var a = [];
+
+    for (var i = 0; i < size; i++) {
+
+      a.push(this.getFloat64());
+    }
+
+    return a;
+  },
+  getArrayBuffer: function (size) {
+
+    var value = this.dv.buffer.slice(this.offset, this.offset + size);
+    this.offset += size;
+    return value;
+  },
+  getChar: function () {
+
+    return String.fromCharCode(this.getUint8());
+  },
+  getString: function (size) {
+
+    var s = '';
+
+    while (size > 0) {
+
+      var value = this.getUint8();
+      size--;
+
+      if (value === 0) break;
+
+      s += String.fromCharCode(value);
+    }
+
+    this.skip(size);
+
+    return s;
+  }
+});
+
+function FBXTree() {}
+
+Object.assign(FBXTree.prototype, {
+  add: function (key, val) {
+
+    this[key] = val;
+  },
+  searchConnectionParent: function (id) {
+
+    if (this.__cache_search_connection_parent === undefined) {
+
+      this.__cache_search_connection_parent = [];
+    }
+
+    if (this.__cache_search_connection_parent[id] !== undefined) {
+
+      return this.__cache_search_connection_parent[id];
+    }
+
+    this.__cache_search_connection_parent[id] = [];
+
+    var conns = this.Connections.properties.connections;
+
+    var results = [];
+    for (var i = 0; i < conns.length; ++i) {
+
+      if (conns[i][0] == id) {
+
+        // 0 means scene root
+        var res = conns[i][1] === 0 ? -1 : conns[i][1];
+        results.push(res);
+      }
+    }
+
+    if (results.length > 0) {
+
+      append(this.__cache_search_connection_parent[id], results);
+      return results;
+    }
+
+    this.__cache_search_connection_parent[id] = [-1];
+    return [-1];
+  },
+  searchConnectionChildren: function (id) {
+
+    if (this.__cache_search_connection_children === undefined) {
+
+      this.__cache_search_connection_children = [];
+    }
+
+    if (this.__cache_search_connection_children[id] !== undefined) {
+
+      return this.__cache_search_connection_children[id];
+    }
+
+    this.__cache_search_connection_children[id] = [];
+
+    var conns = this.Connections.properties.connections;
+
+    var res = [];
+    for (var i = 0; i < conns.length; ++i) {
+
+      if (conns[i][1] == id) {
+
+        // 0 means scene root
+        res.push(conns[i][0] === 0 ? -1 : conns[i][0]);
+        // there may more than one kid, then search to the end
+      }
+    }
+
+    if (res.length > 0) {
+
+      append(this.__cache_search_connection_children[id], res);
+      return res;
+    }
+
+    this.__cache_search_connection_children[id] = [];
+    return [];
+  },
+  searchConnectionType: function (id, to) {
+
+    var key = id + ',' + to; // TODO: to hash
+    if (this.__cache_search_connection_type === undefined) {
+
+      this.__cache_search_connection_type = {};
+    }
+
+    if (this.__cache_search_connection_type[key] !== undefined) {
+
+      return this.__cache_search_connection_type[key];
+    }
+
+    this.__cache_search_connection_type[key] = '';
+
+    var conns = this.Connections.properties.connections;
+
+    for (var i = 0; i < conns.length; ++i) {
+
+      if (conns[i][0] == id && conns[i][1] == to) {
+
+        // 0 means scene root
+        this.__cache_search_connection_type[key] = conns[i][2];
+        return conns[i][2];
+      }
+    }
+
+    this.__cache_search_connection_type[id] = null;
+    return null;
+  }
+});
+
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {boolean}
+ */
+function isFbxFormatBinary(buffer) {
+
+  var CORRECT = 'Kaydara FBX Binary  \0';
+
+  return buffer.byteLength >= CORRECT.length && CORRECT === convertArrayBufferToString(buffer, 0, CORRECT.length);
+}
+
+/**
+ * @returns {boolean}
+ */
+function isFbxFormatASCII(text) {
+
+  var CORRECT = ['K', 'a', 'y', 'd', 'a', 'r', 'a', '\\', 'F', 'B', 'X', '\\', 'B', 'i', 'n', 'a', 'r', 'y', '\\', '\\'];
+
+  var cursor = 0;
+
+  function read(offset) {
+
+    var result = text[offset - 1];
+    text = text.slice(cursor + offset);
+    cursor++;
+    return result;
+  }
+
+  for (var i = 0; i < CORRECT.length; ++i) {
+
+    var num = read(1);
+    if (num == CORRECT[i]) {
+
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * @returns {number}
+ */
+function getFbxVersion(text) {
+
+  var versionRegExp = /FBXVersion: (\d+)/;
+  var match = text.match(versionRegExp);
+  if (match) {
+
+    var version = parseInt(match[1]);
+    return version;
+  }
+  throw new Error('FBXLoader: Cannot find the version number for the file given.');
+}
+
+/**
+ * Converts FBX ticks into real time seconds.
+ * @param {number} time - FBX tick timestamp to convert.
+ * @returns {number} - FBX tick in real world time.
+ */
+function convertFBXTimeToSeconds(time) {
+
+  // Constant is FBX ticks per second.
+  return time / 46186158000;
+}
+
+/**
+ * Parses comma separated list of float numbers and returns them in an array.
+ * @example
+ * // Returns [ 5.6, 9.4, 2.5, 1.4 ]
+ * parseFloatArray( "5.6,9.4,2.5,1.4" )
+ * @returns {number[]}
+ */
+function parseFloatArray(string) {
+
+  var array = string.split(',');
+
+  for (var i = 0, l = array.length; i < l; i++) {
+
+    array[i] = parseFloat(array[i]);
+  }
+
+  return array;
+}
+
+/**
+ * Parses comma separated list of int numbers and returns them in an array.
+ * @example
+ * // Returns [ 5, 8, 2, 3 ]
+ * parseFloatArray( "5,8,2,3" )
+ * @returns {number[]}
+ */
+function parseIntArray(string) {
+
+  var array = string.split(',');
+
+  for (var i = 0, l = array.length; i < l; i++) {
+
+    array[i] = parseInt(array[i]);
+  }
+
+  return array;
+}
+
+/**
+ * Parses Vector3 property from FBXTree.  Property is given as .value.x, .value.y, etc.
+ * @param {FBXVector3} property - Property to parse as Vector3.
+ * @returns {THREE.Vector3}
+ */
+function parseVector3(property) {
+
+  return new Vector3().fromArray(property.value);
+}
+
+/**
+ * Parses Color property from FBXTree.  Property is given as .value.x, .value.y, etc.
+ * @param {FBXVector3} property - Property to parse as Color.
+ * @returns {THREE.Color}
+ */
+function parseColor(property) {
+
+  return new Color().fromArray(property.value);
+}
+
+function parseMatrixArray(floatString) {
+
+  return new Matrix4().fromArray(parseFloatArray(floatString));
+}
+
+/**
+ * Converts ArrayBuffer to String.
+ * @param {ArrayBuffer} buffer
+ * @param {number} from
+ * @param {number} to
+ * @returns {String}
+ */
+function convertArrayBufferToString(buffer, from, to) {
+
+  if (from === undefined) from = 0;
+  if (to === undefined) to = buffer.byteLength;
+
+  var array = new Uint8Array(buffer, from, to);
+
+  if (window.TextDecoder !== undefined) {
+
+    return new TextDecoder().decode(array);
+  }
+
+  var s = '';
+
+  for (var i = 0, il = array.length; i < il; i++) {
+
+    s += String.fromCharCode(array[i]);
+  }
+
+  return s;
+}
+
+/**
+ * Converts number from degrees into radians.
+ * @param {number} value
+ * @returns {number}
+ */
+function degreeToRadian(value) {
+
+  return value * DEG2RAD;
+}
+
+var DEG2RAD = Math.PI / 180;
+
+//
+
+function findIndex(array, func) {
+
+  for (var i = 0, l = array.length; i < l; i++) {
+
+    if (func(array[i])) return i;
+  }
+
+  return -1;
+}
+
+function append(a, b) {
+
+  for (var i = 0, j = a.length, l = b.length; i < l; i++, j++) {
+
+    a[j] = b[i];
+  }
+}
+
+function slice(a, b, from, to) {
+
+  for (var i = from, j = 0; i < to; i++, j++) {
+
+    a[j] = b[i];
+  }
+
+  return a;
+}
+
+var GLTFLoader = function () {
+
+	function GLTFLoader(manager) {
+
+		this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+	}
+
+	GLTFLoader.prototype = {
+
+		constructor: GLTFLoader,
+
+		load: function (url, onLoad, onProgress, onError) {
+
+			var scope = this;
+
+			var path = this.path && typeof this.path === "string" ? this.path : Loader.prototype.extractUrlBase(url);
+
+			var loader = new FileLoader(scope.manager);
+
+			loader.setResponseType('arraybuffer');
+
+			loader.load(url, function (data) {
+
+				scope.parse(data, onLoad, path);
+			}, onProgress, onError);
+		},
+
+		setCrossOrigin: function (value) {
+
+			this.crossOrigin = value;
+		},
+
+		setPath: function (value) {
+
+			this.path = value;
+		},
+
+		parse: function (data, callback, path) {
+
+			var content;
+			var extensions = {};
+
+			var magic = convertUint8ArrayToString(new Uint8Array(data, 0, 4));
+
+			if (magic === BINARY_EXTENSION_HEADER_DEFAULTS.magic) {
+
+				extensions[EXTENSIONS.KHR_BINARY_GLTF] = new GLTFBinaryExtension(data);
+				content = extensions[EXTENSIONS.KHR_BINARY_GLTF].content;
+			} else {
+
+				content = convertUint8ArrayToString(new Uint8Array(data));
+			}
+
+			var json = JSON.parse(content);
+
+			if (json.extensionsUsed && json.extensionsUsed.indexOf(EXTENSIONS.KHR_MATERIALS_COMMON) >= 0) {
+
+				extensions[EXTENSIONS.KHR_MATERIALS_COMMON] = new GLTFMaterialsCommonExtension(json);
+			}
+
+			console.time('GLTFLoader');
+
+			var parser = new GLTFParser(json, extensions, {
+
+				path: path || this.path,
+				crossOrigin: this.crossOrigin
+
+			});
+
+			parser.parse(function (scene, scenes, cameras, animations) {
+
+				console.timeEnd('GLTFLoader');
+
+				var glTF = {
+					"scene": scene,
+					"scenes": scenes,
+					"cameras": cameras,
+					"animations": animations
+				};
+
+				callback(glTF);
+			});
+		}
+
+	};
+
+	/* GLTFREGISTRY */
+
+	function GLTFRegistry() {
+
+		var objects = {};
+
+		return {
+
+			get: function (key) {
+
+				return objects[key];
+			},
+
+			add: function (key, object) {
+
+				objects[key] = object;
+			},
+
+			remove: function (key) {
+
+				delete objects[key];
+			},
+
+			removeAll: function () {
+
+				objects = {};
+			},
+
+			update: function (scene, camera) {
+
+				for (var name in objects) {
+
+					var object = objects[name];
+
+					if (object.update) {
+
+						object.update(scene, camera);
+					}
+				}
+			}
+
+		};
+	}
+
+	/* GLTFSHADERS */
+
+	GLTFLoader.Shaders = {
+
+		update: function () {
+
+			console.warn('THREE.GLTFLoader.Shaders has been deprecated, and now updates automatically.');
+		}
+
+	};
+
+	/* GLTFSHADER */
+
+	function GLTFShader(targetNode, allNodes) {
+
+		var boundUniforms = {};
+
+		// bind each uniform to its source node
+
+		var uniforms = targetNode.material.uniforms;
+
+		for (var uniformId in uniforms) {
+
+			var uniform = uniforms[uniformId];
+
+			if (uniform.semantic) {
+
+				var sourceNodeRef = uniform.node;
+
+				var sourceNode = targetNode;
+
+				if (sourceNodeRef) {
+
+					sourceNode = allNodes[sourceNodeRef];
+				}
+
+				boundUniforms[uniformId] = {
+					semantic: uniform.semantic,
+					sourceNode: sourceNode,
+					targetNode: targetNode,
+					uniform: uniform
+				};
+			}
+		}
+
+		this.boundUniforms = boundUniforms;
+		this._m4 = new Matrix4();
+	}
+
+	// Update - update all the uniform values
+	GLTFShader.prototype.update = function (scene, camera) {
+
+		var boundUniforms = this.boundUniforms;
+
+		for (var name in boundUniforms) {
+
+			var boundUniform = boundUniforms[name];
+
+			switch (boundUniform.semantic) {
+
+				case "MODELVIEW":
+
+					var m4 = boundUniform.uniform.value;
+					m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					break;
+
+				case "MODELVIEWINVERSETRANSPOSE":
+
+					var m3 = boundUniform.uniform.value;
+					this._m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					m3.getNormalMatrix(this._m4);
+					break;
+
+				case "PROJECTION":
+
+					var m4 = boundUniform.uniform.value;
+					m4.copy(camera.projectionMatrix);
+					break;
+
+				case "JOINTMATRIX":
+
+					var m4v = boundUniform.uniform.value;
+
+					for (var mi = 0; mi < m4v.length; mi++) {
+
+						// So it goes like this:
+						// SkinnedMesh world matrix is already baked into MODELVIEW;
+						// transform joints to local space,
+						// then transform using joint's inverse
+						m4v[mi].getInverse(boundUniform.sourceNode.matrixWorld).multiply(boundUniform.targetNode.skeleton.bones[mi].matrixWorld).multiply(boundUniform.targetNode.skeleton.boneInverses[mi]).multiply(boundUniform.targetNode.bindMatrix);
+					}
+
+					break;
+
+				default:
+
+					console.warn("Unhandled shader semantic: " + boundUniform.semantic);
+					break;
+
+			}
+		}
+	};
+
+	/* ANIMATION */
+
+	GLTFLoader.Animations = {
+
+		update: function () {
+
+			console.warn('THREE.GLTFLoader.Animation has been deprecated. Use THREE.AnimationMixer instead.');
+		}
+
+	};
+
+	/*********************************/
+	/********** EXTENSIONS ***********/
+	/*********************************/
+
+	var EXTENSIONS = {
+		KHR_BINARY_GLTF: 'KHR_binary_glTF',
+		KHR_MATERIALS_COMMON: 'KHR_materials_common'
+	};
+
+	/* MATERIALS COMMON EXTENSION */
+
+	function GLTFMaterialsCommonExtension(json) {
+
+		this.name = EXTENSIONS.KHR_MATERIALS_COMMON;
+
+		this.lights = {};
+
+		var extension = json.extensions && json.extensions[EXTENSIONS.KHR_MATERIALS_COMMON] || {};
+		var lights = extension.lights || {};
+
+		for (var lightId in lights) {
+
+			var light = lights[lightId];
+			var lightNode;
+
+			var lightParams = light[light.type];
+			var color = new Color().fromArray(lightParams.color);
+
+			switch (light.type) {
+
+				case "directional":
+					lightNode = new DirectionalLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case "point":
+					lightNode = new PointLight(color);
+					break;
+
+				case "spot":
+					lightNode = new SpotLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case "ambient":
+					lightNode = new AmbientLight(color);
+					break;
+
+			}
+
+			if (lightNode) {
+
+				this.lights[lightId] = lightNode;
+			}
+		}
+	}
+
+	/* BINARY EXTENSION */
+
+	var BINARY_EXTENSION_BUFFER_NAME = 'binary_glTF';
+
+	var BINARY_EXTENSION_HEADER_DEFAULTS = { magic: 'glTF', version: 1, contentFormat: 0 };
+
+	var BINARY_EXTENSION_HEADER_LENGTH = 20;
+
+	function GLTFBinaryExtension(data) {
+
+		this.name = EXTENSIONS.KHR_BINARY_GLTF;
+
+		var headerView = new DataView(data, 0, BINARY_EXTENSION_HEADER_LENGTH);
+
+		var header = {
+			magic: convertUint8ArrayToString(new Uint8Array(data.slice(0, 4))),
+			version: headerView.getUint32(4, true),
+			length: headerView.getUint32(8, true),
+			contentLength: headerView.getUint32(12, true),
+			contentFormat: headerView.getUint32(16, true)
+		};
+
+		for (var key in BINARY_EXTENSION_HEADER_DEFAULTS) {
+
+			var value = BINARY_EXTENSION_HEADER_DEFAULTS[key];
+
+			if (header[key] !== value) {
+
+				throw new Error('Unsupported glTF-Binary header: Expected "%s" to be "%s".', key, value);
+			}
+		}
+
+		var contentArray = new Uint8Array(data, BINARY_EXTENSION_HEADER_LENGTH, header.contentLength);
+
+		this.header = header;
+		this.content = convertUint8ArrayToString(contentArray);
+		this.body = data.slice(BINARY_EXTENSION_HEADER_LENGTH + header.contentLength, header.length);
+	}
+
+	GLTFBinaryExtension.prototype.loadShader = function (shader, bufferViews) {
+
+		var bufferView = bufferViews[shader.extensions[EXTENSIONS.KHR_BINARY_GLTF].bufferView];
+		var array = new Uint8Array(bufferView);
+
+		return convertUint8ArrayToString(array);
+	};
+
+	GLTFBinaryExtension.prototype.loadTextureSourceUri = function (source, bufferViews) {
+
+		var metadata = source.extensions[EXTENSIONS.KHR_BINARY_GLTF];
+		var bufferView = bufferViews[metadata.bufferView];
+		var stringData = convertUint8ArrayToString(new Uint8Array(bufferView));
+
+		return 'data:' + metadata.mimeType + ';base64,' + btoa(stringData);
+	};
+
+	/*********************************/
+	/********** INTERNALS ************/
+	/*********************************/
+
+	/* CONSTANTS */
+
+	var WEBGL_CONSTANTS = {
+		FLOAT: 5126,
+		//FLOAT_MAT2: 35674,
+		FLOAT_MAT3: 35675,
+		FLOAT_MAT4: 35676,
+		FLOAT_VEC2: 35664,
+		FLOAT_VEC3: 35665,
+		FLOAT_VEC4: 35666,
+		LINEAR: 9729,
+		REPEAT: 10497,
+		SAMPLER_2D: 35678,
+		TRIANGLES: 4,
+		LINES: 1,
+		UNSIGNED_BYTE: 5121,
+		UNSIGNED_SHORT: 5123,
+
+		VERTEX_SHADER: 35633,
+		FRAGMENT_SHADER: 35632
+	};
+
+	var WEBGL_TYPE = {
+		5126: Number,
+		//35674: THREE.Matrix2,
+		35675: Matrix3,
+		35676: Matrix4,
+		35664: Vector2,
+		35665: Vector3,
+		35666: Vector4,
+		35678: Texture
+	};
+
+	var WEBGL_COMPONENT_TYPES = {
+		5120: Int8Array,
+		5121: Uint8Array,
+		5122: Int16Array,
+		5123: Uint16Array,
+		5125: Uint32Array,
+		5126: Float32Array
+	};
+
+	var WEBGL_FILTERS = {
+		9728: NearestFilter,
+		9729: LinearFilter,
+		9984: NearestMipMapNearestFilter,
+		9985: LinearMipMapNearestFilter,
+		9986: NearestMipMapLinearFilter,
+		9987: LinearMipMapLinearFilter
+	};
+
+	var WEBGL_WRAPPINGS = {
+		33071: ClampToEdgeWrapping,
+		33648: MirroredRepeatWrapping,
+		10497: RepeatWrapping
+	};
+
+	var WEBGL_TEXTURE_FORMATS = {
+		6406: AlphaFormat,
+		6407: RGBFormat,
+		6408: RGBAFormat,
+		6409: LuminanceFormat,
+		6410: LuminanceAlphaFormat
+	};
+
+	var WEBGL_TEXTURE_DATATYPES = {
+		5121: UnsignedByteType,
+		32819: UnsignedShort4444Type,
+		32820: UnsignedShort5551Type,
+		33635: UnsignedShort565Type
+	};
+
+	var WEBGL_SIDES = {
+		1028: BackSide, // Culling front
+		1029: FrontSide // Culling back
+		//1032: THREE.NoSide   // Culling front and back, what to do?
+	};
+
+	var WEBGL_DEPTH_FUNCS = {
+		512: NeverDepth,
+		513: LessDepth,
+		514: EqualDepth,
+		515: LessEqualDepth,
+		516: GreaterEqualDepth,
+		517: NotEqualDepth,
+		518: GreaterEqualDepth,
+		519: AlwaysDepth
+	};
+
+	var WEBGL_BLEND_EQUATIONS = {
+		32774: AddEquation,
+		32778: SubtractEquation,
+		32779: ReverseSubtractEquation
+	};
+
+	var WEBGL_BLEND_FUNCS = {
+		0: ZeroFactor,
+		1: OneFactor,
+		768: SrcColorFactor,
+		769: OneMinusSrcColorFactor,
+		770: SrcAlphaFactor,
+		771: OneMinusSrcAlphaFactor,
+		772: DstAlphaFactor,
+		773: OneMinusDstAlphaFactor,
+		774: DstColorFactor,
+		775: OneMinusDstColorFactor,
+		776: SrcAlphaSaturateFactor
+		// The followings are not supported by Three.js yet
+		//32769: CONSTANT_COLOR,
+		//32770: ONE_MINUS_CONSTANT_COLOR,
+		//32771: CONSTANT_ALPHA,
+		//32772: ONE_MINUS_CONSTANT_COLOR
+	};
+
+	var WEBGL_TYPE_SIZES = {
+		'SCALAR': 1,
+		'VEC2': 2,
+		'VEC3': 3,
+		'VEC4': 4,
+		'MAT2': 4,
+		'MAT3': 9,
+		'MAT4': 16
+	};
+
+	var PATH_PROPERTIES = {
+		scale: 'scale',
+		translation: 'position',
+		rotation: 'quaternion'
+	};
+
+	var INTERPOLATION = {
+		LINEAR: InterpolateLinear,
+		STEP: InterpolateDiscrete
+	};
+
+	var STATES_ENABLES = {
+		2884: 'CULL_FACE',
+		2929: 'DEPTH_TEST',
+		3042: 'BLEND',
+		3089: 'SCISSOR_TEST',
+		32823: 'POLYGON_OFFSET_FILL',
+		32926: 'SAMPLE_ALPHA_TO_COVERAGE'
+	};
+
+	/* UTILITY FUNCTIONS */
+
+	function _each(object, callback, thisObj) {
+
+		if (!object) {
+			return Promise.resolve();
+		}
+
+		var results;
+		var fns = [];
+
+		if (Object.prototype.toString.call(object) === '[object Array]') {
+
+			results = [];
+
+			var length = object.length;
+
+			for (var idx = 0; idx < length; idx++) {
+
+				var value = callback.call(thisObj || this, object[idx], idx);
+
+				if (value) {
+
+					fns.push(value);
+
+					if (value instanceof Promise) {
+
+						value.then(function (key, value) {
+
+							results[key] = value;
+						}.bind(this, idx));
+					} else {
+
+						results[idx] = value;
+					}
+				}
+			}
+		} else {
+
+			results = {};
+
+			for (var key in object) {
+
+				if (object.hasOwnProperty(key)) {
+
+					var value = callback.call(thisObj || this, object[key], key);
+
+					if (value) {
+
+						fns.push(value);
+
+						if (value instanceof Promise) {
+
+							value.then(function (key, value) {
+
+								results[key] = value;
+							}.bind(this, key));
+						} else {
+
+							results[key] = value;
+						}
+					}
+				}
+			}
+		}
+
+		return Promise.all(fns).then(function () {
+
+			return results;
+		});
+	}
+
+	function resolveURL(url, path) {
+
+		// Invalid URL
+		if (typeof url !== 'string' || url === '') return '';
+
+		// Absolute URL http://,https://,//
+		if (/^(https?:)?\/\//i.test(url)) {
+
+			return url;
+		}
+
+		// Data URI
+		if (/^data:.*,.*$/i.test(url)) {
+
+			return url;
+		}
+
+		// Relative URL
+		return (path || '') + url;
+	}
+
+	function convertUint8ArrayToString(array) {
+
+		if (window.TextDecoder !== undefined) {
+
+			return new TextDecoder().decode(array);
+		}
+
+		// Avoid the String.fromCharCode.apply(null, array) shortcut, which
+		// throws a "maximum call stack size exceeded" error for large arrays.
+
+		var s = '';
+
+		for (var i = 0, il = array.length; i < il; i++) {
+
+			s += String.fromCharCode(array[i]);
+		}
+
+		return s;
+	}
+
+	// Three.js seems too dependent on attribute names so globally
+	// replace those in the shader code
+	function replaceTHREEShaderAttributes(shaderText, technique) {
+
+		// Expected technique attributes
+		var attributes = {};
+
+		for (var attributeId in technique.attributes) {
+
+			var pname = technique.attributes[attributeId];
+
+			var param = technique.parameters[pname];
+			var atype = param.type;
+			var semantic = param.semantic;
+
+			attributes[attributeId] = {
+				type: atype,
+				semantic: semantic
+			};
+		}
+
+		// Figure out which attributes to change in technique
+
+		var shaderParams = technique.parameters;
+		var shaderAttributes = technique.attributes;
+		var params = {};
+
+		for (var attributeId in attributes) {
+
+			var pname = shaderAttributes[attributeId];
+			var shaderParam = shaderParams[pname];
+			var semantic = shaderParam.semantic;
+			if (semantic) {
+
+				params[attributeId] = shaderParam;
+			}
+		}
+
+		for (var pname in params) {
+
+			var param = params[pname];
+			var semantic = param.semantic;
+
+			var regEx = new RegExp("\\b" + pname + "\\b", "g");
+
+			switch (semantic) {
+
+				case "POSITION":
+
+					shaderText = shaderText.replace(regEx, 'position');
+					break;
+
+				case "NORMAL":
+
+					shaderText = shaderText.replace(regEx, 'normal');
+					break;
+
+				case 'TEXCOORD_0':
+				case 'TEXCOORD0':
+				case 'TEXCOORD':
+
+					shaderText = shaderText.replace(regEx, 'uv');
+					break;
+
+				case 'TEXCOORD_1':
+
+					shaderText = shaderText.replace(regEx, 'uv2');
+					break;
+
+				case 'COLOR_0':
+				case 'COLOR0':
+				case 'COLOR':
+
+					shaderText = shaderText.replace(regEx, 'color');
+					break;
+
+				case "WEIGHT":
+
+					shaderText = shaderText.replace(regEx, 'skinWeight');
+					break;
+
+				case "JOINT":
+
+					shaderText = shaderText.replace(regEx, 'skinIndex');
+					break;
+
+			}
+		}
+
+		return shaderText;
+	}
+
+	function createDefaultMaterial() {
+
+		return new MeshPhongMaterial({
+			color: 0x00000,
+			emissive: 0x888888,
+			specular: 0x000000,
+			shininess: 0,
+			transparent: false,
+			depthTest: true,
+			side: FrontSide
+		});
+	}
+
+	// Deferred constructor for RawShaderMaterial types
+	function DeferredShaderMaterial(params) {
+
+		this.isDeferredShaderMaterial = true;
+
+		this.params = params;
+	}
+
+	DeferredShaderMaterial.prototype.create = function () {
+
+		var uniforms = UniformsUtils.clone(this.params.uniforms);
+
+		for (var uniformId in this.params.uniforms) {
+
+			var originalUniform = this.params.uniforms[uniformId];
+
+			if (originalUniform.value instanceof Texture) {
+
+				uniforms[uniformId].value = originalUniform.value;
+				uniforms[uniformId].value.needsUpdate = true;
+			}
+
+			uniforms[uniformId].semantic = originalUniform.semantic;
+			uniforms[uniformId].node = originalUniform.node;
+		}
+
+		this.params.uniforms = uniforms;
+
+		return new RawShaderMaterial(this.params);
+	};
+
+	/* GLTF PARSER */
+
+	function GLTFParser(json, extensions, options) {
+
+		this.json = json || {};
+		this.extensions = extensions || {};
+		this.options = options || {};
+
+		// loader object cache
+		this.cache = new GLTFRegistry();
+	}
+
+	GLTFParser.prototype._withDependencies = function (dependencies) {
+
+		var _dependencies = {};
+
+		for (var i = 0; i < dependencies.length; i++) {
+
+			var dependency = dependencies[i];
+			var fnName = "load" + dependency.charAt(0).toUpperCase() + dependency.slice(1);
+
+			var cached = this.cache.get(dependency);
+
+			if (cached !== undefined) {
+
+				_dependencies[dependency] = cached;
+			} else if (this[fnName]) {
+
+				var fn = this[fnName]();
+				this.cache.add(dependency, fn);
+
+				_dependencies[dependency] = fn;
+			}
+		}
+
+		return _each(_dependencies, function (dependency) {
+
+			return dependency;
+		});
+	};
+
+	GLTFParser.prototype.parse = function (callback) {
+
+		var json = this.json;
+
+		// Clear the loader cache
+		this.cache.removeAll();
+
+		// Fire the callback on complete
+		this._withDependencies(["scenes", "cameras", "animations"]).then(function (dependencies) {
+
+			var scenes = [];
+
+			for (var name in dependencies.scenes) {
+
+				scenes.push(dependencies.scenes[name]);
+			}
+
+			var scene = json.scene !== undefined ? dependencies.scenes[json.scene] : scenes[0];
+
+			var cameras = [];
+
+			for (var name in dependencies.cameras) {
+
+				var camera = dependencies.cameras[name];
+				cameras.push(camera);
+			}
+
+			var animations = [];
+
+			for (var name in dependencies.animations) {
+
+				animations.push(dependencies.animations[name]);
+			}
+
+			callback(scene, scenes, cameras, animations);
+		});
+	};
+
+	GLTFParser.prototype.loadShaders = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var options = this.options;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.shaders, function (shader) {
+
+				if (shader.extensions && shader.extensions[EXTENSIONS.KHR_BINARY_GLTF]) {
+
+					return extensions[EXTENSIONS.KHR_BINARY_GLTF].loadShader(shader, dependencies.bufferViews);
+				}
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('text');
+					loader.load(resolveURL(shader.uri, options.path), function (shaderText) {
+
+						resolve(shaderText);
+					});
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadBuffers = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var options = this.options;
+
+		return _each(json.buffers, function (buffer, name) {
+
+			if (name === BINARY_EXTENSION_BUFFER_NAME) {
+
+				return extensions[EXTENSIONS.KHR_BINARY_GLTF].body;
+			}
+
+			if (buffer.type === 'arraybuffer' || buffer.type === undefined) {
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('arraybuffer');
+					loader.load(resolveURL(buffer.uri, options.path), function (buffer) {
+
+						resolve(buffer);
+					});
+				});
+			} else {
+
+				console.warn('THREE.GLTFLoader: ' + buffer.type + ' buffer type is not supported');
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadBufferViews = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["buffers"]).then(function (dependencies) {
+
+			return _each(json.bufferViews, function (bufferView) {
+
+				var arraybuffer = dependencies.buffers[bufferView.buffer];
+
+				var byteLength = bufferView.byteLength !== undefined ? bufferView.byteLength : 0;
+
+				return arraybuffer.slice(bufferView.byteOffset, bufferView.byteOffset + byteLength);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAccessors = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.accessors, function (accessor) {
+
+				var arraybuffer = dependencies.bufferViews[accessor.bufferView];
+				var itemSize = WEBGL_TYPE_SIZES[accessor.type];
+				var TypedArray = WEBGL_COMPONENT_TYPES[accessor.componentType];
+
+				// For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
+				var elementBytes = TypedArray.BYTES_PER_ELEMENT;
+				var itemBytes = elementBytes * itemSize;
+
+				// The buffer is not interleaved if the stride is the item size in bytes.
+				if (accessor.byteStride && accessor.byteStride !== itemBytes) {
+
+					// Use the full buffer if it's interleaved.
+					var array = new TypedArray(arraybuffer);
+
+					// Integer parameters to IB/IBA are in array elements, not bytes.
+					var ib = new InterleavedBuffer(array, accessor.byteStride / elementBytes);
+
+					return new InterleavedBufferAttribute(ib, itemSize, accessor.byteOffset / elementBytes);
+				} else {
+
+					array = new TypedArray(arraybuffer, accessor.byteOffset, accessor.count * itemSize);
+
+					return new BufferAttribute(array, itemSize);
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadTextures = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var options = this.options;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.textures, function (texture) {
+
+				if (texture.source) {
+
+					return new Promise(function (resolve) {
+
+						var source = json.images[texture.source];
+						var sourceUri = source.uri;
+
+						if (source.extensions && source.extensions[EXTENSIONS.KHR_BINARY_GLTF]) {
+
+							sourceUri = extensions[EXTENSIONS.KHR_BINARY_GLTF].loadTextureSourceUri(source, dependencies.bufferViews);
+						}
+
+						var textureLoader = Loader.Handlers.get(sourceUri);
+
+						if (textureLoader === null) {
+
+							textureLoader = new TextureLoader();
+						}
+
+						textureLoader.setCrossOrigin(options.crossOrigin);
+
+						textureLoader.load(resolveURL(sourceUri, options.path), function (_texture) {
+
+							_texture.flipY = false;
+
+							if (texture.name !== undefined) _texture.name = texture.name;
+
+							_texture.format = texture.format !== undefined ? WEBGL_TEXTURE_FORMATS[texture.format] : RGBAFormat;
+
+							if (texture.internalFormat !== undefined && _texture.format !== WEBGL_TEXTURE_FORMATS[texture.internalFormat]) {
+
+								console.warn('THREE.GLTFLoader: Three.js doesn\'t support texture internalFormat which is different from texture format. ' + 'internalFormat will be forced to be the same value as format.');
+							}
+
+							_texture.type = texture.type !== undefined ? WEBGL_TEXTURE_DATATYPES[texture.type] : UnsignedByteType;
+
+							if (texture.sampler) {
+
+								var sampler = json.samplers[texture.sampler];
+
+								_texture.magFilter = WEBGL_FILTERS[sampler.magFilter] || LinearFilter;
+								_texture.minFilter = WEBGL_FILTERS[sampler.minFilter] || NearestMipMapLinearFilter;
+								_texture.wrapS = WEBGL_WRAPPINGS[sampler.wrapS] || RepeatWrapping;
+								_texture.wrapT = WEBGL_WRAPPINGS[sampler.wrapT] || RepeatWrapping;
+							}
+
+							resolve(_texture);
+						}, undefined, function () {
+
+							resolve();
+						});
+					});
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMaterials = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["shaders", "textures"]).then(function (dependencies) {
+
+			return _each(json.materials, function (material) {
+
+				var materialType;
+				var materialValues = {};
+				var materialParams = {};
+
+				var khr_material;
+
+				if (material.extensions && material.extensions[EXTENSIONS.KHR_MATERIALS_COMMON]) {
+
+					khr_material = material.extensions[EXTENSIONS.KHR_MATERIALS_COMMON];
+				}
+
+				if (khr_material) {
+
+					// don't copy over unused values to avoid material warning spam
+					var keys = ['ambient', 'emission', 'transparent', 'transparency', 'doubleSided'];
+
+					switch (khr_material.technique) {
+
+						case 'BLINN':
+						case 'PHONG':
+							materialType = MeshPhongMaterial;
+							keys.push('diffuse', 'specular', 'shininess');
+							break;
+
+						case 'LAMBERT':
+							materialType = MeshLambertMaterial;
+							keys.push('diffuse');
+							break;
+
+						case 'CONSTANT':
+						default:
+							materialType = MeshBasicMaterial;
+							break;
+
+					}
+
+					keys.forEach(function (v) {
+
+						if (khr_material.values[v] !== undefined) materialValues[v] = khr_material.values[v];
+					});
+
+					if (khr_material.doubleSided || materialValues.doubleSided) {
+
+						materialParams.side = DoubleSide;
+					}
+
+					if (khr_material.transparent || materialValues.transparent) {
+
+						materialParams.transparent = true;
+						materialParams.opacity = materialValues.transparency !== undefined ? materialValues.transparency : 1;
+					}
+				} else if (material.technique === undefined) {
+
+					materialType = MeshPhongMaterial;
+
+					Object.assign(materialValues, material.values);
+				} else {
+
+					materialType = DeferredShaderMaterial;
+
+					var technique = json.techniques[material.technique];
+
+					materialParams.uniforms = {};
+
+					var program = json.programs[technique.program];
+
+					if (program) {
+
+						materialParams.fragmentShader = dependencies.shaders[program.fragmentShader];
+
+						if (!materialParams.fragmentShader) {
+
+							console.warn("ERROR: Missing fragment shader definition:", program.fragmentShader);
+							materialType = MeshPhongMaterial;
+						}
+
+						var vertexShader = dependencies.shaders[program.vertexShader];
+
+						if (!vertexShader) {
+
+							console.warn("ERROR: Missing vertex shader definition:", program.vertexShader);
+							materialType = MeshPhongMaterial;
+						}
+
+						// IMPORTANT: FIX VERTEX SHADER ATTRIBUTE DEFINITIONS
+						materialParams.vertexShader = replaceTHREEShaderAttributes(vertexShader, technique);
+
+						var uniforms = technique.uniforms;
+
+						for (var uniformId in uniforms) {
+
+							var pname = uniforms[uniformId];
+							var shaderParam = technique.parameters[pname];
+
+							var ptype = shaderParam.type;
+
+							if (WEBGL_TYPE[ptype]) {
+
+								var pcount = shaderParam.count;
+								var value;
+
+								if (material.values !== undefined) value = material.values[pname];
+
+								var uvalue = new WEBGL_TYPE[ptype]();
+								var usemantic = shaderParam.semantic;
+								var unode = shaderParam.node;
+
+								switch (ptype) {
+
+									case WEBGL_CONSTANTS.FLOAT:
+
+										uvalue = shaderParam.value;
+
+										if (pname == "transparency") {
+
+											materialParams.transparent = true;
+										}
+
+										if (value !== undefined) {
+
+											uvalue = value;
+										}
+
+										break;
+
+									case WEBGL_CONSTANTS.FLOAT_VEC2:
+									case WEBGL_CONSTANTS.FLOAT_VEC3:
+									case WEBGL_CONSTANTS.FLOAT_VEC4:
+									case WEBGL_CONSTANTS.FLOAT_MAT3:
+
+										if (shaderParam && shaderParam.value) {
+
+											uvalue.fromArray(shaderParam.value);
+										}
+
+										if (value) {
+
+											uvalue.fromArray(value);
+										}
+
+										break;
+
+									case WEBGL_CONSTANTS.FLOAT_MAT2:
+
+										// what to do?
+										console.warn("FLOAT_MAT2 is not a supported uniform type");
+										break;
+
+									case WEBGL_CONSTANTS.FLOAT_MAT4:
+
+										if (pcount) {
+
+											uvalue = new Array(pcount);
+
+											for (var mi = 0; mi < pcount; mi++) {
+
+												uvalue[mi] = new WEBGL_TYPE[ptype]();
+											}
+
+											if (shaderParam && shaderParam.value) {
+
+												var m4v = shaderParam.value;
+												uvalue.fromArray(m4v);
+											}
+
+											if (value) {
+
+												uvalue.fromArray(value);
+											}
+										} else {
+
+											if (shaderParam && shaderParam.value) {
+
+												var m4 = shaderParam.value;
+												uvalue.fromArray(m4);
+											}
+
+											if (value) {
+
+												uvalue.fromArray(value);
+											}
+										}
+
+										break;
+
+									case WEBGL_CONSTANTS.SAMPLER_2D:
+
+										if (value !== undefined) {
+
+											uvalue = dependencies.textures[value];
+										} else if (shaderParam.value !== undefined) {
+
+											uvalue = dependencies.textures[shaderParam.value];
+										} else {
+
+											uvalue = null;
+										}
+
+										break;
+
+								}
+
+								materialParams.uniforms[uniformId] = {
+									value: uvalue,
+									semantic: usemantic,
+									node: unode
+								};
+							} else {
+
+								throw new Error("Unknown shader uniform param type: " + ptype);
+							}
+						}
+
+						var states = technique.states || {};
+						var enables = states.enable || [];
+						var functions = states.functions || {};
+
+						var enableCullFace = false;
+						var enableDepthTest = false;
+						var enableBlend = false;
+
+						for (var i = 0, il = enables.length; i < il; i++) {
+
+							var enable = enables[i];
+
+							switch (STATES_ENABLES[enable]) {
+
+								case 'CULL_FACE':
+
+									enableCullFace = true;
+
+									break;
+
+								case 'DEPTH_TEST':
+
+									enableDepthTest = true;
+
+									break;
+
+								case 'BLEND':
+
+									enableBlend = true;
+
+									break;
+
+								// TODO: implement
+								case 'SCISSOR_TEST':
+								case 'POLYGON_OFFSET_FILL':
+								case 'SAMPLE_ALPHA_TO_COVERAGE':
+
+									break;
+
+								default:
+
+									throw new Error("Unknown technique.states.enable: " + enable);
+
+							}
+						}
+
+						if (enableCullFace) {
+
+							materialParams.side = functions.cullFace !== undefined ? WEBGL_SIDES[functions.cullFace] : FrontSide;
+						} else {
+
+							materialParams.side = DoubleSide;
+						}
+
+						materialParams.depthTest = enableDepthTest;
+						materialParams.depthFunc = functions.depthFunc !== undefined ? WEBGL_DEPTH_FUNCS[functions.depthFunc] : LessDepth;
+						materialParams.depthWrite = functions.depthMask !== undefined ? functions.depthMask[0] : true;
+
+						materialParams.blending = enableBlend ? CustomBlending : NoBlending;
+						materialParams.transparent = enableBlend;
+
+						var blendEquationSeparate = functions.blendEquationSeparate;
+
+						if (blendEquationSeparate !== undefined) {
+
+							materialParams.blendEquation = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[0]];
+							materialParams.blendEquationAlpha = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[1]];
+						} else {
+
+							materialParams.blendEquation = AddEquation;
+							materialParams.blendEquationAlpha = AddEquation;
+						}
+
+						var blendFuncSeparate = functions.blendFuncSeparate;
+
+						if (blendFuncSeparate !== undefined) {
+
+							materialParams.blendSrc = WEBGL_BLEND_FUNCS[blendFuncSeparate[0]];
+							materialParams.blendDst = WEBGL_BLEND_FUNCS[blendFuncSeparate[1]];
+							materialParams.blendSrcAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[2]];
+							materialParams.blendDstAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[3]];
+						} else {
+
+							materialParams.blendSrc = OneFactor;
+							materialParams.blendDst = ZeroFactor;
+							materialParams.blendSrcAlpha = OneFactor;
+							materialParams.blendDstAlpha = ZeroFactor;
+						}
+					}
+				}
+
+				if (Array.isArray(materialValues.diffuse)) {
+
+					materialParams.color = new Color().fromArray(materialValues.diffuse);
+				} else if (typeof materialValues.diffuse === 'string') {
+
+					materialParams.map = dependencies.textures[materialValues.diffuse];
+				}
+
+				delete materialParams.diffuse;
+
+				if (typeof materialValues.reflective === 'string') {
+
+					materialParams.envMap = dependencies.textures[materialValues.reflective];
+				}
+
+				if (typeof materialValues.bump === 'string') {
+
+					materialParams.bumpMap = dependencies.textures[materialValues.bump];
+				}
+
+				if (Array.isArray(materialValues.emission)) {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.color = new Color().fromArray(materialValues.emission);
+					} else {
+
+						materialParams.emissive = new Color().fromArray(materialValues.emission);
+					}
+				} else if (typeof materialValues.emission === 'string') {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.map = dependencies.textures[materialValues.emission];
+					} else {
+
+						materialParams.emissiveMap = dependencies.textures[materialValues.emission];
+					}
+				}
+
+				if (Array.isArray(materialValues.specular)) {
+
+					materialParams.specular = new Color().fromArray(materialValues.specular);
+				} else if (typeof materialValues.specular === 'string') {
+
+					materialParams.specularMap = dependencies.textures[materialValues.specular];
+				}
+
+				if (materialValues.shininess !== undefined) {
+
+					materialParams.shininess = materialValues.shininess;
+				}
+
+				var _material = new materialType(materialParams);
+				if (material.name !== undefined) _material.name = material.name;
+
+				return _material;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMeshes = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "materials"]).then(function (dependencies) {
+
+			return _each(json.meshes, function (mesh) {
+
+				var group = new Group();
+				if (mesh.name !== undefined) group.name = mesh.name;
+
+				if (mesh.extras) group.userData = mesh.extras;
+
+				var primitives = mesh.primitives || [];
+
+				for (var name in primitives) {
+
+					var primitive = primitives[name];
+
+					if (primitive.mode === WEBGL_CONSTANTS.TRIANGLES || primitive.mode === undefined) {
+
+						var geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (!attributeEntry) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'NORMAL':
+									geometry.addAttribute('normal', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_0':
+								case 'TEXCOORD0':
+								case 'TEXCOORD':
+									geometry.addAttribute('uv', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_1':
+									geometry.addAttribute('uv2', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+								case 'WEIGHT':
+									geometry.addAttribute('skinWeight', bufferAttribute);
+									break;
+
+								case 'JOINT':
+									geometry.addAttribute('skinIndex', bufferAttribute);
+									break;
+
+							}
+						}
+
+						if (primitive.indices) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+						}
+
+						var material = dependencies.materials !== undefined ? dependencies.materials[primitive.material] : createDefaultMaterial();
+
+						var meshNode = new Mesh(geometry, material);
+						meshNode.castShadow = true;
+						meshNode.name = name === "0" ? group.name : group.name + name;
+
+						if (primitive.extras) meshNode.userData = primitive.extras;
+
+						group.add(meshNode);
+					} else if (primitive.mode === WEBGL_CONSTANTS.LINES) {
+
+						var geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (!attributeEntry) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+							}
+						}
+
+						var material = dependencies.materials[primitive.material];
+
+						var meshNode;
+
+						if (primitive.indices) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+
+							meshNode = new LineSegments(geometry, material);
+						} else {
+
+							meshNode = new Line(geometry, material);
+						}
+
+						meshNode.name = name === "0" ? group.name : group.name + name;
+
+						if (primitive.extras) meshNode.userData = primitive.extras;
+
+						group.add(meshNode);
+					} else {
+
+						console.warn("Only triangular and line primitives are supported");
+					}
+				}
+
+				return group;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadCameras = function () {
+
+		var json = this.json;
+
+		return _each(json.cameras, function (camera) {
+
+			if (camera.type == "perspective" && camera.perspective) {
+
+				var yfov = camera.perspective.yfov;
+				var aspectRatio = camera.perspective.aspectRatio !== undefined ? camera.perspective.aspectRatio : 1;
+
+				// According to COLLADA spec...
+				// aspectRatio = xfov / yfov
+				var xfov = yfov * aspectRatio;
+
+				var _camera = new PerspectiveCamera(_Math.radToDeg(xfov), aspectRatio, camera.perspective.znear || 1, camera.perspective.zfar || 2e6);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			} else if (camera.type == "orthographic" && camera.orthographic) {
+
+				var _camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, camera.orthographic.znear, camera.orthographic.zfar);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadSkins = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors"]).then(function (dependencies) {
+
+			return _each(json.skins, function (skin) {
+
+				var bindShapeMatrix = new Matrix4();
+
+				if (skin.bindShapeMatrix !== undefined) bindShapeMatrix.fromArray(skin.bindShapeMatrix);
+
+				var _skin = {
+					bindShapeMatrix: bindShapeMatrix,
+					jointNames: skin.jointNames,
+					inverseBindMatrices: dependencies.accessors[skin.inverseBindMatrices]
+				};
+
+				return _skin;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAnimations = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "nodes"]).then(function (dependencies) {
+
+			return _each(json.animations, function (animation, animationId) {
+
+				var tracks = [];
+
+				for (var channelId in animation.channels) {
+
+					var channel = animation.channels[channelId];
+					var sampler = animation.samplers[channel.sampler];
+
+					if (sampler) {
+
+						var target = channel.target;
+						var name = target.id;
+						var input = animation.parameters !== undefined ? animation.parameters[sampler.input] : sampler.input;
+						var output = animation.parameters !== undefined ? animation.parameters[sampler.output] : sampler.output;
+
+						var inputAccessor = dependencies.accessors[input];
+						var outputAccessor = dependencies.accessors[output];
+
+						var node = dependencies.nodes[name];
+
+						if (node) {
+
+							node.updateMatrix();
+							node.matrixAutoUpdate = true;
+
+							var TypedKeyframeTrack = PATH_PROPERTIES[target.path] === PATH_PROPERTIES.rotation ? QuaternionKeyframeTrack : VectorKeyframeTrack;
+
+							var targetName = node.name ? node.name : node.uuid;
+							var interpolation = sampler.interpolation !== undefined ? INTERPOLATION[sampler.interpolation] : InterpolateLinear;
+
+							// KeyframeTrack.optimize() will modify given 'times' and 'values'
+							// buffers before creating a truncated copy to keep. Because buffers may
+							// be reused by other tracks, make copies here.
+							tracks.push(new TypedKeyframeTrack(targetName + '.' + PATH_PROPERTIES[target.path], AnimationUtils.arraySlice(inputAccessor.array, 0), AnimationUtils.arraySlice(outputAccessor.array, 0), interpolation));
+						}
+					}
+				}
+
+				var name = animation.name !== undefined ? animation.name : "animation_" + animationId;
+
+				return new AnimationClip(name, undefined, tracks);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadNodes = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var scope = this;
+
+		return _each(json.nodes, function (node) {
+
+			var matrix = new Matrix4();
+
+			var _node;
+
+			if (node.jointName) {
+
+				_node = new Bone();
+				_node.name = node.name !== undefined ? node.name : node.jointName;
+				_node.jointName = node.jointName;
+			} else {
+
+				_node = new Object3D();
+				if (node.name !== undefined) _node.name = node.name;
+			}
+
+			if (node.extras) _node.userData = node.extras;
+
+			if (node.matrix !== undefined) {
+
+				matrix.fromArray(node.matrix);
+				_node.applyMatrix(matrix);
+			} else {
+
+				if (node.translation !== undefined) {
+
+					_node.position.fromArray(node.translation);
+				}
+
+				if (node.rotation !== undefined) {
+
+					_node.quaternion.fromArray(node.rotation);
+				}
+
+				if (node.scale !== undefined) {
+
+					_node.scale.fromArray(node.scale);
+				}
+			}
+
+			return _node;
+		}).then(function (__nodes) {
+
+			return scope._withDependencies(["meshes", "skins", "cameras"]).then(function (dependencies) {
+
+				return _each(__nodes, function (_node, nodeId) {
+
+					var node = json.nodes[nodeId];
+
+					if (node.meshes !== undefined) {
+
+						for (var meshId in node.meshes) {
+
+							var mesh = node.meshes[meshId];
+							var group = dependencies.meshes[mesh];
+
+							if (group === undefined) {
+
+								console.warn('GLTFLoader: Couldn\'t find node "' + mesh + '".');
+								continue;
+							}
+
+							for (var childrenId in group.children) {
+
+								var child = group.children[childrenId];
+
+								// clone Mesh to add to _node
+
+								var originalMaterial = child.material;
+								var originalGeometry = child.geometry;
+								var originalUserData = child.userData;
+								var originalName = child.name;
+
+								var material;
+
+								if (originalMaterial.isDeferredShaderMaterial) {
+
+									originalMaterial = material = originalMaterial.create();
+								} else {
+
+									material = originalMaterial;
+								}
+
+								switch (child.type) {
+
+									case 'LineSegments':
+										child = new LineSegments(originalGeometry, material);
+										break;
+
+									case 'LineLoop':
+										child = new LineLoop(originalGeometry, material);
+										break;
+
+									case 'Line':
+										child = new Line(originalGeometry, material);
+										break;
+
+									default:
+										child = new Mesh(originalGeometry, material);
+
+								}
+
+								child.castShadow = true;
+								child.userData = originalUserData;
+								child.name = originalName;
+
+								var skinEntry;
+
+								if (node.skin) {
+
+									skinEntry = dependencies.skins[node.skin];
+								}
+
+								// Replace Mesh with SkinnedMesh in library
+								if (skinEntry) {
+
+									var getJointNode = function (jointId) {
+
+										var keys = Object.keys(__nodes);
+
+										for (var i = 0, il = keys.length; i < il; i++) {
+
+											var n = __nodes[keys[i]];
+
+											if (n.jointName === jointId) return n;
+										}
+
+										return null;
+									};
+
+									var geometry = originalGeometry;
+									var material = originalMaterial;
+									material.skinning = true;
+
+									child = new SkinnedMesh(geometry, material);
+									child.castShadow = true;
+									child.userData = originalUserData;
+									child.name = originalName;
+
+									var bones = [];
+									var boneInverses = [];
+
+									for (var i = 0, l = skinEntry.jointNames.length; i < l; i++) {
+
+										var jointId = skinEntry.jointNames[i];
+										var jointNode = getJointNode(jointId);
+
+										if (jointNode) {
+
+											bones.push(jointNode);
+
+											var m = skinEntry.inverseBindMatrices.array;
+											var mat = new Matrix4().fromArray(m, i * 16);
+											boneInverses.push(mat);
+										} else {
+
+											console.warn("WARNING: joint: '" + jointId + "' could not be found");
+										}
+									}
+
+									child.bind(new Skeleton(bones, boneInverses), skinEntry.bindShapeMatrix);
+
+									var buildBoneGraph = function (parentJson, parentObject, property) {
+
+										var children = parentJson[property];
+
+										if (children === undefined) return;
+
+										for (var i = 0, il = children.length; i < il; i++) {
+
+											var nodeId = children[i];
+											var bone = __nodes[nodeId];
+											var boneJson = json.nodes[nodeId];
+
+											if (bone !== undefined && bone.isBone === true && boneJson !== undefined) {
+
+												parentObject.add(bone);
+												buildBoneGraph(boneJson, bone, 'children');
+											}
+										}
+									};
+
+									buildBoneGraph(node, child, 'skeletons');
+								}
+
+								_node.add(child);
+							}
+						}
+					}
+
+					if (node.camera !== undefined) {
+
+						var camera = dependencies.cameras[node.camera];
+
+						_node.add(camera);
+					}
+
+					if (node.extensions && node.extensions[EXTENSIONS.KHR_MATERIALS_COMMON] && node.extensions[EXTENSIONS.KHR_MATERIALS_COMMON].light) {
+
+						var extensionLights = extensions[EXTENSIONS.KHR_MATERIALS_COMMON].lights;
+						var light = extensionLights[node.extensions[EXTENSIONS.KHR_MATERIALS_COMMON].light];
+
+						_node.add(light);
+					}
+
+					return _node;
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadScenes = function () {
+
+		var json = this.json;
+
+		// scene node hierachy builder
+
+		function buildNodeHierachy(nodeId, parentObject, allNodes) {
+
+			var _node = allNodes[nodeId];
+			parentObject.add(_node);
+
+			var node = json.nodes[nodeId];
+
+			if (node.children) {
+
+				var children = node.children;
+
+				for (var i = 0, l = children.length; i < l; i++) {
+
+					var child = children[i];
+					buildNodeHierachy(child, _node, allNodes);
+				}
+			}
+		}
+
+		return this._withDependencies(["nodes"]).then(function (dependencies) {
+
+			return _each(json.scenes, function (scene) {
+
+				var _scene = new Scene();
+				if (scene.name !== undefined) _scene.name = scene.name;
+
+				if (scene.extras) _scene.userData = scene.extras;
+
+				var nodes = scene.nodes || [];
+
+				for (var i = 0, l = nodes.length; i < l; i++) {
+
+					var nodeId = nodes[i];
+					buildNodeHierachy(nodeId, _scene, dependencies.nodes);
+				}
+
+				_scene.traverse(function (child) {
+
+					// Register raw material meshes with GLTFLoader.Shaders
+					if (child.material && child.material.isRawShaderMaterial) {
+
+						child.gltfShader = new GLTFShader(child, dependencies.nodes);
+						child.onBeforeRender = function (renderer, scene, camera) {
+							this.gltfShader.update(scene, camera);
+						};
+					}
+				});
+
+				return _scene;
+			});
+		});
+	};
+
+	return GLTFLoader;
+}();
+
+var GLTF2Loader = function () {
+
+	function GLTF2Loader(manager) {
+
+		this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+	}
+
+	GLTF2Loader.prototype = {
+
+		constructor: GLTF2Loader,
+
+		load: function (url, onLoad, onProgress, onError) {
+
+			var scope = this;
+
+			var path = this.path && typeof this.path === "string" ? this.path : Loader.prototype.extractUrlBase(url);
+
+			var loader = new FileLoader(scope.manager);
+
+			loader.setResponseType('arraybuffer');
+
+			loader.load(url, function (data) {
+
+				scope.parse(data, onLoad, path);
+			}, onProgress, onError);
+		},
+
+		setCrossOrigin: function (value) {
+
+			this.crossOrigin = value;
+		},
+
+		setPath: function (value) {
+
+			this.path = value;
+		},
+
+		parse: function (data, callback, path) {
+
+			var content;
+			var extensions = {};
+
+			var magic = convertUint8ArrayToString(new Uint8Array(data, 0, 4));
+
+			if (magic === BINARY_EXTENSION_HEADER_MAGIC) {
+
+				extensions[EXTENSIONS.KHR_BINARY_GLTF] = new GLTFBinaryExtension(data);
+				content = extensions[EXTENSIONS.KHR_BINARY_GLTF].content;
+			} else {
+
+				content = convertUint8ArrayToString(new Uint8Array(data));
+			}
+
+			var json = JSON.parse(content);
+
+			if (json.extensionsUsed) {
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_LIGHTS) >= 0) {
+
+					extensions[EXTENSIONS.KHR_LIGHTS] = new GLTFLightsExtension(json);
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_MATERIALS_COMMON) >= 0) {
+
+					extensions[EXTENSIONS.KHR_MATERIALS_COMMON] = new GLTFMaterialsCommonExtension(json);
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS) >= 0) {
+
+					extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS] = new GLTFMaterialsPbrSpecularGlossinessExtension();
+				}
+
+				if (json.extensionsUsed.indexOf(EXTENSIONS.KHR_TECHNIQUE_WEBGL) >= 0) {
+
+					extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] = new GLTFTechniqueWebglExtension(json);
+				}
+			}
+
+			console.time('GLTF2Loader');
+
+			var parser = new GLTFParser(json, extensions, {
+
+				path: path || this.path,
+				crossOrigin: this.crossOrigin
+
+			});
+
+			parser.parse(function (scene, scenes, cameras, animations) {
+
+				console.timeEnd('GLTF2Loader');
+
+				var glTF = {
+					"scene": scene,
+					"scenes": scenes,
+					"cameras": cameras,
+					"animations": animations
+				};
+
+				callback(glTF);
+			});
+		}
+
+	};
+
+	/* GLTFREGISTRY */
+
+	function GLTFRegistry() {
+
+		var objects = {};
+
+		return {
+
+			get: function (key) {
+
+				return objects[key];
+			},
+
+			add: function (key, object) {
+
+				objects[key] = object;
+			},
+
+			remove: function (key) {
+
+				delete objects[key];
+			},
+
+			removeAll: function () {
+
+				objects = {};
+			},
+
+			update: function (scene, camera) {
+
+				for (var name in objects) {
+
+					var object = objects[name];
+
+					if (object.update) {
+
+						object.update(scene, camera);
+					}
+				}
+			}
+
+		};
+	}
+
+	/* GLTFSHADER */
+
+	function GLTFShader(targetNode, allNodes) {
+
+		var boundUniforms = {};
+
+		// bind each uniform to its source node
+
+		var uniforms = targetNode.material.uniforms;
+
+		for (var uniformId in uniforms) {
+
+			var uniform = uniforms[uniformId];
+
+			if (uniform.semantic) {
+
+				var sourceNodeRef = uniform.node;
+
+				var sourceNode = targetNode;
+
+				if (sourceNodeRef) {
+
+					sourceNode = allNodes[sourceNodeRef];
+				}
+
+				boundUniforms[uniformId] = {
+					semantic: uniform.semantic,
+					sourceNode: sourceNode,
+					targetNode: targetNode,
+					uniform: uniform
+				};
+			}
+		}
+
+		this.boundUniforms = boundUniforms;
+		this._m4 = new Matrix4();
+	}
+
+	// Update - update all the uniform values
+	GLTFShader.prototype.update = function (scene, camera) {
+
+		var boundUniforms = this.boundUniforms;
+
+		for (var name in boundUniforms) {
+
+			var boundUniform = boundUniforms[name];
+
+			switch (boundUniform.semantic) {
+
+				case "MODELVIEW":
+
+					var m4 = boundUniform.uniform.value;
+					m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					break;
+
+				case "MODELVIEWINVERSETRANSPOSE":
+
+					var m3 = boundUniform.uniform.value;
+					this._m4.multiplyMatrices(camera.matrixWorldInverse, boundUniform.sourceNode.matrixWorld);
+					m3.getNormalMatrix(this._m4);
+					break;
+
+				case "PROJECTION":
+
+					var m4 = boundUniform.uniform.value;
+					m4.copy(camera.projectionMatrix);
+					break;
+
+				case "JOINTMATRIX":
+
+					var m4v = boundUniform.uniform.value;
+
+					for (var mi = 0; mi < m4v.length; mi++) {
+
+						// So it goes like this:
+						// SkinnedMesh world matrix is already baked into MODELVIEW;
+						// transform joints to local space,
+						// then transform using joint's inverse
+						m4v[mi].getInverse(boundUniform.sourceNode.matrixWorld).multiply(boundUniform.targetNode.skeleton.bones[mi].matrixWorld).multiply(boundUniform.targetNode.skeleton.boneInverses[mi]).multiply(boundUniform.targetNode.bindMatrix);
+					}
+
+					break;
+
+				default:
+
+					console.warn("Unhandled shader semantic: " + boundUniform.semantic);
+					break;
+
+			}
+		}
+	};
+
+	/*********************************/
+	/********** EXTENSIONS ***********/
+	/*********************************/
+
+	var EXTENSIONS = {
+		KHR_BINARY_GLTF: 'KHR_binary_glTF',
+		KHR_LIGHTS: 'KHR_lights',
+		KHR_MATERIALS_COMMON: 'KHR_materials_common',
+		KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS: 'KHR_materials_pbrSpecularGlossiness',
+		KHR_TECHNIQUE_WEBGL: 'KHR_technique_webgl'
+	};
+
+	/**
+  * Lights Extension
+  *
+  * Specification: PENDING
+  */
+	function GLTFLightsExtension(json) {
+
+		this.name = EXTENSIONS.KHR_LIGHTS;
+
+		this.lights = {};
+
+		var extension = json.extensions && json.extensions[EXTENSIONS.KHR_LIGHTS] || {};
+		var lights = extension.lights || {};
+
+		for (var lightId in lights) {
+
+			var light = lights[lightId];
+			var lightNode;
+
+			var color = new Color().fromArray(light.color);
+
+			switch (light.type) {
+
+				case 'directional':
+					lightNode = new DirectionalLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case 'point':
+					lightNode = new PointLight(color);
+					break;
+
+				case 'spot':
+					lightNode = new SpotLight(color);
+					lightNode.position.set(0, 0, 1);
+					break;
+
+				case 'ambient':
+					lightNode = new AmbientLight(color);
+					break;
+
+			}
+
+			if (lightNode) {
+
+				if (light.constantAttenuation !== undefined) {
+
+					lightNode.intensity = light.constantAttenuation;
+				}
+
+				if (light.linearAttenuation !== undefined) {
+
+					lightNode.distance = 1 / light.linearAttenuation;
+				}
+
+				if (light.quadraticAttenuation !== undefined) {
+
+					lightNode.decay = light.quadraticAttenuation;
+				}
+
+				if (light.fallOffAngle !== undefined) {
+
+					lightNode.angle = light.fallOffAngle;
+				}
+
+				if (light.fallOffExponent !== undefined) {
+
+					console.warn('GLTF2Loader: light.fallOffExponent not currently supported.');
+				}
+
+				lightNode.name = light.name || 'light_' + lightId;
+				this.lights[lightId] = lightNode;
+			}
+		}
+	}
+
+	/**
+  * Common Materials Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_materials_common
+  */
+	function GLTFMaterialsCommonExtension(json) {
+
+		this.name = EXTENSIONS.KHR_MATERIALS_COMMON;
+	}
+
+	GLTFMaterialsCommonExtension.prototype.getMaterialType = function (material) {
+
+		var khrMaterial = material.extensions[this.name];
+
+		switch (khrMaterial.type) {
+
+			case 'commonBlinn':
+			case 'commonPhong':
+				return MeshPhongMaterial;
+
+			case 'commonLambert':
+				return MeshLambertMaterial;
+
+			case 'commonConstant':
+			default:
+				return MeshBasicMaterial;
+
+		}
+	};
+
+	GLTFMaterialsCommonExtension.prototype.extendParams = function (materialParams, material, dependencies) {
+
+		var khrMaterial = material.extensions[this.name];
+
+		var keys = [];
+
+		// TODO: Currently ignored: 'ambientFactor', 'ambientTexture'
+		switch (khrMaterial.type) {
+
+			case 'commonBlinn':
+			case 'commonPhong':
+				keys.push('diffuseFactor', 'diffuseTexture', 'specularFactor', 'specularTexture', 'shininessFactor');
+				break;
+
+			case 'commonLambert':
+				keys.push('diffuseFactor', 'diffuseTexture');
+				break;
+
+			case 'commonConstant':
+			default:
+				break;
+
+		}
+
+		var materialValues = {};
+
+		keys.forEach(function (v) {
+
+			if (khrMaterial[v] !== undefined) materialValues[v] = khrMaterial[v];
+		});
+
+		if (materialValues.diffuseFactor !== undefined) {
+
+			materialParams.color = new Color().fromArray(materialValues.diffuseFactor);
+			materialParams.opacity = materialValues.diffuseFactor[3];
+		}
+
+		if (materialValues.diffuseTexture !== undefined) {
+
+			materialParams.map = dependencies.textures[materialValues.diffuseTexture.index];
+		}
+
+		if (materialValues.specularFactor !== undefined) {
+
+			materialParams.specular = new Color().fromArray(materialValues.specularFactor);
+		}
+
+		if (materialValues.specularTexture !== undefined) {
+
+			materialParams.specularMap = dependencies.textures[materialValues.specularTexture.index];
+		}
+
+		if (materialValues.shininessFactor !== undefined) {
+
+			materialParams.shininess = materialValues.shininessFactor;
+		}
+	};
+
+	/* BINARY EXTENSION */
+
+	var BINARY_EXTENSION_BUFFER_NAME = 'binary_glTF';
+	var BINARY_EXTENSION_HEADER_MAGIC = 'glTF';
+	var BINARY_EXTENSION_HEADER_LENGTH = 12;
+	var BINARY_EXTENSION_CHUNK_TYPES = { JSON: 0x4E4F534A, BIN: 0x004E4942 };
+
+	function GLTFBinaryExtension(data) {
+
+		this.name = EXTENSIONS.KHR_BINARY_GLTF;
+		this.content = null;
+		this.body = null;
+
+		var headerView = new DataView(data, 0, BINARY_EXTENSION_HEADER_LENGTH);
+
+		this.header = {
+			magic: convertUint8ArrayToString(new Uint8Array(data.slice(0, 4))),
+			version: headerView.getUint32(4, true),
+			length: headerView.getUint32(8, true)
+		};
+
+		if (this.header.magic !== BINARY_EXTENSION_HEADER_MAGIC) {
+
+			throw new Error('GLTF2Loader: Unsupported glTF-Binary header.');
+		} else if (this.header.version < 2.0) {
+
+			throw new Error('GLTF2Loader: Legacy binary file detected. Use GLTFLoader instead.');
+		}
+
+		var chunkView = new DataView(data, BINARY_EXTENSION_HEADER_LENGTH);
+		var chunkIndex = 0;
+
+		while (chunkIndex < chunkView.byteLength) {
+
+			var chunkLength = chunkView.getUint32(chunkIndex, true);
+			chunkIndex += 4;
+
+			var chunkType = chunkView.getUint32(chunkIndex, true);
+			chunkIndex += 4;
+
+			if (chunkType === BINARY_EXTENSION_CHUNK_TYPES.JSON) {
+
+				var contentArray = new Uint8Array(data, BINARY_EXTENSION_HEADER_LENGTH + chunkIndex, chunkLength);
+				this.content = convertUint8ArrayToString(contentArray);
+			} else if (chunkType === BINARY_EXTENSION_CHUNK_TYPES.BIN) {
+
+				var byteOffset = BINARY_EXTENSION_HEADER_LENGTH + chunkIndex;
+				this.body = data.slice(byteOffset, byteOffset + chunkLength);
+			}
+
+			// Clients must ignore chunks with unknown types.
+
+			chunkIndex += chunkLength;
+		}
+
+		if (this.content === null) {
+
+			throw new Error('GLTF2Loader: JSON content not found.');
+		}
+	}
+
+	/**
+  * WebGL Technique Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_technique_webgl
+  */
+	function GLTFTechniqueWebglExtension(json) {
+
+		this.name = EXTENSIONS.KHR_TECHNIQUE_WEBGL;
+
+		var extension = json.extensions && json.extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] || {};
+
+		this.techniques = extension.techniques || {};
+		this.programs = extension.programs || {};
+		this.shaders = extension.shaders || {};
+	}
+
+	GLTFTechniqueWebglExtension.prototype.getMaterialType = function () {
+
+		return DeferredShaderMaterial;
+	};
+
+	GLTFTechniqueWebglExtension.prototype.extendParams = function (materialParams, material, dependencies) {
+
+		var extension = material[EXTENSIONS.KHR_TECHNIQUE_WEBGL];
+		var technique = dependencies.techniques[extension.technique];
+
+		materialParams.uniforms = {};
+
+		var program = dependencies.programs[technique.program];
+
+		if (program === undefined) {
+
+			return;
+		}
+
+		materialParams.fragmentShader = dependencies.shaders[program.fragmentShader];
+
+		if (!materialParams.fragmentShader) {
+
+			throw new Error('ERROR: Missing fragment shader definition:', program.fragmentShader);
+		}
+
+		var vertexShader = dependencies.shaders[program.vertexShader];
+
+		if (!vertexShader) {
+
+			throw new Error('ERROR: Missing vertex shader definition:', program.vertexShader);
+		}
+
+		// IMPORTANT: FIX VERTEX SHADER ATTRIBUTE DEFINITIONS
+		materialParams.vertexShader = replaceTHREEShaderAttributes(vertexShader, technique);
+
+		var uniforms = technique.uniforms;
+
+		for (var uniformId in uniforms) {
+
+			var pname = uniforms[uniformId];
+			var shaderParam = technique.parameters[pname];
+
+			var ptype = shaderParam.type;
+
+			if (WEBGL_TYPE[ptype]) {
+
+				var pcount = shaderParam.count;
+				var value;
+
+				if (material.values !== undefined) value = material.values[pname];
+
+				var uvalue = new WEBGL_TYPE[ptype]();
+				var usemantic = shaderParam.semantic;
+				var unode = shaderParam.node;
+
+				switch (ptype) {
+
+					case WEBGL_CONSTANTS.FLOAT:
+
+						uvalue = shaderParam.value;
+
+						if (pname === 'transparency') {
+
+							materialParams.transparent = true;
+						}
+
+						if (value !== undefined) {
+
+							uvalue = value;
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_VEC2:
+					case WEBGL_CONSTANTS.FLOAT_VEC3:
+					case WEBGL_CONSTANTS.FLOAT_VEC4:
+					case WEBGL_CONSTANTS.FLOAT_MAT3:
+
+						if (shaderParam && shaderParam.value) {
+
+							uvalue.fromArray(shaderParam.value);
+						}
+
+						if (value) {
+
+							uvalue.fromArray(value);
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_MAT2:
+
+						// what to do?
+						console.warn('FLOAT_MAT2 is not a supported uniform type');
+						break;
+
+					case WEBGL_CONSTANTS.FLOAT_MAT4:
+
+						if (pcount) {
+
+							uvalue = new Array(pcount);
+
+							for (var mi = 0; mi < pcount; mi++) {
+
+								uvalue[mi] = new WEBGL_TYPE[ptype]();
+							}
+
+							if (shaderParam && shaderParam.value) {
+
+								var m4v = shaderParam.value;
+								uvalue.fromArray(m4v);
+							}
+
+							if (value) {
+
+								uvalue.fromArray(value);
+							}
+						} else {
+
+							if (shaderParam && shaderParam.value) {
+
+								var m4 = shaderParam.value;
+								uvalue.fromArray(m4);
+							}
+
+							if (value) {
+
+								uvalue.fromArray(value);
+							}
+						}
+
+						break;
+
+					case WEBGL_CONSTANTS.SAMPLER_2D:
+
+						if (value !== undefined) {
+
+							uvalue = dependencies.textures[value];
+						} else if (shaderParam.value !== undefined) {
+
+							uvalue = dependencies.textures[shaderParam.value];
+						} else {
+
+							uvalue = null;
+						}
+
+						break;
+
+				}
+
+				materialParams.uniforms[uniformId] = {
+					value: uvalue,
+					semantic: usemantic,
+					node: unode
+				};
+			} else {
+
+				throw new Error('Unknown shader uniform param type: ' + ptype);
+			}
+		}
+
+		var states = technique.states || {};
+		var enables = states.enable || [];
+		var functions = states.functions || {};
+
+		var enableCullFace = false;
+		var enableDepthTest = false;
+		var enableBlend = false;
+
+		for (var i = 0, il = enables.length; i < il; i++) {
+
+			var enable = enables[i];
+
+			switch (STATES_ENABLES[enable]) {
+
+				case 'CULL_FACE':
+
+					enableCullFace = true;
+
+					break;
+
+				case 'DEPTH_TEST':
+
+					enableDepthTest = true;
+
+					break;
+
+				case 'BLEND':
+
+					enableBlend = true;
+
+					break;
+
+				// TODO: implement
+				case 'SCISSOR_TEST':
+				case 'POLYGON_OFFSET_FILL':
+				case 'SAMPLE_ALPHA_TO_COVERAGE':
+
+					break;
+
+				default:
+
+					throw new Error("Unknown technique.states.enable: " + enable);
+
+			}
+		}
+
+		if (enableCullFace) {
+
+			materialParams.side = functions.cullFace !== undefined ? WEBGL_SIDES[functions.cullFace] : FrontSide;
+		} else {
+
+			materialParams.side = DoubleSide;
+		}
+
+		materialParams.depthTest = enableDepthTest;
+		materialParams.depthFunc = functions.depthFunc !== undefined ? WEBGL_DEPTH_FUNCS[functions.depthFunc] : LessDepth;
+		materialParams.depthWrite = functions.depthMask !== undefined ? functions.depthMask[0] : true;
+
+		materialParams.blending = enableBlend ? CustomBlending : NoBlending;
+		materialParams.transparent = enableBlend;
+
+		var blendEquationSeparate = functions.blendEquationSeparate;
+
+		if (blendEquationSeparate !== undefined) {
+
+			materialParams.blendEquation = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[0]];
+			materialParams.blendEquationAlpha = WEBGL_BLEND_EQUATIONS[blendEquationSeparate[1]];
+		} else {
+
+			materialParams.blendEquation = AddEquation;
+			materialParams.blendEquationAlpha = AddEquation;
+		}
+
+		var blendFuncSeparate = functions.blendFuncSeparate;
+
+		if (blendFuncSeparate !== undefined) {
+
+			materialParams.blendSrc = WEBGL_BLEND_FUNCS[blendFuncSeparate[0]];
+			materialParams.blendDst = WEBGL_BLEND_FUNCS[blendFuncSeparate[1]];
+			materialParams.blendSrcAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[2]];
+			materialParams.blendDstAlpha = WEBGL_BLEND_FUNCS[blendFuncSeparate[3]];
+		} else {
+
+			materialParams.blendSrc = OneFactor;
+			materialParams.blendDst = ZeroFactor;
+			materialParams.blendSrcAlpha = OneFactor;
+			materialParams.blendDstAlpha = ZeroFactor;
+		}
+	};
+
+	/**
+  * Specular-Glossiness Extension
+  *
+  * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness
+  */
+	function GLTFMaterialsPbrSpecularGlossinessExtension() {
+
+		return {
+
+			name: EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS,
+
+			getMaterialType: function () {
+
+				return ShaderMaterial;
+			},
+
+			extendParams: function (params, material, dependencies) {
+
+				// specification
+				// https://github.com/sbtron/glTF/tree/KHRpbrSpecGloss/extensions/Khronos/KHR_materials_pbrSpecularGlossiness
+
+				var pbrSpecularGlossiness = material.extensions[this.name];
+
+				var shader = ShaderLib['standard'];
+
+				var uniforms = UniformsUtils.clone(shader.uniforms);
+
+				var specularMapParsFragmentChunk = ['#ifdef USE_SPECULARMAP', '	uniform sampler2D specularMap;', '#endif'].join('\n');
+
+				var glossinessMapParsFragmentChunk = ['#ifdef USE_GLOSSINESSMAP', '	uniform sampler2D glossinessMap;', '#endif'].join('\n');
+
+				var specularMapFragmentChunk = ['vec3 specularFactor = specular;', '#ifdef USE_SPECULARMAP', '	vec4 texelSpecular = texture2D( specularMap, vUv );', '	// reads channel RGB, compatible with a glTF Specular-Glossiness (RGBA) texture', '	specularFactor *= texelSpecular.rgb;', '#endif'].join('\n');
+
+				var glossinessMapFragmentChunk = ['float glossinessFactor = glossiness;', '#ifdef USE_GLOSSINESSMAP', '	vec4 texelGlossiness = texture2D( glossinessMap, vUv );', '	// reads channel A, compatible with a glTF Specular-Glossiness (RGBA) texture', '	glossinessFactor *= texelGlossiness.a;', '#endif'].join('\n');
+
+				var lightPhysicalFragmentChunk = ['PhysicalMaterial material;', 'material.diffuseColor = diffuseColor.rgb;', 'material.specularRoughness = clamp( 1.0 - glossinessFactor, 0.04, 1.0 );', 'material.specularColor = specularFactor.rgb;'].join('\n');
+
+				var fragmentShader = shader.fragmentShader.replace('#include <specularmap_fragment>', '').replace('uniform float roughness;', 'uniform vec3 specular;').replace('uniform float metalness;', 'uniform float glossiness;').replace('#include <roughnessmap_pars_fragment>', specularMapParsFragmentChunk).replace('#include <metalnessmap_pars_fragment>', glossinessMapParsFragmentChunk).replace('#include <roughnessmap_fragment>', specularMapFragmentChunk).replace('#include <metalnessmap_fragment>', glossinessMapFragmentChunk).replace('#include <lights_physical_fragment>', lightPhysicalFragmentChunk);
+
+				delete uniforms.roughness;
+				delete uniforms.metalness;
+				delete uniforms.roughnessMap;
+				delete uniforms.metalnessMap;
+
+				uniforms.specular = { value: new Color().setHex(0x111111) };
+				uniforms.glossiness = { value: 0.5 };
+				uniforms.specularMap = { value: null };
+				uniforms.glossinessMap = { value: null };
+
+				params.vertexShader = shader.vertexShader;
+				params.fragmentShader = fragmentShader;
+				params.uniforms = uniforms;
+				params.defines = { 'STANDARD': '' };
+
+				params.color = new Color(1.0, 1.0, 1.0);
+				params.opacity = 1.0;
+
+				if (Array.isArray(pbrSpecularGlossiness.diffuseFactor)) {
+
+					var array = pbrSpecularGlossiness.diffuseFactor;
+
+					params.color.fromArray(array);
+					params.opacity = array[3];
+				}
+
+				if (pbrSpecularGlossiness.diffuseTexture !== undefined) {
+
+					params.map = dependencies.textures[pbrSpecularGlossiness.diffuseTexture.index];
+				}
+
+				params.emissive = new Color(0.0, 0.0, 0.0);
+				params.glossiness = pbrSpecularGlossiness.glossinessFactor !== undefined ? pbrSpecularGlossiness.glossinessFactor : 1.0;
+				params.specular = new Color(1.0, 1.0, 1.0);
+
+				if (Array.isArray(pbrSpecularGlossiness.specularFactor)) {
+
+					params.specular.fromArray(pbrSpecularGlossiness.specularFactor);
+				}
+
+				if (pbrSpecularGlossiness.specularGlossinessTexture !== undefined) {
+
+					params.glossinessMap = dependencies.textures[pbrSpecularGlossiness.specularGlossinessTexture.index];
+					params.specularMap = dependencies.textures[pbrSpecularGlossiness.specularGlossinessTexture.index];
+				}
+			},
+
+			createMaterial: function (params) {
+
+				// setup material properties based on MeshStandardMaterial for Specular-Glossiness
+
+				var material = new ShaderMaterial({
+					defines: params.defines,
+					vertexShader: params.vertexShader,
+					fragmentShader: params.fragmentShader,
+					uniforms: params.uniforms,
+					fog: true,
+					lights: true,
+					opacity: params.opacity,
+					transparent: params.transparent
+				});
+
+				material.color = params.color;
+
+				material.map = params.map === undefined ? null : params.map;
+
+				material.lightMap = null;
+				material.lightMapIntensity = 1.0;
+
+				material.aoMap = params.aoMap === undefined ? null : params.aoMap;
+				material.aoMapIntensity = 1.0;
+
+				material.emissive = params.emissive;
+				material.emissiveIntensity = 1.0;
+				material.emissiveMap = params.emissiveMap === undefined ? null : params.emissiveMap;
+
+				material.bumpMap = params.bumpMap === undefined ? null : params.bumpMap;
+				material.bumpScale = 1;
+
+				material.normalMap = params.normalMap === undefined ? null : params.normalMap;
+				material.normalScale = new Vector2(1, 1);
+
+				material.displacementMap = null;
+				material.displacementScale = 1;
+				material.displacementBias = 0;
+
+				material.specularMap = params.specularMap === undefined ? null : params.specularMap;
+				material.specular = params.specular;
+
+				material.glossinessMap = params.glossinessMap === undefined ? null : params.glossinessMap;
+				material.glossiness = params.glossiness;
+
+				material.alphaMap = null;
+
+				material.envMap = params.envMap === undefined ? null : params.envMap;
+				material.envMapIntensity = 1.0;
+
+				material.refractionRatio = 0.98;
+
+				material.extensions.derivatives = true;
+
+				return material;
+			},
+
+			// Here's based on refreshUniformsCommon() and refreshUniformsStandard() in WebGLRenderer.
+			refreshUniforms: function (renderer, scene, camera, geometry, material, group) {
+
+				var uniforms = material.uniforms;
+				var defines = material.defines;
+
+				uniforms.opacity.value = material.opacity;
+
+				uniforms.diffuse.value.copy(material.color);
+				uniforms.emissive.value.copy(material.emissive).multiplyScalar(material.emissiveIntensity);
+
+				uniforms.map.value = material.map;
+				uniforms.specularMap.value = material.specularMap;
+				uniforms.alphaMap.value = material.alphaMap;
+
+				uniforms.lightMap.value = material.lightMap;
+				uniforms.lightMapIntensity.value = material.lightMapIntensity;
+
+				uniforms.aoMap.value = material.aoMap;
+				uniforms.aoMapIntensity.value = material.aoMapIntensity;
+
+				// uv repeat and offset setting priorities
+				// 1. color map
+				// 2. specular map
+				// 3. normal map
+				// 4. bump map
+				// 5. alpha map
+				// 6. emissive map
+
+				var uvScaleMap;
+
+				if (material.map) {
+
+					uvScaleMap = material.map;
+				} else if (material.specularMap) {
+
+					uvScaleMap = material.specularMap;
+				} else if (material.displacementMap) {
+
+					uvScaleMap = material.displacementMap;
+				} else if (material.normalMap) {
+
+					uvScaleMap = material.normalMap;
+				} else if (material.bumpMap) {
+
+					uvScaleMap = material.bumpMap;
+				} else if (material.glossinessMap) {
+
+					uvScaleMap = material.glossinessMap;
+				} else if (material.alphaMap) {
+
+					uvScaleMap = material.alphaMap;
+				} else if (material.emissiveMap) {
+
+					uvScaleMap = material.emissiveMap;
+				}
+
+				if (uvScaleMap !== undefined) {
+
+					// backwards compatibility
+					if (uvScaleMap.isWebGLRenderTarget) {
+
+						uvScaleMap = uvScaleMap.texture;
+					}
+
+					var offset = uvScaleMap.offset;
+					var repeat = uvScaleMap.repeat;
+
+					uniforms.offsetRepeat.value.set(offset.x, offset.y, repeat.x, repeat.y);
+				}
+
+				uniforms.envMap.value = material.envMap;
+				uniforms.envMapIntensity.value = material.envMapIntensity;
+				uniforms.flipEnvMap.value = material.envMap && material.envMap.isCubeTexture ? -1 : 1;
+
+				uniforms.refractionRatio.value = material.refractionRatio;
+
+				uniforms.specular.value.copy(material.specular);
+				uniforms.glossiness.value = material.glossiness;
+
+				uniforms.glossinessMap.value = material.glossinessMap;
+
+				uniforms.emissiveMap.value = material.emissiveMap;
+				uniforms.bumpMap.value = material.bumpMap;
+				uniforms.normalMap.value = material.normalMap;
+
+				uniforms.displacementMap.value = material.displacementMap;
+				uniforms.displacementScale.value = material.displacementScale;
+				uniforms.displacementBias.value = material.displacementBias;
+
+				if (uniforms.glossinessMap.value !== null && defines.USE_GLOSSINESSMAP === undefined) {
+
+					defines.USE_GLOSSINESSMAP = '';
+					// set USE_ROUGHNESSMAP to enable vUv
+					defines.USE_ROUGHNESSMAP = '';
+				}
+
+				if (uniforms.glossinessMap.value === null && defines.USE_GLOSSINESSMAP !== undefined) {
+
+					delete defines.USE_GLOSSINESSMAP;
+					delete defines.USE_ROUGHNESSMAP;
+				}
+			}
+
+		};
+	}
+
+	/*********************************/
+	/********** INTERNALS ************/
+	/*********************************/
+
+	/* CONSTANTS */
+
+	var WEBGL_CONSTANTS = {
+		FLOAT: 5126,
+		//FLOAT_MAT2: 35674,
+		FLOAT_MAT3: 35675,
+		FLOAT_MAT4: 35676,
+		FLOAT_VEC2: 35664,
+		FLOAT_VEC3: 35665,
+		FLOAT_VEC4: 35666,
+		LINEAR: 9729,
+		REPEAT: 10497,
+		SAMPLER_2D: 35678,
+		TRIANGLES: 4,
+		LINES: 1,
+		UNSIGNED_BYTE: 5121,
+		UNSIGNED_SHORT: 5123,
+
+		VERTEX_SHADER: 35633,
+		FRAGMENT_SHADER: 35632
+	};
+
+	var WEBGL_TYPE = {
+		5126: Number,
+		//35674: THREE.Matrix2,
+		35675: Matrix3,
+		35676: Matrix4,
+		35664: Vector2,
+		35665: Vector3,
+		35666: Vector4,
+		35678: Texture
+	};
+
+	var WEBGL_COMPONENT_TYPES = {
+		5120: Int8Array,
+		5121: Uint8Array,
+		5122: Int16Array,
+		5123: Uint16Array,
+		5125: Uint32Array,
+		5126: Float32Array
+	};
+
+	var WEBGL_FILTERS = {
+		9728: NearestFilter,
+		9729: LinearFilter,
+		9984: NearestMipMapNearestFilter,
+		9985: LinearMipMapNearestFilter,
+		9986: NearestMipMapLinearFilter,
+		9987: LinearMipMapLinearFilter
+	};
+
+	var WEBGL_WRAPPINGS = {
+		33071: ClampToEdgeWrapping,
+		33648: MirroredRepeatWrapping,
+		10497: RepeatWrapping
+	};
+
+	var WEBGL_TEXTURE_FORMATS = {
+		6406: AlphaFormat,
+		6407: RGBFormat,
+		6408: RGBAFormat,
+		6409: LuminanceFormat,
+		6410: LuminanceAlphaFormat
+	};
+
+	var WEBGL_TEXTURE_DATATYPES = {
+		5121: UnsignedByteType,
+		32819: UnsignedShort4444Type,
+		32820: UnsignedShort5551Type,
+		33635: UnsignedShort565Type
+	};
+
+	var WEBGL_SIDES = {
+		1028: BackSide, // Culling front
+		1029: FrontSide // Culling back
+		//1032: THREE.NoSide   // Culling front and back, what to do?
+	};
+
+	var WEBGL_DEPTH_FUNCS = {
+		512: NeverDepth,
+		513: LessDepth,
+		514: EqualDepth,
+		515: LessEqualDepth,
+		516: GreaterEqualDepth,
+		517: NotEqualDepth,
+		518: GreaterEqualDepth,
+		519: AlwaysDepth
+	};
+
+	var WEBGL_BLEND_EQUATIONS = {
+		32774: AddEquation,
+		32778: SubtractEquation,
+		32779: ReverseSubtractEquation
+	};
+
+	var WEBGL_BLEND_FUNCS = {
+		0: ZeroFactor,
+		1: OneFactor,
+		768: SrcColorFactor,
+		769: OneMinusSrcColorFactor,
+		770: SrcAlphaFactor,
+		771: OneMinusSrcAlphaFactor,
+		772: DstAlphaFactor,
+		773: OneMinusDstAlphaFactor,
+		774: DstColorFactor,
+		775: OneMinusDstColorFactor,
+		776: SrcAlphaSaturateFactor
+		// The followings are not supported by Three.js yet
+		//32769: CONSTANT_COLOR,
+		//32770: ONE_MINUS_CONSTANT_COLOR,
+		//32771: CONSTANT_ALPHA,
+		//32772: ONE_MINUS_CONSTANT_COLOR
+	};
+
+	var WEBGL_TYPE_SIZES = {
+		'SCALAR': 1,
+		'VEC2': 2,
+		'VEC3': 3,
+		'VEC4': 4,
+		'MAT2': 4,
+		'MAT3': 9,
+		'MAT4': 16
+	};
+
+	var PATH_PROPERTIES = {
+		scale: 'scale',
+		translation: 'position',
+		rotation: 'quaternion',
+		weights: 'morphTargetInfluences'
+	};
+
+	var INTERPOLATION = {
+		LINEAR: InterpolateLinear,
+		STEP: InterpolateDiscrete
+	};
+
+	var STATES_ENABLES = {
+		2884: 'CULL_FACE',
+		2929: 'DEPTH_TEST',
+		3042: 'BLEND',
+		3089: 'SCISSOR_TEST',
+		32823: 'POLYGON_OFFSET_FILL',
+		32926: 'SAMPLE_ALPHA_TO_COVERAGE'
+	};
+
+	var ALPHA_MODES = {
+		OPAQUE: 'OPAQUE',
+		MASK: 'MASK',
+		BLEND: 'BLEND'
+	};
+
+	/* UTILITY FUNCTIONS */
+
+	function _each(object, callback, thisObj) {
+
+		if (!object) {
+			return Promise.resolve();
+		}
+
+		var results;
+		var fns = [];
+
+		if (Object.prototype.toString.call(object) === '[object Array]') {
+
+			results = [];
+
+			var length = object.length;
+
+			for (var idx = 0; idx < length; idx++) {
+
+				var value = callback.call(thisObj || this, object[idx], idx);
+
+				if (value) {
+
+					fns.push(value);
+
+					if (value instanceof Promise) {
+
+						value.then(function (key, value) {
+
+							results[key] = value;
+						}.bind(this, idx));
+					} else {
+
+						results[idx] = value;
+					}
+				}
+			}
+		} else {
+
+			results = {};
+
+			for (var key in object) {
+
+				if (object.hasOwnProperty(key)) {
+
+					var value = callback.call(thisObj || this, object[key], key);
+
+					if (value) {
+
+						fns.push(value);
+
+						if (value instanceof Promise) {
+
+							value.then(function (key, value) {
+
+								results[key] = value;
+							}.bind(this, key));
+						} else {
+
+							results[key] = value;
+						}
+					}
+				}
+			}
+		}
+
+		return Promise.all(fns).then(function () {
+
+			return results;
+		});
+	}
+
+	function resolveURL(url, path) {
+
+		// Invalid URL
+		if (typeof url !== 'string' || url === '') return '';
+
+		// Absolute URL http://,https://,//
+		if (/^(https?:)?\/\//i.test(url)) {
+
+			return url;
+		}
+
+		// Data URI
+		if (/^data:.*,.*$/i.test(url)) {
+
+			return url;
+		}
+
+		// Blob URL
+		if (/^blob:.*$/i.test(url)) {
+
+			return url;
+		}
+
+		// Relative URL
+		return (path || '') + url;
+	}
+
+	function convertUint8ArrayToString(array) {
+
+		if (window.TextDecoder !== undefined) {
+
+			return new TextDecoder().decode(array);
+		}
+
+		// Avoid the String.fromCharCode.apply(null, array) shortcut, which
+		// throws a "maximum call stack size exceeded" error for large arrays.
+
+		var s = '';
+
+		for (var i = 0, il = array.length; i < il; i++) {
+
+			s += String.fromCharCode(array[i]);
+		}
+
+		return s;
+	}
+
+	// Three.js seems too dependent on attribute names so globally
+	// replace those in the shader code
+	function replaceTHREEShaderAttributes(shaderText, technique) {
+
+		// Expected technique attributes
+		var attributes = {};
+
+		for (var attributeId in technique.attributes) {
+
+			var pname = technique.attributes[attributeId];
+
+			var param = technique.parameters[pname];
+			var atype = param.type;
+			var semantic = param.semantic;
+
+			attributes[attributeId] = {
+				type: atype,
+				semantic: semantic
+			};
+		}
+
+		// Figure out which attributes to change in technique
+
+		var shaderParams = technique.parameters;
+		var shaderAttributes = technique.attributes;
+		var params = {};
+
+		for (var attributeId in attributes) {
+
+			var pname = shaderAttributes[attributeId];
+			var shaderParam = shaderParams[pname];
+			var semantic = shaderParam.semantic;
+			if (semantic) {
+
+				params[attributeId] = shaderParam;
+			}
+		}
+
+		for (var pname in params) {
+
+			var param = params[pname];
+			var semantic = param.semantic;
+
+			var regEx = new RegExp("\\b" + pname + "\\b", "g");
+
+			switch (semantic) {
+
+				case 'POSITION':
+
+					shaderText = shaderText.replace(regEx, 'position');
+					break;
+
+				case 'NORMAL':
+
+					shaderText = shaderText.replace(regEx, 'normal');
+					break;
+
+				case 'TEXCOORD_0':
+				case 'TEXCOORD0':
+				case 'TEXCOORD':
+
+					shaderText = shaderText.replace(regEx, 'uv');
+					break;
+
+				case 'TEXCOORD_1':
+
+					shaderText = shaderText.replace(regEx, 'uv2');
+					break;
+
+				case 'COLOR_0':
+				case 'COLOR0':
+				case 'COLOR':
+
+					shaderText = shaderText.replace(regEx, 'color');
+					break;
+
+				case 'WEIGHTS_0':
+				case 'WEIGHT':
+					// WEIGHT semantic deprecated.
+
+					shaderText = shaderText.replace(regEx, 'skinWeight');
+					break;
+
+				case 'JOINTS_0':
+				case 'JOINT':
+					// JOINT semantic deprecated.
+
+					shaderText = shaderText.replace(regEx, 'skinIndex');
+					break;
+
+			}
+		}
+
+		return shaderText;
+	}
+
+	function createDefaultMaterial() {
+
+		return new MeshPhongMaterial({
+			color: 0x00000,
+			emissive: 0x888888,
+			specular: 0x000000,
+			shininess: 0,
+			transparent: false,
+			depthTest: true,
+			side: FrontSide
+		});
+	}
+
+	// Deferred constructor for RawShaderMaterial types
+	function DeferredShaderMaterial(params) {
+
+		this.isDeferredShaderMaterial = true;
+
+		this.params = params;
+	}
+
+	DeferredShaderMaterial.prototype.create = function () {
+
+		var uniforms = UniformsUtils.clone(this.params.uniforms);
+
+		for (var uniformId in this.params.uniforms) {
+
+			var originalUniform = this.params.uniforms[uniformId];
+
+			if (originalUniform.value instanceof Texture) {
+
+				uniforms[uniformId].value = originalUniform.value;
+				uniforms[uniformId].value.needsUpdate = true;
+			}
+
+			uniforms[uniformId].semantic = originalUniform.semantic;
+			uniforms[uniformId].node = originalUniform.node;
+		}
+
+		this.params.uniforms = uniforms;
+
+		return new RawShaderMaterial(this.params);
+	};
+
+	/* GLTF PARSER */
+
+	function GLTFParser(json, extensions, options) {
+
+		this.json = json || {};
+		this.extensions = extensions || {};
+		this.options = options || {};
+
+		// loader object cache
+		this.cache = new GLTFRegistry();
+	}
+
+	GLTFParser.prototype._withDependencies = function (dependencies) {
+
+		var _dependencies = {};
+
+		for (var i = 0; i < dependencies.length; i++) {
+
+			var dependency = dependencies[i];
+			var fnName = "load" + dependency.charAt(0).toUpperCase() + dependency.slice(1);
+
+			var cached = this.cache.get(dependency);
+
+			if (cached !== undefined) {
+
+				_dependencies[dependency] = cached;
+			} else if (this[fnName]) {
+
+				var fn = this[fnName]();
+				this.cache.add(dependency, fn);
+
+				_dependencies[dependency] = fn;
+			}
+		}
+
+		return _each(_dependencies, function (dependency) {
+
+			return dependency;
+		});
+	};
+
+	GLTFParser.prototype.parse = function (callback) {
+
+		var json = this.json;
+
+		// Clear the loader cache
+		this.cache.removeAll();
+
+		// Fire the callback on complete
+		this._withDependencies(["scenes", "cameras", "animations"]).then(function (dependencies) {
+
+			var scenes = [];
+
+			for (var name in dependencies.scenes) {
+
+				scenes.push(dependencies.scenes[name]);
+			}
+
+			var scene = json.scene !== undefined ? dependencies.scenes[json.scene] : scenes[0];
+
+			var cameras = [];
+
+			for (var name in dependencies.cameras) {
+
+				var camera = dependencies.cameras[name];
+				cameras.push(camera);
+			}
+
+			var animations = [];
+
+			for (var name in dependencies.animations) {
+
+				animations.push(dependencies.animations[name]);
+			}
+
+			callback(scene, scenes, cameras, animations);
+		});
+	};
+
+	GLTFParser.prototype.loadShaders = function () {
+
+		var json = this.json;
+		var options = this.options;
+		var extensions = this.extensions;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			var shaders = extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL] !== undefined ? extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].shaders : json.shaders;
+
+			if (shaders === undefined) shaders = {};
+
+			return _each(shaders, function (shader) {
+
+				if (shader.bufferView !== undefined) {
+
+					var bufferView = dependencies.bufferViews[shader.bufferView];
+					var array = new Uint8Array(bufferView);
+					return convertUint8ArrayToString(array);
+				}
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('text');
+					loader.load(resolveURL(shader.uri, options.path), function (shaderText) {
+
+						resolve(shaderText);
+					});
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadBuffers = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var options = this.options;
+
+		return _each(json.buffers, function (buffer, name) {
+
+			if (buffer.type === 'arraybuffer' || buffer.type === undefined) {
+
+				// If present, GLB container is required to be the first buffer.
+				if (buffer.uri === undefined && name === 0) {
+
+					return extensions[EXTENSIONS.KHR_BINARY_GLTF].body;
+				}
+
+				return new Promise(function (resolve) {
+
+					var loader = new FileLoader();
+					loader.setResponseType('arraybuffer');
+					loader.load(resolveURL(buffer.uri, options.path), function (buffer) {
+
+						resolve(buffer);
+					});
+				});
+			} else {
+
+				console.warn('GLTFLoader: ' + buffer.type + ' buffer type is not supported');
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadBufferViews = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["buffers"]).then(function (dependencies) {
+
+			return _each(json.bufferViews, function (bufferView) {
+
+				var arraybuffer = dependencies.buffers[bufferView.buffer];
+
+				var byteLength = bufferView.byteLength || 0;
+				var byteOffset = bufferView.byteOffset || 0;
+
+				return arraybuffer.slice(byteOffset, byteOffset + byteLength);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAccessors = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.accessors, function (accessor) {
+
+				var arraybuffer = dependencies.bufferViews[accessor.bufferView];
+				var itemSize = WEBGL_TYPE_SIZES[accessor.type];
+				var TypedArray = WEBGL_COMPONENT_TYPES[accessor.componentType];
+
+				// For VEC3: itemSize is 3, elementBytes is 4, itemBytes is 12.
+				var elementBytes = TypedArray.BYTES_PER_ELEMENT;
+				var itemBytes = elementBytes * itemSize;
+				var byteStride = json.bufferViews[accessor.bufferView].byteStride;
+				var array;
+
+				// The buffer is not interleaved if the stride is the item size in bytes.
+				if (byteStride && byteStride !== itemBytes) {
+
+					// Use the full buffer if it's interleaved.
+					array = new TypedArray(arraybuffer);
+
+					// Integer parameters to IB/IBA are in array elements, not bytes.
+					var ib = new InterleavedBuffer(array, byteStride / elementBytes);
+
+					return new InterleavedBufferAttribute(ib, itemSize, accessor.byteOffset / elementBytes);
+				} else {
+
+					array = new TypedArray(arraybuffer, accessor.byteOffset, accessor.count * itemSize);
+
+					return new BufferAttribute(array, itemSize);
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadTextures = function () {
+
+		var json = this.json;
+		var options = this.options;
+
+		return this._withDependencies(["bufferViews"]).then(function (dependencies) {
+
+			return _each(json.textures, function (texture) {
+
+				if (texture.source !== undefined) {
+
+					return new Promise(function (resolve) {
+
+						var source = json.images[texture.source];
+						var sourceUri = source.uri;
+
+						var urlCreator;
+
+						if (source.bufferView !== undefined) {
+
+							var bufferView = dependencies.bufferViews[source.bufferView];
+							var blob = new Blob([bufferView], { type: source.mimeType });
+							urlCreator = window.URL || window.webkitURL;
+							sourceUri = urlCreator.createObjectURL(blob);
+						}
+
+						var textureLoader = Loader.Handlers.get(sourceUri);
+
+						if (textureLoader === null) {
+
+							textureLoader = new TextureLoader();
+						}
+
+						textureLoader.setCrossOrigin(options.crossOrigin);
+
+						textureLoader.load(resolveURL(sourceUri, options.path), function (_texture) {
+
+							if (urlCreator !== undefined) {
+
+								urlCreator.revokeObjectURL(sourceUri);
+							}
+
+							_texture.flipY = false;
+
+							if (texture.name !== undefined) _texture.name = texture.name;
+
+							_texture.format = texture.format !== undefined ? WEBGL_TEXTURE_FORMATS[texture.format] : RGBAFormat;
+
+							if (texture.internalFormat !== undefined && _texture.format !== WEBGL_TEXTURE_FORMATS[texture.internalFormat]) {
+
+								console.warn('GLTFLoader: Three.js doesn\'t support texture internalFormat which is different from texture format. ' + 'internalFormat will be forced to be the same value as format.');
+							}
+
+							_texture.type = texture.type !== undefined ? WEBGL_TEXTURE_DATATYPES[texture.type] : UnsignedByteType;
+
+							var samplers = json.samplers || {};
+							var sampler = samplers[texture.sampler] || {};
+
+							_texture.magFilter = WEBGL_FILTERS[sampler.magFilter] || LinearFilter;
+							_texture.minFilter = WEBGL_FILTERS[sampler.minFilter] || NearestMipMapLinearFilter;
+							_texture.wrapS = WEBGL_WRAPPINGS[sampler.wrapS] || RepeatWrapping;
+							_texture.wrapT = WEBGL_WRAPPINGS[sampler.wrapT] || RepeatWrapping;
+
+							resolve(_texture);
+						}, undefined, function () {
+
+							resolve();
+						});
+					});
+				}
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMaterials = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+
+		return this._withDependencies(['shaders', 'textures']).then(function (dependencies) {
+
+			return _each(json.materials, function (material) {
+
+				var materialType;
+				var materialParams = {};
+				var materialExtensions = material.extensions || {};
+
+				if (materialExtensions[EXTENSIONS.KHR_MATERIALS_COMMON]) {
+
+					materialType = extensions[EXTENSIONS.KHR_MATERIALS_COMMON].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_MATERIALS_COMMON].extendParams(materialParams, material, dependencies);
+				} else if (materialExtensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS]) {
+
+					materialType = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].extendParams(materialParams, material, dependencies);
+				} else if (materialExtensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL]) {
+
+					materialType = extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].getMaterialType(material);
+					extensions[EXTENSIONS.KHR_TECHNIQUE_WEBGL].extendParams(materialParams, material, dependencies);
+				} else if (material.pbrMetallicRoughness !== undefined) {
+
+					// Specification:
+					// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#metallic-roughness-material
+
+					materialType = MeshStandardMaterial;
+
+					var metallicRoughness = material.pbrMetallicRoughness;
+
+					materialParams.color = new Color(1.0, 1.0, 1.0);
+					materialParams.opacity = 1.0;
+
+					if (Array.isArray(metallicRoughness.baseColorFactor)) {
+
+						var array = metallicRoughness.baseColorFactor;
+
+						materialParams.color.fromArray(array);
+						materialParams.opacity = array[3];
+					}
+
+					if (metallicRoughness.baseColorTexture !== undefined) {
+
+						materialParams.map = dependencies.textures[metallicRoughness.baseColorTexture.index];
+					}
+
+					materialParams.metalness = metallicRoughness.metallicFactor !== undefined ? metallicRoughness.metallicFactor : 1.0;
+					materialParams.roughness = metallicRoughness.roughnessFactor !== undefined ? metallicRoughness.roughnessFactor : 1.0;
+
+					if (metallicRoughness.metallicRoughnessTexture !== undefined) {
+
+						var textureIndex = metallicRoughness.metallicRoughnessTexture.index;
+						materialParams.metalnessMap = dependencies.textures[textureIndex];
+						materialParams.roughnessMap = dependencies.textures[textureIndex];
+					}
+				} else {
+
+					materialType = MeshPhongMaterial;
+				}
+
+				if (material.doubleSided === true) {
+
+					materialParams.side = DoubleSide;
+				}
+
+				var alphaMode = material.alphaMode || ALPHA_MODES.OPAQUE;
+
+				if (alphaMode !== ALPHA_MODES.OPAQUE) {
+
+					materialParams.transparent = true;
+				} else {
+
+					materialParams.transparent = false;
+				}
+
+				if (material.normalTexture !== undefined) {
+
+					materialParams.normalMap = dependencies.textures[material.normalTexture.index];
+				}
+
+				if (material.occlusionTexture !== undefined) {
+
+					materialParams.aoMap = dependencies.textures[material.occlusionTexture.index];
+				}
+
+				if (material.emissiveFactor !== undefined) {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.color = new Color().fromArray(material.emissiveFactor);
+					} else {
+
+						materialParams.emissive = new Color().fromArray(material.emissiveFactor);
+					}
+				}
+
+				if (material.emissiveTexture !== undefined) {
+
+					if (materialType === MeshBasicMaterial) {
+
+						materialParams.map = dependencies.textures[material.emissiveTexture.index];
+					} else {
+
+						materialParams.emissiveMap = dependencies.textures[material.emissiveTexture.index];
+					}
+				}
+
+				var _material;
+
+				if (materialType === ShaderMaterial) {
+
+					_material = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].createMaterial(materialParams);
+				} else {
+
+					_material = new materialType(materialParams);
+				}
+
+				if (material.name !== undefined) _material.name = material.name;
+
+				return _material;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadMeshes = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "materials"]).then(function (dependencies) {
+
+			return _each(json.meshes, function (mesh) {
+
+				var group = new Group();
+				if (mesh.name !== undefined) group.name = mesh.name;
+
+				if (mesh.extras) group.userData = mesh.extras;
+
+				var primitives = mesh.primitives || [];
+
+				for (var name in primitives) {
+
+					var primitive = primitives[name];
+
+					var material = primitive.material !== undefined ? dependencies.materials[primitive.material] : createDefaultMaterial();
+
+					var geometry;
+
+					var meshNode;
+
+					if (primitive.mode === WEBGL_CONSTANTS.TRIANGLES || primitive.mode === undefined) {
+
+						geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (attributeEntry === undefined) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'NORMAL':
+
+									geometry.addAttribute('normal', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_0':
+								case 'TEXCOORD0':
+								case 'TEXCOORD':
+
+									geometry.addAttribute('uv', bufferAttribute);
+									break;
+
+								case 'TEXCOORD_1':
+
+									geometry.addAttribute('uv2', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+								case 'WEIGHTS_0':
+								case 'WEIGHT':
+									// WEIGHT semantic deprecated.
+
+									geometry.addAttribute('skinWeight', bufferAttribute);
+									break;
+
+								case 'JOINTS_0':
+								case 'JOINT':
+									// JOINT semantic deprecated.
+
+									geometry.addAttribute('skinIndex', bufferAttribute);
+									break;
+
+							}
+						}
+
+						if (primitive.indices !== undefined) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+						}
+
+						if (material.aoMap !== undefined && geometry.attributes.uv2 === undefined && geometry.attributes.uv !== undefined) {
+
+							console.log('GLTF2Loader: Duplicating UVs to support aoMap.');
+							geometry.addAttribute('uv2', new BufferAttribute(geometry.attributes.uv.array, 2));
+						}
+
+						meshNode = new Mesh(geometry, material);
+						meshNode.castShadow = true;
+
+						if (primitive.targets !== undefined) {
+
+							var targets = primitive.targets;
+							var morphAttributes = geometry.morphAttributes;
+
+							morphAttributes.position = [];
+							morphAttributes.normal = [];
+
+							material.morphTargets = true;
+
+							for (var i = 0, il = targets.length; i < il; i++) {
+
+								var target = targets[i];
+								var attributeName = 'morphTarget' + i;
+
+								var positionAttribute, normalAttribute;
+
+								if (target.POSITION !== undefined) {
+
+									// Three.js morph formula is
+									//   position
+									//     + weight0 * ( morphTarget0 - position )
+									//     + weight1 * ( morphTarget1 - position )
+									//     ...
+									// while the glTF one is
+									//   position
+									//     + weight0 * morphTarget0
+									//     + weight1 * morphTarget1
+									//     ...
+									// then adding position to morphTarget.
+									// So morphTarget value will depend on mesh's position, then cloning attribute
+									// for the case if attribute is shared among two or more meshes.
+
+									positionAttribute = dependencies.accessors[target.POSITION].clone();
+									var position = geometry.attributes.position;
+
+									for (var j = 0, jl = positionAttribute.array.length; j < jl; j++) {
+
+										positionAttribute.array[j] += position.array[j];
+									}
+								} else {
+
+									// Copying the original position not to affect the final position.
+									// See the formula above.
+									positionAttribute = geometry.attributes.position.clone();
+								}
+
+								if (target.NORMAL !== undefined) {
+
+									material.morphNormals = true;
+
+									// see target.POSITION's comment
+
+									normalAttribute = dependencies.accessors[target.NORMAL].clone();
+									var normal = geometry.attributes.normal;
+
+									for (var j = 0, jl = normalAttribute.array.length; j < jl; j++) {
+
+										normalAttribute.array[j] += normal.array[j];
+									}
+								} else {
+
+									normalAttribute = geometry.attributes.normal.clone();
+								}
+
+								// TODO: implement
+								if (target.TANGENT !== undefined) {}
+
+								positionAttribute.name = attributeName;
+								normalAttribute.name = attributeName;
+
+								morphAttributes.position.push(positionAttribute);
+								morphAttributes.normal.push(normalAttribute);
+							}
+
+							meshNode.updateMorphTargets();
+
+							if (mesh.weights !== undefined) {
+
+								for (var i = 0, il = mesh.weights.length; i < il; i++) {
+
+									meshNode.morphTargetInfluences[i] = mesh.weights[i];
+								}
+							}
+						}
+					} else if (primitive.mode === WEBGL_CONSTANTS.LINES) {
+
+						geometry = new BufferGeometry();
+
+						var attributes = primitive.attributes;
+
+						for (var attributeId in attributes) {
+
+							var attributeEntry = attributes[attributeId];
+
+							if (!attributeEntry) return;
+
+							var bufferAttribute = dependencies.accessors[attributeEntry];
+
+							switch (attributeId) {
+
+								case 'POSITION':
+									geometry.addAttribute('position', bufferAttribute);
+									break;
+
+								case 'COLOR_0':
+								case 'COLOR0':
+								case 'COLOR':
+									geometry.addAttribute('color', bufferAttribute);
+									break;
+
+							}
+						}
+
+						if (primitive.indices !== undefined) {
+
+							geometry.setIndex(dependencies.accessors[primitive.indices]);
+
+							meshNode = new LineSegments(geometry, material);
+						} else {
+
+							meshNode = new Line(geometry, material);
+						}
+					} else {
+
+						throw new Error("Only triangular and line primitives are supported");
+					}
+
+					if (geometry.attributes.color !== undefined) {
+
+						material.vertexColors = VertexColors;
+						material.needsUpdate = true;
+					}
+
+					meshNode.name = name === "0" ? group.name : group.name + name;
+
+					if (primitive.extras) meshNode.userData = primitive.extras;
+
+					group.add(meshNode);
+				}
+
+				return group;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadCameras = function () {
+
+		var json = this.json;
+
+		return _each(json.cameras, function (camera) {
+
+			if (camera.type == "perspective" && camera.perspective) {
+
+				var yfov = camera.perspective.yfov;
+				var aspectRatio = camera.perspective.aspectRatio !== undefined ? camera.perspective.aspectRatio : 1;
+
+				// According to COLLADA spec...
+				// aspectRatio = xfov / yfov
+				var xfov = yfov * aspectRatio;
+
+				var _camera = new PerspectiveCamera(_Math.radToDeg(xfov), aspectRatio, camera.perspective.znear || 1, camera.perspective.zfar || 2e6);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			} else if (camera.type == "orthographic" && camera.orthographic) {
+
+				var _camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, camera.orthographic.znear, camera.orthographic.zfar);
+				if (camera.name !== undefined) _camera.name = camera.name;
+
+				if (camera.extras) _camera.userData = camera.extras;
+
+				return _camera;
+			}
+		});
+	};
+
+	GLTFParser.prototype.loadSkins = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors"]).then(function (dependencies) {
+
+			return _each(json.skins, function (skin) {
+
+				var bindShapeMatrix = new Matrix4();
+
+				if (skin.bindShapeMatrix !== undefined) bindShapeMatrix.fromArray(skin.bindShapeMatrix);
+
+				var _skin = {
+					bindShapeMatrix: bindShapeMatrix,
+					joints: skin.joints,
+					inverseBindMatrices: dependencies.accessors[skin.inverseBindMatrices]
+				};
+
+				return _skin;
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadAnimations = function () {
+
+		var json = this.json;
+
+		return this._withDependencies(["accessors", "nodes"]).then(function (dependencies) {
+
+			return _each(json.animations, function (animation, animationId) {
+
+				var tracks = [];
+
+				for (var channelId in animation.channels) {
+
+					var channel = animation.channels[channelId];
+					var sampler = animation.samplers[channel.sampler];
+
+					if (sampler) {
+
+						var target = channel.target;
+						var name = target.node !== undefined ? target.node : target.id; // NOTE: target.id is deprecated.
+						var input = animation.parameters !== undefined ? animation.parameters[sampler.input] : sampler.input;
+						var output = animation.parameters !== undefined ? animation.parameters[sampler.output] : sampler.output;
+
+						var inputAccessor = dependencies.accessors[input];
+						var outputAccessor = dependencies.accessors[output];
+
+						var node = dependencies.nodes[name];
+
+						if (node) {
+
+							node.updateMatrix();
+							node.matrixAutoUpdate = true;
+
+							var TypedKeyframeTrack;
+
+							switch (PATH_PROPERTIES[target.path]) {
+
+								case PATH_PROPERTIES.weights:
+
+									TypedKeyframeTrack = NumberKeyframeTrack;
+									break;
+
+								case PATH_PROPERTIES.rotation:
+
+									TypedKeyframeTrack = QuaternionKeyframeTrack;
+									break;
+
+								case PATH_PROPERTIES.position:
+								case PATH_PROPERTIES.scale:
+								default:
+
+									TypedKeyframeTrack = VectorKeyframeTrack;
+									break;
+
+							}
+
+							var targetName = node.name ? node.name : node.uuid;
+							var interpolation = sampler.interpolation !== undefined ? INTERPOLATION[sampler.interpolation] : InterpolateLinear;
+
+							var targetNames = [];
+
+							if (PATH_PROPERTIES[target.path] === PATH_PROPERTIES.weights) {
+
+								// node should be THREE.Group here but
+								// PATH_PROPERTIES.weights(morphTargetInfluences) should be
+								// the property of a mesh object under node.
+								// So finding targets here.
+
+								node.traverse(function (object) {
+
+									if (object.isMesh === true && object.material.morphTargets === true) {
+
+										targetNames.push(object.name ? object.name : object.uuid);
+									}
+								});
+							} else {
+
+								targetNames.push(targetName);
+							}
+
+							// KeyframeTrack.optimize() will modify given 'times' and 'values'
+							// buffers before creating a truncated copy to keep. Because buffers may
+							// be reused by other tracks, make copies here.
+							for (var i = 0, il = targetNames.length; i < il; i++) {
+
+								tracks.push(new TypedKeyframeTrack(targetNames[i] + '.' + PATH_PROPERTIES[target.path], AnimationUtils.arraySlice(inputAccessor.array, 0), AnimationUtils.arraySlice(outputAccessor.array, 0), interpolation));
+							}
+						}
+					}
+				}
+
+				var name = animation.name !== undefined ? animation.name : "animation_" + animationId;
+
+				return new AnimationClip(name, undefined, tracks);
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadNodes = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+		var scope = this;
+
+		var nodes = json.nodes || [];
+		var skins = json.skins || [];
+
+		// Nothing in the node definition indicates whether it is a Bone or an
+		// Object3D. Use the skins' joint references to mark bones.
+		skins.forEach(function (skin) {
+
+			skin.joints.forEach(function (id) {
+
+				nodes[id].isBone = true;
+			});
+		});
+
+		return _each(json.nodes, function (node) {
+
+			var matrix = new Matrix4();
+
+			var _node = node.isBone === true ? new Bone() : new Object3D();
+
+			if (node.name !== undefined) {
+
+				_node.name = PropertyBinding.sanitizeNodeName(node.name);
+			}
+
+			if (node.extras) _node.userData = node.extras;
+
+			if (node.matrix !== undefined) {
+
+				matrix.fromArray(node.matrix);
+				_node.applyMatrix(matrix);
+			} else {
+
+				if (node.translation !== undefined) {
+
+					_node.position.fromArray(node.translation);
+				}
+
+				if (node.rotation !== undefined) {
+
+					_node.quaternion.fromArray(node.rotation);
+				}
+
+				if (node.scale !== undefined) {
+
+					_node.scale.fromArray(node.scale);
+				}
+			}
+
+			return _node;
+		}).then(function (__nodes) {
+
+			return scope._withDependencies(["meshes", "skins", "cameras"]).then(function (dependencies) {
+
+				return _each(__nodes, function (_node, nodeId) {
+
+					var node = json.nodes[nodeId];
+
+					var meshes;
+
+					if (node.mesh !== undefined) {
+
+						meshes = [node.mesh];
+					} else if (node.meshes !== undefined) {
+
+						console.warn('GLTF2Loader: Legacy glTF file detected. Nodes may have no more than 1 mesh.');
+
+						meshes = node.meshes;
+					}
+
+					if (meshes !== undefined) {
+
+						for (var meshId in meshes) {
+
+							var mesh = meshes[meshId];
+							var group = dependencies.meshes[mesh];
+
+							if (group === undefined) {
+
+								console.warn('GLTF2Loader: Couldn\'t find node "' + mesh + '".');
+								continue;
+							}
+
+							for (var childrenId in group.children) {
+
+								var child = group.children[childrenId];
+
+								// clone Mesh to add to _node
+
+								var originalMaterial = child.material;
+								var originalGeometry = child.geometry;
+								var originalUserData = child.userData;
+								var originalName = child.name;
+
+								var material;
+
+								if (originalMaterial.isDeferredShaderMaterial) {
+
+									originalMaterial = material = originalMaterial.create();
+								} else {
+
+									material = originalMaterial;
+								}
+
+								switch (child.type) {
+
+									case 'LineSegments':
+										child = new LineSegments(originalGeometry, material);
+										break;
+
+									case 'LineLoop':
+										child = new LineLoop(originalGeometry, material);
+										break;
+
+									case 'Line':
+										child = new Line(originalGeometry, material);
+										break;
+
+									default:
+										child = new Mesh(originalGeometry, material);
+
+								}
+
+								child.castShadow = true;
+								child.userData = originalUserData;
+								child.name = originalName;
+
+								var skinEntry;
+
+								if (node.skin !== undefined) {
+
+									skinEntry = dependencies.skins[node.skin];
+								}
+
+								// Replace Mesh with SkinnedMesh in library
+								if (skinEntry) {
+
+									var geometry = originalGeometry;
+									material = originalMaterial;
+									material.skinning = true;
+
+									child = new SkinnedMesh(geometry, material, false);
+									child.castShadow = true;
+									child.userData = originalUserData;
+									child.name = originalName;
+
+									var bones = [];
+									var boneInverses = [];
+
+									for (var i = 0, l = skinEntry.joints.length; i < l; i++) {
+
+										var jointId = skinEntry.joints[i];
+										var jointNode = __nodes[jointId];
+
+										if (jointNode) {
+
+											bones.push(jointNode);
+
+											var m = skinEntry.inverseBindMatrices.array;
+											var mat = new Matrix4().fromArray(m, i * 16);
+											boneInverses.push(mat);
+										} else {
+
+											console.warn("WARNING: joint: '" + jointId + "' could not be found");
+										}
+									}
+
+									child.bind(new Skeleton(bones, boneInverses, false), skinEntry.bindShapeMatrix);
+
+									var buildBoneGraph = function (parentJson, parentObject, property) {
+
+										var children = parentJson[property];
+
+										if (children === undefined) return;
+
+										for (var i = 0, il = children.length; i < il; i++) {
+
+											var nodeId = children[i];
+											var bone = __nodes[nodeId];
+											var boneJson = json.nodes[nodeId];
+
+											if (bone !== undefined && bone.isBone === true && boneJson !== undefined) {
+
+												parentObject.add(bone);
+												buildBoneGraph(boneJson, bone, 'children');
+											}
+										}
+									};
+
+									buildBoneGraph(node, child, 'skeletons');
+								}
+
+								_node.add(child);
+							}
+						}
+					}
+
+					if (node.camera !== undefined) {
+
+						var camera = dependencies.cameras[node.camera];
+
+						_node.add(camera);
+					}
+
+					if (node.extensions && node.extensions[EXTENSIONS.KHR_LIGHTS] && node.extensions[EXTENSIONS.KHR_LIGHTS].light !== undefined) {
+
+						var lights = extensions[EXTENSIONS.KHR_LIGHTS].lights;
+						_node.add(lights[node.extensions[EXTENSIONS.KHR_LIGHTS].light]);
+					}
+
+					return _node;
+				});
+			});
+		});
+	};
+
+	GLTFParser.prototype.loadScenes = function () {
+
+		var json = this.json;
+		var extensions = this.extensions;
+
+		// scene node hierachy builder
+
+		function buildNodeHierachy(nodeId, parentObject, allNodes) {
+
+			var _node = allNodes[nodeId];
+			parentObject.add(_node);
+
+			var node = json.nodes[nodeId];
+
+			if (node.children) {
+
+				var children = node.children;
+
+				for (var i = 0, l = children.length; i < l; i++) {
+
+					var child = children[i];
+					buildNodeHierachy(child, _node, allNodes);
+				}
+			}
+		}
+
+		return this._withDependencies(["nodes"]).then(function (dependencies) {
+
+			return _each(json.scenes, function (scene) {
+
+				var _scene = new Scene();
+				if (scene.name !== undefined) _scene.name = scene.name;
+
+				if (scene.extras) _scene.userData = scene.extras;
+
+				var nodes = scene.nodes || [];
+
+				for (var i = 0, l = nodes.length; i < l; i++) {
+
+					var nodeId = nodes[i];
+					buildNodeHierachy(nodeId, _scene, dependencies.nodes);
+				}
+
+				_scene.traverse(function (child) {
+
+					// Register raw material meshes with GLTF2Loader.Shaders
+					if (child.material && child.material.isRawShaderMaterial) {
+
+						child.gltfShader = new GLTFShader(child, dependencies.nodes);
+						child.onBeforeRender = function (renderer, scene, camera) {
+							this.gltfShader.update(scene, camera);
+						};
+					}
+
+					// for Specular-Glossiness.
+					if (child.material && child.material.type === 'ShaderMaterial') {
+
+						child.onBeforeRender = extensions[EXTENSIONS.KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS].refreshUniforms;
+					}
+				});
+
+				// Ambient lighting, if present, is always attached to the scene root.
+				if (scene.extensions && scene.extensions[EXTENSIONS.KHR_LIGHTS] && scene.extensions[EXTENSIONS.KHR_LIGHTS].light !== undefined) {
+
+					var lights = extensions[EXTENSIONS.KHR_LIGHTS].lights;
+					_scene.add(lights[scene.extensions[EXTENSIONS.KHR_LIGHTS].light]);
+				}
+
+				return _scene;
+			});
+		});
+	};
+
+	return GLTF2Loader;
+}();
+
+var OBJLoader = function () {
+
+	// v float float float
+	var vertex_pattern = /^v\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)/;
+	// vn float float float
+	var normal_pattern = /^vn\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)/;
+	// vt float float
+	var uv_pattern = /^vt\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)/;
+	// f vertex vertex vertex
+	var face_vertex = /^f\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)(?:\s+(-?\d+))?/;
+	// f vertex/uv vertex/uv vertex/uv
+	var face_vertex_uv = /^f\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+))?/;
+	// f vertex/uv/normal vertex/uv/normal vertex/uv/normal
+	var face_vertex_uv_normal = /^f\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+)\/(-?\d+))?/;
+	// f vertex//normal vertex//normal vertex//normal
+	var face_vertex_normal = /^f\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)(?:\s+(-?\d+)\/\/(-?\d+))?/;
+	// o object_name | g group_name
+	var object_pattern = /^[og]\s*(.+)?/;
+	// mtllib file_reference
+	var material_library_pattern = /^mtllib /;
+	// usemtl material_name
+	var material_use_pattern = /^usemtl /;
+
+	function ParserState() {
+
+		var state = {
+			objects: [],
+			object: {},
+
+			vertices: [],
+			normals: [],
+			uvs: [],
+
+			materialLibraries: [],
+
+			startObject: function (name, fromDeclaration) {
+
+				// If the current object (initial from reset) is not from a g/o declaration in the parsed
+				// file. We need to use it for the first parsed g/o to keep things in sync.
+				if (this.object && this.object.fromDeclaration === false) {
+
+					this.object.name = name;
+					this.object.fromDeclaration = fromDeclaration !== false;
+					return;
+				}
+
+				var previousMaterial = this.object && typeof this.object.currentMaterial === 'function' ? this.object.currentMaterial() : undefined;
+
+				if (this.object && typeof this.object._finalize === 'function') {
+
+					this.object._finalize(true);
+				}
+
+				this.object = {
+					name: name || '',
+					fromDeclaration: fromDeclaration !== false,
+
+					geometry: {
+						vertices: [],
+						normals: [],
+						uvs: []
+					},
+					materials: [],
+					smooth: true,
+
+					startMaterial: function (name, libraries) {
+
+						var previous = this._finalize(false);
+
+						// New usemtl declaration overwrites an inherited material, except if faces were declared
+						// after the material, then it must be preserved for proper MultiMaterial continuation.
+						if (previous && (previous.inherited || previous.groupCount <= 0)) {
+
+							this.materials.splice(previous.index, 1);
+						}
+
+						var material = {
+							index: this.materials.length,
+							name: name || '',
+							mtllib: Array.isArray(libraries) && libraries.length > 0 ? libraries[libraries.length - 1] : '',
+							smooth: previous !== undefined ? previous.smooth : this.smooth,
+							groupStart: previous !== undefined ? previous.groupEnd : 0,
+							groupEnd: -1,
+							groupCount: -1,
+							inherited: false,
+
+							clone: function (index) {
+								var cloned = {
+									index: typeof index === 'number' ? index : this.index,
+									name: this.name,
+									mtllib: this.mtllib,
+									smooth: this.smooth,
+									groupStart: 0,
+									groupEnd: -1,
+									groupCount: -1,
+									inherited: false
+								};
+								cloned.clone = this.clone.bind(cloned);
+								return cloned;
+							}
+						};
+
+						this.materials.push(material);
+
+						return material;
+					},
+
+					currentMaterial: function () {
+
+						if (this.materials.length > 0) {
+							return this.materials[this.materials.length - 1];
+						}
+
+						return undefined;
+					},
+
+					_finalize: function (end) {
+
+						var lastMultiMaterial = this.currentMaterial();
+						if (lastMultiMaterial && lastMultiMaterial.groupEnd === -1) {
+
+							lastMultiMaterial.groupEnd = this.geometry.vertices.length / 3;
+							lastMultiMaterial.groupCount = lastMultiMaterial.groupEnd - lastMultiMaterial.groupStart;
+							lastMultiMaterial.inherited = false;
+						}
+
+						// Ignore objects tail materials if no face declarations followed them before a new o/g started.
+						if (end && this.materials.length > 1) {
+
+							for (var mi = this.materials.length - 1; mi >= 0; mi--) {
+								if (this.materials[mi].groupCount <= 0) {
+									this.materials.splice(mi, 1);
+								}
+							}
+						}
+
+						// Guarantee at least one empty material, this makes the creation later more straight forward.
+						if (end && this.materials.length === 0) {
+
+							this.materials.push({
+								name: '',
+								smooth: this.smooth
+							});
+						}
+
+						return lastMultiMaterial;
+					}
+				};
+
+				// Inherit previous objects material.
+				// Spec tells us that a declared material must be set to all objects until a new material is declared.
+				// If a usemtl declaration is encountered while this new object is being parsed, it will
+				// overwrite the inherited material. Exception being that there was already face declarations
+				// to the inherited material, then it will be preserved for proper MultiMaterial continuation.
+
+				if (previousMaterial && previousMaterial.name && typeof previousMaterial.clone === "function") {
+
+					var declared = previousMaterial.clone(0);
+					declared.inherited = true;
+					this.object.materials.push(declared);
+				}
+
+				this.objects.push(this.object);
+			},
+
+			finalize: function () {
+
+				if (this.object && typeof this.object._finalize === 'function') {
+
+					this.object._finalize(true);
+				}
+			},
+
+			parseVertexIndex: function (value, len) {
+
+				var index = parseInt(value, 10);
+				return (index >= 0 ? index - 1 : index + len / 3) * 3;
+			},
+
+			parseNormalIndex: function (value, len) {
+
+				var index = parseInt(value, 10);
+				return (index >= 0 ? index - 1 : index + len / 3) * 3;
+			},
+
+			parseUVIndex: function (value, len) {
+
+				var index = parseInt(value, 10);
+				return (index >= 0 ? index - 1 : index + len / 2) * 2;
+			},
+
+			addVertex: function (a, b, c) {
+
+				var src = this.vertices;
+				var dst = this.object.geometry.vertices;
+
+				dst.push(src[a + 0], src[a + 1], src[a + 2]);
+				dst.push(src[b + 0], src[b + 1], src[b + 2]);
+				dst.push(src[c + 0], src[c + 1], src[c + 2]);
+			},
+
+			addVertexLine: function (a) {
+
+				var src = this.vertices;
+				var dst = this.object.geometry.vertices;
+
+				dst.push(src[a + 0], src[a + 1], src[a + 2]);
+			},
+
+			addNormal: function (a, b, c) {
+
+				var src = this.normals;
+				var dst = this.object.geometry.normals;
+
+				dst.push(src[a + 0], src[a + 1], src[a + 2]);
+				dst.push(src[b + 0], src[b + 1], src[b + 2]);
+				dst.push(src[c + 0], src[c + 1], src[c + 2]);
+			},
+
+			addUV: function (a, b, c) {
+
+				var src = this.uvs;
+				var dst = this.object.geometry.uvs;
+
+				dst.push(src[a + 0], src[a + 1]);
+				dst.push(src[b + 0], src[b + 1]);
+				dst.push(src[c + 0], src[c + 1]);
+			},
+
+			addUVLine: function (a) {
+
+				var src = this.uvs;
+				var dst = this.object.geometry.uvs;
+
+				dst.push(src[a + 0], src[a + 1]);
+			},
+
+			addFace: function (a, b, c, d, ua, ub, uc, ud, na, nb, nc, nd) {
+
+				var vLen = this.vertices.length;
+
+				var ia = this.parseVertexIndex(a, vLen);
+				var ib = this.parseVertexIndex(b, vLen);
+				var ic = this.parseVertexIndex(c, vLen);
+				var id;
+
+				if (d === undefined) {
+
+					this.addVertex(ia, ib, ic);
+				} else {
+
+					id = this.parseVertexIndex(d, vLen);
+
+					this.addVertex(ia, ib, id);
+					this.addVertex(ib, ic, id);
+				}
+
+				if (ua !== undefined) {
+
+					var uvLen = this.uvs.length;
+
+					ia = this.parseUVIndex(ua, uvLen);
+					ib = this.parseUVIndex(ub, uvLen);
+					ic = this.parseUVIndex(uc, uvLen);
+
+					if (d === undefined) {
+
+						this.addUV(ia, ib, ic);
+					} else {
+
+						id = this.parseUVIndex(ud, uvLen);
+
+						this.addUV(ia, ib, id);
+						this.addUV(ib, ic, id);
+					}
+				}
+
+				if (na !== undefined) {
+
+					// Normals are many times the same. If so, skip function call and parseInt.
+					var nLen = this.normals.length;
+					ia = this.parseNormalIndex(na, nLen);
+
+					ib = na === nb ? ia : this.parseNormalIndex(nb, nLen);
+					ic = na === nc ? ia : this.parseNormalIndex(nc, nLen);
+
+					if (d === undefined) {
+
+						this.addNormal(ia, ib, ic);
+					} else {
+
+						id = this.parseNormalIndex(nd, nLen);
+
+						this.addNormal(ia, ib, id);
+						this.addNormal(ib, ic, id);
+					}
+				}
+			},
+
+			addLineGeometry: function (vertices, uvs) {
+
+				this.object.geometry.type = 'Line';
+
+				var vLen = this.vertices.length;
+				var uvLen = this.uvs.length;
+
+				for (var vi = 0, l = vertices.length; vi < l; vi++) {
+
+					this.addVertexLine(this.parseVertexIndex(vertices[vi], vLen));
+				}
+
+				for (var uvi = 0, l = uvs.length; uvi < l; uvi++) {
+
+					this.addUVLine(this.parseUVIndex(uvs[uvi], uvLen));
+				}
+			}
+
+		};
+
+		state.startObject('', false);
+
+		return state;
+	}
+
+	//
+
+	function OBJLoader(manager) {
+
+		this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+
+		this.materials = null;
+	};
+
+	OBJLoader.prototype = {
+
+		constructor: OBJLoader,
+
+		load: function (url, onLoad, onProgress, onError) {
+
+			var scope = this;
+
+			var loader = new FileLoader(scope.manager);
+			loader.setPath(this.path);
+			loader.load(url, function (text) {
+
+				onLoad(scope.parse(text));
+			}, onProgress, onError);
+		},
+
+		setPath: function (value) {
+
+			this.path = value;
+		},
+
+		setMaterials: function (materials) {
+
+			this.materials = materials;
+
+			return this;
+		},
+
+		parse: function (text) {
+
+			console.time('OBJLoader');
+
+			var state = new ParserState();
+
+			if (text.indexOf('\r\n') !== -1) {
+
+				// This is faster than String.split with regex that splits on both
+				text = text.replace(/\r\n/g, '\n');
+			}
+
+			if (text.indexOf('\\\n') !== -1) {
+
+				// join lines separated by a line continuation character (\)
+				text = text.replace(/\\\n/g, '');
+			}
+
+			var lines = text.split('\n');
+			var line = '',
+			    lineFirstChar = '',
+			    lineSecondChar = '';
+			var lineLength = 0;
+			var result = [];
+
+			// Faster to just trim left side of the line. Use if available.
+			var trimLeft = typeof ''.trimLeft === 'function';
+
+			for (var i = 0, l = lines.length; i < l; i++) {
+
+				line = lines[i];
+
+				line = trimLeft ? line.trimLeft() : line.trim();
+
+				lineLength = line.length;
+
+				if (lineLength === 0) continue;
+
+				lineFirstChar = line.charAt(0);
+
+				// @todo invoke passed in handler if any
+				if (lineFirstChar === '#') continue;
+
+				if (lineFirstChar === 'v') {
+
+					lineSecondChar = line.charAt(1);
+
+					if (lineSecondChar === ' ' && (result = vertex_pattern.exec(line)) !== null) {
+
+						// 0                  1      2      3
+						// ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+
+						state.vertices.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
+					} else if (lineSecondChar === 'n' && (result = normal_pattern.exec(line)) !== null) {
+
+						// 0                   1      2      3
+						// ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+
+						state.normals.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
+					} else if (lineSecondChar === 't' && (result = uv_pattern.exec(line)) !== null) {
+
+						// 0               1      2
+						// ["vt 0.1 0.2", "0.1", "0.2"]
+
+						state.uvs.push(parseFloat(result[1]), parseFloat(result[2]));
+					} else {
+
+						throw new Error("Unexpected vertex/normal/uv line: '" + line + "'");
+					}
+				} else if (lineFirstChar === "f") {
+
+					if ((result = face_vertex_uv_normal.exec(line)) !== null) {
+
+						// f vertex/uv/normal vertex/uv/normal vertex/uv/normal
+						// 0                        1    2    3    4    5    6    7    8    9   10         11         12
+						// ["f 1/1/1 2/2/2 3/3/3", "1", "1", "1", "2", "2", "2", "3", "3", "3", undefined, undefined, undefined]
+
+						state.addFace(result[1], result[4], result[7], result[10], result[2], result[5], result[8], result[11], result[3], result[6], result[9], result[12]);
+					} else if ((result = face_vertex_uv.exec(line)) !== null) {
+
+						// f vertex/uv vertex/uv vertex/uv
+						// 0                  1    2    3    4    5    6   7          8
+						// ["f 1/1 2/2 3/3", "1", "1", "2", "2", "3", "3", undefined, undefined]
+
+						state.addFace(result[1], result[3], result[5], result[7], result[2], result[4], result[6], result[8]);
+					} else if ((result = face_vertex_normal.exec(line)) !== null) {
+
+						// f vertex//normal vertex//normal vertex//normal
+						// 0                     1    2    3    4    5    6   7          8
+						// ["f 1//1 2//2 3//3", "1", "1", "2", "2", "3", "3", undefined, undefined]
+
+						state.addFace(result[1], result[3], result[5], result[7], undefined, undefined, undefined, undefined, result[2], result[4], result[6], result[8]);
+					} else if ((result = face_vertex.exec(line)) !== null) {
+
+						// f vertex vertex vertex
+						// 0            1    2    3   4
+						// ["f 1 2 3", "1", "2", "3", undefined]
+
+						state.addFace(result[1], result[2], result[3], result[4]);
+					} else {
+
+						throw new Error("Unexpected face line: '" + line + "'");
+					}
+				} else if (lineFirstChar === "l") {
+
+					var lineParts = line.substring(1).trim().split(" ");
+					var lineVertices = [],
+					    lineUVs = [];
+
+					if (line.indexOf("/") === -1) {
+
+						lineVertices = lineParts;
+					} else {
+
+						for (var li = 0, llen = lineParts.length; li < llen; li++) {
+
+							var parts = lineParts[li].split("/");
+
+							if (parts[0] !== "") lineVertices.push(parts[0]);
+							if (parts[1] !== "") lineUVs.push(parts[1]);
+						}
+					}
+					state.addLineGeometry(lineVertices, lineUVs);
+				} else if ((result = object_pattern.exec(line)) !== null) {
+
+					// o object_name
+					// or
+					// g group_name
+
+					// WORKAROUND: https://bugs.chromium.org/p/v8/issues/detail?id=2869
+					// var name = result[ 0 ].substr( 1 ).trim();
+					var name = (" " + result[0].substr(1).trim()).substr(1);
+
+					state.startObject(name);
+				} else if (material_use_pattern.test(line)) {
+
+					// material
+
+					state.object.startMaterial(line.substring(7).trim(), state.materialLibraries);
+				} else if (material_library_pattern.test(line)) {
+
+					// mtl file
+
+					state.materialLibraries.push(line.substring(7).trim());
+				} else if (lineFirstChar === "s") {
+
+					result = line.split(' ');
+
+					// smooth shading
+
+					// @todo Handle files that have varying smooth values for a set of faces inside one geometry,
+					// but does not define a usemtl for each face set.
+					// This should be detected and a dummy material created (later MultiMaterial and geometry groups).
+					// This requires some care to not create extra material on each smooth value for "normal" obj files.
+					// where explicit usemtl defines geometry groups.
+					// Example asset: examples/models/obj/cerberus/Cerberus.obj
+
+					/*
+      * http://paulbourke.net/dataformats/obj/
+      * or
+      * http://www.cs.utah.edu/~boulos/cs3505/obj_spec.pdf
+      *
+      * From chapter "Grouping" Syntax explanation "s group_number":
+      * "group_number is the smoothing group number. To turn off smoothing groups, use a value of 0 or off.
+      * Polygonal elements use group numbers to put elements in different smoothing groups. For free-form
+      * surfaces, smoothing groups are either turned on or off; there is no difference between values greater
+      * than 0."
+      */
+					if (result.length > 1) {
+
+						var value = result[1].trim().toLowerCase();
+						state.object.smooth = value !== '0' && value !== 'off';
+					} else {
+
+						// ZBrush can produce "s" lines #11707
+						state.object.smooth = true;
+					}
+					var material = state.object.currentMaterial();
+					if (material) material.smooth = state.object.smooth;
+				} else {
+
+					// Handle null terminated files without exception
+					if (line === '\0') continue;
+
+					throw new Error("Unexpected line: '" + line + "'");
+				}
+			}
+
+			state.finalize();
+
+			var container = new Group();
+			container.materialLibraries = [].concat(state.materialLibraries);
+
+			for (var i = 0, l = state.objects.length; i < l; i++) {
+
+				var object = state.objects[i];
+				var geometry = object.geometry;
+				var materials = object.materials;
+				var isLine = geometry.type === 'Line';
+
+				// Skip o/g line declarations that did not follow with any faces
+				if (geometry.vertices.length === 0) continue;
+
+				var buffergeometry = new BufferGeometry();
+
+				buffergeometry.addAttribute('position', new BufferAttribute(new Float32Array(geometry.vertices), 3));
+
+				if (geometry.normals.length > 0) {
+
+					buffergeometry.addAttribute('normal', new BufferAttribute(new Float32Array(geometry.normals), 3));
+				} else {
+
+					buffergeometry.computeVertexNormals();
+				}
+
+				if (geometry.uvs.length > 0) {
+
+					buffergeometry.addAttribute('uv', new BufferAttribute(new Float32Array(geometry.uvs), 2));
+				}
+
+				// Create materials
+
+				var createdMaterials = [];
+
+				for (var mi = 0, miLen = materials.length; mi < miLen; mi++) {
+
+					var sourceMaterial = materials[mi];
+					var material = undefined;
+
+					if (this.materials !== null) {
+
+						material = this.materials.create(sourceMaterial.name);
+
+						// mtl etc. loaders probably can't create line materials correctly, copy properties to a line material.
+						if (isLine && material && !(material instanceof LineBasicMaterial)) {
+
+							var materialLine = new LineBasicMaterial();
+							materialLine.copy(material);
+							material = materialLine;
+						}
+					}
+
+					if (!material) {
+
+						material = !isLine ? new MeshPhongMaterial() : new LineBasicMaterial();
+						material.name = sourceMaterial.name;
+					}
+
+					material.flatShading = sourceMaterial.smooth ? false : true;
+
+					createdMaterials.push(material);
+				}
+
+				// Create mesh
+
+				var mesh;
+
+				if (createdMaterials.length > 1) {
+
+					for (var mi = 0, miLen = materials.length; mi < miLen; mi++) {
+
+						var sourceMaterial = materials[mi];
+						buffergeometry.addGroup(sourceMaterial.groupStart, sourceMaterial.groupCount, mi);
+					}
+
+					mesh = !isLine ? new Mesh(buffergeometry, createdMaterials) : new LineSegments(buffergeometry, createdMaterials);
+				} else {
+
+					mesh = !isLine ? new Mesh(buffergeometry, createdMaterials[0]) : new LineSegments(buffergeometry, createdMaterials[0]);
+				}
+
+				mesh.name = object.name;
+
+				container.add(mesh);
+			}
+
+			console.timeEnd('OBJLoader');
+
+			return container;
+		}
+
+	};
+
+	return OBJLoader;
+}();
+
+var OBJLoader2 = function () {
+
+	var OBJLOADER2_VERSION = '1.2.1';
+
+	function OBJLoader2(manager) {
+		console.log("Using THREE.OBJLoader2 version: " + OBJLOADER2_VERSION);
+		this.manager = Validator.verifyInput(manager, DefaultLoadingManager);
+
+		this.path = '';
+		this.fileLoader = new FileLoader(this.manager);
+
+		this.meshCreator = new MeshCreator();
+		this.parser = new Parser(this.meshCreator);
+
+		this.validated = false;
+	}
+
+	/**
+  * Base path to use.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} path The basepath
+  */
+	OBJLoader2.prototype.setPath = function (path) {
+		this.path = Validator.verifyInput(path, this.path);
+	};
+
+	/**
+  * Set the node where the loaded objects will be attached.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {THREE.Object3D} sceneGraphBaseNode Scenegraph object where meshes will be attached
+  */
+	OBJLoader2.prototype.setSceneGraphBaseNode = function (sceneGraphBaseNode) {
+		this.meshCreator.setSceneGraphBaseNode(sceneGraphBaseNode);
+	};
+
+	/**
+  * Set materials loaded by MTLLoader or any other supplier of an Array of {@link THREE.Material}.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {THREE.Material[]} materials  Array of {@link THREE.Material} from MTLLoader
+  */
+	OBJLoader2.prototype.setMaterials = function (materials) {
+		this.meshCreator.setMaterials(materials);
+	};
+
+	/**
+  * Allows to set debug mode for the parser and the meshCreator.
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {boolean} parserDebug Internal Parser will produce debug output
+  * @param {boolean} meshCreatorDebug Internal MeshCreator will produce debug output
+  */
+	OBJLoader2.prototype.setDebug = function (parserDebug, meshCreatorDebug) {
+		this.parser.setDebug(parserDebug);
+		this.meshCreator.setDebug(meshCreatorDebug);
+	};
+
+	/**
+  * Use this convenient method to load an OBJ file at the given URL. Per default the fileLoader uses an arraybuffer
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} url URL of the file to load
+  * @param {callback} onLoad Called after loading was successfully completed
+  * @param {callback} onProgress Called to report progress of loading. The argument will be the XMLHttpRequest instance, which contains {integer total} and {integer loaded} bytes.
+  * @param {callback} onError Called after an error occurred during loading
+  * @param {boolean} [useArrayBuffer=true] Set this to false to force string based parsing
+  */
+	OBJLoader2.prototype.load = function (url, onLoad, onProgress, onError, useArrayBuffer) {
+		this._validate();
+		this.fileLoader.setPath(this.path);
+		this.fileLoader.setResponseType(useArrayBuffer !== false ? 'arraybuffer' : 'text');
+
+		var scope = this;
+		scope.fileLoader.load(url, function (content) {
+
+			// only use parseText if useArrayBuffer is explicitly set to false
+			onLoad(useArrayBuffer !== false ? scope.parse(content) : scope.parseText(content));
+		}, onProgress, onError);
+	};
+
+	/**
+  * Default parse function: Parses OBJ file content stored in arrayBuffer and returns the sceneGraphBaseNode
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {Uint8Array} arrayBuffer OBJ data as Uint8Array
+  */
+	OBJLoader2.prototype.parse = function (arrayBuffer) {
+		// fast-fail on bad type
+		if (!(arrayBuffer instanceof ArrayBuffer || arrayBuffer instanceof Uint8Array)) {
+
+			throw 'Provided input is not of type arraybuffer! Aborting...';
+		}
+		console.log('Parsing arrayBuffer...');
+		console.time('parseArrayBuffer');
+
+		this._validate();
+		this.parser.parseArrayBuffer(arrayBuffer);
+		var sceneGraphAttach = this._finalize();
+
+		console.timeEnd('parseArrayBuffer');
+
+		return sceneGraphAttach;
+	};
+
+	/**
+  * Legacy parse function: Parses OBJ file content stored in string and returns the sceneGraphBaseNode
+  * @memberOf THREE.OBJLoader2
+  *
+  * @param {string} text OBJ data as string
+  */
+	OBJLoader2.prototype.parseText = function (text) {
+		// fast-fail on bad type
+		if (!(typeof text === 'string' || text instanceof String)) {
+
+			throw 'Provided input is not of type String! Aborting...';
+		}
+		console.log('Parsing text...');
+		console.time('parseText');
+
+		this._validate();
+		this.parser.parseText(text);
+		var sceneGraphBaseNode = this._finalize();
+
+		console.timeEnd('parseText');
+
+		return sceneGraphBaseNode;
+	};
+
+	OBJLoader2.prototype._validate = function () {
+		if (this.validated) return;
+
+		this.fileLoader = Validator.verifyInput(this.fileLoader, new FileLoader(this.manager));
+		this.parser.validate();
+		this.meshCreator.validate();
+
+		this.validated = true;
+	};
+
+	OBJLoader2.prototype._finalize = function () {
+		console.log('Global output object count: ' + this.meshCreator.globalObjectCount);
+
+		this.parser.finalize();
+		this.fileLoader = null;
+		var sceneGraphBaseNode = this.meshCreator.sceneGraphBaseNode;
+		this.meshCreator.finalize();
+		this.validated = false;
+
+		return sceneGraphBaseNode;
+	};
+
+	/**
+  * Constants used by THREE.OBJLoader2
+  */
+	var Consts = {
+		CODE_LF: 10,
+		CODE_CR: 13,
+		CODE_SPACE: 32,
+		CODE_SLASH: 47,
+		STRING_LF: '\n',
+		STRING_CR: '\r',
+		STRING_SPACE: ' ',
+		STRING_SLASH: '/',
+		LINE_F: 'f',
+		LINE_G: 'g',
+		LINE_L: 'l',
+		LINE_O: 'o',
+		LINE_S: 's',
+		LINE_V: 'v',
+		LINE_VT: 'vt',
+		LINE_VN: 'vn',
+		LINE_MTLLIB: 'mtllib',
+		LINE_USEMTL: 'usemtl',
+		/*
+   * Build Face/Quad: first element in indexArray is the line identification, therefore offset of one needs to be taken into account
+   * N-Gons are not supported
+   * Quad Faces: FaceA: 0, 1, 2  FaceB: 2, 3, 0
+   *
+   * 0: "f vertex/uv/normal	vertex/uv/normal	vertex/uv/normal	(vertex/uv/normal)"
+   * 1: "f vertex/uv		  	vertex/uv		   	vertex/uv		   	(vertex/uv		 )"
+   * 2: "f vertex//normal	 	vertex//normal	  	vertex//normal	  	(vertex//normal  )"
+   * 3: "f vertex			 	vertex			  	vertex			  	(vertex		  	 )"
+   *
+   * @param indexArray
+   * @param faceType
+   */
+		QUAD_INDICES_1: [1, 2, 3, 3, 4, 1],
+		QUAD_INDICES_2: [1, 3, 5, 5, 7, 1],
+		QUAD_INDICES_3: [1, 4, 7, 7, 10, 1]
+	};
+
+	var Validator = {
+		/**
+   * If given input is null or undefined, false is returned otherwise true.
+   *
+   * @param input Anything
+   * @returns {boolean}
+   */
+		isValid: function (input) {
+			return input !== null && input !== undefined;
+		},
+		/**
+   * If given input is null or undefined, the defaultValue is returned otherwise the given input.
+   *
+   * @param input Anything
+   * @param defaultValue Anything
+   * @returns {*}
+   */
+		verifyInput: function (input, defaultValue) {
+			return input === null || input === undefined ? defaultValue : input;
+		}
+	};
+
+	OBJLoader2.prototype._getValidator = function () {
+		return Validator;
+	};
+
+	/**
+  * Parse OBJ data either from ArrayBuffer or string
+  * @class
+  */
+	var Parser = function () {
+
+		function Parser(meshCreator) {
+			this.meshCreator = meshCreator;
+			this.rawObject = null;
+			this.inputObjectCount = 1;
+			this.debug = false;
+		}
+
+		Parser.prototype.setDebug = function (debug) {
+			if (debug === true || debug === false) this.debug = debug;
+		};
+
+		Parser.prototype.validate = function () {
+			this.rawObject = new RawObject();
+			this.inputObjectCount = 1;
+		};
+
+		/**
+   * Parse the provided arraybuffer
+   * @memberOf Parser
+   *
+   * @param {Uint8Array} arrayBuffer OBJ data as Uint8Array
+   */
+		Parser.prototype.parseArrayBuffer = function (arrayBuffer) {
+			var arrayBufferView = new Uint8Array(arrayBuffer);
+			var length = arrayBufferView.byteLength;
+			var buffer = new Array(32);
+			var bufferPointer = 0;
+			var slashes = new Array(32);
+			var slashesPointer = 0;
+			var reachedFaces = false;
+			var code;
+			var word = '';
+			for (var i = 0; i < length; i++) {
+
+				code = arrayBufferView[i];
+				switch (code) {
+					case Consts.CODE_SPACE:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.CODE_SLASH:
+						slashes[slashesPointer++] = i;
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.CODE_LF:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						reachedFaces = this.processLine(buffer, bufferPointer, slashes, slashesPointer, reachedFaces);
+						slashesPointer = 0;
+						bufferPointer = 0;
+						break;
+
+					case Consts.CODE_CR:
+						break;
+
+					default:
+						word += String.fromCharCode(code);
+						break;
+				}
+			}
+		};
+
+		/**
+   * Parse the provided text
+   * @memberOf Parser
+   *
+   * @param {string} text OBJ data as string
+   */
+		Parser.prototype.parseText = function (text) {
+			var length = text.length;
+			var buffer = new Array(32);
+			var bufferPointer = 0;
+			var slashes = new Array(32);
+			var slashesPointer = 0;
+			var reachedFaces = false;
+			var char;
+			var word = '';
+			for (var i = 0; i < length; i++) {
+
+				char = text[i];
+				switch (char) {
+					case Consts.STRING_SPACE:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.STRING_SLASH:
+						slashes[slashesPointer++] = i;
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						break;
+
+					case Consts.STRING_LF:
+						if (word.length > 0) buffer[bufferPointer++] = word;
+						word = '';
+						reachedFaces = this.processLine(buffer, bufferPointer, slashes, slashesPointer, reachedFaces);
+						slashesPointer = 0;
+						bufferPointer = 0;
+						break;
+
+					case Consts.STRING_CR:
+						break;
+
+					default:
+						word += char;
+				}
+			}
+		};
+
+		Parser.prototype.processLine = function (buffer, bufferPointer, slashes, slashesPointer, reachedFaces) {
+			if (bufferPointer < 1) return reachedFaces;
+
+			var bufferLength = bufferPointer - 1;
+			switch (buffer[0]) {
+				case Consts.LINE_V:
+
+					// object complete instance required if reached faces already (= reached next block of v)
+					if (reachedFaces) {
+
+						this.processCompletedObject(null, this.rawObject.groupName);
+						reachedFaces = false;
+					}
+					this.rawObject.pushVertex(buffer);
+					break;
+
+				case Consts.LINE_VT:
+					this.rawObject.pushUv(buffer);
+					break;
+
+				case Consts.LINE_VN:
+					this.rawObject.pushNormal(buffer);
+					break;
+
+				case Consts.LINE_F:
+					reachedFaces = true;
+					/*
+      * 0: "f vertex/uv/normal ..."
+      * 1: "f vertex/uv ..."
+      * 2: "f vertex//normal ..."
+      * 3: "f vertex ..."
+      */
+					var haveQuad = bufferLength % 4 === 0;
+					if (slashesPointer > 1 && slashes[1] - slashes[0] === 1) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVn(buffer);
+						} else {
+							this.rawObject.buildFaceVVn(buffer);
+						}
+					} else if (bufferLength === slashesPointer * 2) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVt(buffer);
+						} else {
+							this.rawObject.buildFaceVVt(buffer);
+						}
+					} else if (bufferLength * 2 === slashesPointer * 3) {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadVVtVn(buffer);
+						} else {
+							this.rawObject.buildFaceVVtVn(buffer);
+						}
+					} else {
+
+						if (haveQuad) {
+							this.rawObject.buildQuadV(buffer);
+						} else {
+							this.rawObject.buildFaceV(buffer);
+						}
+					}
+					break;
+
+				case Consts.LINE_L:
+					if (bufferLength === slashesPointer * 2) {
+
+						this.rawObject.buildLineVvt(buffer);
+					} else {
+
+						this.rawObject.buildLineV(buffer);
+					}
+					break;
+
+				case Consts.LINE_S:
+					this.rawObject.pushSmoothingGroup(buffer[1]);
+					break;
+
+				case Consts.LINE_G:
+					this.processCompletedGroup(buffer[1]);
+					break;
+
+				case Consts.LINE_O:
+					if (this.rawObject.vertices.length > 0) {
+
+						this.processCompletedObject(buffer[1], null);
+						reachedFaces = false;
+					} else {
+
+						this.rawObject.pushObject(buffer[1]);
+					}
+					break;
+
+				case Consts.LINE_MTLLIB:
+					this.rawObject.pushMtllib(buffer[1]);
+					break;
+
+				case Consts.LINE_USEMTL:
+					this.rawObject.pushUsemtl(buffer[1]);
+					break;
+
+				default:
+					break;
+			}
+			return reachedFaces;
+		};
+
+		Parser.prototype.processCompletedObject = function (objectName, groupName) {
+			this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			this.inputObjectCount++;
+			this.rawObject = this.rawObject.newInstanceFromObject(objectName, groupName);
+		};
+
+		Parser.prototype.processCompletedGroup = function (groupName) {
+			var notEmpty = this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			if (notEmpty) {
+
+				this.inputObjectCount++;
+				this.rawObject = this.rawObject.newInstanceFromGroup(groupName);
+			} else {
+
+				// if a group was set that did not lead to object creation in finalize, then the group name has to be updated
+				this.rawObject.pushGroup(groupName);
+			}
+		};
+
+		Parser.prototype.finalize = function () {
+			this.rawObject.finalize(this.meshCreator, this.inputObjectCount, this.debug);
+			this.inputObjectCount++;
+		};
+
+		return Parser;
+	}();
+
+	/**
+  * {@link RawObject} is only used by {@link Parser}.
+  * The user of OBJLoader2 does not need to care about this class.
+  * It is defined publicly for inclusion in web worker based OBJ loader ({@link THREE.OBJLoader2.WWOBJLoader2})
+  */
+	var RawObject = function () {
+
+		function RawObject(objectName, groupName, mtllibName) {
+			this.globalVertexOffset = 1;
+			this.globalUvOffset = 1;
+			this.globalNormalOffset = 1;
+
+			this.vertices = [];
+			this.normals = [];
+			this.uvs = [];
+
+			// faces are stored according combined index of group, material and smoothingGroup (0 or not)
+			this.mtllibName = Validator.verifyInput(mtllibName, 'none');
+			this.objectName = Validator.verifyInput(objectName, 'none');
+			this.groupName = Validator.verifyInput(groupName, 'none');
+			this.activeMtlName = 'none';
+			this.activeSmoothingGroup = 1;
+
+			this.mtlCount = 0;
+			this.smoothingGroupCount = 0;
+
+			this.rawObjectDescriptions = [];
+			// this default index is required as it is possible to define faces without 'g' or 'usemtl'
+			var index = this.buildIndex(this.activeMtlName, this.activeSmoothingGroup);
+			this.rawObjectDescriptionInUse = new RawObjectDescription(this.objectName, this.groupName, this.activeMtlName, this.activeSmoothingGroup);
+			this.rawObjectDescriptions[index] = this.rawObjectDescriptionInUse;
+		}
+
+		RawObject.prototype.buildIndex = function (materialName, smoothingGroup) {
+			return materialName + '|' + smoothingGroup;
+		};
+
+		RawObject.prototype.newInstanceFromObject = function (objectName, groupName) {
+			var newRawObject = new RawObject(objectName, groupName, this.mtllibName);
+
+			// move indices forward
+			newRawObject.globalVertexOffset = this.globalVertexOffset + this.vertices.length / 3;
+			newRawObject.globalUvOffset = this.globalUvOffset + this.uvs.length / 2;
+			newRawObject.globalNormalOffset = this.globalNormalOffset + this.normals.length / 3;
+
+			return newRawObject;
+		};
+
+		RawObject.prototype.newInstanceFromGroup = function (groupName) {
+			var newRawObject = new RawObject(this.objectName, groupName, this.mtllibName);
+
+			// keep current buffers and indices forward
+			newRawObject.vertices = this.vertices;
+			newRawObject.uvs = this.uvs;
+			newRawObject.normals = this.normals;
+			newRawObject.globalVertexOffset = this.globalVertexOffset;
+			newRawObject.globalUvOffset = this.globalUvOffset;
+			newRawObject.globalNormalOffset = this.globalNormalOffset;
+
+			return newRawObject;
+		};
+
+		RawObject.prototype.pushVertex = function (buffer) {
+			this.vertices.push(parseFloat(buffer[1]));
+			this.vertices.push(parseFloat(buffer[2]));
+			this.vertices.push(parseFloat(buffer[3]));
+		};
+
+		RawObject.prototype.pushUv = function (buffer) {
+			this.uvs.push(parseFloat(buffer[1]));
+			this.uvs.push(parseFloat(buffer[2]));
+		};
+
+		RawObject.prototype.pushNormal = function (buffer) {
+			this.normals.push(parseFloat(buffer[1]));
+			this.normals.push(parseFloat(buffer[2]));
+			this.normals.push(parseFloat(buffer[3]));
+		};
+
+		RawObject.prototype.pushObject = function (objectName) {
+			this.objectName = objectName;
+		};
+
+		RawObject.prototype.pushMtllib = function (mtllibName) {
+			this.mtllibName = mtllibName;
+		};
+
+		RawObject.prototype.pushGroup = function (groupName) {
+			this.groupName = groupName;
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.pushUsemtl = function (mtlName) {
+			if (this.activeMtlName === mtlName || !Validator.isValid(mtlName)) return;
+			this.activeMtlName = mtlName;
+			this.mtlCount++;
+
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.pushSmoothingGroup = function (activeSmoothingGroup) {
+			var normalized = activeSmoothingGroup === 'off' ? 0 : activeSmoothingGroup;
+			if (this.activeSmoothingGroup === normalized) return;
+			this.activeSmoothingGroup = normalized;
+			this.smoothingGroupCount++;
+
+			this.verifyIndex();
+		};
+
+		RawObject.prototype.verifyIndex = function () {
+			var index = this.buildIndex(this.activeMtlName, this.activeSmoothingGroup === 0 ? 0 : 1);
+			this.rawObjectDescriptionInUse = this.rawObjectDescriptions[index];
+			if (!Validator.isValid(this.rawObjectDescriptionInUse)) {
+
+				this.rawObjectDescriptionInUse = new RawObjectDescription(this.objectName, this.groupName, this.activeMtlName, this.activeSmoothingGroup);
+				this.rawObjectDescriptions[index] = this.rawObjectDescriptionInUse;
+			}
+		};
+
+		RawObject.prototype.buildQuadVVtVn = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_3[i]]);
+				this.attachFaceVt(indexArray[Consts.QUAD_INDICES_3[i] + 1]);
+				this.attachFaceVn(indexArray[Consts.QUAD_INDICES_3[i] + 2]);
+			}
+		};
+
+		RawObject.prototype.buildQuadVVt = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_2[i]]);
+				this.attachFaceVt(indexArray[Consts.QUAD_INDICES_2[i] + 1]);
+			}
+		};
+
+		RawObject.prototype.buildQuadVVn = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_2[i]]);
+				this.attachFaceVn(indexArray[Consts.QUAD_INDICES_2[i] + 1]);
+			}
+		};
+
+		RawObject.prototype.buildQuadV = function (indexArray) {
+			for (var i = 0; i < 6; i++) {
+				this.attachFaceV_(indexArray[Consts.QUAD_INDICES_1[i]]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVtVn = function (indexArray) {
+			for (var i = 1; i < 10; i += 3) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVt(indexArray[i + 1]);
+				this.attachFaceVn(indexArray[i + 2]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVt = function (indexArray) {
+			for (var i = 1; i < 7; i += 2) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVt(indexArray[i + 1]);
+			}
+		};
+
+		RawObject.prototype.buildFaceVVn = function (indexArray) {
+			for (var i = 1; i < 7; i += 2) {
+				this.attachFaceV_(indexArray[i]);
+				this.attachFaceVn(indexArray[i + 1]);
+			}
+		};
+
+		RawObject.prototype.buildFaceV = function (indexArray) {
+			for (var i = 1; i < 4; i++) {
+				this.attachFaceV_(indexArray[i]);
+			}
+		};
+
+		RawObject.prototype.attachFaceV_ = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalVertexOffset) * 3;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.vertices.push(this.vertices[index++]);
+			rodiu.vertices.push(this.vertices[index++]);
+			rodiu.vertices.push(this.vertices[index]);
+		};
+
+		RawObject.prototype.attachFaceVt = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalUvOffset) * 2;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.uvs.push(this.uvs[index++]);
+			rodiu.uvs.push(this.uvs[index]);
+		};
+
+		RawObject.prototype.attachFaceVn = function (faceIndex) {
+			var faceIndexInt = parseInt(faceIndex);
+			var index = (faceIndexInt - this.globalNormalOffset) * 3;
+
+			var rodiu = this.rawObjectDescriptionInUse;
+			rodiu.normals.push(this.normals[index++]);
+			rodiu.normals.push(this.normals[index++]);
+			rodiu.normals.push(this.normals[index]);
+		};
+
+		/*
+   * Support for lines with or without texture. irst element in indexArray is the line identification
+   * 0: "f vertex/uv		vertex/uv 		..."
+   * 1: "f vertex			vertex 			..."
+   */
+		RawObject.prototype.buildLineVvt = function (lineArray) {
+			var length = lineArray.length;
+			for (var i = 1; i < length; i++) {
+				this.vertices.push(parseInt(lineArray[i]));
+				this.uvs.push(parseInt(lineArray[i]));
+			}
+		};
+
+		RawObject.prototype.buildLineV = function (lineArray) {
+			var length = lineArray.length;
+			for (var i = 1; i < length; i++) {
+				this.vertices.push(parseInt(lineArray[i]));
+			}
+		};
+
+		/**
+   * Clear any empty rawObjectDescription and calculate absolute vertex, normal and uv counts
+   */
+		RawObject.prototype.finalize = function (meshCreator, inputObjectCount, debug) {
+			var temp = this.rawObjectDescriptions;
+			this.rawObjectDescriptions = [];
+			var rawObjectDescription;
+			var index = 0;
+			var absoluteVertexCount = 0;
+			var absoluteNormalCount = 0;
+			var absoluteUvCount = 0;
+
+			for (var name in temp) {
+
+				rawObjectDescription = temp[name];
+				if (rawObjectDescription.vertices.length > 0) {
+
+					if (rawObjectDescription.objectName === 'none') rawObjectDescription.objectName = rawObjectDescription.groupName;
+					this.rawObjectDescriptions[index++] = rawObjectDescription;
+					absoluteVertexCount += rawObjectDescription.vertices.length;
+					absoluteUvCount += rawObjectDescription.uvs.length;
+					absoluteNormalCount += rawObjectDescription.normals.length;
+				}
+			}
+
+			// don not continue if no result
+			var notEmpty = false;
+			if (index > 0) {
+
+				if (debug) this.createReport(inputObjectCount, true);
+				meshCreator.buildMesh(this.rawObjectDescriptions, inputObjectCount, absoluteVertexCount, absoluteNormalCount, absoluteUvCount);
+				notEmpty = true;
+			}
+			return notEmpty;
+		};
+
+		RawObject.prototype.createReport = function (inputObjectCount, printDirectly) {
+			var report = {
+				name: this.objectName ? this.objectName : 'groups',
+				mtllibName: this.mtllibName,
+				vertexCount: this.vertices.length / 3,
+				normalCount: this.normals.length / 3,
+				uvCount: this.uvs.length / 2,
+				smoothingGroupCount: this.smoothingGroupCount,
+				mtlCount: this.mtlCount,
+				rawObjectDescriptions: this.rawObjectDescriptions.length
+			};
+
+			if (printDirectly) {
+				console.log('Input Object number: ' + inputObjectCount + ' Object name: ' + report.name);
+				console.log('Mtllib name: ' + report.mtllibName);
+				console.log('Vertex count: ' + report.vertexCount);
+				console.log('Normal count: ' + report.normalCount);
+				console.log('UV count: ' + report.uvCount);
+				console.log('SmoothingGroup count: ' + report.smoothingGroupCount);
+				console.log('Material count: ' + report.mtlCount);
+				console.log('Real RawObjectDescription count: ' + report.rawObjectDescriptions);
+				console.log('');
+			}
+
+			return report;
+		};
+
+		return RawObject;
+	}();
+
+	/**
+  * Descriptive information and data (vertices, normals, uvs) to passed on to mesh building function.
+  * @class
+  *
+  * @param {string} objectName Name of the mesh
+  * @param {string} groupName Name of the group
+  * @param {string} materialName Name of the material
+  * @param {number} smoothingGroup Normalized smoothingGroup (0: THREE.FlatShading, 1: THREE.SmoothShading)
+  */
+	var RawObjectDescription = function () {
+
+		function RawObjectDescription(objectName, groupName, materialName, smoothingGroup) {
+			this.objectName = objectName;
+			this.groupName = groupName;
+			this.materialName = materialName;
+			this.smoothingGroup = smoothingGroup;
+			this.vertices = [];
+			this.uvs = [];
+			this.normals = [];
+		}
+
+		return RawObjectDescription;
+	}();
+
+	/**
+  * MeshCreator is used to transform RawObjectDescriptions to THREE.Mesh
+  *
+  * @class
+  */
+	var MeshCreator = function () {
+
+		function MeshCreator() {
+			this.sceneGraphBaseNode = null;
+			this.materials = null;
+			this.debug = false;
+			this.globalObjectCount = 1;
+
+			this.validated = false;
+		}
+
+		MeshCreator.prototype.setSceneGraphBaseNode = function (sceneGraphBaseNode) {
+			this.sceneGraphBaseNode = Validator.verifyInput(sceneGraphBaseNode, this.sceneGraphBaseNode);
+			this.sceneGraphBaseNode = Validator.verifyInput(this.sceneGraphBaseNode, new Group());
+		};
+
+		MeshCreator.prototype.setMaterials = function (materials) {
+			this.materials = Validator.verifyInput(materials, this.materials);
+			this.materials = Validator.verifyInput(this.materials, { materials: [] });
+		};
+
+		MeshCreator.prototype.setDebug = function (debug) {
+			if (debug === true || debug === false) this.debug = debug;
+		};
+
+		MeshCreator.prototype.validate = function () {
+			if (this.validated) return;
+
+			this.setSceneGraphBaseNode(null);
+			this.setMaterials(null);
+			this.setDebug(null);
+			this.globalObjectCount = 1;
+		};
+
+		MeshCreator.prototype.finalize = function () {
+			this.sceneGraphBaseNode = null;
+			this.materials = null;
+			this.validated = false;
+		};
+
+		/**
+   * This is an internal function, but due to its importance to Parser it is documented.
+   * RawObjectDescriptions are transformed to THREE.Mesh.
+   * It is ensured that rawObjectDescriptions only contain objects with vertices (no need to check).
+   * This method shall be overridden by the web worker implementation
+   *
+   * @param {RawObjectDescription[]} rawObjectDescriptions Array of descriptive information and data (vertices, normals, uvs) about the parsed object(s)
+   * @param {number} inputObjectCount Number of objects already retrieved from OBJ
+   * @param {number} absoluteVertexCount Sum of all vertices of all rawObjectDescriptions
+   * @param {number} absoluteNormalCount Sum of all normals of all rawObjectDescriptions
+   * @param {number} absoluteUvCount Sum of all uvs of all rawObjectDescriptions
+   */
+		MeshCreator.prototype.buildMesh = function (rawObjectDescriptions, inputObjectCount, absoluteVertexCount, absoluteNormalCount, absoluteUvCount) {
+
+			if (this.debug) console.log('MeshCreator.buildRawMeshData:\nInput object no.: ' + inputObjectCount);
+
+			var bufferGeometry = new BufferGeometry();
+			var vertexBA = new BufferAttribute(new Float32Array(absoluteVertexCount), 3);
+			bufferGeometry.addAttribute('position', vertexBA);
+
+			var normalBA;
+			if (absoluteNormalCount > 0) {
+
+				normalBA = new BufferAttribute(new Float32Array(absoluteNormalCount), 3);
+				bufferGeometry.addAttribute('normal', normalBA);
+			}
+			var uvBA;
+			if (absoluteUvCount > 0) {
+
+				uvBA = new BufferAttribute(new Float32Array(absoluteUvCount), 2);
+				bufferGeometry.addAttribute('uv', uvBA);
+			}
+
+			if (this.debug) console.log('Creating Multi-Material for object no.: ' + this.globalObjectCount);
+
+			var rawObjectDescription;
+			var material;
+			var materialName;
+			var createMultiMaterial = rawObjectDescriptions.length > 1;
+			var materials = [];
+			var materialIndex = 0;
+			var materialIndexMapping = [];
+			var selectedMaterialIndex;
+
+			var vertexBAOffset = 0;
+			var vertexGroupOffset = 0;
+			var vertexLength;
+			var normalOffset = 0;
+			var uvOffset = 0;
+
+			for (var oodIndex in rawObjectDescriptions) {
+				rawObjectDescription = rawObjectDescriptions[oodIndex];
+
+				materialName = rawObjectDescription.materialName;
+				material = this.materials[materialName];
+				if (!material) {
+
+					material = this.materials['defaultMaterial'];
+					if (!material) {
+
+						material = new MeshStandardMaterial({ color: 0xDCF1FF });
+						material.name = 'defaultMaterial';
+						this.materials['defaultMaterial'] = material;
+					}
+					console.warn('object_group "' + rawObjectDescription.objectName + '_' + rawObjectDescription.groupName + '" was defined without material! Assigning "defaultMaterial".');
+				}
+				// clone material in case flat shading is needed due to smoothingGroup 0
+				if (rawObjectDescription.smoothingGroup === 0) {
+
+					materialName = material.name + '_flat';
+					var materialClone = this.materials[materialName];
+					if (!materialClone) {
+
+						materialClone = material.clone();
+						materialClone.name = materialName;
+						materialClone.shading = FlatShading;
+						this.materials[materialName] = name;
+					}
+				}
+
+				vertexLength = rawObjectDescription.vertices.length;
+				if (createMultiMaterial) {
+
+					// re-use material if already used before. Reduces materials array size and eliminates duplicates
+					selectedMaterialIndex = materialIndexMapping[materialName];
+					if (!selectedMaterialIndex) {
+
+						selectedMaterialIndex = materialIndex;
+						materialIndexMapping[materialName] = materialIndex;
+						materials.push(material);
+						materialIndex++;
+					}
+
+					bufferGeometry.addGroup(vertexGroupOffset, vertexLength / 3, selectedMaterialIndex);
+					vertexGroupOffset += vertexLength / 3;
+				}
+
+				vertexBA.set(rawObjectDescription.vertices, vertexBAOffset);
+				vertexBAOffset += vertexLength;
+
+				if (normalBA) {
+
+					normalBA.set(rawObjectDescription.normals, normalOffset);
+					normalOffset += rawObjectDescription.normals.length;
+				}
+				if (uvBA) {
+
+					uvBA.set(rawObjectDescription.uvs, uvOffset);
+					uvOffset += rawObjectDescription.uvs.length;
+				}
+				if (this.debug) this.printReport(rawObjectDescription, selectedMaterialIndex);
+			}
+			if (!normalBA) bufferGeometry.computeVertexNormals();
+
+			if (createMultiMaterial) material = materials;
+			var mesh = new Mesh(bufferGeometry, material);
+			this.sceneGraphBaseNode.add(mesh);
+
+			this.globalObjectCount++;
+		};
+
+		MeshCreator.prototype.printReport = function (rawObjectDescription, selectedMaterialIndex) {
+			console.log(' Output Object no.: ' + this.globalObjectCount + '\n objectName: ' + rawObjectDescription.objectName + '\n groupName: ' + rawObjectDescription.groupName + '\n materialName: ' + rawObjectDescription.materialName + '\n materialIndex: ' + selectedMaterialIndex + '\n smoothingGroup: ' + rawObjectDescription.smoothingGroup + '\n #vertices: ' + rawObjectDescription.vertices.length / 3 + '\n #uvs: ' + rawObjectDescription.uvs.length / 2 + '\n #normals: ' + rawObjectDescription.normals.length / 3);
+		};
+
+		return MeshCreator;
+	}();
+
+	OBJLoader2.prototype._buildWebWorkerCode = function (funcBuildObject, funcBuildSingelton) {
+		var workerCode = '';
+		workerCode += funcBuildObject('Consts', Consts);
+		workerCode += funcBuildObject('Validator', Validator);
+		workerCode += funcBuildSingelton('Parser', 'Parser', Parser);
+		workerCode += funcBuildSingelton('RawObject', 'RawObject', RawObject);
+		workerCode += funcBuildSingelton('RawObjectDescription', 'RawObjectDescription', RawObjectDescription);
+		return workerCode;
+	};
+
+	return OBJLoader2;
+}();
+
+function MTLLoader(manager) {
+
+	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+};
+
+MTLLoader.prototype = {
+
+	constructor: MTLLoader,
+
+	/**
+  * Loads and parses a MTL asset from a URL.
+  *
+  * @param {String} url - URL to the MTL file.
+  * @param {Function} [onLoad] - Callback invoked with the loaded object.
+  * @param {Function} [onProgress] - Callback for download progress.
+  * @param {Function} [onError] - Callback for download errors.
+  *
+  * @see setPath setTexturePath
+  *
+  * @note In order for relative texture references to resolve correctly
+  * you must call setPath and/or setTexturePath explicitly prior to load.
+  */
+	load: function (url, onLoad, onProgress, onError) {
+
+		var scope = this;
+
+		var loader = new FileLoader(this.manager);
+		loader.setPath(this.path);
+		loader.load(url, function (text) {
+
+			onLoad(scope.parse(text));
+		}, onProgress, onError);
+	},
+
+	/**
+  * Set base path for resolving references.
+  * If set this path will be prepended to each loaded and found reference.
+  *
+  * @see setTexturePath
+  * @param {String} path
+  *
+  * @example
+  *     mtlLoader.setPath( 'assets/obj/' );
+  *     mtlLoader.load( 'my.mtl', ... );
+  */
+	setPath: function (path) {
+
+		this.path = path;
+	},
+
+	/**
+  * Set base path for resolving texture references.
+  * If set this path will be prepended found texture reference.
+  * If not set and setPath is, it will be used as texture base path.
+  *
+  * @see setPath
+  * @param {String} path
+  *
+  * @example
+  *     mtlLoader.setPath( 'assets/obj/' );
+  *     mtlLoader.setTexturePath( 'assets/textures/' );
+  *     mtlLoader.load( 'my.mtl', ... );
+  */
+	setTexturePath: function (path) {
+
+		this.texturePath = path;
+	},
+
+	setBaseUrl: function (path) {
+
+		console.warn('MTLLoader: .setBaseUrl() is deprecated. Use .setTexturePath( path ) for texture path or .setPath( path ) for general base path instead.');
+
+		this.setTexturePath(path);
+	},
+
+	setCrossOrigin: function (value) {
+
+		this.crossOrigin = value;
+	},
+
+	setMaterialOptions: function (value) {
+
+		this.materialOptions = value;
+	},
+
+	/**
+  * Parses a MTL file.
+  *
+  * @param {String} text - Content of MTL file
+  * @return {MTLLoader.MaterialCreator}
+  *
+  * @see setPath setTexturePath
+  *
+  * @note In order for relative texture references to resolve correctly
+  * you must call setPath and/or setTexturePath explicitly prior to parse.
+  */
+	parse: function (text) {
+
+		var lines = text.split('\n');
+		var info = {};
+		var delimiter_pattern = /\s+/;
+		var materialsInfo = {};
+
+		for (var i = 0; i < lines.length; i++) {
+
+			var line = lines[i];
+			line = line.trim();
+
+			if (line.length === 0 || line.charAt(0) === '#') {
+
+				// Blank line or comment ignore
+				continue;
+			}
+
+			var pos = line.indexOf(' ');
+
+			var key = pos >= 0 ? line.substring(0, pos) : line;
+			key = key.toLowerCase();
+
+			var value = pos >= 0 ? line.substring(pos + 1) : '';
+			value = value.trim();
+
+			if (key === 'newmtl') {
+
+				// New material
+
+				info = { name: value };
+				materialsInfo[value] = info;
+			} else if (info) {
+
+				if (key === 'ka' || key === 'kd' || key === 'ks') {
+
+					var ss = value.split(delimiter_pattern, 3);
+					info[key] = [parseFloat(ss[0]), parseFloat(ss[1]), parseFloat(ss[2])];
+				} else {
+
+					info[key] = value;
+				}
+			}
+		}
+
+		var materialCreator = new MTLLoader.MaterialCreator(this.texturePath || this.path, this.materialOptions);
+		materialCreator.setCrossOrigin(this.crossOrigin);
+		materialCreator.setManager(this.manager);
+		materialCreator.setMaterials(materialsInfo);
+		return materialCreator;
+	}
+
+};
+
+/**
+ * Create a new THREE-MTLLoader.MaterialCreator
+ * @param baseUrl - Url relative to which textures are loaded
+ * @param options - Set of options on how to construct the materials
+ *                  side: Which side to apply the material
+ *                        THREE.FrontSide (default), THREE.BackSide, THREE.DoubleSide
+ *                  wrap: What type of wrapping to apply for textures
+ *                        THREE.RepeatWrapping (default), THREE.ClampToEdgeWrapping, THREE.MirroredRepeatWrapping
+ *                  normalizeRGB: RGBs need to be normalized to 0-1 from 0-255
+ *                                Default: false, assumed to be already normalized
+ *                  ignoreZeroRGBs: Ignore values of RGBs (Ka,Kd,Ks) that are all 0's
+ *                                  Default: false
+ * @constructor
+ */
+
+MTLLoader.MaterialCreator = function (baseUrl, options) {
+
+	this.baseUrl = baseUrl || '';
+	this.options = options;
+	this.materialsInfo = {};
+	this.materials = {};
+	this.materialsArray = [];
+	this.nameLookup = {};
+
+	this.side = this.options && this.options.side ? this.options.side : FrontSide;
+	this.wrap = this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
+};
+
+MTLLoader.MaterialCreator.prototype = {
+
+	constructor: MTLLoader.MaterialCreator,
+
+	setCrossOrigin: function (value) {
+
+		this.crossOrigin = value;
+	},
+
+	setManager: function (value) {
+
+		this.manager = value;
+	},
+
+	setMaterials: function (materialsInfo) {
+
+		this.materialsInfo = this.convert(materialsInfo);
+		this.materials = {};
+		this.materialsArray = [];
+		this.nameLookup = {};
+	},
+
+	convert: function (materialsInfo) {
+
+		if (!this.options) return materialsInfo;
+
+		var converted = {};
+
+		for (var mn in materialsInfo) {
+
+			// Convert materials info into normalized form based on options
+
+			var mat = materialsInfo[mn];
+
+			var covmat = {};
+
+			converted[mn] = covmat;
+
+			for (var prop in mat) {
+
+				var save = true;
+				var value = mat[prop];
+				var lprop = prop.toLowerCase();
+
+				switch (lprop) {
+
+					case 'kd':
+					case 'ka':
+					case 'ks':
+
+						// Diffuse color (color under white light) using RGB values
+
+						if (this.options && this.options.normalizeRGB) {
+
+							value = [value[0] / 255, value[1] / 255, value[2] / 255];
+						}
+
+						if (this.options && this.options.ignoreZeroRGBs) {
+
+							if (value[0] === 0 && value[1] === 0 && value[2] === 0) {
+
+								// ignore
+
+								save = false;
+							}
+						}
+
+						break;
+
+					default:
+
+						break;
+
+				}
+
+				if (save) {
+
+					covmat[lprop] = value;
+				}
+			}
+		}
+
+		return converted;
+	},
+
+	preload: function () {
+
+		for (var mn in this.materialsInfo) {
+
+			this.create(mn);
+		}
+	},
+
+	getIndex: function (materialName) {
+
+		return this.nameLookup[materialName];
+	},
+
+	getAsArray: function () {
+
+		var index = 0;
+
+		for (var mn in this.materialsInfo) {
+
+			this.materialsArray[index] = this.create(mn);
+			this.nameLookup[mn] = index;
+			index++;
+		}
+
+		return this.materialsArray;
+	},
+
+	create: function (materialName) {
+
+		if (this.materials[materialName] === undefined) {
+
+			this.createMaterial_(materialName);
+		}
+
+		return this.materials[materialName];
+	},
+
+	createMaterial_: function (materialName) {
+
+		// Create material
+
+		var scope = this;
+		var mat = this.materialsInfo[materialName];
+		var params = {
+
+			name: materialName,
+			side: this.side
+
+		};
+
+		function resolveURL(baseUrl, url) {
+
+			if (typeof url !== 'string' || url === '') return '';
+
+			// Absolute URL
+			if (/^https?:\/\//i.test(url)) return url;
+
+			return baseUrl + url;
+		}
+
+		function setMapForType(mapType, value) {
+
+			if (params[mapType]) return; // Keep the first encountered texture
+
+			var texParams = scope.getTextureParams(value, params);
+			var map = scope.loadTexture(resolveURL(scope.baseUrl, texParams.url));
+
+			map.repeat.copy(texParams.scale);
+			map.offset.copy(texParams.offset);
+
+			map.wrapS = scope.wrap;
+			map.wrapT = scope.wrap;
+
+			params[mapType] = map;
+		}
+
+		for (var prop in mat) {
+
+			var value = mat[prop];
+			var n;
+
+			if (value === '') continue;
+
+			switch (prop.toLowerCase()) {
+
+				// Ns is material specular exponent
+
+				case 'kd':
+
+					// Diffuse color (color under white light) using RGB values
+
+					params.color = new Color().fromArray(value);
+
+					break;
+
+				case 'ks':
+
+					// Specular color (color when light is reflected from shiny surface) using RGB values
+					params.specular = new Color().fromArray(value);
+
+					break;
+
+				case 'map_kd':
+
+					// Diffuse texture map
+
+					setMapForType("map", value);
+
+					break;
+
+				case 'map_ks':
+
+					// Specular map
+
+					setMapForType("specularMap", value);
+
+					break;
+
+				case 'map_bump':
+				case 'bump':
+
+					// Bump texture map
+
+					setMapForType("bumpMap", value);
+
+					break;
+
+				case 'ns':
+
+					// The specular exponent (defines the focus of the specular highlight)
+					// A high exponent results in a tight, concentrated highlight. Ns values normally range from 0 to 1000.
+
+					params.shininess = parseFloat(value);
+
+					break;
+
+				case 'd':
+					n = parseFloat(value);
+
+					if (n < 1) {
+
+						params.opacity = n;
+						params.transparent = true;
+					}
+
+					break;
+
+				case 'tr':
+					n = parseFloat(value);
+
+					if (n > 0) {
+
+						params.opacity = 1 - n;
+						params.transparent = true;
+					}
+
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		this.materials[materialName] = new MeshPhongMaterial(params);
+		return this.materials[materialName];
+	},
+
+	getTextureParams: function (value, matParams) {
+
+		var texParams = {
+
+			scale: new Vector2(1, 1),
+			offset: new Vector2(0, 0)
+
+		};
+
+		var items = value.split(/\s+/);
+		var pos;
+
+		pos = items.indexOf('-bm');
+
+		if (pos >= 0) {
+
+			matParams.bumpScale = parseFloat(items[pos + 1]);
+			items.splice(pos, 2);
+		}
+
+		pos = items.indexOf('-s');
+
+		if (pos >= 0) {
+
+			texParams.scale.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+			items.splice(pos, 4); // we expect 3 parameters here!
+		}
+
+		pos = items.indexOf('-o');
+
+		if (pos >= 0) {
+
+			texParams.offset.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+			items.splice(pos, 4); // we expect 3 parameters here!
+		}
+
+		texParams.url = items.join(' ').trim();
+		return texParams;
+	},
+
+	loadTexture: function (url, mapping, onLoad, onProgress, onError) {
+
+		var texture;
+		var loader = Loader.Handlers.get(url);
+		var manager = this.manager !== undefined ? this.manager : DefaultLoadingManager;
+
+		if (loader === null) {
+
+			loader = new TextureLoader(manager);
+		}
+
+		if (loader.setCrossOrigin) loader.setCrossOrigin(this.crossOrigin);
+		texture = loader.load(url, onLoad, onProgress, onError);
+
+		if (mapping !== undefined) texture.mapping = mapping;
+
+		return texture;
+	}
+
+};
+
+function ColladaLoader(manager) {
+
+	var COLLADA = null;
+	var scene = null;
+	var visualScene;
+	var kinematicsModel;
+
+	var readyCallbackFunc = null;
+
+	var sources = {};
+	var images = {};
+	var animations = {};
+	var controllers = {};
+	var geometries = {};
+	var materials = {};
+	var effects = {};
+	var cameras = {};
+	var lights = {};
+
+	var animData;
+	var kinematics;
+	var visualScenes;
+	var kinematicsModels;
+	var baseUrl;
+	var morphs;
+	var skins;
+
+	var flip_uv = true;
+
+	var options = {
+		// Force Geometry to always be centered at the local origin of the
+		// containing Mesh.
+		centerGeometry: false,
+
+		// Axis conversion is done for geometries, animations, and controllers.
+		// If we ever pull cameras or lights out of the COLLADA file, they'll
+		// need extra work.
+		convertUpAxis: false,
+
+		subdivideFaces: true,
+
+		upAxis: 'Y',
+
+		// For reflective or refractive materials we'll use this cubemap
+		defaultEnvMap: null
+
+	};
+
+	var colladaUnit = 1.0;
+	var colladaUp = 'Y';
+	var upConversion = null;
+
+	function load(url, readyCallback, progressCallback, failCallback) {
+
+		var length = 0;
+
+		if (document.implementation && document.implementation.createDocument) {
+
+			var request = new XMLHttpRequest();
+
+			request.onreadystatechange = function () {
+
+				if (request.readyState === 4) {
+
+					if (request.status === 0 || request.status === 200) {
+
+						if (request.response) {
+
+							readyCallbackFunc = readyCallback;
+							parse(request.response, undefined, url);
+						} else {
+
+							if (failCallback) {
+
+								failCallback({ type: 'error', url: url });
+							} else {
+
+								console.error("ColladaLoader: Empty or non-existing file (" + url + ")");
+							}
+						}
+					} else {
+
+						if (failCallback) {
+
+							failCallback({ type: 'error', url: url });
+						} else {
+
+							console.error('ColladaLoader: Couldn\'t load "' + url + '" (' + request.status + ')');
+						}
+					}
+				} else if (request.readyState === 3) {
+
+					if (progressCallback) {
+
+						if (length === 0) {
+
+							length = request.getResponseHeader("Content-Length");
+						}
+
+						progressCallback({ total: length, loaded: request.responseText.length });
+					}
+				}
+			};
+
+			request.open("GET", url, true);
+			request.send(null);
+		} else {
+
+			alert("Don't know how to parse XML!");
+		}
+	}
+
+	function parse(text, callBack, url) {
+
+		COLLADA = new DOMParser().parseFromString(text, 'text/xml');
+		callBack = callBack || readyCallbackFunc;
+
+		if (url !== undefined) {
+
+			var parts = url.split('/');
+			parts.pop();
+			baseUrl = (parts.length < 1 ? '.' : parts.join('/')) + '/';
+		}
+
+		parseAsset();
+		setUpConversion();
+		images = parseLib("library_images image", _Image, "image");
+		materials = parseLib("library_materials material", Material, "material");
+		effects = parseLib("library_effects effect", Effect, "effect");
+		geometries = parseLib("library_geometries geometry", Geometry$$, "geometry");
+		cameras = parseLib("library_cameras camera", Camera, "camera");
+		lights = parseLib("library_lights light", Light, "light");
+		controllers = parseLib("library_controllers controller", Controller, "controller");
+		animations = parseLib("library_animations animation", Animation, "animation");
+		visualScenes = parseLib("library_visual_scenes visual_scene", VisualScene, "visual_scene");
+		kinematicsModels = parseLib("library_kinematics_models kinematics_model", KinematicsModel, "kinematics_model");
+
+		morphs = [];
+		skins = [];
+
+		visualScene = parseScene();
+		scene = new Group();
+
+		for (var i = 0; i < visualScene.nodes.length; i++) {
+
+			scene.add(createSceneGraph(visualScene.nodes[i]));
+		}
+
+		// unit conversion
+		scene.scale.multiplyScalar(colladaUnit);
+
+		createAnimations();
+
+		kinematicsModel = parseKinematicsModel();
+		createKinematics();
+
+		var result = {
+
+			scene: scene,
+			morphs: morphs,
+			skins: skins,
+			animations: animData,
+			kinematics: kinematics,
+			dae: {
+				images: images,
+				materials: materials,
+				cameras: cameras,
+				lights: lights,
+				effects: effects,
+				geometries: geometries,
+				controllers: controllers,
+				animations: animations,
+				visualScenes: visualScenes,
+				visualScene: visualScene,
+				scene: visualScene,
+				kinematicsModels: kinematicsModels,
+				kinematicsModel: kinematicsModel
+			}
+
+		};
+
+		if (callBack) {
+
+			callBack(result);
+		}
+
+		return result;
+	}
+
+	function parseAsset() {
+
+		var elements = COLLADA.querySelectorAll('asset');
+
+		var element = elements[0];
+
+		if (element && element.childNodes) {
+
+			for (var i = 0; i < element.childNodes.length; i++) {
+
+				var child = element.childNodes[i];
+
+				switch (child.nodeName) {
+
+					case 'unit':
+
+						var meter = child.getAttribute('meter');
+
+						if (meter) {
+
+							colladaUnit = parseFloat(meter);
+						}
+
+						break;
+
+					case 'up_axis':
+
+						colladaUp = child.textContent.charAt(0);
+						break;
+
+				}
+			}
+		}
+	}
+
+	function parseLib(q, classSpec, prefix) {
+
+		var elements = COLLADA.querySelectorAll(q);
+
+		var lib = {};
+
+		var i = 0;
+
+		var elementsLength = elements.length;
+
+		for (var j = 0; j < elementsLength; j++) {
+
+			var element = elements[j];
+			var daeElement = new classSpec().parse(element);
+
+			if (!daeElement.id || daeElement.id.length === 0) daeElement.id = prefix + i++;
+			lib[daeElement.id] = daeElement;
+		}
+
+		return lib;
+	}
+
+	function parseScene() {
+
+		var sceneElement = COLLADA.querySelectorAll('scene instance_visual_scene')[0];
+
+		if (sceneElement) {
+
+			var url = sceneElement.getAttribute('url').replace(/^#/, '');
+			return visualScenes[url.length > 0 ? url : 'visual_scene0'];
+		} else {
+
+			return null;
+		}
+	}
+
+	function parseKinematicsModel() {
+
+		var kinematicsModelElement = COLLADA.querySelectorAll('instance_kinematics_model')[0];
+
+		if (kinematicsModelElement) {
+
+			var url = kinematicsModelElement.getAttribute('url').replace(/^#/, '');
+			return kinematicsModels[url.length > 0 ? url : 'kinematics_model0'];
+		} else {
+
+			return null;
+		}
+	}
+
+	function createAnimations() {
+
+		animData = [];
+
+		// fill in the keys
+		recurseHierarchy(scene);
+	}
+
+	function recurseHierarchy(node) {
+
+		var n = visualScene.getChildById(node.colladaId, true),
+		    newData = null;
+
+		if (n && n.keys) {
+
+			newData = {
+				fps: 60,
+				hierarchy: [{
+					node: n,
+					keys: n.keys,
+					sids: n.sids
+				}],
+				node: node,
+				name: 'animation_' + node.name,
+				length: 0
+			};
+
+			animData.push(newData);
+
+			for (var i = 0, il = n.keys.length; i < il; i++) {
+
+				newData.length = Math.max(newData.length, n.keys[i].time);
+			}
+		} else {
+
+			newData = {
+				hierarchy: [{
+					keys: [],
+					sids: []
+				}]
+			};
+		}
+
+		for (var i = 0, il = node.children.length; i < il; i++) {
+
+			var d = recurseHierarchy(node.children[i]);
+
+			for (var j = 0, jl = d.hierarchy.length; j < jl; j++) {
+
+				newData.hierarchy.push({
+					keys: [],
+					sids: []
+				});
+			}
+		}
+
+		return newData;
+	}
+
+	function calcAnimationBounds() {
+
+		var start = 1000000;
+		var end = -start;
+		var frames = 0;
+		var ID;
+		for (var id in animations) {
+
+			var animation = animations[id];
+			ID = ID || animation.id;
+			for (var i = 0; i < animation.sampler.length; i++) {
+
+				var sampler = animation.sampler[i];
+
+				sampler.create();
+
+				start = Math.min(start, sampler.startTime);
+				end = Math.max(end, sampler.endTime);
+				frames = Math.max(frames, sampler.input.length);
+			}
+		}
+
+		return { start: start, end: end, frames: frames, ID: ID };
+	}
+
+	function createMorph(geometry, ctrl) {
+
+		var morphCtrl = ctrl instanceof InstanceController ? controllers[ctrl.url] : ctrl;
+
+		if (!morphCtrl || !morphCtrl.morph) {
+
+			console.log("could not find morph controller!");
+			return;
+		}
+
+		var morph = morphCtrl.morph;
+
+		for (var i = 0; i < morph.targets.length; i++) {
+
+			var target_id = morph.targets[i];
+			var daeGeometry = geometries[target_id];
+
+			if (!daeGeometry.mesh || !daeGeometry.mesh.primitives || !daeGeometry.mesh.primitives.length) {
+				continue;
+			}
+
+			var target = daeGeometry.mesh.primitives[0].geometry;
+
+			if (target.vertices.length === geometry.vertices.length) {
+
+				geometry.morphTargets.push({ name: "target_1", vertices: target.vertices });
+			}
+		}
+
+		geometry.morphTargets.push({ name: "target_Z", vertices: geometry.vertices });
+	}
+
+	function createSkin(geometry, ctrl, applyBindShape) {
+
+		var skinCtrl = controllers[ctrl.url];
+
+		if (!skinCtrl || !skinCtrl.skin) {
+
+			console.log("could not find skin controller!");
+			return;
+		}
+
+		if (!ctrl.skeleton || !ctrl.skeleton.length) {
+
+			console.log("could not find the skeleton for the skin!");
+			return;
+		}
+
+		var skin = skinCtrl.skin;
+		var skeleton = visualScene.getChildById(ctrl.skeleton[0]);
+		var hierarchy = [];
+
+		applyBindShape = applyBindShape !== undefined ? applyBindShape : true;
+
+		var bones = [];
+		geometry.skinWeights = [];
+		geometry.skinIndices = [];
+
+		//createBones( geometry.bones, skin, hierarchy, skeleton, null, -1 );
+		//createWeights( skin, geometry.bones, geometry.skinIndices, geometry.skinWeights );
+
+		/*
+  geometry.animation = {
+  	name: 'take_001',
+  	fps: 30,
+  	length: 2,
+  	JIT: true,
+  	hierarchy: hierarchy
+  };
+  */
+
+		if (applyBindShape) {
+
+			for (var i = 0; i < geometry.vertices.length; i++) {
+
+				geometry.vertices[i].applyMatrix4(skin.bindShapeMatrix);
+			}
+		}
+	}
+
+	function setupSkeleton(node, bones, frame, parent) {
+
+		node.world = node.world || new Matrix4();
+		node.localworld = node.localworld || new Matrix4();
+		node.world.copy(node.matrix);
+		node.localworld.copy(node.matrix);
+
+		if (node.channels && node.channels.length) {
+
+			var channel = node.channels[0];
+			var m = channel.sampler.output[frame];
+
+			if (m instanceof Matrix4) {
+
+				node.world.copy(m);
+				node.localworld.copy(m);
+				if (frame === 0) node.matrix.copy(m);
+			}
+		}
+
+		if (parent) {
+
+			node.world.multiplyMatrices(parent, node.world);
+		}
+
+		bones.push(node);
+
+		for (var i = 0; i < node.nodes.length; i++) {
+
+			setupSkeleton(node.nodes[i], bones, frame, node.world);
+		}
+	}
+
+	function setupSkinningMatrices(bones, skin) {
+
+		// FIXME: this is dumb...
+
+		for (var i = 0; i < bones.length; i++) {
+
+			var bone = bones[i];
+			var found = -1;
+
+			if (bone.type != 'JOINT') continue;
+
+			for (var j = 0; j < skin.joints.length; j++) {
+
+				if (bone.sid === skin.joints[j]) {
+
+					found = j;
+					break;
+				}
+			}
+
+			if (found >= 0) {
+
+				var inv = skin.invBindMatrices[found];
+
+				bone.invBindMatrix = inv;
+				bone.skinningMatrix = new Matrix4();
+				bone.skinningMatrix.multiplyMatrices(bone.world, inv); // (IBMi * JMi)
+				bone.animatrix = new Matrix4();
+
+				bone.animatrix.copy(bone.localworld);
+				bone.weights = [];
+
+				for (var j = 0; j < skin.weights.length; j++) {
+
+					for (var k = 0; k < skin.weights[j].length; k++) {
+
+						var w = skin.weights[j][k];
+
+						if (w.joint === found) {
+
+							bone.weights.push(w);
+						}
+					}
+				}
+			} else {
+
+				console.warn("ColladaLoader: Could not find joint '" + bone.sid + "'.");
+
+				bone.skinningMatrix = new Matrix4();
+				bone.weights = [];
+			}
+		}
+	}
+
+	//Walk the Collada tree and flatten the bones into a list, extract the position, quat and scale from the matrix
+	function flattenSkeleton(skeleton) {
+
+		var list = [];
+		var walk = function (parentid, node, list) {
+
+			var bone = {};
+			bone.name = node.sid;
+			bone.parent = parentid;
+			bone.matrix = node.matrix;
+			var data = [new Vector3(), new Quaternion(), new Vector3()];
+			bone.matrix.decompose(data[0], data[1], data[2]);
+
+			bone.pos = [data[0].x, data[0].y, data[0].z];
+
+			bone.scl = [data[2].x, data[2].y, data[2].z];
+			bone.rotq = [data[1].x, data[1].y, data[1].z, data[1].w];
+			list.push(bone);
+
+			for (var i in node.nodes) {
+
+				walk(node.sid, node.nodes[i], list);
+			}
+		};
+
+		walk(-1, skeleton, list);
+		return list;
+	}
+
+	//Move the vertices into the pose that is proper for the start of the animation
+	function skinToBindPose(geometry, skeleton, skinController) {
+
+		var bones = [];
+		setupSkeleton(skeleton, bones, -1);
+		setupSkinningMatrices(bones, skinController.skin);
+		var v = new Vector3();
+		var skinned = [];
+
+		for (var i = 0; i < geometry.vertices.length; i++) {
+
+			skinned.push(new Vector3());
+		}
+
+		for (i = 0; i < bones.length; i++) {
+
+			if (bones[i].type != 'JOINT') continue;
+
+			for (var j = 0; j < bones[i].weights.length; j++) {
+
+				var w = bones[i].weights[j];
+				var vidx = w.index;
+				var weight = w.weight;
+
+				var o = geometry.vertices[vidx];
+				var s = skinned[vidx];
+
+				v.x = o.x;
+				v.y = o.y;
+				v.z = o.z;
+
+				v.applyMatrix4(bones[i].skinningMatrix);
+
+				s.x += v.x * weight;
+				s.y += v.y * weight;
+				s.z += v.z * weight;
+			}
+		}
+
+		for (var i = 0; i < geometry.vertices.length; i++) {
+
+			geometry.vertices[i] = skinned[i];
+		}
+	}
+
+	function applySkin(geometry, instanceCtrl, frame) {
+
+		if (frame === undefined) frame = 40;
+
+		var skinController = controllers[instanceCtrl.url];
+
+		if (!skinController || !skinController.skin) {
+
+			console.log('ColladaLoader: Could not find skin controller.');
+			return;
+		}
+
+		if (!instanceCtrl.skeleton || !instanceCtrl.skeleton.length) {
+
+			console.log('ColladaLoader: Could not find the skeleton for the skin. ');
+			return;
+		}
+
+		var animationBounds = calcAnimationBounds();
+		var skeleton = visualScene.getChildById(instanceCtrl.skeleton[0], true) || visualScene.getChildBySid(instanceCtrl.skeleton[0], true);
+
+		//flatten the skeleton into a list of bones
+		var bonelist = flattenSkeleton(skeleton);
+		var joints = skinController.skin.joints;
+
+		//sort that list so that the order reflects the order in the joint list
+		var sortedbones = [];
+		for (var i = 0; i < joints.length; i++) {
+
+			for (var j = 0; j < bonelist.length; j++) {
+
+				if (bonelist[j].name === joints[i]) {
+
+					sortedbones[i] = bonelist[j];
+				}
+			}
+		}
+
+		//hook up the parents by index instead of name
+		for (var i = 0; i < sortedbones.length; i++) {
+
+			for (var j = 0; j < sortedbones.length; j++) {
+
+				if (sortedbones[i].parent === sortedbones[j].name) {
+
+					sortedbones[i].parent = j;
+				}
+			}
+		}
+
+		var i, j, w, vidx, weight;
+		var v = new Vector3(),
+		    o,
+		    s;
+
+		// move vertices to bind shape
+		for (i = 0; i < geometry.vertices.length; i++) {
+			geometry.vertices[i].applyMatrix4(skinController.skin.bindShapeMatrix);
+		}
+
+		var skinIndices = [];
+		var skinWeights = [];
+		var weights = skinController.skin.weights;
+
+		// hook up the skin weights
+		// TODO - this might be a good place to choose greatest 4 weights
+		for (var i = 0; i < weights.length; i++) {
+
+			var indicies = new Vector4(weights[i][0] ? weights[i][0].joint : 0, weights[i][1] ? weights[i][1].joint : 0, weights[i][2] ? weights[i][2].joint : 0, weights[i][3] ? weights[i][3].joint : 0);
+			var weight = new Vector4(weights[i][0] ? weights[i][0].weight : 0, weights[i][1] ? weights[i][1].weight : 0, weights[i][2] ? weights[i][2].weight : 0, weights[i][3] ? weights[i][3].weight : 0);
+
+			skinIndices.push(indicies);
+			skinWeights.push(weight);
+		}
+
+		geometry.skinIndices = skinIndices;
+		geometry.skinWeights = skinWeights;
+		geometry.bones = sortedbones;
+		// process animation, or simply pose the rig if no animation
+
+		//create an animation for the animated bones
+		//NOTE: this has no effect when using morphtargets
+		var animationdata = { "name": animationBounds.ID, "fps": 30, "length": animationBounds.frames / 30, "hierarchy": [] };
+
+		for (var j = 0; j < sortedbones.length; j++) {
+
+			animationdata.hierarchy.push({ parent: sortedbones[j].parent, name: sortedbones[j].name, keys: [] });
+		}
+
+		console.log('ColladaLoader:', animationBounds.ID + ' has ' + sortedbones.length + ' bones.');
+
+		skinToBindPose(geometry, skeleton, skinController);
+
+		for (frame = 0; frame < animationBounds.frames; frame++) {
+
+			var bones = [];
+			var skinned = [];
+			// process the frame and setup the rig with a fresh
+			// transform, possibly from the bone's animation channel(s)
+
+			setupSkeleton(skeleton, bones, frame);
+			setupSkinningMatrices(bones, skinController.skin);
+
+			for (var i = 0; i < bones.length; i++) {
+
+				for (var j = 0; j < animationdata.hierarchy.length; j++) {
+
+					if (animationdata.hierarchy[j].name === bones[i].sid) {
+
+						var key = {};
+						key.time = frame / 30;
+						key.matrix = bones[i].animatrix;
+
+						if (frame === 0) bones[i].matrix = key.matrix;
+
+						var data = [new Vector3(), new Quaternion(), new Vector3()];
+						key.matrix.decompose(data[0], data[1], data[2]);
+
+						key.pos = [data[0].x, data[0].y, data[0].z];
+
+						key.scl = [data[2].x, data[2].y, data[2].z];
+						key.rot = data[1];
+
+						animationdata.hierarchy[j].keys.push(key);
+					}
+				}
+			}
+
+			geometry.animation = animationdata;
+		}
+	}
+
+	function createKinematics() {
+
+		if (kinematicsModel && kinematicsModel.joints.length === 0) {
+			kinematics = undefined;
+			return;
+		}
+
+		var jointMap = {};
+
+		var _addToMap = function (jointIndex, parentVisualElement) {
+
+			var parentVisualElementId = parentVisualElement.getAttribute('id');
+			var colladaNode = visualScene.getChildById(parentVisualElementId, true);
+			var joint = kinematicsModel.joints[jointIndex];
+
+			scene.traverse(function (node) {
+
+				if (node.colladaId == parentVisualElementId) {
+
+					jointMap[jointIndex] = {
+						node: node,
+						transforms: colladaNode.transforms,
+						joint: joint,
+						position: joint.zeroPosition
+					};
+				}
+			});
+		};
+
+		kinematics = {
+
+			joints: kinematicsModel && kinematicsModel.joints,
+
+			getJointValue: function (jointIndex) {
+
+				var jointData = jointMap[jointIndex];
+
+				if (jointData) {
+
+					return jointData.position;
+				} else {
+
+					console.log('getJointValue: joint ' + jointIndex + ' doesn\'t exist');
+				}
+			},
+
+			setJointValue: function (jointIndex, value) {
+
+				var jointData = jointMap[jointIndex];
+
+				if (jointData) {
+
+					var joint = jointData.joint;
+
+					if (value > joint.limits.max || value < joint.limits.min) {
+
+						console.log('setJointValue: joint ' + jointIndex + ' value ' + value + ' outside of limits (min: ' + joint.limits.min + ', max: ' + joint.limits.max + ')');
+					} else if (joint.static) {
+
+						console.log('setJointValue: joint ' + jointIndex + ' is static');
+					} else {
+
+						var threejsNode = jointData.node;
+						var axis = joint.axis;
+						var transforms = jointData.transforms;
+
+						var matrix = new Matrix4();
+						var m1 = new Matrix4();
+
+						for (i = 0; i < transforms.length; i++) {
+
+							var transform = transforms[i];
+
+							// kinda ghetto joint detection
+
+							if (transform.sid && transform.sid.indexOf('joint' + jointIndex) !== -1) {
+
+								// apply actual joint value here
+								switch (joint.type) {
+
+									case 'revolute':
+
+										matrix.multiply(m1.makeRotationAxis(axis, _Math.degToRad(value)));
+										break;
+
+									case 'prismatic':
+
+										matrix.multiply(m1.makeTranslation(axis.x * value, axis.y * value, axis.z * value));
+										break;
+
+									default:
+
+										console.warn('setJointValue: unknown joint type: ' + joint.type);
+										break;
+
+								}
+							} else {
+
+								switch (transform.type) {
+
+									case 'matrix':
+
+										matrix.multiply(transform.obj);
+
+										break;
+
+									case 'translate':
+
+										matrix.multiply(m1.makeTranslation(transform.obj.x, transform.obj.y, transform.obj.z));
+
+										break;
+
+									case 'rotate':
+
+										matrix.multiply(m1.makeRotationAxis(transform.obj, transform.angle));
+
+										break;
+
+								}
+							}
+						}
+
+						// apply the matrix to the threejs node
+						var elementsFloat32Arr = matrix.elements;
+						var elements = Array.prototype.slice.call(elementsFloat32Arr);
+
+						var elementsRowMajor = [elements[0], elements[4], elements[8], elements[12], elements[1], elements[5], elements[9], elements[13], elements[2], elements[6], elements[10], elements[14], elements[3], elements[7], elements[11], elements[15]];
+
+						threejsNode.matrix.set.apply(threejsNode.matrix, elementsRowMajor);
+						threejsNode.matrix.decompose(threejsNode.position, threejsNode.quaternion, threejsNode.scale);
+
+						jointMap[jointIndex].position = value;
+					}
+				} else {
+
+					console.log('setJointValue: joint ' + jointIndex + ' doesn\'t exist');
+				}
+			}
+
+		};
+
+		var element = COLLADA.querySelector('scene instance_kinematics_scene');
+
+		if (element) {
+
+			for (var i = 0; i < element.childNodes.length; i++) {
+
+				var child = element.childNodes[i];
+
+				if (child.nodeType != 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'bind_joint_axis':
+
+						var visualTarget = child.getAttribute('target').split('/').pop();
+						var axis = child.querySelector('axis param').textContent;
+						var jointIndex = parseInt(axis.split('joint').pop().split('.')[0]);
+						var visualTargetElement = COLLADA.querySelector('[sid="' + visualTarget + '"]');
+
+						if (visualTargetElement) {
+							var parentVisualElement = visualTargetElement.parentElement;
+							_addToMap(jointIndex, parentVisualElement);
+						}
+
+						break;
+
+					default:
+
+						break;
+
+				}
+			}
+		}
+	}
+
+	function createSceneGraph(node, parent) {
+
+		var obj = new Object3D();
+		var skinned = false;
+		var skinController;
+		var morphController;
+		var i, j;
+
+		// FIXME: controllers
+
+		for (i = 0; i < node.controllers.length; i++) {
+
+			var controller = controllers[node.controllers[i].url];
+
+			switch (controller.type) {
+
+				case 'skin':
+
+					if (geometries[controller.skin.source]) {
+
+						var inst_geom = new InstanceGeometry();
+
+						inst_geom.url = controller.skin.source;
+						inst_geom.instance_material = node.controllers[i].instance_material;
+
+						node.geometries.push(inst_geom);
+						skinned = true;
+						skinController = node.controllers[i];
+					} else if (controllers[controller.skin.source]) {
+
+						// urgh: controller can be chained
+						// handle the most basic case...
+
+						var second = controllers[controller.skin.source];
+						morphController = second;
+						//	skinController = node.controllers[i];
+
+						if (second.morph && geometries[second.morph.source]) {
+
+							var inst_geom = new InstanceGeometry();
+
+							inst_geom.url = second.morph.source;
+							inst_geom.instance_material = node.controllers[i].instance_material;
+
+							node.geometries.push(inst_geom);
+						}
+					}
+
+					break;
+
+				case 'morph':
+
+					if (geometries[controller.morph.source]) {
+
+						var inst_geom = new InstanceGeometry();
+
+						inst_geom.url = controller.morph.source;
+						inst_geom.instance_material = node.controllers[i].instance_material;
+
+						node.geometries.push(inst_geom);
+						morphController = node.controllers[i];
+					}
+
+					console.log('ColladaLoader: Morph-controller partially supported.');
+
+				default:
+					break;
+
+			}
+		}
+
+		// geometries
+
+		var double_sided_materials = {};
+
+		for (i = 0; i < node.geometries.length; i++) {
+
+			var instance_geometry = node.geometries[i];
+			var instance_materials = instance_geometry.instance_material;
+			var geometry = geometries[instance_geometry.url];
+			var used_materials = {};
+			var used_materials_array = [];
+			var num_materials = 0;
+			var first_material;
+
+			if (geometry) {
+
+				if (!geometry.mesh || !geometry.mesh.primitives) continue;
+
+				if (obj.name.length === 0) {
+
+					obj.name = geometry.id;
+				}
+
+				// collect used fx for this geometry-instance
+
+				if (instance_materials) {
+
+					for (j = 0; j < instance_materials.length; j++) {
+
+						var instance_material = instance_materials[j];
+						var mat = materials[instance_material.target];
+						var effect_id = mat.instance_effect.url;
+						var shader = effects[effect_id].shader;
+						var material3js = shader.material;
+
+						if (geometry.doubleSided) {
+
+							if (!(instance_material.symbol in double_sided_materials)) {
+
+								var _copied_material = material3js.clone();
+								_copied_material.side = DoubleSide;
+								double_sided_materials[instance_material.symbol] = _copied_material;
+							}
+
+							material3js = double_sided_materials[instance_material.symbol];
+						}
+
+						material3js.opacity = !material3js.opacity ? 1 : material3js.opacity;
+						used_materials[instance_material.symbol] = num_materials;
+						used_materials_array.push(material3js);
+						first_material = material3js;
+						first_material.name = mat.name === null || mat.name === '' ? mat.id : mat.name;
+						num_materials++;
+					}
+				}
+
+				var mesh;
+				var material = first_material || new MeshLambertMaterial({ color: 0xdddddd, side: geometry.doubleSided ? DoubleSide : FrontSide });
+				var geom = geometry.mesh.geometry3js;
+
+				if (num_materials > 1) {
+
+					material = new MultiMaterial(used_materials_array);
+
+					for (j = 0; j < geom.faces.length; j++) {
+
+						var face = geom.faces[j];
+						face.materialIndex = used_materials[face.daeMaterial];
+					}
+				}
+
+				if (skinController !== undefined) {
+
+					applySkin(geom, skinController);
+
+					if (geom.morphTargets.length > 0) {
+
+						material.morphTargets = true;
+						material.skinning = false;
+					} else {
+
+						material.morphTargets = false;
+						material.skinning = true;
+					}
+
+					mesh = new SkinnedMesh(geom, material, false);
+
+					//mesh.skeleton = skinController.skeleton;
+					//mesh.skinController = controllers[ skinController.url ];
+					//mesh.skinInstanceController = skinController;
+					mesh.name = 'skin_' + skins.length;
+
+					//mesh.animationHandle.setKey(0);
+					skins.push(mesh);
+				} else if (morphController !== undefined) {
+
+					createMorph(geom, morphController);
+
+					material.morphTargets = true;
+
+					mesh = new Mesh(geom, material);
+					mesh.name = 'morph_' + morphs.length;
+
+					morphs.push(mesh);
+				} else {
+
+					if (geom.isLineStrip === true) {
+
+						mesh = new Line(geom);
+					} else {
+
+						mesh = new Mesh(geom, material);
+					}
+				}
+
+				obj.add(mesh);
+			}
+		}
+
+		for (i = 0; i < node.cameras.length; i++) {
+
+			var instance_camera = node.cameras[i];
+			var cparams = cameras[instance_camera.url];
+
+			var cam = new PerspectiveCamera(cparams.yfov, parseFloat(cparams.aspect_ratio), parseFloat(cparams.znear), parseFloat(cparams.zfar));
+
+			obj.add(cam);
+		}
+
+		for (i = 0; i < node.lights.length; i++) {
+
+			var light = null;
+			var instance_light = node.lights[i];
+			var lparams = lights[instance_light.url];
+
+			if (lparams && lparams.technique) {
+
+				var color = lparams.color.getHex();
+				var intensity = lparams.intensity;
+				var distance = lparams.distance;
+				var angle = lparams.falloff_angle;
+
+				switch (lparams.technique) {
+
+					case 'directional':
+
+						light = new DirectionalLight(color, intensity, distance);
+						light.position.set(0, 0, 1);
+						break;
+
+					case 'point':
+
+						light = new PointLight(color, intensity, distance);
+						break;
+
+					case 'spot':
+
+						light = new SpotLight(color, intensity, distance, angle);
+						light.position.set(0, 0, 1);
+						break;
+
+					case 'ambient':
+
+						light = new AmbientLight(color);
+						break;
+
+				}
+			}
+
+			if (light) {
+				obj.add(light);
+			}
+		}
+
+		obj.name = node.name || node.id || "";
+		obj.colladaId = node.id || "";
+		obj.layer = node.layer || "";
+		obj.matrix = node.matrix;
+		obj.matrix.decompose(obj.position, obj.quaternion, obj.scale);
+
+		if (options.centerGeometry && obj.geometry) {
+
+			var delta = obj.geometry.center();
+			delta.multiply(obj.scale);
+			delta.applyQuaternion(obj.quaternion);
+
+			obj.position.sub(delta);
+		}
+
+		for (i = 0; i < node.nodes.length; i++) {
+
+			obj.add(createSceneGraph(node.nodes[i], node));
+		}
+
+		return obj;
+	}
+
+	function getJointId(skin, id) {
+
+		for (var i = 0; i < skin.joints.length; i++) {
+
+			if (skin.joints[i] === id) {
+
+				return i;
+			}
+		}
+	}
+
+	function getLibraryNode(id) {
+
+		var nodes = COLLADA.querySelectorAll('library_nodes node');
+
+		for (var i = 0; i < nodes.length; i++) {
+
+			var attObj = nodes[i].attributes.getNamedItem('id');
+
+			if (attObj && attObj.value === id) {
+
+				return nodes[i];
+			}
+		}
+
+		return undefined;
+	}
+
+	function getChannelsForNode(node) {
+
+		var channels = [];
+		var startTime = 1000000;
+		var endTime = -1000000;
+
+		for (var id in animations) {
+
+			var animation = animations[id];
+
+			for (var i = 0; i < animation.channel.length; i++) {
+
+				var channel = animation.channel[i];
+				var sampler = animation.sampler[i];
+				var id = channel.target.split('/')[0];
+
+				if (id == node.id) {
+
+					sampler.create();
+					channel.sampler = sampler;
+					startTime = Math.min(startTime, sampler.startTime);
+					endTime = Math.max(endTime, sampler.endTime);
+					channels.push(channel);
+				}
+			}
+		}
+
+		if (channels.length) {
+
+			node.startTime = startTime;
+			node.endTime = endTime;
+		}
+
+		return channels;
+	}
+
+	function calcFrameDuration(node) {
+
+		var minT = 10000000;
+
+		for (var i = 0; i < node.channels.length; i++) {
+
+			var sampler = node.channels[i].sampler;
+
+			for (var j = 0; j < sampler.input.length - 1; j++) {
+
+				var t0 = sampler.input[j];
+				var t1 = sampler.input[j + 1];
+				minT = Math.min(minT, t1 - t0);
+			}
+		}
+
+		return minT;
+	}
+
+	function calcMatrixAt(node, t) {
+
+		var animated = {};
+
+		var i, j;
+
+		for (i = 0; i < node.channels.length; i++) {
+
+			var channel = node.channels[i];
+			animated[channel.sid] = channel;
+		}
+
+		var matrix = new Matrix4();
+
+		for (i = 0; i < node.transforms.length; i++) {
+
+			var transform = node.transforms[i];
+			var channel = animated[transform.sid];
+
+			if (channel !== undefined) {
+
+				var sampler = channel.sampler;
+				var value;
+
+				for (j = 0; j < sampler.input.length - 1; j++) {
+
+					if (sampler.input[j + 1] > t) {
+
+						value = sampler.output[j];
+						//console.log(value.flatten)
+						break;
+					}
+				}
+
+				if (value !== undefined) {
+
+					if (value instanceof Matrix4) {
+
+						matrix.multiplyMatrices(matrix, value);
+					} else {
+
+						// FIXME: handle other types
+
+						matrix.multiplyMatrices(matrix, transform.matrix);
+					}
+				} else {
+
+					matrix.multiplyMatrices(matrix, transform.matrix);
+				}
+			} else {
+
+				matrix.multiplyMatrices(matrix, transform.matrix);
+			}
+		}
+
+		return matrix;
+	}
+
+	function bakeAnimations(node) {
+
+		if (node.channels && node.channels.length) {
+
+			var keys = [],
+			    sids = [];
+
+			for (var i = 0, il = node.channels.length; i < il; i++) {
+
+				var channel = node.channels[i],
+				    fullSid = channel.fullSid,
+				    sampler = channel.sampler,
+				    input = sampler.input,
+				    transform = node.getTransformBySid(channel.sid),
+				    member;
+
+				if (channel.arrIndices) {
+
+					member = [];
+
+					for (var j = 0, jl = channel.arrIndices.length; j < jl; j++) {
+
+						member[j] = getConvertedIndex(channel.arrIndices[j]);
+					}
+				} else {
+
+					member = getConvertedMember(channel.member);
+				}
+
+				if (transform) {
+
+					if (sids.indexOf(fullSid) === -1) {
+
+						sids.push(fullSid);
+					}
+
+					for (var j = 0, jl = input.length; j < jl; j++) {
+
+						var time = input[j],
+						    data = sampler.getData(transform.type, j, member),
+						    key = findKey(keys, time);
+
+						if (!key) {
+
+							key = new Key(time);
+							var timeNdx = findTimeNdx(keys, time);
+							keys.splice(timeNdx === -1 ? keys.length : timeNdx, 0, key);
+						}
+
+						key.addTarget(fullSid, transform, member, data);
+					}
+				} else {
+
+					console.log('Could not find transform "' + channel.sid + '" in node ' + node.id);
+				}
+			}
+
+			// post process
+			for (var i = 0; i < sids.length; i++) {
+
+				var sid = sids[i];
+
+				for (var j = 0; j < keys.length; j++) {
+
+					var key = keys[j];
+
+					if (!key.hasTarget(sid)) {
+
+						interpolateKeys(keys, key, j, sid);
+					}
+				}
+			}
+
+			node.keys = keys;
+			node.sids = sids;
+		}
+	}
+
+	function findKey(keys, time) {
+
+		var retVal = null;
+
+		for (var i = 0, il = keys.length; i < il && retVal === null; i++) {
+
+			var key = keys[i];
+
+			if (key.time === time) {
+
+				retVal = key;
+			} else if (key.time > time) {
+
+				break;
+			}
+		}
+
+		return retVal;
+	}
+
+	function findTimeNdx(keys, time) {
+
+		var ndx = -1;
+
+		for (var i = 0, il = keys.length; i < il && ndx === -1; i++) {
+
+			var key = keys[i];
+
+			if (key.time >= time) {
+
+				ndx = i;
+			}
+		}
+
+		return ndx;
+	}
+
+	function interpolateKeys(keys, key, ndx, fullSid) {
+
+		var prevKey = getPrevKeyWith(keys, fullSid, ndx ? ndx - 1 : 0),
+		    nextKey = getNextKeyWith(keys, fullSid, ndx + 1);
+
+		if (prevKey && nextKey) {
+
+			var scale = (key.time - prevKey.time) / (nextKey.time - prevKey.time),
+			    prevTarget = prevKey.getTarget(fullSid),
+			    nextData = nextKey.getTarget(fullSid).data,
+			    prevData = prevTarget.data,
+			    data;
+
+			if (prevTarget.type === 'matrix') {
+
+				data = prevData;
+			} else if (prevData.length) {
+
+				data = [];
+
+				for (var i = 0; i < prevData.length; ++i) {
+
+					data[i] = prevData[i] + (nextData[i] - prevData[i]) * scale;
+				}
+			} else {
+
+				data = prevData + (nextData - prevData) * scale;
+			}
+
+			key.addTarget(fullSid, prevTarget.transform, prevTarget.member, data);
+		}
+	}
+
+	// Get next key with given sid
+
+	function getNextKeyWith(keys, fullSid, ndx) {
+
+		for (; ndx < keys.length; ndx++) {
+
+			var key = keys[ndx];
+
+			if (key.hasTarget(fullSid)) {
+
+				return key;
+			}
+		}
+
+		return null;
+	}
+
+	// Get previous key with given sid
+
+	function getPrevKeyWith(keys, fullSid, ndx) {
+
+		ndx = ndx >= 0 ? ndx : ndx + keys.length;
+
+		for (; ndx >= 0; ndx--) {
+
+			var key = keys[ndx];
+
+			if (key.hasTarget(fullSid)) {
+
+				return key;
+			}
+		}
+
+		return null;
+	}
+
+	function _Image() {
+
+		this.id = "";
+		this.init_from = "";
+	}
+
+	_Image.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			if (child.nodeName === 'init_from') {
+
+				this.init_from = child.textContent;
+			}
+		}
+
+		return this;
+	};
+
+	function Controller() {
+
+		this.id = "";
+		this.name = "";
+		this.type = "";
+		this.skin = null;
+		this.morph = null;
+	}
+
+	Controller.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+		this.type = "none";
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'skin':
+
+					this.skin = new Skin().parse(child);
+					this.type = child.nodeName;
+					break;
+
+				case 'morph':
+
+					this.morph = new Morph().parse(child);
+					this.type = child.nodeName;
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Morph() {
+
+		this.method = null;
+		this.source = null;
+		this.targets = null;
+		this.weights = null;
+	}
+
+	Morph.prototype.parse = function (element) {
+
+		var sources = {};
+		var inputs = [];
+		var i;
+
+		this.method = element.getAttribute('method');
+		this.source = element.getAttribute('source').replace(/^#/, '');
+
+		for (i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'source':
+
+					var source = new Source().parse(child);
+					sources[source.id] = source;
+					break;
+
+				case 'targets':
+
+					inputs = this.parseInputs(child);
+					break;
+
+				default:
+
+					console.log(child.nodeName);
+					break;
+
+			}
+		}
+
+		for (i = 0; i < inputs.length; i++) {
+
+			var input = inputs[i];
+			var source = sources[input.source];
+
+			switch (input.semantic) {
+
+				case 'MORPH_TARGET':
+
+					this.targets = source.read();
+					break;
+
+				case 'MORPH_WEIGHT':
+
+					this.weights = source.read();
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Morph.prototype.parseInputs = function (element) {
+
+		var inputs = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'input':
+
+					inputs.push(new Input().parse(child));
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		return inputs;
+	};
+
+	function Skin() {
+
+		this.source = "";
+		this.bindShapeMatrix = null;
+		this.invBindMatrices = [];
+		this.joints = [];
+		this.weights = [];
+	}
+
+	Skin.prototype.parse = function (element) {
+
+		var sources = {};
+		var joints, weights;
+
+		this.source = element.getAttribute('source').replace(/^#/, '');
+		this.invBindMatrices = [];
+		this.joints = [];
+		this.weights = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'bind_shape_matrix':
+
+					var f = _floats(child.textContent);
+					this.bindShapeMatrix = getConvertedMat4(f);
+					break;
+
+				case 'source':
+
+					var src = new Source().parse(child);
+					sources[src.id] = src;
+					break;
+
+				case 'joints':
+
+					joints = child;
+					break;
+
+				case 'vertex_weights':
+
+					weights = child;
+					break;
+
+				default:
+
+					console.log(child.nodeName);
+					break;
+
+			}
+		}
+
+		this.parseJoints(joints, sources);
+		this.parseWeights(weights, sources);
+
+		return this;
+	};
+
+	Skin.prototype.parseJoints = function (element, sources) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'input':
+
+					var input = new Input().parse(child);
+					var source = sources[input.source];
+
+					if (input.semantic === 'JOINT') {
+
+						this.joints = source.read();
+					} else if (input.semantic === 'INV_BIND_MATRIX') {
+
+						this.invBindMatrices = source.read();
+					}
+
+					break;
+
+				default:
+					break;
+			}
+		}
+	};
+
+	Skin.prototype.parseWeights = function (element, sources) {
+
+		var v,
+		    vcount,
+		    inputs = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'input':
+
+					inputs.push(new Input().parse(child));
+					break;
+
+				case 'v':
+
+					v = _ints(child.textContent);
+					break;
+
+				case 'vcount':
+
+					vcount = _ints(child.textContent);
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		var index = 0;
+
+		for (var i = 0; i < vcount.length; i++) {
+
+			var numBones = vcount[i];
+			var vertex_weights = [];
+
+			for (var j = 0; j < numBones; j++) {
+
+				var influence = {};
+
+				for (var k = 0; k < inputs.length; k++) {
+
+					var input = inputs[k];
+					var value = v[index + input.offset];
+
+					switch (input.semantic) {
+
+						case 'JOINT':
+
+							influence.joint = value; //this.joints[value];
+							break;
+
+						case 'WEIGHT':
+
+							influence.weight = sources[input.source].data[value];
+							break;
+
+						default:
+							break;
+
+					}
+				}
+
+				vertex_weights.push(influence);
+				index += inputs.length;
+			}
+
+			for (var j = 0; j < vertex_weights.length; j++) {
+
+				vertex_weights[j].index = i;
+			}
+
+			this.weights.push(vertex_weights);
+		}
+	};
+
+	function VisualScene() {
+
+		this.id = "";
+		this.name = "";
+		this.nodes = [];
+		this.scene = new Group();
+	}
+
+	VisualScene.prototype.getChildById = function (id, recursive) {
+
+		for (var i = 0; i < this.nodes.length; i++) {
+
+			var node = this.nodes[i].getChildById(id, recursive);
+
+			if (node) {
+
+				return node;
+			}
+		}
+
+		return null;
+	};
+
+	VisualScene.prototype.getChildBySid = function (sid, recursive) {
+
+		for (var i = 0; i < this.nodes.length; i++) {
+
+			var node = this.nodes[i].getChildBySid(sid, recursive);
+
+			if (node) {
+
+				return node;
+			}
+		}
+
+		return null;
+	};
+
+	VisualScene.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+		this.nodes = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'node':
+
+					this.nodes.push(new Node().parse(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Node() {
+
+		this.id = "";
+		this.name = "";
+		this.sid = "";
+		this.nodes = [];
+		this.controllers = [];
+		this.transforms = [];
+		this.geometries = [];
+		this.channels = [];
+		this.matrix = new Matrix4();
+	}
+
+	Node.prototype.getChannelForTransform = function (transformSid) {
+
+		for (var i = 0; i < this.channels.length; i++) {
+
+			var channel = this.channels[i];
+			var parts = channel.target.split('/');
+			var id = parts.shift();
+			var sid = parts.shift();
+			var dotSyntax = sid.indexOf(".") >= 0;
+			var arrSyntax = sid.indexOf("(") >= 0;
+			var arrIndices;
+
+			if (dotSyntax) {
+
+				parts = sid.split(".");
+				sid = parts.shift();
+			} else if (arrSyntax) {
+
+				arrIndices = sid.split("(");
+				sid = arrIndices.shift();
+
+				for (var j = 0; j < arrIndices.length; j++) {
+
+					arrIndices[j] = parseInt(arrIndices[j].replace(/\)/, ''));
+				}
+			}
+
+			if (sid === transformSid) {
+
+				channel.info = { sid: sid, dotSyntax: dotSyntax, arrSyntax: arrSyntax, arrIndices: arrIndices };
+				return channel;
+			}
+		}
+
+		return null;
+	};
+
+	Node.prototype.getChildById = function (id, recursive) {
+
+		if (this.id === id) {
+
+			return this;
+		}
+
+		if (recursive) {
+
+			for (var i = 0; i < this.nodes.length; i++) {
+
+				var n = this.nodes[i].getChildById(id, recursive);
+
+				if (n) {
+
+					return n;
+				}
+			}
+		}
+
+		return null;
+	};
+
+	Node.prototype.getChildBySid = function (sid, recursive) {
+
+		if (this.sid === sid) {
+
+			return this;
+		}
+
+		if (recursive) {
+
+			for (var i = 0; i < this.nodes.length; i++) {
+
+				var n = this.nodes[i].getChildBySid(sid, recursive);
+
+				if (n) {
+
+					return n;
+				}
+			}
+		}
+
+		return null;
+	};
+
+	Node.prototype.getTransformBySid = function (sid) {
+
+		for (var i = 0; i < this.transforms.length; i++) {
+
+			if (this.transforms[i].sid === sid) return this.transforms[i];
+		}
+
+		return null;
+	};
+
+	Node.prototype.parse = function (element) {
+
+		var url;
+
+		this.id = element.getAttribute('id');
+		this.sid = element.getAttribute('sid');
+		this.name = element.getAttribute('name');
+		this.type = element.getAttribute('type');
+		this.layer = element.getAttribute('layer');
+
+		this.type = this.type === 'JOINT' ? this.type : 'NODE';
+
+		this.nodes = [];
+		this.transforms = [];
+		this.geometries = [];
+		this.cameras = [];
+		this.lights = [];
+		this.controllers = [];
+		this.matrix = new Matrix4();
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'node':
+
+					this.nodes.push(new Node().parse(child));
+					break;
+
+				case 'instance_camera':
+
+					this.cameras.push(new InstanceCamera().parse(child));
+					break;
+
+				case 'instance_controller':
+
+					this.controllers.push(new InstanceController().parse(child));
+					break;
+
+				case 'instance_geometry':
+
+					this.geometries.push(new InstanceGeometry().parse(child));
+					break;
+
+				case 'instance_light':
+
+					this.lights.push(new InstanceLight().parse(child));
+					break;
+
+				case 'instance_node':
+
+					url = child.getAttribute('url').replace(/^#/, '');
+					var iNode = getLibraryNode(url);
+
+					if (iNode) {
+
+						this.nodes.push(new Node().parse(iNode));
+					}
+
+					break;
+
+				case 'rotate':
+				case 'translate':
+				case 'scale':
+				case 'matrix':
+				case 'lookat':
+				case 'skew':
+
+					this.transforms.push(new Transform().parse(child));
+					break;
+
+				case 'extra':
+					break;
+
+				default:
+
+					console.log(child.nodeName);
+					break;
+
+			}
+		}
+
+		this.channels = getChannelsForNode(this);
+		bakeAnimations(this);
+
+		this.updateMatrix();
+
+		return this;
+	};
+
+	Node.prototype.updateMatrix = function () {
+
+		this.matrix.identity();
+
+		for (var i = 0; i < this.transforms.length; i++) {
+
+			this.transforms[i].apply(this.matrix);
+		}
+	};
+
+	function Transform() {
+
+		this.sid = "";
+		this.type = "";
+		this.data = [];
+		this.obj = null;
+	}
+
+	Transform.prototype.parse = function (element) {
+
+		this.sid = element.getAttribute('sid');
+		this.type = element.nodeName;
+		this.data = _floats(element.textContent);
+		this.convert();
+
+		return this;
+	};
+
+	Transform.prototype.convert = function () {
+
+		switch (this.type) {
+
+			case 'matrix':
+
+				this.obj = getConvertedMat4(this.data);
+				break;
+
+			case 'rotate':
+
+				this.angle = _Math.degToRad(this.data[3]);
+
+			case 'translate':
+
+				fixCoords(this.data, -1);
+				this.obj = new Vector3(this.data[0], this.data[1], this.data[2]);
+				break;
+
+			case 'scale':
+
+				fixCoords(this.data, 1);
+				this.obj = new Vector3(this.data[0], this.data[1], this.data[2]);
+				break;
+
+			default:
+				console.log('Can not convert Transform of type ' + this.type);
+				break;
+
+		}
+	};
+
+	Transform.prototype.apply = function () {
+
+		var m1 = new Matrix4();
+
+		return function (matrix) {
+
+			switch (this.type) {
+
+				case 'matrix':
+
+					matrix.multiply(this.obj);
+
+					break;
+
+				case 'translate':
+
+					matrix.multiply(m1.makeTranslation(this.obj.x, this.obj.y, this.obj.z));
+
+					break;
+
+				case 'rotate':
+
+					matrix.multiply(m1.makeRotationAxis(this.obj, this.angle));
+
+					break;
+
+				case 'scale':
+
+					matrix.scale(this.obj);
+
+					break;
+
+			}
+		};
+	}();
+
+	Transform.prototype.update = function (data, member) {
+
+		var members = ['X', 'Y', 'Z', 'ANGLE'];
+
+		switch (this.type) {
+
+			case 'matrix':
+
+				if (!member) {
+
+					this.obj.copy(data);
+				} else if (member.length === 1) {
+
+					switch (member[0]) {
+
+						case 0:
+
+							this.obj.n11 = data[0];
+							this.obj.n21 = data[1];
+							this.obj.n31 = data[2];
+							this.obj.n41 = data[3];
+
+							break;
+
+						case 1:
+
+							this.obj.n12 = data[0];
+							this.obj.n22 = data[1];
+							this.obj.n32 = data[2];
+							this.obj.n42 = data[3];
+
+							break;
+
+						case 2:
+
+							this.obj.n13 = data[0];
+							this.obj.n23 = data[1];
+							this.obj.n33 = data[2];
+							this.obj.n43 = data[3];
+
+							break;
+
+						case 3:
+
+							this.obj.n14 = data[0];
+							this.obj.n24 = data[1];
+							this.obj.n34 = data[2];
+							this.obj.n44 = data[3];
+
+							break;
+
+					}
+				} else if (member.length === 2) {
+
+					var propName = 'n' + (member[0] + 1) + (member[1] + 1);
+					this.obj[propName] = data;
+				} else {
+
+					console.log('Incorrect addressing of matrix in transform.');
+				}
+
+				break;
+
+			case 'translate':
+			case 'scale':
+
+				if (Object.prototype.toString.call(member) === '[object Array]') {
+
+					member = members[member[0]];
+				}
+
+				switch (member) {
+
+					case 'X':
+
+						this.obj.x = data;
+						break;
+
+					case 'Y':
+
+						this.obj.y = data;
+						break;
+
+					case 'Z':
+
+						this.obj.z = data;
+						break;
+
+					default:
+
+						this.obj.x = data[0];
+						this.obj.y = data[1];
+						this.obj.z = data[2];
+						break;
+
+				}
+
+				break;
+
+			case 'rotate':
+
+				if (Object.prototype.toString.call(member) === '[object Array]') {
+
+					member = members[member[0]];
+				}
+
+				switch (member) {
+
+					case 'X':
+
+						this.obj.x = data;
+						break;
+
+					case 'Y':
+
+						this.obj.y = data;
+						break;
+
+					case 'Z':
+
+						this.obj.z = data;
+						break;
+
+					case 'ANGLE':
+
+						this.angle = _Math.degToRad(data);
+						break;
+
+					default:
+
+						this.obj.x = data[0];
+						this.obj.y = data[1];
+						this.obj.z = data[2];
+						this.angle = _Math.degToRad(data[3]);
+						break;
+
+				}
+				break;
+
+		}
+	};
+
+	function InstanceController() {
+
+		this.url = "";
+		this.skeleton = [];
+		this.instance_material = [];
+	}
+
+	InstanceController.prototype.parse = function (element) {
+
+		this.url = element.getAttribute('url').replace(/^#/, '');
+		this.skeleton = [];
+		this.instance_material = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType !== 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'skeleton':
+
+					this.skeleton.push(child.textContent.replace(/^#/, ''));
+					break;
+
+				case 'bind_material':
+
+					var instances = child.querySelectorAll('instance_material');
+
+					for (var j = 0; j < instances.length; j++) {
+
+						var instance = instances[j];
+						this.instance_material.push(new InstanceMaterial().parse(instance));
+					}
+
+					break;
+
+				case 'extra':
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function InstanceMaterial() {
+
+		this.symbol = "";
+		this.target = "";
+	}
+
+	InstanceMaterial.prototype.parse = function (element) {
+
+		this.symbol = element.getAttribute('symbol');
+		this.target = element.getAttribute('target').replace(/^#/, '');
+		return this;
+	};
+
+	function InstanceGeometry() {
+
+		this.url = "";
+		this.instance_material = [];
+	}
+
+	InstanceGeometry.prototype.parse = function (element) {
+
+		this.url = element.getAttribute('url').replace(/^#/, '');
+		this.instance_material = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			if (child.nodeName === 'bind_material') {
+
+				var instances = child.querySelectorAll('instance_material');
+
+				for (var j = 0; j < instances.length; j++) {
+
+					var instance = instances[j];
+					this.instance_material.push(new InstanceMaterial().parse(instance));
+				}
+
+				break;
+			}
+		}
+
+		return this;
+	};
+
+	function Geometry$$() {
+
+		this.id = "";
+		this.mesh = null;
+	}
+
+	Geometry$$.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+
+		extractDoubleSided(this, element);
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'mesh':
+
+					this.mesh = new Mesh$$(this).parse(child);
+					break;
+
+				case 'extra':
+
+					// console.log( child );
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		return this;
+	};
+
+	function Mesh$$(geometry) {
+
+		this.geometry = geometry.id;
+		this.primitives = [];
+		this.vertices = null;
+		this.geometry3js = null;
+	}
+
+	Mesh$$.prototype.parse = function (element) {
+
+		this.primitives = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'source':
+
+					_source(child);
+					break;
+
+				case 'vertices':
+
+					this.vertices = new Vertices().parse(child);
+					break;
+
+				case 'linestrips':
+
+					this.primitives.push(new LineStrips().parse(child));
+					break;
+
+				case 'triangles':
+
+					this.primitives.push(new Triangles().parse(child));
+					break;
+
+				case 'polygons':
+
+					this.primitives.push(new Polygons().parse(child));
+					break;
+
+				case 'polylist':
+
+					this.primitives.push(new Polylist().parse(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		this.geometry3js = new Geometry();
+
+		if (this.vertices === null) {
+
+			// TODO (mrdoob): Study case when this is null (carrier.dae)
+
+			return this;
+		}
+
+		var vertexData = sources[this.vertices.input['POSITION'].source].data;
+
+		for (var i = 0; i < vertexData.length; i += 3) {
+
+			this.geometry3js.vertices.push(getConvertedVec3(vertexData, i).clone());
+		}
+
+		for (var i = 0; i < this.primitives.length; i++) {
+
+			var primitive = this.primitives[i];
+			primitive.setVertices(this.vertices);
+			this.handlePrimitive(primitive, this.geometry3js);
+		}
+
+		if (this.geometry3js.calcNormals) {
+
+			this.geometry3js.computeVertexNormals();
+			delete this.geometry3js.calcNormals;
+		}
+
+		return this;
+	};
+
+	Mesh$$.prototype.handlePrimitive = function (primitive, geom) {
+
+		if (primitive instanceof LineStrips) {
+
+			// TODO: Handle indices. Maybe easier with BufferGeometry?
+
+			geom.isLineStrip = true;
+			return;
+		}
+
+		var j,
+		    k,
+		    pList = primitive.p,
+		    inputs = primitive.inputs;
+		var input, index, idx32;
+		var source, numParams;
+		var vcount,
+		    vcIndex = 0,
+		    maxOffset = 0;
+		var texture_sets = [];
+
+		for (j = 0; j < inputs.length; j++) {
+
+			input = inputs[j];
+
+			var offset = input.offset + 1;
+			maxOffset = maxOffset < offset ? offset : maxOffset;
+
+			switch (input.semantic) {
+
+				case 'TEXCOORD':
+					texture_sets.push(input.set);
+					break;
+
+			}
+		}
+
+		for (var pCount = 0; pCount < pList.length; ++pCount) {
+
+			var p = pList[pCount],
+			    i = 0;
+
+			while (i < p.length) {
+
+				var vs = [];
+				var ns = [];
+				var ts = null;
+				var cs = [];
+
+				if (primitive.vcount) {
+
+					vcount = primitive.vcount.length ? primitive.vcount[vcIndex++] : primitive.vcount;
+				} else {
+
+					vcount = p.length / maxOffset;
+				}
+
+				for (j = 0; j < vcount; j++) {
+
+					for (k = 0; k < inputs.length; k++) {
+
+						input = inputs[k];
+						source = sources[input.source];
+
+						index = p[i + j * maxOffset + input.offset];
+						numParams = source.accessor.params.length;
+						idx32 = index * numParams;
+
+						switch (input.semantic) {
+
+							case 'VERTEX':
+
+								vs.push(index);
+
+								break;
+
+							case 'NORMAL':
+
+								ns.push(getConvertedVec3(source.data, idx32));
+
+								break;
+
+							case 'TEXCOORD':
+
+								ts = ts || {};
+								if (ts[input.set] === undefined) ts[input.set] = [];
+								// invert the V
+								ts[input.set].push(new Vector2(source.data[idx32], source.data[idx32 + 1]));
+
+								break;
+
+							case 'COLOR':
+
+								cs.push(new Color().setRGB(source.data[idx32], source.data[idx32 + 1], source.data[idx32 + 2]));
+
+								break;
+
+							default:
+
+								break;
+
+						}
+					}
+				}
+
+				if (ns.length === 0) {
+
+					// check the vertices inputs
+					input = this.vertices.input.NORMAL;
+
+					if (input) {
+
+						source = sources[input.source];
+						numParams = source.accessor.params.length;
+
+						for (var ndx = 0, len = vs.length; ndx < len; ndx++) {
+
+							ns.push(getConvertedVec3(source.data, vs[ndx] * numParams));
+						}
+					} else {
+
+						geom.calcNormals = true;
+					}
+				}
+
+				if (!ts) {
+
+					ts = {};
+					// check the vertices inputs
+					input = this.vertices.input.TEXCOORD;
+
+					if (input) {
+
+						texture_sets.push(input.set);
+						source = sources[input.source];
+						numParams = source.accessor.params.length;
+
+						for (var ndx = 0, len = vs.length; ndx < len; ndx++) {
+
+							idx32 = vs[ndx] * numParams;
+							if (ts[input.set] === undefined) ts[input.set] = [];
+							// invert the V
+							ts[input.set].push(new Vector2(source.data[idx32], 1.0 - source.data[idx32 + 1]));
+						}
+					}
+				}
+
+				if (cs.length === 0) {
+
+					// check the vertices inputs
+					input = this.vertices.input.COLOR;
+
+					if (input) {
+
+						source = sources[input.source];
+						numParams = source.accessor.params.length;
+
+						for (var ndx = 0, len = vs.length; ndx < len; ndx++) {
+
+							idx32 = vs[ndx] * numParams;
+							cs.push(new Color().setRGB(source.data[idx32], source.data[idx32 + 1], source.data[idx32 + 2]));
+						}
+					}
+				}
+
+				var face = null,
+				    faces = [],
+				    uv,
+				    uvArr;
+
+				if (vcount === 3) {
+
+					faces.push(new Face3(vs[0], vs[1], vs[2], ns, cs.length ? cs : new Color()));
+				} else if (vcount === 4) {
+
+					faces.push(new Face3(vs[0], vs[1], vs[3], ns.length ? [ns[0].clone(), ns[1].clone(), ns[3].clone()] : [], cs.length ? [cs[0], cs[1], cs[3]] : new Color()));
+
+					faces.push(new Face3(vs[1], vs[2], vs[3], ns.length ? [ns[1].clone(), ns[2].clone(), ns[3].clone()] : [], cs.length ? [cs[1], cs[2], cs[3]] : new Color()));
+				} else if (vcount > 4 && options.subdivideFaces) {
+
+					var clr = cs.length ? cs : new Color(),
+					    vec1,
+					    vec2,
+					    vec3,
+					    v1,
+					    v2,
+					    norm;
+
+					// subdivide into multiple Face3s
+
+					for (k = 1; k < vcount - 1;) {
+
+						faces.push(new Face3(vs[0], vs[k], vs[k + 1], ns.length ? [ns[0].clone(), ns[k++].clone(), ns[k].clone()] : [], clr));
+					}
+				}
+
+				if (faces.length) {
+
+					for (var ndx = 0, len = faces.length; ndx < len; ndx++) {
+
+						face = faces[ndx];
+						face.daeMaterial = primitive.material;
+						geom.faces.push(face);
+
+						for (k = 0; k < texture_sets.length; k++) {
+
+							uv = ts[texture_sets[k]];
+
+							if (vcount > 4) {
+
+								// Grab the right UVs for the vertices in this face
+								uvArr = [uv[0], uv[ndx + 1], uv[ndx + 2]];
+							} else if (vcount === 4) {
+
+								if (ndx === 0) {
+
+									uvArr = [uv[0], uv[1], uv[3]];
+								} else {
+
+									uvArr = [uv[1].clone(), uv[2], uv[3].clone()];
+								}
+							} else {
+
+								uvArr = [uv[0], uv[1], uv[2]];
+							}
+
+							if (geom.faceVertexUvs[k] === undefined) {
+
+								geom.faceVertexUvs[k] = [];
+							}
+
+							geom.faceVertexUvs[k].push(uvArr);
+						}
+					}
+				} else {
+
+					console.log('dropped face with vcount ' + vcount + ' for geometry with id: ' + geom.id);
+				}
+
+				i += maxOffset * vcount;
+			}
+		}
+	};
+
+	function Polygons() {
+
+		this.material = "";
+		this.count = 0;
+		this.inputs = [];
+		this.vcount = null;
+		this.p = [];
+		this.geometry = new Geometry();
+	}
+
+	Polygons.prototype.setVertices = function (vertices) {
+
+		for (var i = 0; i < this.inputs.length; i++) {
+
+			if (this.inputs[i].source === vertices.id) {
+
+				this.inputs[i].source = vertices.input['POSITION'].source;
+			}
+		}
+	};
+
+	Polygons.prototype.parse = function (element) {
+
+		this.material = element.getAttribute('material');
+		this.count = _attr_as_int(element, 'count', 0);
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'input':
+
+					this.inputs.push(new Input().parse(element.childNodes[i]));
+					break;
+
+				case 'vcount':
+
+					this.vcount = _ints(child.textContent);
+					break;
+
+				case 'p':
+
+					this.p.push(_ints(child.textContent));
+					break;
+
+				case 'ph':
+
+					console.warn('polygon holes not yet supported!');
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Polylist() {
+
+		Polygons.call(this);
+
+		this.vcount = [];
+	}
+
+	Polylist.prototype = Object.create(Polygons.prototype);
+	Polylist.prototype.constructor = Polylist;
+
+	function LineStrips() {
+
+		Polygons.call(this);
+
+		this.vcount = 1;
+	}
+
+	LineStrips.prototype = Object.create(Polygons.prototype);
+	LineStrips.prototype.constructor = LineStrips;
+
+	function Triangles() {
+
+		Polygons.call(this);
+
+		this.vcount = 3;
+	}
+
+	Triangles.prototype = Object.create(Polygons.prototype);
+	Triangles.prototype.constructor = Triangles;
+
+	function Accessor() {
+
+		this.source = "";
+		this.count = 0;
+		this.stride = 0;
+		this.params = [];
+	}
+
+	Accessor.prototype.parse = function (element) {
+
+		this.params = [];
+		this.source = element.getAttribute('source');
+		this.count = _attr_as_int(element, 'count', 0);
+		this.stride = _attr_as_int(element, 'stride', 0);
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			if (child.nodeName === 'param') {
+
+				var param = {};
+				param['name'] = child.getAttribute('name');
+				param['type'] = child.getAttribute('type');
+				this.params.push(param);
+			}
+		}
+
+		return this;
+	};
+
+	function Vertices() {
+
+		this.input = {};
+	}
+
+	Vertices.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			if (element.childNodes[i].nodeName === 'input') {
+
+				var input = new Input().parse(element.childNodes[i]);
+				this.input[input.semantic] = input;
+			}
+		}
+
+		return this;
+	};
+
+	function Input() {
+
+		this.semantic = "";
+		this.offset = 0;
+		this.source = "";
+		this.set = 0;
+	}
+
+	Input.prototype.parse = function (element) {
+
+		this.semantic = element.getAttribute('semantic');
+		this.source = element.getAttribute('source').replace(/^#/, '');
+		this.set = _attr_as_int(element, 'set', -1);
+		this.offset = _attr_as_int(element, 'offset', 0);
+
+		if (this.semantic === 'TEXCOORD' && this.set < 0) {
+
+			this.set = 0;
+		}
+
+		return this;
+	};
+
+	function Source(id) {
+
+		this.id = id;
+		this.type = null;
+	}
+
+	Source.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'bool_array':
+
+					this.data = _bools(child.textContent);
+					this.type = child.nodeName;
+					break;
+
+				case 'float_array':
+
+					this.data = _floats(child.textContent);
+					this.type = child.nodeName;
+					break;
+
+				case 'int_array':
+
+					this.data = _ints(child.textContent);
+					this.type = child.nodeName;
+					break;
+
+				case 'IDREF_array':
+				case 'Name_array':
+
+					this.data = _strings(child.textContent);
+					this.type = child.nodeName;
+					break;
+
+				case 'technique_common':
+
+					for (var j = 0; j < child.childNodes.length; j++) {
+
+						if (child.childNodes[j].nodeName === 'accessor') {
+
+							this.accessor = new Accessor().parse(child.childNodes[j]);
+							break;
+						}
+					}
+					break;
+
+				default:
+					// console.log(child.nodeName);
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Source.prototype.read = function () {
+
+		var result = [];
+
+		//for (var i = 0; i < this.accessor.params.length; i++) {
+
+		var param = this.accessor.params[0];
+
+		//console.log(param.name + " " + param.type);
+
+		switch (param.type) {
+
+			case 'IDREF':
+			case 'Name':case 'name':
+			case 'float':
+
+				return this.data;
+
+			case 'float4x4':
+
+				for (var j = 0; j < this.data.length; j += 16) {
+
+					var s = this.data.slice(j, j + 16);
+					var m = getConvertedMat4(s);
+					result.push(m);
+				}
+
+				break;
+
+			default:
+
+				console.log('ColladaLoader: Source: Read dont know how to read ' + param.type + '.');
+				break;
+
+		}
+
+		//}
+
+		return result;
+	};
+
+	function Material() {
+
+		this.id = "";
+		this.name = "";
+		this.instance_effect = null;
+	}
+
+	Material.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			if (element.childNodes[i].nodeName === 'instance_effect') {
+
+				this.instance_effect = new InstanceEffect().parse(element.childNodes[i]);
+				break;
+			}
+		}
+
+		return this;
+	};
+
+	function ColorOrTexture() {
+
+		this.color = new Color();
+		this.color.setRGB(Math.random(), Math.random(), Math.random());
+		this.color.a = 1.0;
+
+		this.texture = null;
+		this.texcoord = null;
+		this.texOpts = null;
+	}
+
+	ColorOrTexture.prototype.isColor = function () {
+
+		return this.texture === null;
+	};
+
+	ColorOrTexture.prototype.isTexture = function () {
+
+		return this.texture != null;
+	};
+
+	ColorOrTexture.prototype.parse = function (element) {
+
+		if (element.nodeName === 'transparent') {
+
+			this.opaque = element.getAttribute('opaque');
+		}
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'color':
+
+					var rgba = _floats(child.textContent);
+					this.color = new Color();
+					this.color.setRGB(rgba[0], rgba[1], rgba[2]);
+					this.color.a = rgba[3];
+					break;
+
+				case 'texture':
+
+					this.texture = child.getAttribute('texture');
+					this.texcoord = child.getAttribute('texcoord');
+					// Defaults from:
+					// https://collada.org/mediawiki/index.php/Maya_texture_placement_MAYA_extension
+					this.texOpts = {
+						offsetU: 0,
+						offsetV: 0,
+						repeatU: 1,
+						repeatV: 1,
+						wrapU: 1,
+						wrapV: 1
+					};
+					this.parseTexture(child);
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	ColorOrTexture.prototype.parseTexture = function (element) {
+
+		if (!element.childNodes) return this;
+
+		// This should be supported by Maya, 3dsMax, and MotionBuilder
+
+		if (element.childNodes[1] && element.childNodes[1].nodeName === 'extra') {
+
+			element = element.childNodes[1];
+
+			if (element.childNodes[1] && element.childNodes[1].nodeName === 'technique') {
+
+				element = element.childNodes[1];
+			}
+		}
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'offsetU':
+				case 'offsetV':
+				case 'repeatU':
+				case 'repeatV':
+
+					this.texOpts[child.nodeName] = parseFloat(child.textContent);
+
+					break;
+
+				case 'wrapU':
+				case 'wrapV':
+
+					// some dae have a value of true which becomes NaN via parseInt
+
+					if (child.textContent.toUpperCase() === 'TRUE') {
+
+						this.texOpts[child.nodeName] = 1;
+					} else {
+
+						this.texOpts[child.nodeName] = parseInt(child.textContent);
+					}
+					break;
+
+				default:
+
+					this.texOpts[child.nodeName] = child.textContent;
+
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Shader(type, effect) {
+
+		this.type = type;
+		this.effect = effect;
+		this.material = null;
+	}
+
+	Shader.prototype.parse = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'emission':
+				case 'diffuse':
+				case 'specular':
+				case 'transparent':
+
+					this[child.nodeName] = new ColorOrTexture().parse(child);
+					break;
+
+				case 'bump':
+
+					// If 'bumptype' is 'heightfield', create a 'bump' property
+					// Else if 'bumptype' is 'normalmap', create a 'normal' property
+					// (Default to 'bump')
+					var bumpType = child.getAttribute('bumptype');
+					if (bumpType) {
+						if (bumpType.toLowerCase() === "heightfield") {
+							this['bump'] = new ColorOrTexture().parse(child);
+						} else if (bumpType.toLowerCase() === "normalmap") {
+							this['normal'] = new ColorOrTexture().parse(child);
+						} else {
+							console.error("Shader.prototype.parse: Invalid value for attribute 'bumptype' (" + bumpType + ") - valid bumptypes are 'HEIGHTFIELD' and 'NORMALMAP' - defaulting to 'HEIGHTFIELD'");
+							this['bump'] = new ColorOrTexture().parse(child);
+						}
+					} else {
+						console.warn("Shader.prototype.parse: Attribute 'bumptype' missing from bump node - defaulting to 'HEIGHTFIELD'");
+						this['bump'] = new ColorOrTexture().parse(child);
+					}
+
+					break;
+
+				case 'shininess':
+				case 'reflectivity':
+				case 'index_of_refraction':
+				case 'transparency':
+
+					var f = child.querySelectorAll('float');
+
+					if (f.length > 0) this[child.nodeName] = parseFloat(f[0].textContent);
+
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		this.create();
+		return this;
+	};
+
+	Shader.prototype.create = function () {
+
+		var props = {};
+
+		var transparent = false;
+
+		if (this['transparency'] !== undefined && this['transparent'] !== undefined) {
+			// convert transparent color RBG to average value
+			var transparentColor = this['transparent'];
+			var transparencyLevel = (this.transparent.color.r + this.transparent.color.g + this.transparent.color.b) / 3 * this.transparency;
+
+			if (transparencyLevel > 0) {
+				transparent = true;
+				props['transparent'] = true;
+				props['opacity'] = 1 - transparencyLevel;
+			}
+		}
+
+		var keys = {
+			'diffuse': 'map',
+			'ambient': 'lightMap',
+			'specular': 'specularMap',
+			'emission': 'emissionMap',
+			'bump': 'bumpMap',
+			'normal': 'normalMap'
+		};
+
+		for (var prop in this) {
+
+			switch (prop) {
+
+				case 'ambient':
+				case 'emission':
+				case 'diffuse':
+				case 'specular':
+				case 'bump':
+				case 'normal':
+
+					var cot = this[prop];
+
+					if (cot instanceof ColorOrTexture) {
+
+						if (cot.isTexture()) {
+
+							var samplerId = cot.texture;
+							var sampler = this.effect.sampler[samplerId];
+
+							if (sampler !== undefined && sampler.source !== undefined) {
+
+								var surface = this.effect.surface[sampler.source];
+
+								if (surface !== undefined) {
+
+									var image = images[surface.init_from];
+
+									if (image) {
+
+										var url = baseUrl + image.init_from;
+
+										var texture;
+										var loader = Loader.Handlers.get(url);
+
+										if (loader !== null) {
+
+											texture = loader.load(url);
+										} else {
+
+											texture = new Texture();
+
+											loadTextureImage(texture, url);
+										}
+
+										if (sampler.wrap_s === "MIRROR") {
+
+											texture.wrapS = MirroredRepeatWrapping;
+										} else if (sampler.wrap_s === "WRAP" || cot.texOpts.wrapU) {
+
+											texture.wrapS = RepeatWrapping;
+										} else {
+
+											texture.wrapS = ClampToEdgeWrapping;
+										}
+
+										if (sampler.wrap_t === "MIRROR") {
+
+											texture.wrapT = MirroredRepeatWrapping;
+										} else if (sampler.wrap_t === "WRAP" || cot.texOpts.wrapV) {
+
+											texture.wrapT = RepeatWrapping;
+										} else {
+
+											texture.wrapT = ClampToEdgeWrapping;
+										}
+
+										texture.offset.x = cot.texOpts.offsetU;
+										texture.offset.y = cot.texOpts.offsetV;
+										texture.repeat.x = cot.texOpts.repeatU;
+										texture.repeat.y = cot.texOpts.repeatV;
+										props[keys[prop]] = texture;
+
+										// Texture with baked lighting?
+										if (prop === 'emission') props['emissive'] = 0xffffff;
+									}
+								}
+							}
+						} else if (prop === 'diffuse' || !transparent) {
+
+							if (prop === 'emission') {
+
+								props['emissive'] = cot.color.getHex();
+							} else {
+
+								props[prop] = cot.color.getHex();
+							}
+						}
+					}
+
+					break;
+
+				case 'shininess':
+
+					props[prop] = this[prop];
+					break;
+
+				case 'reflectivity':
+
+					props[prop] = this[prop];
+					if (props[prop] > 0.0) props['envMap'] = options.defaultEnvMap;
+					props['combine'] = MixOperation; //mix regular shading with reflective component
+					break;
+
+				case 'index_of_refraction':
+
+					props['refractionRatio'] = this[prop]; //TODO: "index_of_refraction" becomes "refractionRatio" in shader, but I'm not sure if the two are actually comparable
+					if (this[prop] !== 1.0) props['envMap'] = options.defaultEnvMap;
+					break;
+
+				case 'transparency':
+					// gets figured out up top
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		props['side'] = this.effect.doubleSided ? DoubleSide : FrontSide;
+
+		if (props.diffuse !== undefined) {
+
+			props.color = props.diffuse;
+			delete props.diffuse;
+		}
+
+		switch (this.type) {
+
+			case 'constant':
+
+				if (props.emissive != undefined) props.color = props.emissive;
+				this.material = new MeshBasicMaterial(props);
+				break;
+
+			case 'phong':
+			case 'blinn':
+
+				this.material = new MeshPhongMaterial(props);
+				break;
+
+			case 'lambert':
+			default:
+
+				this.material = new MeshLambertMaterial(props);
+				break;
+
+		}
+
+		return this.material;
+	};
+
+	function Surface(effect) {
+
+		this.effect = effect;
+		this.init_from = null;
+		this.format = null;
+	}
+
+	Surface.prototype.parse = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'init_from':
+
+					this.init_from = child.textContent;
+					break;
+
+				case 'format':
+
+					this.format = child.textContent;
+					break;
+
+				default:
+
+					console.log("unhandled Surface prop: " + child.nodeName);
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Sampler2D(effect) {
+
+		this.effect = effect;
+		this.source = null;
+		this.wrap_s = null;
+		this.wrap_t = null;
+		this.minfilter = null;
+		this.magfilter = null;
+		this.mipfilter = null;
+	}
+
+	Sampler2D.prototype.parse = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'source':
+
+					this.source = child.textContent;
+					break;
+
+				case 'minfilter':
+
+					this.minfilter = child.textContent;
+					break;
+
+				case 'magfilter':
+
+					this.magfilter = child.textContent;
+					break;
+
+				case 'mipfilter':
+
+					this.mipfilter = child.textContent;
+					break;
+
+				case 'wrap_s':
+
+					this.wrap_s = child.textContent;
+					break;
+
+				case 'wrap_t':
+
+					this.wrap_t = child.textContent;
+					break;
+
+				default:
+
+					console.log("unhandled Sampler2D prop: " + child.nodeName);
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Effect() {
+
+		this.id = "";
+		this.name = "";
+		this.shader = null;
+		this.surface = {};
+		this.sampler = {};
+	}
+
+	Effect.prototype.create = function () {
+
+		if (this.shader === null) {
+
+			return null;
+		}
+	};
+
+	Effect.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+
+		extractDoubleSided(this, element);
+
+		this.shader = null;
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'profile_COMMON':
+
+					this.parseTechnique(this.parseProfileCOMMON(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Effect.prototype.parseNewparam = function (element) {
+
+		var sid = element.getAttribute('sid');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'surface':
+
+					this.surface[sid] = new Surface(this).parse(child);
+					break;
+
+				case 'sampler2D':
+
+					this.sampler[sid] = new Sampler2D(this).parse(child);
+					break;
+
+				case 'extra':
+
+					break;
+
+				default:
+
+					console.log(child.nodeName);
+					break;
+
+			}
+		}
+	};
+
+	Effect.prototype.parseProfileCOMMON = function (element) {
+
+		var technique;
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'profile_COMMON':
+
+					this.parseProfileCOMMON(child);
+					break;
+
+				case 'technique':
+
+					technique = child;
+					break;
+
+				case 'newparam':
+
+					this.parseNewparam(child);
+					break;
+
+				case 'image':
+
+					var _image = new _Image().parse(child);
+					images[_image.id] = _image;
+					break;
+
+				case 'extra':
+					break;
+
+				default:
+
+					console.log(child.nodeName);
+					break;
+
+			}
+		}
+
+		return technique;
+	};
+
+	Effect.prototype.parseTechnique = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'constant':
+				case 'lambert':
+				case 'blinn':
+				case 'phong':
+
+					this.shader = new Shader(child.nodeName, this).parse(child);
+					break;
+				case 'extra':
+					this.parseExtra(child);
+					break;
+				default:
+					break;
+
+			}
+		}
+	};
+
+	Effect.prototype.parseExtra = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'technique':
+					this.parseExtraTechnique(child);
+					break;
+				default:
+					break;
+
+			}
+		}
+	};
+
+	Effect.prototype.parseExtraTechnique = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'bump':
+					this.shader.parse(element);
+					break;
+				default:
+					break;
+
+			}
+		}
+	};
+
+	function InstanceEffect() {
+
+		this.url = "";
+	}
+
+	InstanceEffect.prototype.parse = function (element) {
+
+		this.url = element.getAttribute('url').replace(/^#/, '');
+		return this;
+	};
+
+	function Animation() {
+
+		this.id = "";
+		this.name = "";
+		this.source = {};
+		this.sampler = [];
+		this.channel = [];
+	}
+
+	Animation.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+		this.source = {};
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'animation':
+
+					var anim = new Animation().parse(child);
+
+					for (var src in anim.source) {
+
+						this.source[src] = anim.source[src];
+					}
+
+					for (var j = 0; j < anim.channel.length; j++) {
+
+						this.channel.push(anim.channel[j]);
+						this.sampler.push(anim.sampler[j]);
+					}
+
+					break;
+
+				case 'source':
+
+					var src = new Source().parse(child);
+					this.source[src.id] = src;
+					break;
+
+				case 'sampler':
+
+					this.sampler.push(new Sampler(this).parse(child));
+					break;
+
+				case 'channel':
+
+					this.channel.push(new Channel(this).parse(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Channel(animation) {
+
+		this.animation = animation;
+		this.source = "";
+		this.target = "";
+		this.fullSid = null;
+		this.sid = null;
+		this.dotSyntax = null;
+		this.arrSyntax = null;
+		this.arrIndices = null;
+		this.member = null;
+	}
+
+	Channel.prototype.parse = function (element) {
+
+		this.source = element.getAttribute('source').replace(/^#/, '');
+		this.target = element.getAttribute('target');
+
+		var parts = this.target.split('/');
+
+		var id = parts.shift();
+		var sid = parts.shift();
+
+		var dotSyntax = sid.indexOf(".") >= 0;
+		var arrSyntax = sid.indexOf("(") >= 0;
+
+		if (dotSyntax) {
+
+			parts = sid.split(".");
+			this.sid = parts.shift();
+			this.member = parts.shift();
+		} else if (arrSyntax) {
+
+			var arrIndices = sid.split("(");
+			this.sid = arrIndices.shift();
+
+			for (var j = 0; j < arrIndices.length; j++) {
+
+				arrIndices[j] = parseInt(arrIndices[j].replace(/\)/, ''));
+			}
+
+			this.arrIndices = arrIndices;
+		} else {
+
+			this.sid = sid;
+		}
+
+		this.fullSid = sid;
+		this.dotSyntax = dotSyntax;
+		this.arrSyntax = arrSyntax;
+
+		return this;
+	};
+
+	function Sampler(animation) {
+
+		this.id = "";
+		this.animation = animation;
+		this.inputs = [];
+		this.input = null;
+		this.output = null;
+		this.strideOut = null;
+		this.interpolation = null;
+		this.startTime = null;
+		this.endTime = null;
+		this.duration = 0;
+	}
+
+	Sampler.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.inputs = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'input':
+
+					this.inputs.push(new Input().parse(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Sampler.prototype.create = function () {
+
+		for (var i = 0; i < this.inputs.length; i++) {
+
+			var input = this.inputs[i];
+			var source = this.animation.source[input.source];
+
+			switch (input.semantic) {
+
+				case 'INPUT':
+
+					this.input = source.read();
+					break;
+
+				case 'OUTPUT':
+
+					this.output = source.read();
+					this.strideOut = source.accessor.stride;
+					break;
+
+				case 'INTERPOLATION':
+
+					this.interpolation = source.read();
+					break;
+
+				case 'IN_TANGENT':
+
+					break;
+
+				case 'OUT_TANGENT':
+
+					break;
+
+				default:
+
+					console.log(input.semantic);
+					break;
+
+			}
+		}
+
+		this.startTime = 0;
+		this.endTime = 0;
+		this.duration = 0;
+
+		if (this.input.length) {
+
+			this.startTime = 100000000;
+			this.endTime = -100000000;
+
+			for (var i = 0; i < this.input.length; i++) {
+
+				this.startTime = Math.min(this.startTime, this.input[i]);
+				this.endTime = Math.max(this.endTime, this.input[i]);
+			}
+
+			this.duration = this.endTime - this.startTime;
+		}
+	};
+
+	Sampler.prototype.getData = function (type, ndx, member) {
+
+		var data;
+
+		if (type === 'matrix' && this.strideOut === 16) {
+
+			data = this.output[ndx];
+		} else if (this.strideOut > 1) {
+
+			data = [];
+			ndx *= this.strideOut;
+
+			for (var i = 0; i < this.strideOut; ++i) {
+
+				data[i] = this.output[ndx + i];
+			}
+
+			if (this.strideOut === 3) {
+
+				switch (type) {
+
+					case 'rotate':
+					case 'translate':
+
+						fixCoords(data, -1);
+						break;
+
+					case 'scale':
+
+						fixCoords(data, 1);
+						break;
+
+				}
+			} else if (this.strideOut === 4 && type === 'matrix') {
+
+				fixCoords(data, -1);
+			}
+		} else {
+
+			data = this.output[ndx];
+
+			if (member && type === 'translate') {
+				data = getConvertedTranslation(member, data);
+			}
+		}
+
+		return data;
+	};
+
+	function Key(time) {
+
+		this.targets = [];
+		this.time = time;
+	}
+
+	Key.prototype.addTarget = function (fullSid, transform, member, data) {
+
+		this.targets.push({
+			sid: fullSid,
+			member: member,
+			transform: transform,
+			data: data
+		});
+	};
+
+	Key.prototype.apply = function (opt_sid) {
+
+		for (var i = 0; i < this.targets.length; ++i) {
+
+			var target = this.targets[i];
+
+			if (!opt_sid || target.sid === opt_sid) {
+
+				target.transform.update(target.data, target.member);
+			}
+		}
+	};
+
+	Key.prototype.getTarget = function (fullSid) {
+
+		for (var i = 0; i < this.targets.length; ++i) {
+
+			if (this.targets[i].sid === fullSid) {
+
+				return this.targets[i];
+			}
+		}
+
+		return null;
+	};
+
+	Key.prototype.hasTarget = function (fullSid) {
+
+		for (var i = 0; i < this.targets.length; ++i) {
+
+			if (this.targets[i].sid === fullSid) {
+
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	// TODO: Currently only doing linear interpolation. Should support full COLLADA spec.
+	Key.prototype.interpolate = function (nextKey, time) {
+
+		for (var i = 0, l = this.targets.length; i < l; i++) {
+
+			var target = this.targets[i],
+			    nextTarget = nextKey.getTarget(target.sid),
+			    data;
+
+			if (target.transform.type !== 'matrix' && nextTarget) {
+
+				var scale = (time - this.time) / (nextKey.time - this.time),
+				    nextData = nextTarget.data,
+				    prevData = target.data;
+
+				if (scale < 0) scale = 0;
+				if (scale > 1) scale = 1;
+
+				if (prevData.length) {
+
+					data = [];
+
+					for (var j = 0; j < prevData.length; ++j) {
+
+						data[j] = prevData[j] + (nextData[j] - prevData[j]) * scale;
+					}
+				} else {
+
+					data = prevData + (nextData - prevData) * scale;
+				}
+			} else {
+
+				data = target.data;
+			}
+
+			target.transform.update(data, target.member);
+		}
+	};
+
+	// Camera
+	function Camera() {
+
+		this.id = "";
+		this.name = "";
+		this.technique = "";
+	}
+
+	Camera.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'optics':
+
+					this.parseOptics(child);
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Camera.prototype.parseOptics = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			if (element.childNodes[i].nodeName === 'technique_common') {
+
+				var technique = element.childNodes[i];
+
+				for (var j = 0; j < technique.childNodes.length; j++) {
+
+					this.technique = technique.childNodes[j].nodeName;
+
+					if (this.technique === 'perspective') {
+
+						var perspective = technique.childNodes[j];
+
+						for (var k = 0; k < perspective.childNodes.length; k++) {
+
+							var param = perspective.childNodes[k];
+
+							switch (param.nodeName) {
+
+								case 'yfov':
+									this.yfov = param.textContent;
+									break;
+								case 'xfov':
+									this.xfov = param.textContent;
+									break;
+								case 'znear':
+									this.znear = param.textContent;
+									break;
+								case 'zfar':
+									this.zfar = param.textContent;
+									break;
+								case 'aspect_ratio':
+									this.aspect_ratio = param.textContent;
+									break;
+
+							}
+						}
+					} else if (this.technique === 'orthographic') {
+
+						var orthographic = technique.childNodes[j];
+
+						for (var k = 0; k < orthographic.childNodes.length; k++) {
+
+							var param = orthographic.childNodes[k];
+
+							switch (param.nodeName) {
+
+								case 'xmag':
+									this.xmag = param.textContent;
+									break;
+								case 'ymag':
+									this.ymag = param.textContent;
+									break;
+								case 'znear':
+									this.znear = param.textContent;
+									break;
+								case 'zfar':
+									this.zfar = param.textContent;
+									break;
+								case 'aspect_ratio':
+									this.aspect_ratio = param.textContent;
+									break;
+
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return this;
+	};
+
+	function InstanceCamera() {
+
+		this.url = "";
+	}
+
+	InstanceCamera.prototype.parse = function (element) {
+
+		this.url = element.getAttribute('url').replace(/^#/, '');
+
+		return this;
+	};
+
+	// Light
+
+	function Light() {
+
+		this.id = "";
+		this.name = "";
+		this.technique = "";
+	}
+
+	Light.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'technique_common':
+
+					this.parseCommon(child);
+					break;
+
+				case 'technique':
+
+					this.parseTechnique(child);
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	Light.prototype.parseCommon = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			switch (element.childNodes[i].nodeName) {
+
+				case 'directional':
+				case 'point':
+				case 'spot':
+				case 'ambient':
+
+					this.technique = element.childNodes[i].nodeName;
+
+					var light = element.childNodes[i];
+
+					for (var j = 0; j < light.childNodes.length; j++) {
+
+						var child = light.childNodes[j];
+
+						switch (child.nodeName) {
+
+							case 'color':
+
+								var rgba = _floats(child.textContent);
+								this.color = new Color(0);
+								this.color.setRGB(rgba[0], rgba[1], rgba[2]);
+								this.color.a = rgba[3];
+								break;
+
+							case 'falloff_angle':
+
+								this.falloff_angle = parseFloat(child.textContent);
+								break;
+
+							case 'quadratic_attenuation':
+								var f = parseFloat(child.textContent);
+								this.distance = f ? Math.sqrt(1 / f) : 0;
+						}
+					}
+
+			}
+		}
+
+		return this;
+	};
+
+	Light.prototype.parseTechnique = function (element) {
+
+		this.profile = element.getAttribute('profile');
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+
+			switch (child.nodeName) {
+
+				case 'intensity':
+
+					this.intensity = parseFloat(child.textContent);
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function InstanceLight() {
+
+		this.url = "";
+	}
+
+	InstanceLight.prototype.parse = function (element) {
+
+		this.url = element.getAttribute('url').replace(/^#/, '');
+
+		return this;
+	};
+
+	function KinematicsModel() {
+
+		this.id = '';
+		this.name = '';
+		this.joints = [];
+		this.links = [];
+	}
+
+	KinematicsModel.prototype.parse = function (element) {
+
+		this.id = element.getAttribute('id');
+		this.name = element.getAttribute('name');
+		this.joints = [];
+		this.links = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'technique_common':
+
+					this.parseCommon(child);
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	KinematicsModel.prototype.parseCommon = function (element) {
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (element.childNodes[i].nodeName) {
+
+				case 'joint':
+					this.joints.push(new Joint().parse(child));
+					break;
+
+				case 'link':
+					this.links.push(new Link().parse(child));
+					break;
+
+				default:
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Joint() {
+
+		this.sid = '';
+		this.name = '';
+		this.axis = new Vector3();
+		this.limits = {
+			min: 0,
+			max: 0
+		};
+		this.type = '';
+		this.static = false;
+		this.zeroPosition = 0.0;
+		this.middlePosition = 0.0;
+	}
+
+	Joint.prototype.parse = function (element) {
+
+		this.sid = element.getAttribute('sid');
+		this.name = element.getAttribute('name');
+		this.axis = new Vector3();
+		this.limits = {
+			min: 0,
+			max: 0
+		};
+		this.type = '';
+		this.static = false;
+		this.zeroPosition = 0.0;
+		this.middlePosition = 0.0;
+
+		var axisElement = element.querySelector('axis');
+		var _axis = _floats(axisElement.textContent);
+		this.axis = getConvertedVec3(_axis, 0);
+
+		var min = element.querySelector('limits min') ? parseFloat(element.querySelector('limits min').textContent) : -360;
+		var max = element.querySelector('limits max') ? parseFloat(element.querySelector('limits max').textContent) : 360;
+
+		this.limits = {
+			min: min,
+			max: max
+		};
+
+		var jointTypes = ['prismatic', 'revolute'];
+		for (var i = 0; i < jointTypes.length; i++) {
+
+			var type = jointTypes[i];
+
+			var jointElement = element.querySelector(type);
+
+			if (jointElement) {
+
+				this.type = type;
+			}
+		}
+
+		// if the min is equal to or somehow greater than the max, consider the joint static
+		if (this.limits.min >= this.limits.max) {
+
+			this.static = true;
+		}
+
+		this.middlePosition = (this.limits.min + this.limits.max) / 2.0;
+		return this;
+	};
+
+	function Link() {
+
+		this.sid = '';
+		this.name = '';
+		this.transforms = [];
+		this.attachments = [];
+	}
+
+	Link.prototype.parse = function (element) {
+
+		this.sid = element.getAttribute('sid');
+		this.name = element.getAttribute('name');
+		this.transforms = [];
+		this.attachments = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'attachment_full':
+					this.attachments.push(new Attachment().parse(child));
+					break;
+
+				case 'rotate':
+				case 'translate':
+				case 'matrix':
+
+					this.transforms.push(new Transform().parse(child));
+					break;
+
+				default:
+
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function Attachment() {
+
+		this.joint = '';
+		this.transforms = [];
+		this.links = [];
+	}
+
+	Attachment.prototype.parse = function (element) {
+
+		this.joint = element.getAttribute('joint').split('/').pop();
+		this.links = [];
+
+		for (var i = 0; i < element.childNodes.length; i++) {
+
+			var child = element.childNodes[i];
+			if (child.nodeType != 1) continue;
+
+			switch (child.nodeName) {
+
+				case 'link':
+					this.links.push(new Link().parse(child));
+					break;
+
+				case 'rotate':
+				case 'translate':
+				case 'matrix':
+
+					this.transforms.push(new Transform().parse(child));
+					break;
+
+				default:
+
+					break;
+
+			}
+		}
+
+		return this;
+	};
+
+	function _source(element) {
+
+		var id = element.getAttribute('id');
+
+		if (sources[id] != undefined) {
+
+			return sources[id];
+		}
+
+		sources[id] = new Source(id).parse(element);
+		return sources[id];
+	}
+
+	function _nsResolver(nsPrefix) {
+
+		if (nsPrefix === "dae") {
+
+			return "http://www.collada.org/2005/11/COLLADASchema";
+		}
+
+		return null;
+	}
+
+	function _bools(str) {
+
+		var raw = _strings(str);
+		var data = [];
+
+		for (var i = 0, l = raw.length; i < l; i++) {
+
+			data.push(raw[i] === 'true' || raw[i] === '1' ? true : false);
+		}
+
+		return data;
+	}
+
+	function _floats(str) {
+
+		var raw = _strings(str);
+		var data = [];
+
+		for (var i = 0, l = raw.length; i < l; i++) {
+
+			data.push(parseFloat(raw[i]));
+		}
+
+		return data;
+	}
+
+	function _ints(str) {
+
+		var raw = _strings(str);
+		var data = [];
+
+		for (var i = 0, l = raw.length; i < l; i++) {
+
+			data.push(parseInt(raw[i], 10));
+		}
+
+		return data;
+	}
+
+	function _strings(str) {
+
+		return str.length > 0 ? _trimString(str).split(/\s+/) : [];
+	}
+
+	function _trimString(str) {
+
+		return str.replace(/^\s+/, "").replace(/\s+$/, "");
+	}
+
+	function _attr_as_float(element, name, defaultValue) {
+
+		if (element.hasAttribute(name)) {
+
+			return parseFloat(element.getAttribute(name));
+		} else {
+
+			return defaultValue;
+		}
+	}
+
+	function _attr_as_int(element, name, defaultValue) {
+
+		if (element.hasAttribute(name)) {
+
+			return parseInt(element.getAttribute(name), 10);
+		} else {
+
+			return defaultValue;
+		}
+	}
+
+	function _attr_as_string(element, name, defaultValue) {
+
+		if (element.hasAttribute(name)) {
+
+			return element.getAttribute(name);
+		} else {
+
+			return defaultValue;
+		}
+	}
+
+	function _format_float(f, num) {
+
+		if (f === undefined) {
+
+			var s = '0.';
+
+			while (s.length < num + 2) {
+
+				s += '0';
+			}
+
+			return s;
+		}
+
+		num = num || 2;
+
+		var parts = f.toString().split('.');
+		parts[1] = parts.length > 1 ? parts[1].substr(0, num) : "0";
+
+		while (parts[1].length < num) {
+
+			parts[1] += '0';
+		}
+
+		return parts.join('.');
+	}
+
+	function loadTextureImage(texture, url) {
+
+		var loader = new ImageLoader();
+
+		loader.load(url, function (image) {
+
+			texture.image = image;
+			texture.needsUpdate = true;
+		});
+	}
+
+	function extractDoubleSided(obj, element) {
+
+		obj.doubleSided = false;
+
+		var node = element.querySelectorAll('extra double_sided')[0];
+
+		if (node) {
+
+			if (node && parseInt(node.textContent, 10) === 1) {
+
+				obj.doubleSided = true;
+			}
+		}
+	}
+
+	// Up axis conversion
+
+	function setUpConversion() {
+
+		if (options.convertUpAxis !== true || colladaUp === options.upAxis) {
+
+			upConversion = null;
+		} else {
+
+			switch (colladaUp) {
+
+				case 'X':
+
+					upConversion = options.upAxis === 'Y' ? 'XtoY' : 'XtoZ';
+					break;
+
+				case 'Y':
+
+					upConversion = options.upAxis === 'X' ? 'YtoX' : 'YtoZ';
+					break;
+
+				case 'Z':
+
+					upConversion = options.upAxis === 'X' ? 'ZtoX' : 'ZtoY';
+					break;
+
+			}
+		}
+	}
+
+	function fixCoords(data, sign) {
+
+		if (options.convertUpAxis !== true || colladaUp === options.upAxis) {
+
+			return;
+		}
+
+		switch (upConversion) {
+
+			case 'XtoY':
+
+				var tmp = data[0];
+				data[0] = sign * data[1];
+				data[1] = tmp;
+				break;
+
+			case 'XtoZ':
+
+				var tmp = data[2];
+				data[2] = data[1];
+				data[1] = data[0];
+				data[0] = tmp;
+				break;
+
+			case 'YtoX':
+
+				var tmp = data[0];
+				data[0] = data[1];
+				data[1] = sign * tmp;
+				break;
+
+			case 'YtoZ':
+
+				var tmp = data[1];
+				data[1] = sign * data[2];
+				data[2] = tmp;
+				break;
+
+			case 'ZtoX':
+
+				var tmp = data[0];
+				data[0] = data[1];
+				data[1] = data[2];
+				data[2] = tmp;
+				break;
+
+			case 'ZtoY':
+
+				var tmp = data[1];
+				data[1] = data[2];
+				data[2] = sign * tmp;
+				break;
+
+		}
+	}
+
+	function getConvertedTranslation(axis, data) {
+
+		if (options.convertUpAxis !== true || colladaUp === options.upAxis) {
+
+			return data;
+		}
+
+		switch (axis) {
+			case 'X':
+				data = upConversion === 'XtoY' ? data * -1 : data;
+				break;
+			case 'Y':
+				data = upConversion === 'YtoZ' || upConversion === 'YtoX' ? data * -1 : data;
+				break;
+			case 'Z':
+				data = upConversion === 'ZtoY' ? data * -1 : data;
+				break;
+			default:
+				break;
+		}
+
+		return data;
+	}
+
+	function getConvertedVec3(data, offset) {
+
+		var arr = [data[offset], data[offset + 1], data[offset + 2]];
+		fixCoords(arr, -1);
+		return new Vector3(arr[0], arr[1], arr[2]);
+	}
+
+	function getConvertedMat4(data) {
+
+		if (options.convertUpAxis) {
+
+			// First fix rotation and scale
+
+			// Columns first
+			var arr = [data[0], data[4], data[8]];
+			fixCoords(arr, -1);
+			data[0] = arr[0];
+			data[4] = arr[1];
+			data[8] = arr[2];
+			arr = [data[1], data[5], data[9]];
+			fixCoords(arr, -1);
+			data[1] = arr[0];
+			data[5] = arr[1];
+			data[9] = arr[2];
+			arr = [data[2], data[6], data[10]];
+			fixCoords(arr, -1);
+			data[2] = arr[0];
+			data[6] = arr[1];
+			data[10] = arr[2];
+			// Rows second
+			arr = [data[0], data[1], data[2]];
+			fixCoords(arr, -1);
+			data[0] = arr[0];
+			data[1] = arr[1];
+			data[2] = arr[2];
+			arr = [data[4], data[5], data[6]];
+			fixCoords(arr, -1);
+			data[4] = arr[0];
+			data[5] = arr[1];
+			data[6] = arr[2];
+			arr = [data[8], data[9], data[10]];
+			fixCoords(arr, -1);
+			data[8] = arr[0];
+			data[9] = arr[1];
+			data[10] = arr[2];
+
+			// Now fix translation
+			arr = [data[3], data[7], data[11]];
+			fixCoords(arr, -1);
+			data[3] = arr[0];
+			data[7] = arr[1];
+			data[11] = arr[2];
+		}
+
+		return new Matrix4().set(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
+	}
+
+	function getConvertedIndex(index) {
+
+		if (index > -1 && index < 3) {
+
+			var members = ['X', 'Y', 'Z'],
+			    indices = { X: 0, Y: 1, Z: 2 };
+
+			index = getConvertedMember(members[index]);
+			index = indices[index];
+		}
+
+		return index;
+	}
+
+	function getConvertedMember(member) {
+
+		if (options.convertUpAxis) {
+
+			switch (member) {
+
+				case 'X':
+
+					switch (upConversion) {
+
+						case 'XtoY':
+						case 'XtoZ':
+						case 'YtoX':
+
+							member = 'Y';
+							break;
+
+						case 'ZtoX':
+
+							member = 'Z';
+							break;
+
+					}
+
+					break;
+
+				case 'Y':
+
+					switch (upConversion) {
+
+						case 'XtoY':
+						case 'YtoX':
+						case 'ZtoX':
+
+							member = 'X';
+							break;
+
+						case 'XtoZ':
+						case 'YtoZ':
+						case 'ZtoY':
+
+							member = 'Z';
+							break;
+
+					}
+
+					break;
+
+				case 'Z':
+
+					switch (upConversion) {
+
+						case 'XtoZ':
+
+							member = 'X';
+							break;
+
+						case 'YtoZ':
+						case 'ZtoX':
+						case 'ZtoY':
+
+							member = 'Y';
+							break;
+
+					}
+
+					break;
+
+			}
+		}
+
+		return member;
+	}
+
+	return {
+
+		load: load,
+		parse: parse,
+		applySkin: applySkin,
+		geometries: geometries,
+		options: options
+
+	};
+};
+
+function ColladaLoader2(manager) {
+
+	this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+};
+
+ColladaLoader2.prototype = {
+
+	constructor: ColladaLoader2,
+
+	load: function (url, onLoad, onProgress, onError) {
+
+		var scope = this;
+
+		var resourceDirectory = url.split(/[\\\/]/);
+		resourceDirectory.pop();
+		resourceDirectory = resourceDirectory.join('/') + '/';
+
+		var loader = new FileLoader(scope.manager);
+		loader.load(url, function (text) {
+
+			onLoad(scope.parse(text, resourceDirectory));
+		}, onProgress, onError);
+	},
+
+	options: {
+
+		set convertUpAxis(value) {
+
+			console.log('ColladaLoader2.options.convertUpAxis: TODO');
+		}
+
+	},
+
+	setCrossOrigin: function (value) {
+
+		this.crossOrigin = value;
+	},
+
+	parse: function (text, resourceDirectory) {
+
+		function getElementsByTagName(xml, name) {
+
+			// Non recursive xml.getElementsByTagName() ...
+
+			var array = [];
+			var childNodes = xml.childNodes;
+
+			for (var i = 0, l = childNodes.length; i < l; i++) {
+
+				var child = childNodes[i];
+
+				if (child.nodeName === name) {
+
+					array.push(child);
+				}
+			}
+
+			return array;
+		}
+
+		function parseStrings(text) {
+
+			if (text.length === 0) return [];
+
+			var parts = text.trim().split(/\s+/);
+			var array = new Array(parts.length);
+
+			for (var i = 0, l = parts.length; i < l; i++) {
+
+				array[i] = parts[i];
+			}
+
+			return array;
+		}
+
+		function parseFloats(text) {
+
+			if (text.length === 0) return [];
+
+			var parts = text.trim().split(/\s+/);
+			var array = new Array(parts.length);
+
+			for (var i = 0, l = parts.length; i < l; i++) {
+
+				array[i] = parseFloat(parts[i]);
+			}
+
+			return array;
+		}
+
+		function parseInts(text) {
+
+			if (text.length === 0) return [];
+
+			var parts = text.trim().split(/\s+/);
+			var array = new Array(parts.length);
+
+			for (var i = 0, l = parts.length; i < l; i++) {
+
+				array[i] = parseInt(parts[i]);
+			}
+
+			return array;
+		}
+
+		function parseId(text) {
+
+			return text.substring(1);
+		}
+
+		function isEmpty(object) {
+
+			return Object.keys(object).length === 0;
+		}
+
+		// asset
+
+		function parseAsset(xml) {
+
+			return {
+				unit: parseAssetUnit(getElementsByTagName(xml, 'unit')[0]),
+				upAxis: parseAssetUpAxis(getElementsByTagName(xml, 'up_axis')[0])
+			};
+		}
+
+		function parseAssetUnit(xml) {
+
+			return xml !== undefined ? parseFloat(xml.getAttribute('meter')) : 1;
+		}
+
+		function parseAssetUpAxis(xml) {
+
+			return xml !== undefined ? xml.textContent : 'Y_UP';
+		}
+
+		// library
+
+		function parseLibrary(xml, libraryName, nodeName, parser) {
+
+			var library = getElementsByTagName(xml, libraryName)[0];
+
+			if (library !== undefined) {
+
+				var elements = getElementsByTagName(library, nodeName);
+
+				for (var i = 0; i < elements.length; i++) {
+
+					parser(elements[i]);
+				}
+			}
+		}
+
+		function buildLibrary(data, builder) {
+
+			for (var name in data) {
+
+				var object = data[name];
+				object.build = builder(data[name]);
+			}
+		}
+
+		// get
+
+		function getBuild(data, builder) {
+
+			if (data.build !== undefined) return data.build;
+
+			data.build = builder(data);
+
+			return data.build;
+		}
+
+		// animation
+
+		function parseAnimation(xml) {
+
+			var data = {
+				sources: {},
+				samplers: {},
+				channels: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				var id;
+
+				switch (child.nodeName) {
+
+					case 'source':
+						id = child.getAttribute('id');
+						data.sources[id] = parseSource(child);
+						break;
+
+					case 'sampler':
+						id = child.getAttribute('id');
+						data.samplers[id] = parseAnimationSampler(child);
+						break;
+
+					case 'channel':
+						id = child.getAttribute('target');
+						data.channels[id] = parseAnimationChannel(child);
+						break;
+
+					default:
+						console.log(child);
+
+				}
+			}
+
+			library.animations[xml.getAttribute('id')] = data;
+		}
+
+		function parseAnimationSampler(xml) {
+
+			var data = {
+				inputs: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'input':
+						var id = parseId(child.getAttribute('source'));
+						var semantic = child.getAttribute('semantic');
+						data.inputs[semantic] = id;
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseAnimationChannel(xml) {
+
+			var data = {};
+
+			var target = xml.getAttribute('target');
+
+			// parsing SID Addressing Syntax
+
+			var parts = target.split('/');
+
+			var id = parts.shift();
+			var sid = parts.shift();
+
+			// check selection syntax
+
+			var arraySyntax = sid.indexOf('(') !== -1;
+			var memberSyntax = sid.indexOf('.') !== -1;
+
+			if (memberSyntax) {
+
+				//  member selection access
+
+				parts = sid.split('.');
+				sid = parts.shift();
+				data.member = parts.shift();
+			} else if (arraySyntax) {
+
+				// array-access syntax. can be used to express fields in one-dimensional vectors or two-dimensional matrices.
+
+				var indices = sid.split('(');
+				sid = indices.shift();
+
+				for (var i = 0; i < indices.length; i++) {
+
+					indices[i] = parseInt(indices[i].replace(/\)/, ''));
+				}
+
+				data.indices = indices;
+			}
+
+			data.id = id;
+			data.sid = sid;
+
+			data.arraySyntax = arraySyntax;
+			data.memberSyntax = memberSyntax;
+
+			data.sampler = parseId(xml.getAttribute('source'));
+
+			return data;
+		}
+
+		function buildAnimation(data) {
+
+			var tracks = [];
+
+			var channels = data.channels;
+			var samplers = data.samplers;
+			var sources = data.sources;
+
+			for (var target in channels) {
+
+				if (channels.hasOwnProperty(target)) {
+
+					var channel = channels[target];
+					var sampler = samplers[channel.sampler];
+
+					var inputId = sampler.inputs.INPUT;
+					var outputId = sampler.inputs.OUTPUT;
+					var interpolationId = sampler.inputs.INTERPOLATION;
+
+					var inputSource = sources[inputId];
+					var outputSource = sources[outputId];
+					var interpolationSource = sources[interpolationId];
+
+					var animation = buildAnimationChannel(channel, inputSource, outputSource, interpolationSource);
+
+					createKeyframeTracks(animation, tracks);
+				}
+			}
+
+			return tracks;
+		}
+
+		function getAnimation(id) {
+
+			return getBuild(library.animations[id], buildAnimation);
+		}
+
+		function buildAnimationChannel(channel, inputSource, outputSource, interpolationSource) {
+
+			var node = library.nodes[channel.id];
+			var transform = node.transforms[channel.sid];
+			var defaultMatrix = node.matrix.clone().transpose();
+
+			var time, stride;
+			var i, il, j, jl;
+
+			var data = {};
+
+			// the collada spec allows the animation of data in various ways.
+			// depending on the transform type (matrix, translate, rotate, scale), we execute different logic
+
+			switch (transform) {
+
+				case 'matrix':
+
+					for (i = 0, il = inputSource.array.length; i < il; i++) {
+
+						time = inputSource.array[i];
+						stride = i * outputSource.stride;
+
+						if (data[time] === undefined) data[time] = {};
+
+						if (channel.arraySyntax === true) {
+
+							var value = outputSource.array[stride];
+							var index = channel.indices[0] + 4 * channel.indices[1];
+
+							data[time][index] = value;
+						} else {
+
+							for (j = 0, jl = outputSource.stride; j < jl; j++) {
+
+								data[time][j] = outputSource.array[stride + j];
+							}
+						}
+					}
+
+					break;
+
+				case 'translate':
+					console.warn('ColladaLoader2: Animation transform type "%s" not yet implemented.', transform);
+					break;
+
+				case 'rotate':
+					console.warn('ColladaLoader2: Animation transform "%s" not yet implemented.', transform);
+					break;
+
+				case 'scale':
+					console.warn('ColladaLoader2: Animation transform "%s" not yet implemented.', transform);
+					break;
+
+			}
+
+			var keyframes = prepareAnimationData(data, defaultMatrix);
+
+			if (node.type !== 'JOINT') console.warn('ColladaLoader2: Animation data for invalid node with ID "%s" found. The loader only supports animation of bones (skeletal animation).', node.id);
+
+			var animation = {
+				name: '.skeleton.bones[' + node.sid + ']',
+				keyframes: keyframes
+			};
+
+			return animation;
+		}
+
+		function prepareAnimationData(data, defaultMatrix) {
+
+			var keyframes = [];
+
+			// transfer data into a sortable array
+
+			for (var time in data) {
+
+				keyframes.push({ time: parseFloat(time), value: data[time] });
+			}
+
+			// ensure keyframes are sorted by time
+
+			keyframes.sort(ascending);
+
+			// now we clean up all animation data, so we can use them for keyframe tracks
+
+			for (var i = 0; i < 16; i++) {
+
+				transformAnimationData(keyframes, i, defaultMatrix.elements[i]);
+			}
+
+			return keyframes;
+
+			// array sort function
+
+			function ascending(a, b) {
+
+				return a.time - b.time;
+			}
+		}
+
+		var position = new Vector3();
+		var scale = new Vector3();
+		var quaternion = new Quaternion();
+
+		function createKeyframeTracks(animation, tracks) {
+
+			var keyframes = animation.keyframes;
+			var name = animation.name;
+
+			var times = [];
+			var positionData = [];
+			var quaternionData = [];
+			var scaleData = [];
+
+			for (var i = 0, l = keyframes.length; i < l; i++) {
+
+				var keyframe = keyframes[i];
+
+				var time = keyframe.time;
+				var value = keyframe.value;
+
+				matrix.set(value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15]);
+
+				matrix.decompose(position, quaternion, scale);
+
+				times.push(time);
+				positionData.push(position.x, position.y, position.z);
+				quaternionData.push(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+				scaleData.push(scale.x, scale.y, scale.z);
+			}
+
+			if (positionData.length > 0) tracks.push(new VectorKeyframeTrack(name + '.position', times, positionData));
+			if (quaternionData.length > 0) tracks.push(new QuaternionKeyframeTrack(name + '.quaternion', times, quaternionData));
+			if (scaleData.length > 0) tracks.push(new VectorKeyframeTrack(name + '.scale', times, scaleData));
+
+			return tracks;
+		}
+
+		function transformAnimationData(keyframes, property, defaultValue) {
+
+			var keyframe;
+
+			var empty = true;
+			var i, l;
+
+			// check, if values of a property are missing in our keyframes
+
+			for (i = 0, l = keyframes.length; i < l; i++) {
+
+				keyframe = keyframes[i];
+
+				if (keyframe.value[property] === undefined) {
+
+					keyframe.value[property] = null; // mark as missing
+				} else {
+
+					empty = false;
+				}
+			}
+
+			if (empty === true) {
+
+				// no values at all, so we set a default value
+
+				for (i = 0, l = keyframes.length; i < l; i++) {
+
+					keyframe = keyframes[i];
+
+					keyframe.value[property] = defaultValue;
+				}
+			} else {
+
+				// filling gaps
+
+				createMissingKeyframes(keyframes, property);
+			}
+		}
+
+		function createMissingKeyframes(keyframes, property) {
+
+			var prev, next;
+
+			for (var i = 0, l = keyframes.length; i < l; i++) {
+
+				var keyframe = keyframes[i];
+
+				if (keyframe.value[property] === null) {
+
+					prev = getPrev(keyframes, i, property);
+					next = getNext(keyframes, i, property);
+
+					if (prev === null) {
+
+						keyframe.value[property] = next.value[property];
+						continue;
+					}
+
+					if (next === null) {
+
+						keyframe.value[property] = prev.value[property];
+						continue;
+					}
+
+					interpolate(keyframe, prev, next, property);
+				}
+			}
+		}
+
+		function getPrev(keyframes, i, property) {
+
+			while (i >= 0) {
+
+				var keyframe = keyframes[i];
+
+				if (keyframe.value[property] !== null) return keyframe;
+
+				i--;
+			}
+
+			return null;
+		}
+
+		function getNext(keyframes, i, property) {
+
+			while (i < keyframes.length) {
+
+				var keyframe = keyframes[i];
+
+				if (keyframe.value[property] !== null) return keyframe;
+
+				i++;
+			}
+
+			return null;
+		}
+
+		function interpolate(key, prev, next, property) {
+
+			if (next.time - prev.time === 0) {
+
+				key.value[property] = prev.value[property];
+				return;
+			}
+
+			key.value[property] = (key.time - prev.time) * (next.value[property] - prev.value[property]) / (next.time - prev.time) + prev.value[property];
+		}
+
+		// animation clips
+
+		function parseAnimationClip(xml) {
+
+			var data = {
+				name: xml.getAttribute('id') || 'default',
+				start: parseFloat(xml.getAttribute('start') || 0),
+				end: parseFloat(xml.getAttribute('end') || 0),
+				animations: []
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'instance_animation':
+						data.animations.push(parseId(child.getAttribute('url')));
+						break;
+
+				}
+			}
+
+			library.clips[xml.getAttribute('id')] = data;
+		}
+
+		function buildAnimationClip(data) {
+
+			var tracks = [];
+
+			var name = data.name;
+			var duration = data.end - data.start || -1;
+			var animations = data.animations;
+
+			for (var i = 0, il = animations.length; i < il; i++) {
+
+				var animationTracks = getAnimation(animations[i]);
+
+				for (var j = 0, jl = animationTracks.length; j < jl; j++) {
+
+					tracks.push(animationTracks[j]);
+				}
+			}
+
+			return new AnimationClip(name, duration, tracks);
+		}
+
+		function getAnimationClip(id) {
+
+			return getBuild(library.clips[id], buildAnimationClip);
+		}
+
+		// controller
+
+		function parseController(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'skin':
+						// there is exactly one skin per controller
+						data.id = parseId(child.getAttribute('source'));
+						data.skin = parseSkin(child);
+						break;
+
+				}
+			}
+
+			library.controllers[xml.getAttribute('id')] = data;
+		}
+
+		function parseSkin(xml) {
+
+			var data = {
+				sources: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'bind_shape_matrix':
+						data.bindShapeMatrix = parseFloats(child.textContent);
+						break;
+
+					case 'source':
+						var id = child.getAttribute('id');
+						data.sources[id] = parseSource(child);
+						break;
+
+					case 'joints':
+						data.joints = parseJoints(child);
+						break;
+
+					case 'vertex_weights':
+						data.vertexWeights = parseVertexWeights(child);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseJoints(xml) {
+
+			var data = {
+				inputs: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'input':
+						var semantic = child.getAttribute('semantic');
+						var id = parseId(child.getAttribute('source'));
+						data.inputs[semantic] = id;
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseVertexWeights(xml) {
+
+			var data = {
+				inputs: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'input':
+						var semantic = child.getAttribute('semantic');
+						var id = parseId(child.getAttribute('source'));
+						var offset = parseInt(child.getAttribute('offset'));
+						data.inputs[semantic] = { id: id, offset: offset };
+						break;
+
+					case 'vcount':
+						data.vcount = parseInts(child.textContent);
+						break;
+
+					case 'v':
+						data.v = parseInts(child.textContent);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function buildController(data) {
+
+			var build = {};
+
+			build.id = data.id;
+			build.skin = buildSkin(data.skin);
+
+			// we enhance the 'sources' property of the corresponding geometry with our skin data
+
+			var geometry = library.geometries[build.id];
+			geometry.sources.skinIndices = build.skin.indices;
+			geometry.sources.skinWeights = build.skin.weights;
+
+			return build;
+		}
+
+		function buildSkin(data) {
+
+			var BONE_LIMIT = 4;
+
+			var build = {
+				joints: [], // this must be an array to preserve the joint order
+				indices: {
+					array: [],
+					stride: BONE_LIMIT
+				},
+				weights: {
+					array: [],
+					stride: BONE_LIMIT
+				}
+			};
+
+			var sources = data.sources;
+			var vertexWeights = data.vertexWeights;
+
+			var vcount = vertexWeights.vcount;
+			var v = vertexWeights.v;
+			var jointOffset = vertexWeights.inputs.JOINT.offset;
+			var weightOffset = vertexWeights.inputs.WEIGHT.offset;
+
+			var jointSource = data.sources[data.joints.inputs.JOINT];
+			var inverseSource = data.sources[data.joints.inputs.INV_BIND_MATRIX];
+
+			var weights = sources[vertexWeights.inputs.WEIGHT.id].array;
+			var stride = 0;
+
+			var i, j, l;
+
+			// procces skin data for each vertex
+
+			for (i = 0, l = vcount.length; i < l; i++) {
+
+				var jointCount = vcount[i]; // this is the amount of joints that affect a single vertex
+				var vertexSkinData = [];
+
+				for (j = 0; j < jointCount; j++) {
+
+					var skinIndex = v[stride + jointOffset];
+					var weightId = v[stride + weightOffset];
+					var skinWeight = weights[weightId];
+
+					vertexSkinData.push({ index: skinIndex, weight: skinWeight });
+
+					stride += 2;
+				}
+
+				// we sort the joints in descending order based on the weights.
+				// this ensures, we only procced the most important joints of the vertex
+
+				vertexSkinData.sort(descending);
+
+				// now we provide for each vertex a set of four index and weight values.
+				// the order of the skin data matches the order of vertices
+
+				for (j = 0; j < BONE_LIMIT; j++) {
+
+					var d = vertexSkinData[j];
+
+					if (d !== undefined) {
+
+						build.indices.array.push(d.index);
+						build.weights.array.push(d.weight);
+					} else {
+
+						build.indices.array.push(0);
+						build.weights.array.push(0);
+					}
+				}
+			}
+
+			// setup bind matrix
+
+			build.bindMatrix = new Matrix4().fromArray(data.bindShapeMatrix).transpose();
+
+			// process bones and inverse bind matrix data
+
+			for (i = 0, l = jointSource.array.length; i < l; i++) {
+
+				var name = jointSource.array[i];
+				var boneInverse = new Matrix4().fromArray(inverseSource.array, i * inverseSource.stride).transpose();
+
+				build.joints.push({ name: name, boneInverse: boneInverse });
+			}
+
+			return build;
+
+			// array sort function
+
+			function descending(a, b) {
+
+				return b.weight - a.weight;
+			}
+		}
+
+		function getController(id) {
+
+			return getBuild(library.controllers[id], buildController);
+		}
+
+		// image
+
+		function parseImage(xml) {
+
+			var data = {
+				init_from: getElementsByTagName(xml, 'init_from')[0].textContent
+			};
+
+			library.images[xml.getAttribute('id')] = data;
+		}
+
+		function buildImage(data) {
+
+			if (data.build !== undefined) return data.build;
+
+			return data.init_from;
+		}
+
+		function getImage(id) {
+
+			return getBuild(library.images[id], buildImage);
+		}
+
+		// effect
+
+		function parseEffect(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'profile_COMMON':
+						data.profile = parseEffectProfileCOMMON(child);
+						break;
+
+				}
+			}
+
+			library.effects[xml.getAttribute('id')] = data;
+		}
+
+		function parseEffectProfileCOMMON(xml) {
+
+			var data = {
+				surfaces: {},
+				samplers: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'newparam':
+						parseEffectNewparam(child, data);
+						break;
+
+					case 'technique':
+						data.technique = parseEffectTechnique(child);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectNewparam(xml, data) {
+
+			var sid = xml.getAttribute('sid');
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'surface':
+						data.surfaces[sid] = parseEffectSurface(child);
+						break;
+
+					case 'sampler2D':
+						data.samplers[sid] = parseEffectSampler(child);
+						break;
+
+				}
+			}
+		}
+
+		function parseEffectSurface(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'init_from':
+						data.init_from = child.textContent;
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectSampler(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'source':
+						data.source = child.textContent;
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectTechnique(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'constant':
+					case 'lambert':
+					case 'blinn':
+					case 'phong':
+						data.type = child.nodeName;
+						data.parameters = parseEffectParameters(child);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectParameters(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'emission':
+					case 'diffuse':
+					case 'specular':
+					case 'shininess':
+					case 'transparent':
+					case 'transparency':
+						data[child.nodeName] = parseEffectParameter(child);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectParameter(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'color':
+						data[child.nodeName] = parseFloats(child.textContent);
+						break;
+
+					case 'float':
+						data[child.nodeName] = parseFloat(child.textContent);
+						break;
+
+					case 'texture':
+						data[child.nodeName] = { id: child.getAttribute('texture'), extra: parseEffectParameterTexture(child) };
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectParameterTexture(xml) {
+
+			var data = {
+				technique: {}
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'extra':
+						parseEffectParameterTextureExtra(child, data);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseEffectParameterTextureExtra(xml, data) {
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'technique':
+						parseEffectParameterTextureExtraTechnique(child, data);
+						break;
+
+				}
+			}
+		}
+
+		function parseEffectParameterTextureExtraTechnique(xml, data) {
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'repeatU':
+					case 'repeatV':
+					case 'offsetU':
+					case 'offsetV':
+						data.technique[child.nodeName] = parseFloat(child.textContent);
+						break;
+
+					case 'wrapU':
+					case 'wrapV':
+
+						// some files have values for wrapU/wrapV which become NaN via parseInt
+
+						if (child.textContent.toUpperCase() === 'TRUE') {
+
+							data.technique[child.nodeName] = 1;
+						} else if (child.textContent.toUpperCase() === 'FALSE') {
+
+							data.technique[child.nodeName] = 0;
+						} else {
+
+							data.technique[child.nodeName] = parseInt(child.textContent);
+						}
+
+						break;
+
+				}
+			}
+		}
+
+		function buildEffect(data) {
+
+			return data;
+		}
+
+		function getEffect(id) {
+
+			return getBuild(library.effects[id], buildEffect);
+		}
+
+		// material
+
+		function parseMaterial(xml) {
+
+			var data = {
+				name: xml.getAttribute('name')
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'instance_effect':
+						data.url = parseId(child.getAttribute('url'));
+						break;
+
+				}
+			}
+
+			library.materials[xml.getAttribute('id')] = data;
+		}
+
+		function buildMaterial(data) {
+
+			var effect = getEffect(data.url);
+			var technique = effect.profile.technique;
+
+			var material;
+
+			switch (technique.type) {
+
+				case 'phong':
+				case 'blinn':
+					material = new MeshPhongMaterial();
+					break;
+
+				case 'lambert':
+					material = new MeshLambertMaterial();
+					break;
+
+				default:
+					material = new MeshBasicMaterial();
+					break;
+
+			}
+
+			material.name = data.name;
+
+			function getTexture(textureObject) {
+
+				var sampler = effect.profile.samplers[textureObject.id];
+
+				if (sampler !== undefined) {
+
+					var surface = effect.profile.surfaces[sampler.source];
+
+					var texture = textureLoader.load(getImage(surface.init_from));
+
+					var extra = textureObject.extra;
+
+					if (extra !== undefined && extra.technique !== undefined) {
+
+						var technique = extra.technique;
+
+						texture.wrapS = technique.wrapU ? RepeatWrapping : ClampToEdgeWrapping;
+						texture.wrapT = technique.wrapV ? RepeatWrapping : ClampToEdgeWrapping;
+
+						texture.offset.set(technique.offsetU || 0, technique.offsetV || 0);
+						texture.repeat.set(technique.repeatU || 1, technique.repeatV || 1);
+					} else {
+
+						texture.wrapS = RepeatWrapping;
+						texture.wrapT = RepeatWrapping;
+					}
+
+					return texture;
+				}
+
+				console.error('ColladaLoader2: Undefined sampler', textureObject.id);
+
+				return null;
+			}
+
+			var parameters = technique.parameters;
+
+			for (var key in parameters) {
+
+				var parameter = parameters[key];
+
+				switch (key) {
+
+					case 'diffuse':
+						if (parameter.color) material.color.fromArray(parameter.color);
+						if (parameter.texture) material.map = getTexture(parameter.texture);
+						break;
+					case 'specular':
+						if (parameter.color && material.specular) material.specular.fromArray(parameter.color);
+						if (parameter.texture) material.specularMap = getTexture(parameter.texture);
+						break;
+					case 'shininess':
+						if (parameter.float && material.shininess) material.shininess = parameter.float;
+						break;
+					case 'emission':
+						if (parameter.color && material.emissive) material.emissive.fromArray(parameter.color);
+						break;
+					case 'transparent':
+						// if ( parameter.texture ) material.alphaMap = getTexture( parameter.texture );
+						material.transparent = true;
+						break;
+					case 'transparency':
+						if (parameter.float !== undefined) material.opacity = parameter.float;
+						material.transparent = true;
+						break;
+
+				}
+			}
+
+			return material;
+		}
+
+		function getMaterial(id) {
+
+			return getBuild(library.materials[id], buildMaterial);
+		}
+
+		// camera
+
+		function parseCamera(xml) {
+
+			var data = {
+				name: xml.getAttribute('name')
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'optics':
+						data.optics = parseCameraOptics(child);
+						break;
+
+				}
+			}
+
+			library.cameras[xml.getAttribute('id')] = data;
+		}
+
+		function parseCameraOptics(xml) {
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				switch (child.nodeName) {
+
+					case 'technique_common':
+						return parseCameraTechnique(child);
+
+				}
+			}
+
+			return {};
+		}
+
+		function parseCameraTechnique(xml) {
+
+			var data = {};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				switch (child.nodeName) {
+
+					case 'perspective':
+					case 'orthographic':
+
+						data.technique = child.nodeName;
+						data.parameters = parseCameraParameters(child);
+
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseCameraParameters(xml) {
+
+			var data = {};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				switch (child.nodeName) {
+
+					case 'xfov':
+					case 'yfov':
+					case 'xmag':
+					case 'ymag':
+					case 'znear':
+					case 'zfar':
+					case 'aspect_ratio':
+						data[child.nodeName] = parseFloat(child.textContent);
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function buildCamera(data) {
+
+			var camera;
+
+			switch (data.optics.technique) {
+
+				case 'perspective':
+					camera = new PerspectiveCamera(data.optics.parameters.yfov, data.optics.parameters.aspect_ratio, data.optics.parameters.znear, data.optics.parameters.zfar);
+					break;
+
+				case 'orthographic':
+					var ymag = data.optics.parameters.ymag;
+					var xmag = data.optics.parameters.xmag;
+					var aspectRatio = data.optics.parameters.aspect_ratio;
+
+					xmag = xmag === undefined ? ymag * aspectRatio : xmag;
+					ymag = ymag === undefined ? xmag / aspectRatio : ymag;
+
+					xmag *= 0.5;
+					ymag *= 0.5;
+
+					camera = new OrthographicCamera(-xmag, xmag, ymag, -ymag, // left, right, top, bottom
+					data.optics.parameters.znear, data.optics.parameters.zfar);
+					break;
+
+				default:
+					camera = new PerspectiveCamera();
+					break;
+
+			}
+
+			camera.name = data.name;
+
+			return camera;
+		}
+
+		function getCamera(id) {
+
+			return getBuild(library.cameras[id], buildCamera);
+		}
+
+		// light
+
+		function parseLight(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'technique_common':
+						data = parseLightTechnique(child);
+						break;
+
+				}
+			}
+
+			library.lights[xml.getAttribute('id')] = data;
+		}
+
+		function parseLightTechnique(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'directional':
+					case 'point':
+					case 'spot':
+					case 'ambient':
+
+						data.technique = child.nodeName;
+						data.parameters = parseLightParameters(child);
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseLightParameters(xml) {
+
+			var data = {};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'color':
+						var array = parseFloats(child.textContent);
+						data.color = new Color().fromArray(array);
+						break;
+
+					case 'falloff_angle':
+						data.falloffAngle = parseFloat(child.textContent);
+						break;
+
+					case 'quadratic_attenuation':
+						var f = parseFloat(child.textContent);
+						data.distance = f ? Math.sqrt(1 / f) : 0;
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function buildLight(data) {
+
+			var light;
+
+			switch (data.technique) {
+
+				case 'directional':
+					light = new DirectionalLight();
+					break;
+
+				case 'point':
+					light = new PointLight();
+					break;
+
+				case 'spot':
+					light = new SpotLight();
+					break;
+
+				case 'ambient':
+					light = new AmbientLight();
+					break;
+
+			}
+
+			if (data.parameters.color) light.color.copy(data.parameters.color);
+			if (data.parameters.distance) light.distance = data.parameters.distance;
+
+			return light;
+		}
+
+		function getLight(id) {
+
+			return getBuild(library.lights[id], buildLight);
+		}
+
+		// geometry
+
+		function parseGeometry(xml) {
+
+			var data = {
+				name: xml.getAttribute('name'),
+				sources: {},
+				vertices: {},
+				primitives: []
+			};
+
+			var mesh = getElementsByTagName(xml, 'mesh')[0];
+
+			for (var i = 0; i < mesh.childNodes.length; i++) {
+
+				var child = mesh.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				var id = child.getAttribute('id');
+
+				switch (child.nodeName) {
+
+					case 'source':
+						data.sources[id] = parseSource(child);
+						break;
+
+					case 'vertices':
+						// data.sources[ id ] = data.sources[ parseId( getElementsByTagName( child, 'input' )[ 0 ].getAttribute( 'source' ) ) ];
+						data.vertices = parseGeometryVertices(child);
+						break;
+
+					case 'polygons':
+						console.warn('ColladaLoader2: Unsupported primitive type: ', child.nodeName);
+						break;
+
+					case 'lines':
+					case 'linestrips':
+					case 'polylist':
+					case 'triangles':
+						data.primitives.push(parseGeometryPrimitive(child));
+						break;
+
+					default:
+						console.log(child);
+
+				}
+			}
+
+			library.geometries[xml.getAttribute('id')] = data;
+		}
+
+		function parseSource(xml) {
+
+			var data = {
+				array: [],
+				stride: 3
+			};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'float_array':
+						data.array = parseFloats(child.textContent);
+						break;
+
+					case 'Name_array':
+						data.array = parseStrings(child.textContent);
+						break;
+
+					case 'technique_common':
+						var accessor = getElementsByTagName(child, 'accessor')[0];
+
+						if (accessor !== undefined) {
+
+							data.stride = parseInt(accessor.getAttribute('stride'));
+						}
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function parseGeometryVertices(xml) {
+
+			var data = {};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				data[child.getAttribute('semantic')] = parseId(child.getAttribute('source'));
+			}
+
+			return data;
+		}
+
+		function parseGeometryPrimitive(xml) {
+
+			var primitive = {
+				type: xml.nodeName,
+				material: xml.getAttribute('material'),
+				count: parseInt(xml.getAttribute('count')),
+				inputs: {},
+				stride: 0
+			};
+
+			for (var i = 0, l = xml.childNodes.length; i < l; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'input':
+						var id = parseId(child.getAttribute('source'));
+						var semantic = child.getAttribute('semantic');
+						var offset = parseInt(child.getAttribute('offset'));
+						primitive.inputs[semantic] = { id: id, offset: offset };
+						primitive.stride = Math.max(primitive.stride, offset + 1);
+						break;
+
+					case 'vcount':
+						primitive.vcount = parseInts(child.textContent);
+						break;
+
+					case 'p':
+						primitive.p = parseInts(child.textContent);
+						break;
+
+				}
+			}
+
+			return primitive;
+		}
+
+		function buildGeometry(data) {
+
+			var build = {};
+
+			var sources = data.sources;
+			var vertices = data.vertices;
+			var primitives = data.primitives;
+
+			if (primitives.length === 0) return {};
+
+			var position = { array: [], stride: 0 };
+			var normal = { array: [], stride: 0 };
+			var uv = { array: [], stride: 0 };
+			var color = { array: [], stride: 0 };
+
+			var skinIndex = { array: [], stride: 4 };
+			var skinWeight = { array: [], stride: 4 };
+
+			var geometry = new BufferGeometry();
+			geometry.name = data.name || '';
+
+			var materialKeys = [];
+
+			var start = 0,
+			    count = 0;
+			var array;
+
+			for (var p = 0; p < primitives.length; p++) {
+
+				var primitive = primitives[p];
+				var inputs = primitive.inputs;
+				var triangleCount = 1;
+
+				if (primitive.vcount && primitive.vcount[0] === 4) {
+
+					triangleCount = 2; // one quad -> two triangles
+				}
+
+				// groups
+
+				count = primitive.count * 3 * triangleCount;
+				geometry.addGroup(start, count, p);
+				start += count;
+
+				// material
+
+				materialKeys.push(primitive.material);
+
+				// geometry data
+
+				for (var name in inputs) {
+
+					var input = inputs[name];
+
+					switch (name) {
+
+						case 'VERTEX':
+							for (var key in vertices) {
+
+								if (key === 'POSITION') {
+
+									buildGeometryData(primitive, sources[vertices[key]], input.offset, position.array);
+									position.stride = sources[vertices[key]].stride;
+
+									if (sources.skinWeights && sources.skinIndices) {
+
+										buildGeometryData(primitive, sources.skinIndices, input.offset, skinIndex.array);
+										buildGeometryData(primitive, sources.skinWeights, input.offset, skinWeight.array);
+									}
+								}
+							}
+							break;
+
+						case 'NORMAL':
+							buildGeometryData(primitive, sources[input.id], input.offset, normal.array);
+							normal.stride = sources[input.id].stride;
+							break;
+
+						case 'COLOR':
+							buildGeometryData(primitive, sources[input.id], input.offset, color.array);
+							color.stride = sources[input.id].stride;
+							break;
+
+						case 'TEXCOORD':
+							buildGeometryData(primitive, sources[input.id], input.offset, uv.array);
+							uv.stride = sources[input.id].stride;
+							break;
+
+					}
+				}
+			}
+
+			// build geometry
+
+			if (position.array.length > 0) geometry.addAttribute('position', new Float32BufferAttribute(position.array, position.stride));
+			if (normal.array.length > 0) geometry.addAttribute('normal', new Float32BufferAttribute(normal.array, normal.stride));
+			if (color.array.length > 0) geometry.addAttribute('color', new Float32BufferAttribute(color.array, color.stride));
+			if (uv.array.length > 0) geometry.addAttribute('uv', new Float32BufferAttribute(uv.array, uv.stride));
+
+			if (skinIndex.array.length > 0) geometry.addAttribute('skinIndex', new Float32BufferAttribute(skinIndex.array, skinIndex.stride));
+			if (skinWeight.array.length > 0) geometry.addAttribute('skinWeight', new Float32BufferAttribute(skinWeight.array, skinWeight.stride));
+
+			build.data = geometry;
+			build.type = primitives[0].type;
+			build.materialKeys = materialKeys;
+
+			return build;
+		}
+
+		function buildGeometryData(primitive, source, offset, array) {
+
+			var indices = primitive.p;
+			var stride = primitive.stride;
+			var vcount = primitive.vcount;
+
+			function pushVector(i) {
+
+				var index = indices[i + offset] * sourceStride;
+				var length = index + sourceStride;
+
+				for (; index < length; index++) {
+
+					array.push(sourceArray[index]);
+				}
+			}
+
+			var maxcount = 0;
+
+			var sourceArray = source.array;
+			var sourceStride = source.stride;
+
+			if (primitive.vcount !== undefined) {
+
+				var index = 0;
+
+				for (var i = 0, l = vcount.length; i < l; i++) {
+
+					var count = vcount[i];
+
+					if (count === 4) {
+
+						var a = index + stride * 0;
+						var b = index + stride * 1;
+						var c = index + stride * 2;
+						var d = index + stride * 3;
+
+						pushVector(a);pushVector(b);pushVector(d);
+						pushVector(b);pushVector(c);pushVector(d);
+					} else if (count === 3) {
+
+						var a = index + stride * 0;
+						var b = index + stride * 1;
+						var c = index + stride * 2;
+
+						pushVector(a);pushVector(b);pushVector(c);
+					} else {
+
+						maxcount = Math.max(maxcount, count);
+					}
+
+					index += stride * count;
+				}
+
+				if (maxcount > 0) {
+
+					console.log('ColladaLoader2: Geometry has faces with more than 4 vertices.');
+				}
+			} else {
+
+				for (var i = 0, l = indices.length; i < l; i += stride) {
+
+					pushVector(i);
+				}
+			}
+		}
+
+		function getGeometry(id) {
+
+			return getBuild(library.geometries[id], buildGeometry);
+		}
+
+		// nodes
+
+		var matrix = new Matrix4();
+		var vector = new Vector3();
+
+		function parseNode(xml) {
+
+			var data = {
+				name: xml.getAttribute('name'),
+				type: xml.getAttribute('type'),
+				id: xml.getAttribute('id'),
+				sid: xml.getAttribute('sid'),
+				matrix: new Matrix4(),
+				nodes: [],
+				instanceCameras: [],
+				instanceControllers: [],
+				instanceLights: [],
+				instanceGeometries: [],
+				instanceNodes: [],
+				transforms: {}
+			};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				if (child.nodeType !== 1) continue;
+
+				switch (child.nodeName) {
+
+					case 'node':
+
+						if (child.hasAttribute('id')) {
+
+							data.nodes.push(child.getAttribute('id'));
+							parseNode(child);
+						}
+
+						break;
+
+					case 'instance_camera':
+						data.instanceCameras.push(parseId(child.getAttribute('url')));
+						break;
+
+					case 'instance_controller':
+						data.instanceControllers.push(parseNodeInstance(child));
+						break;
+
+					case 'instance_light':
+						data.instanceLights.push(parseId(child.getAttribute('url')));
+						break;
+
+					case 'instance_geometry':
+						data.instanceGeometries.push(parseNodeInstance(child));
+						break;
+
+					case 'instance_node':
+						data.instanceNodes.push(parseId(child.getAttribute('url')));
+						break;
+
+					case 'matrix':
+						var array = parseFloats(child.textContent);
+						data.matrix.multiply(matrix.fromArray(array).transpose());
+						data.transforms[child.getAttribute('sid')] = child.nodeName;
+						break;
+
+					case 'translate':
+						var array = parseFloats(child.textContent);
+						vector.fromArray(array);
+						data.matrix.multiply(matrix.makeTranslation(vector.x, vector.y, vector.z));
+						data.transforms[child.getAttribute('sid')] = child.nodeName;
+						break;
+
+					case 'rotate':
+						var array = parseFloats(child.textContent);
+						var angle = _Math.degToRad(array[3]);
+						data.matrix.multiply(matrix.makeRotationAxis(vector.fromArray(array), angle));
+						data.transforms[child.getAttribute('sid')] = child.nodeName;
+						break;
+
+					case 'scale':
+						var array = parseFloats(child.textContent);
+						data.matrix.scale(vector.fromArray(array));
+						data.transforms[child.getAttribute('sid')] = child.nodeName;
+						break;
+
+					case 'extra':
+						break;
+
+					default:
+						console.log(child);
+
+				}
+			}
+
+			if (xml.hasAttribute('id')) {
+
+				library.nodes[xml.getAttribute('id')] = data;
+			}
+
+			return data;
+		}
+
+		function parseNodeInstance(xml) {
+
+			var data = {
+				id: parseId(xml.getAttribute('url')),
+				materials: {},
+				skeletons: []
+			};
+
+			for (var i = 0; i < xml.childNodes.length; i++) {
+
+				var child = xml.childNodes[i];
+
+				switch (child.nodeName) {
+
+					case 'bind_material':
+						var instances = child.getElementsByTagName('instance_material');
+
+						for (var j = 0; j < instances.length; j++) {
+
+							var instance = instances[j];
+							var symbol = instance.getAttribute('symbol');
+							var target = instance.getAttribute('target');
+
+							data.materials[symbol] = parseId(target);
+						}
+
+						break;
+
+					case 'skeleton':
+						data.skeletons.push(parseId(child.textContent));
+						break;
+
+					default:
+						break;
+
+				}
+			}
+
+			return data;
+		}
+
+		function getSkeleton(skeletons, joints, skinnedMesh) {
+
+			var boneData = [];
+			var sortedBoneData = [];
+
+			var i, j, data;
+
+			// a skeleton can have multiple root bones. collada expresses this
+			// situtation with multiple "skeleton" tags per controller instance
+
+			for (i = 0; i < skeletons.length; i++) {
+
+				var skeleton = skeletons[i];
+				var root = getNode(skeleton);
+
+				// bone hierarchy is a child of the skinned mesh
+
+				skinnedMesh.add(root);
+
+				// setup bone data for a single bone hierarchy
+
+				buildBoneHierarchy(root, joints, boneData);
+			}
+
+			// sort bone data (the order is defined in the corresponding controller)
+
+			for (i = 0; i < joints.length; i++) {
+
+				for (j = 0; j < boneData.length; j++) {
+
+					data = boneData[j];
+
+					if (data.bone.name === joints[i].name) {
+
+						sortedBoneData[i] = data;
+						data.processed = true;
+						break;
+					}
+				}
+			}
+
+			// add unprocessed bone data at the end of the list
+
+			for (i = 0; i < boneData.length; i++) {
+
+				data = boneData[i];
+
+				if (data.processed === false) {
+
+					sortedBoneData.push(data);
+					data.processed = true;
+				}
+			}
+
+			// setup arrays for skeleton creation
+
+			var bones = [];
+			var boneInverses = [];
+
+			for (i = 0; i < sortedBoneData.length; i++) {
+
+				data = sortedBoneData[i];
+
+				bones.push(data.bone);
+				boneInverses.push(data.boneInverse);
+			}
+
+			return new Skeleton(bones, boneInverses);
+		}
+
+		function buildBoneHierarchy(root, joints, boneData) {
+
+			// setup bone data from visual scene
+
+			root.traverse(function (object) {
+
+				if (object.isBone === true) {
+
+					var boneInverse;
+
+					// retrieve the boneInverse from the controller data
+
+					for (var i = 0; i < joints.length; i++) {
+
+						var joint = joints[i];
+
+						if (joint.name === object.name) {
+
+							boneInverse = joint.boneInverse;
+							break;
+						}
+					}
+
+					if (boneInverse === undefined) {
+
+						// Unfortunately, there can be joints in the visual scene that are not part of the
+						// corresponding controller. In this case, we have to create a dummy boneInverse matrix
+						// for the respective bone. This bone won't affect any vertices, because there are no skin indices
+						// and weights defined for it. But we still have to add the bone to the sorted bone list in order to
+						// ensure a correct animation of the model.
+
+						boneInverse = new Matrix4();
+						console.warn('ColladaLoader2: Missing data for bone: %s.', object.name);
+					}
+
+					boneData.push({ bone: object, boneInverse: boneInverse, processed: false });
+				}
+			});
+		}
+
+		function buildNode(data) {
+
+			var objects = [];
+
+			var matrix = data.matrix;
+			var nodes = data.nodes;
+			var type = data.type;
+			var instanceCameras = data.instanceCameras;
+			var instanceControllers = data.instanceControllers;
+			var instanceLights = data.instanceLights;
+			var instanceGeometries = data.instanceGeometries;
+			var instanceNodes = data.instanceNodes;
+
+			for (var i = 0, l = nodes.length; i < l; i++) {
+
+				objects.push(getNode(nodes[i]));
+			}
+
+			for (var i = 0, l = instanceCameras.length; i < l; i++) {
+
+				objects.push(getCamera(instanceCameras[i]).clone());
+			}
+
+			for (var i = 0, l = instanceControllers.length; i < l; i++) {
+
+				var instance = instanceControllers[i];
+				var controller = getController(instance.id);
+				var geometry = getGeometry(controller.id);
+				var materials = resolveMaterialBinding(geometry.materialKeys, instance.materials);
+				var object = getObject(geometry, materials);
+
+				var skeletons = instance.skeletons;
+				var joints = controller.skin.joints;
+
+				var skeleton = getSkeleton(skeletons, joints, object);
+
+				object.bind(skeleton, controller.skin.bindMatrix);
+				object.normalizeSkinWeights();
+
+				objects.push(object);
+			}
+
+			for (var i = 0, l = instanceLights.length; i < l; i++) {
+
+				objects.push(getLight(instanceLights[i]).clone());
+			}
+
+			for (var i = 0, l = instanceGeometries.length; i < l; i++) {
+
+				var instance = instanceGeometries[i];
+				var geometry = getGeometry(instance.id);
+				var materials = resolveMaterialBinding(geometry.materialKeys, instance.materials);
+				var object = getObject(geometry, materials);
+				objects.push(object);
+			}
+
+			for (var i = 0, l = instanceNodes.length; i < l; i++) {
+
+				objects.push(getNode(instanceNodes[i]).clone());
+			}
+
+			var object;
+
+			if (nodes.length === 0 && objects.length === 1) {
+
+				object = objects[0];
+			} else {
+
+				object = type === 'JOINT' ? new Bone() : new Group();
+
+				for (var i = 0; i < objects.length; i++) {
+
+					object.add(objects[i]);
+				}
+			}
+
+			object.name = type === 'JOINT' ? data.sid : data.name;
+			object.matrix.copy(matrix);
+			object.matrix.decompose(object.position, object.quaternion, object.scale);
+
+			return object;
+		}
+
+		function resolveMaterialBinding(keys, instanceMaterials) {
+
+			var materials = [];
+
+			for (var i = 0, l = keys.length; i < l; i++) {
+
+				var id = instanceMaterials[keys[i]];
+				materials.push(getMaterial(id));
+			}
+
+			return materials;
+		}
+
+		function getObject(geometry, materials) {
+
+			var object;
+
+			var skinning = geometry.data.attributes.skinIndex !== undefined;
+
+			if (skinning) {
+
+				for (var i = 0, l = materials.length; i < l; i++) {
+
+					materials[i].skinning = true;
+				}
+			}
+
+			var material = materials.length === 1 ? materials[0] : materials;
+
+			switch (geometry.type) {
+
+				case 'lines':
+					object = new LineSegments(geometry.data, material);
+					break;
+
+				case 'linestrips':
+					object = new Line(geometry.data, material);
+					break;
+
+				case 'triangles':
+				case 'polylist':
+					if (skinning) {
+
+						object = new SkinnedMesh(geometry.data, material);
+					} else {
+
+						object = new Mesh(geometry.data, material);
+					}
+					break;
+
+			}
+
+			return object;
+		}
+
+		function getNode(id) {
+
+			return getBuild(library.nodes[id], buildNode);
+		}
+
+		// visual scenes
+
+		function parseVisualScene(xml) {
+
+			var data = {
+				name: xml.getAttribute('name'),
+				children: []
+			};
+
+			var elements = getElementsByTagName(xml, 'node');
+
+			for (var i = 0; i < elements.length; i++) {
+
+				data.children.push(parseNode(elements[i]));
+			}
+
+			library.visualScenes[xml.getAttribute('id')] = data;
+		}
+
+		function buildVisualScene(data) {
+
+			var group = new Group();
+			group.name = data.name;
+
+			var children = data.children;
+
+			for (var i = 0; i < children.length; i++) {
+
+				group.add(buildNode(children[i]));
+			}
+
+			return group;
+		}
+
+		function getVisualScene(id) {
+
+			return getBuild(library.visualScenes[id], buildVisualScene);
+		}
+
+		// scenes
+
+		function parseScene(xml) {
+
+			var instance = getElementsByTagName(xml, 'instance_visual_scene')[0];
+			return getVisualScene(parseId(instance.getAttribute('url')));
+		}
+
+		function setupAnimations() {
+
+			var clips = library.clips;
+
+			if (isEmpty(clips) === true) {
+
+				if (isEmpty(library.animations) === false) {
+
+					// if there are animations but no clips, we create a default clip for playback
+
+					var tracks = [];
+
+					for (var id in library.animations) {
+
+						var animationTracks = getAnimation(id);
+
+						for (var i = 0, l = animationTracks.length; i < l; i++) {
+
+							tracks.push(animationTracks[i]);
+						}
+					}
+
+					animations.push(new AnimationClip('default', -1, tracks));
+				}
+			} else {
+
+				for (var id in clips) {
+
+					animations.push(getAnimationClip(id));
+				}
+			}
+		}
+
+		console.time('ColladaLoader2');
+
+		if (text.length === 0) {
+
+			return { scene: new Scene() };
+		}
+
+		console.time('ColladaLoader2: DOMParser');
+
+		var xml = new DOMParser().parseFromString(text, 'application/xml');
+
+		console.timeEnd('ColladaLoader2: DOMParser');
+
+		var collada = getElementsByTagName(xml, 'COLLADA')[0];
+
+		// metadata
+
+		var version = collada.getAttribute('version');
+		console.log('ColladaLoader2: File version', version);
+
+		var asset = parseAsset(getElementsByTagName(collada, 'asset')[0]);
+		var textureLoader = new TextureLoader(this.manager).setPath(resourceDirectory);
+
+		//
+
+		var animations = [];
+
+		//
+
+		var library = {
+			animations: {},
+			clips: {},
+			controllers: {},
+			images: {},
+			effects: {},
+			materials: {},
+			cameras: {},
+			lights: {},
+			geometries: {},
+			nodes: {},
+			visualScenes: {}
+		};
+
+		console.time('ColladaLoader2: Parse');
+
+		parseLibrary(collada, 'library_animations', 'animation', parseAnimation);
+		parseLibrary(collada, 'library_animation_clips', 'animation_clip', parseAnimationClip);
+		parseLibrary(collada, 'library_controllers', 'controller', parseController);
+		parseLibrary(collada, 'library_images', 'image', parseImage);
+		parseLibrary(collada, 'library_effects', 'effect', parseEffect);
+		parseLibrary(collada, 'library_materials', 'material', parseMaterial);
+		parseLibrary(collada, 'library_cameras', 'camera', parseCamera);
+		parseLibrary(collada, 'library_lights', 'light', parseLight);
+		parseLibrary(collada, 'library_geometries', 'geometry', parseGeometry);
+		parseLibrary(collada, 'library_nodes', 'node', parseNode);
+		parseLibrary(collada, 'library_visual_scenes', 'visual_scene', parseVisualScene);
+
+		console.timeEnd('ColladaLoader2: Parse');
+
+		console.time('ColladaLoader2: Build');
+
+		buildLibrary(library.animations, buildAnimation);
+		buildLibrary(library.clips, buildAnimationClip);
+		buildLibrary(library.controllers, buildController);
+		buildLibrary(library.images, buildImage);
+		buildLibrary(library.effects, buildEffect);
+		buildLibrary(library.materials, buildMaterial);
+		buildLibrary(library.cameras, buildCamera);
+		buildLibrary(library.lights, buildLight);
+		buildLibrary(library.geometries, buildGeometry);
+		buildLibrary(library.visualScenes, buildVisualScene);
+
+		console.timeEnd('ColladaLoader2: Build');
+
+		setupAnimations();
+
+		var scene = parseScene(getElementsByTagName(collada, 'scene')[0]);
+
+		if (asset.upAxis === 'Z_UP') {
+
+			scene.rotation.x = -Math.PI / 2;
+		}
+
+		scene.scale.multiplyScalar(asset.unit);
+
+		console.timeEnd('ColladaLoader2');
+
+		return {
+			animations: animations,
+			library: library,
+			scene: scene
+		};
+	}
+
+};
+
+var loadingManager = new LoadingManager();
+
+var percentComplete = 0;
+
+// hide the upload form when loading starts so that the progress bar can be shown
+loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+  percentComplete = 0;
+  HTMLControl.setOnLoadStartState();
+};
+
+loadingManager.onLoad = function () {
+
+  HTMLControl.setOnLoadEndState();
+};
+
+loadingManager.onProgress = function (url, currentFile, totalFiles) {
+
+  // console.log( 'on progress ', percentComplete)
+  if (percentComplete < 100) {
+
+    percentComplete += 10 / totalFiles;
+    HTMLControl.loading.progress.style.width = percentComplete + '%';
+  }
+};
+
+loadingManager.onError = function (msg) {
+
+  if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
+};
+
+var objectLoader = null;
+var bufferGeometryLoader = null;
+var jsonLoader = null;
+var fbxLoader = null;
+var gltfLoader = null; // todo
+var gltf2Loader = null;
+var objLoader = null; // todo
+var objLoader2 = null;
+var mtlLoader = null;
+var colladaLoader = null; // todo
+var colladaLoader2 = null;
+
+// object loaders require access to .setMaterials function
+var oLoader = new OBJLoader(loadingManager);
+var oLoader2 = new OBJLoader2(loadingManager);
+// don't use loadingManager here as this is called early to preload materials
+// required for access to .setPath
+var mtlLdr = new MTLLoader();
+
+var defaultReject = function (err) {
+  console.log(err);
+};
+
+var promisifyLoader = function (loader) {
+  return function (url) {
+    return new Promise(function (resolve) {
+      var reject = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultReject;
+
+
+      loader.load(url, resolve, loadingManager.onProgress, loadingManager.onError);
+    });
+  };
+};
+
+var Loaders = function Loaders() {
+  classCallCheck(this, Loaders);
+
+
+  return {
+
+    get objectLoader() {
+      if (objectLoader === null) {
+        objectLoader = promisifyLoader(new ObjectLoader(loadingManager));
+      }
+      return objectLoader;
+    },
+
+    get bufferGeometryLoader() {
+      if (bufferGeometryLoader === null) {
+        bufferGeometryLoader = promisifyLoader(new BufferGeometryLoader(loadingManager));
+      }
+      return bufferGeometryLoader;
+    },
+
+    get jsonLoader() {
+      if (jsonLoader === null) {
+        jsonLoader = promisifyLoader(new JSONLoader(loadingManager));
+      }
+      return jsonLoader;
+    },
+
+    get fbxLoader() {
+      if (fbxLoader === null) {
+        fbxLoader = promisifyLoader(new FBXLoader(loadingManager));
+      }
+      return fbxLoader;
+    },
+
+    get gltfLoader() {
+      if (gltfLoader === null) {
+        gltfLoader = promisifyLoader(new GLTFLoader(loadingManager));
+      }
+      return gltfLoader;
+    },
+
+    get gltf2Loader() {
+      if (gltf2Loader === null) {
+        gltf2Loader = promisifyLoader(new GLTF2Loader(loadingManager));
+      }
+      return gltf2Loader;
+    },
+
+    get objLoader() {
+      if (objLoader === null) {
+        objLoader = promisifyLoader(oLoader);
+      }
+      return objLoader;
+    },
+
+    get objLoader2() {
+      if (objLoader2 === null) {
+        objLoader2 = promisifyLoader(oLoader2);
+      }
+      return objLoader2;
+    },
+
+    assignObjectLoaderMtls: function (mtls) {
+
+      oLoader.setMaterials(mtls);
+      oLoader2.setMaterials(mtls);
+    },
+
+    get mtlLoader() {
+      if (mtlLoader === null) {
+        mtlLoader = promisifyLoader(mtlLdr);
+      }
+      return mtlLoader;
+    },
+
+    setMtlLoaderPath: function (path) {
+      mtlLdr.setPath(path);
+    },
+
+
+    get colladaLoader() {
+      if (colladaLoader === null) {
+        colladaLoader = promisifyLoader(new ColladaLoader(loadingManager));
+      }
+      return colladaLoader;
+    },
+
+    get colladaLoader2() {
+      if (colladaLoader2 === null) {
+        colladaLoader2 = promisifyLoader(new ColladaLoader2(loadingManager));
+      }
+      return colladaLoader2;
+    }
+
+  };
+};
+
+var loaders$1 = new Loaders();
+var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
+
+var OnLoadCallbacks = function () {
+  function OnLoadCallbacks() {
+    classCallCheck(this, OnLoadCallbacks);
+  }
+
+  OnLoadCallbacks.onJSONBufferGeometryLoad = function onJSONBufferGeometryLoad(file) {
+
+    console.log('Using THREE.BufferGeometryLoader');
+
+    var promise = loaders$1.bufferGeometryLoader(file);
+    promise.then(function (geometry) {
+
+      var object = new Mesh(geometry, defaultMat);
+      loaderCanvas.addObjectToScene(object);
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onJSONGeometryLoad = function onJSONGeometryLoad(file) {
+
+    console.log('Using THREE.JSONLoader');
+
+    var promise = loaders$1.jsonLoader(file);
+    promise.then(function (geometry) {
+
+      var object = new Mesh(geometry, defaultMat);
+      loaderCanvas.addObjectToScene(object);
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onJSONObjectLoad = function onJSONObjectLoad(file) {
+
+    console.log('Using THREE.ObjectLoader');
+
+    var promise = loaders$1.objectLoader(file);
+    promise.then(function (object) {
+
+      loaderCanvas.addObjectToScene(object);
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onFBXLoad = function onFBXLoad(file) {
+
+    console.log('Using THREE.FBXLoader');
+
+    var promise = loaders$1.fbxLoader(file);
+
+    promise.then(function (result) {
+
+      loaderCanvas.addObjectToScene(result);
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onGLTFLoad = function onGLTFLoad(file) {
+
+    var promise = new Promise(function (resolve, reject) {});
+
+    promise = loaders$1.gltf2Loader(file);
+
+    promise.then(function (gltf) {
+
+      if (gltf.scenes.length > 1) {
+
+        gltf.scenes.forEach(function (scene) {
+
+          if (gltf.animations) scene.animations = gltf.animations;
+          loaderCanvas.addObjectToScene(scene);
+        });
+      } else if (gltf.scene) {
+
+        if (gltf.animations) gltf.scene.animations = gltf.animations;
+        loaderCanvas.addObjectToScene(gltf.scene);
+      } else {
+
+        console.error('No scene found in GLTF file.');
+      }
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onOBJLoad = function onOBJLoad(file) {
+
+    // only objLoader2 is working
+    var promise = new Promise(function (resolve) {});
+
+    console.log('Using THREE.OBJLoader2');
+
+    promise = loaders$1.objLoader2(file);
+
+    promise.then(function (object) {
+
+      loaderCanvas.addObjectToScene(object);
+    });
+
+    return promise;
+  };
+
+  OnLoadCallbacks.onDAELoad = function onDAELoad(file) {
+
+    var promise = new Promise(function (resolve) {});
+
+    console.log('Using THREE.ColladaLoader2');
+
+    promise = loaders$1.colladaLoader2(file);
+
+    promise.then(function (result) {
+
+      var object = result.scene;
+
+      if (result.animations && result.animations.length > 0) object.animations = result.animations;
+
+      loaderCanvas.addObjectToScene(object);
+    });
+
+    return promise;
+  };
+
+  return OnLoadCallbacks;
+}();
+
+var loaders = new Loaders();
+
+HTMLControl.demos.FBX.addEventListener('click', throttle(function () {
+
+  OnLoadCallbacks.onFBXLoad('/assets/models/loader/xsi_man_skinning.fbx');
+  OnLoadCallbacks.onFBXLoad('/assets/models/loader/nurbs.fbx');
+}, 3000), false);
+
+HTMLControl.demos.GLTF.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  OnLoadCallbacks.onGLTFLoad('/assets/models/loader/CesiumMan.glb');
+}, 3000), false);
+
+HTMLControl.demos.JSONGeo.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  OnLoadCallbacks.onJSONGeometryLoad('/assets/models/loader/platform_geo.json');
+}, 3000), false);
+
+HTMLControl.demos.JSONBuffer.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  OnLoadCallbacks.onJSONBufferGeometryLoad('/assets/models/loader/suzanne.json');
+}, 3000), false);
+
+HTMLControl.demos.JSONScene.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  OnLoadCallbacks.onJSONObjectLoad('/assets/models/loader/pump.json');
+}, 3000), false);
+
+HTMLControl.demos.Collada.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  OnLoadCallbacks.onDAELoad('/assets/models/loader/avatar.dae');
+}, 3000), false);
+
+HTMLControl.demos.OBJ.addEventListener('click', throttle(function (e) {
+
+  e.preventDefault();
+
+  loaders.setMtlLoaderPath('/assets/models/loader/');
+
+  var promise = loaders.mtlLoader('male02_dds.mtl');
+
+  promise.then(function (materials) {
+
+    materials.preload();
+    loaders.assignObjectLoaderMtls(materials.materials);
+
+    OnLoadCallbacks.onOBJLoad('/assets/models/loader/male02_dds.obj');
+  });
+}, 3000), false);
+
+var goFullscreen = function (elem) {
+
+  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+};
+
+HTMLControl.fullscreenButton.addEventListener('click', function (e) {
+
+  e.preventDefault();
+  goFullscreen(HTMLControl.canvas);
+}, false);
+
+// override console functions to show errors and warnings on the page
+console.warn = errorHandler;
+console.error = errorHandler;
+
+initFooter();
 
 }());

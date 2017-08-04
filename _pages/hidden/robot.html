@@ -1,0 +1,87 @@
+---
+layout: single
+title: "Robot Simulation"
+excerpt: ""
+categories: work
+permalink: /hidden/robot/
+comments: false
+js:
+  robot
+css:
+  loader
+vendor-js:
+  [ "/zip/inflate.min" ]
+---
+
+<div id="view-container" class="control-panel">
+  <canvas id="viewer-canvas" class="fill"></canvas>
+
+  <div id="controls">
+
+    <div id="animation-controls" class="hide">
+
+      <select id="animation-clips">
+        <option value="static">Static Pose</option>
+      </select>
+
+      <a href="#" id="playback-control">
+        <span id="play-button" class="fa fa-lg fa-play-circle hide" aria-hidden="true"></span>
+        <span id="pause-button" class="fa fa-lg fa-pause-circle" aria-hidden="true"></span>
+      </a>
+
+      <input id="animation-slider" type="range" min="0" max="100" value="0" class="loader-slider"/>
+
+    </div>
+
+    <div id="right-buttons">
+
+      <a href="#" id="fullscreen-button">
+        <span class="fa fa-lg fa-arrows-alt" aria-hidden="true"></span>
+      </a>
+    </div>
+
+  </div>
+
+
+
+
+  <div id="loading-overlay" class="fill">
+
+
+    <div id="loading-bar" class="hide">
+      <span id="bar">
+        <span id="progress"></span>
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="info">
+
+  <div class="hide reveal-on-load">
+    <br><button id="reset">Reset</button>
+
+
+  </div>
+
+  <div id="error-overlay" class="hide notice--info">
+    <h2>The following error(s) and warning(s) occurred:</h2>
+    <div id="error-messages"></div>
+  </div>
+
+  <div id="demos" class="hide-on-load">
+    <h3>Demos</h3>
+    <p>
+      <a href="#" id="demo-fbx">Multiple FBX models (nurbs curves and skinned Xsi man)</a><br>
+      <a href="#" id="demo-gltf">GLTF</a><br>
+      <a href="#" id="demo-json-geo">JSON - Geometry</a><br>
+      <a href="#" id="demo-json-buffer">JSON - BufferGeometry</a><br>
+      <a href="#" id="demo-json-scene">JSON - Scene</a><br>
+      <a href="#" id="demo-collada">Collada (DAE)</a><br>
+      <a href="#" id="demo-obj">OBJ + MTL with DDS textures</a><br>
+    </p>
+  </div>
+
+</div>

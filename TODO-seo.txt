@@ -1,4 +1,1 @@
-update date on each page
-every relevant page at least 500 words
-Double check redirects from http to https and www.b.. to .b..
 Structured data markup

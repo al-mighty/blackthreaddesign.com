@@ -1,82 +1,43 @@
 @import "colors";
 
-$perspective: 1200px;
-$scale :0.75;
-$rotationX: 45deg;
-$rotationY: 8deg;
-$rotationZ: 0;
-
-$steps:2; //has to match js
-
-$blur-deviation:0.4;
-$color:#222;
-
-#about-content {
+#about-me {
 	position: relative;
-	height: 100%;
-	height: 100%;
+  float: right;
+  width: 50%;
 }
 
-#about-original {
-
-  // background: linear-gradient( 180deg, rgba( 0,0,0,0.1 ), rgba( 0,0,0,0.2 ) ); 
-  // background-size:100vw 100vh;
-  // background-attachment:fixed;
-
-}
-
-.realistic{
-
-  font-size: 150%;
-
-  position:absolute;
-  top:-300px;
-
-  
-	// max-width:900px;
-
-	-webkit-filter: contrast(7);
-  opacity:1/(($steps*2));
-  transform-origin:50% 600px; 
-
-
-
-  transform: scale($scale,$scale) perspective($perspective) rotateY($rotationY) rotateX($rotationX); 
-  text-shadow:0 0 3px transparentize($color,0.4),0 0 1px transparentize($color,0.8);
-  text-align:justify;
-}
-
-.realistic.blur{
-  pointer-events:none;
-}
-
-$transform:scale($scale,$scale) perspective($perspective);
-$step:$blur-deviation/$steps;
-@for $i from 1 through $steps{
-  $cur:$step*($i);
-  .realistic.blur-top:nth-child(#{$i}){
-    transform: $transform rotateY($rotationY + $cur) rotateX($rotationX + $cur);
-  }
-  .realistic.blur-bottom:nth-child(#{$i}){
-    transform: $transform rotateY($rotationY - $cur) rotateX($rotationX - $cur);
-  }
-}
-.realistic.blur1{
-  transform: scale($scale,$scale) perspective($perspective) rotateY($rotationY + $blur-deviation) rotateX($rotationX + $blur-deviation);
-}
-
-.realistic.blur2{
-  transform: scale($scale,$scale) perspective($perspective) rotateY($rotationY - $blur-deviation) rotateX($rotationX - $blur-deviation) ;
+#profile-img {
+  float: left;
+  width: 40vmin;
+  height: 40vmin;
 }
 
 
-.overlay{
-  position:absolute;
-  top:0;
-  left:0;
-  bottom:0;
-  right:0;
-  background:linear-gradient(transparentize(#eee,0.7),transparentize(#eee,1));
-  z-index:99;
-  pointer-events:none; 
+.flip-container {
+  perspective:1200;
+  transition:all 0.6s;
+  transform-style:preserve-3d;
+}
+.flip-container:hover {
+  -webkit-transform:rotateY(180deg);
+  -moz-transform:rotateY(180deg);
+}
+
+.front, .back {
+  backface-visibility:hidden;
+}
+.back {
+  z-index:800;
+  transform:rotateY(-180deg);
+}
+
+.flip-container img {
+  vertical-align:middle;
+  display:inline-block;
+  line-height:1.4;
+}
+.cont {
+  position: absolute;
+  border-radius:50%;
+  border: 3px solid $dark-blue;
 }
