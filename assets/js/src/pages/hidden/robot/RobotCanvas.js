@@ -13,7 +13,7 @@ import HTMLControl from './utilities/HTMLControl.js';
 // Set up THREE caching
 THREE.Cache.enabled = true;
 
-class LoaderCanvas {
+class RobotCanvas {
 
   constructor( canvas ) {
 
@@ -96,6 +96,6 @@ class LoaderCanvas {
 
 }
 
-const loaderCanvas = new LoaderCanvas( HTMLControl.canvas );
+const robotCanvas = new RobotCanvas( HTMLControl.canvas );
 
-export default loaderCanvas;
+export default robotCanvas;

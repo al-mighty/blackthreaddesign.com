@@ -1,5 +1,4 @@
 import errorHandler from './utilities/errorHandler.js';
-import './utilities/initDemos.js';
 import HTMLControl from './utilities/HTMLControl.js';
 
 const goFullscreen = ( elem ) => {
