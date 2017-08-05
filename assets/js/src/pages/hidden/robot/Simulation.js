@@ -1,35 +1,56 @@
 import * as THREE from 'three';
 
-import OnLoadCallbacks from './utilities/onLoadCallbacks.js';
-import robotCanvas from './RobotCanvas.js';
+import canvas from './Canvas.js';
+
+import Loaders from './utilities/Loaders.js';
+
+const loaders = new Loaders();
 
 export default class Simulation {
 
   constructor() {
 
+    this.loadingPromises = [];
+
     this.loadModels();
 
-    this.tempBall();
+    canvas.app.controls.rotateUp( Math.PI / 12 );
 
   }
 
   loadModels() {
 
-    OnLoadCallbacks.onFBXLoad( '/assets/models/robot/field_01.fbx' );
-    OnLoadCallbacks.onFBXLoad( '/assets/models/robot/nao_01.fbx' );
+    const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( result ) => {
 
-  }
+      // field width width ~140cm, length ~200cm
+      canvas.addObjectToScene( result );
 
-  tempBall() {
+    } );
 
-    const geo = new THREE.SphereBufferGeometry( 50, 16, 16 );
-    geo.translate( 0, 37.5, 0 );
+    const naoPromise = loaders.fbxLoader( '/assets/models/robot/nao.fbx' ).then( ( result ) => {
 
-    const mat = new THREE.MeshStandardMaterial( { color: 0xefefef } );
+      result.position.set( -50, 0, 0 );
 
-    const ballMesh = new THREE.Mesh( geo, mat );
+      canvas.addObjectToScene( result );
 
-    robotCanvas.addObjectToScene( ballMesh );
+      this.nao = result;
+
+    } );
+
+    const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( result ) => {
+
+      result.position.set( 0, 5, 0 );
+      result.rotation.set( 0, - Math.PI / 2, 0 );
+
+      canvas.addObjectToScene( result );
+
+      this.ball = result;
+
+      console.log( result )
+
+    } );
+
+    this.loadingPromises = [ fieldPromise, naoPromise, ballPromise ];
 
   }
 

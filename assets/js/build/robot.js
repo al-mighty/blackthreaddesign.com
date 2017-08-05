@@ -52044,6 +52044,8 @@ function OrbitControls(object, domElement) {
 		sphericalDelta.phi -= angle;
 	}
 
+	this.rotateUp = rotateUp;
+
 	var panLeft = function () {
 
 		var v = new Vector3();
@@ -52596,118 +52598,6 @@ function OrbitControls(object, domElement) {
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
 
-Object.defineProperties(OrbitControls.prototype, {
-
-	center: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .center has been renamed to .target');
-			return this.target;
-		}
-
-	},
-
-	// backward compatibility
-
-	noZoom: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.');
-			return !this.enableZoom;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.');
-			this.enableZoom = !value;
-		}
-
-	},
-
-	noRotate: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.');
-			return !this.enableRotate;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.');
-			this.enableRotate = !value;
-		}
-
-	},
-
-	noPan: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.');
-			return !this.enablePan;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.');
-			this.enablePan = !value;
-		}
-
-	},
-
-	noKeys: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.');
-			return !this.enableKeys;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.');
-			this.enableKeys = !value;
-		}
-
-	},
-
-	staticMoving: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.');
-			return !this.enableDamping;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.');
-			this.enableDamping = !value;
-		}
-
-	},
-
-	dynamicDampingFactor: {
-
-		get: function () {
-
-			console.warn('THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.');
-			return this.dampingFactor;
-		},
-
-		set: function (value) {
-
-			console.warn('THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.');
-			this.dampingFactor = value;
-		}
-
-	}
-
-});
-
 function App(canvas) {
 
   var self = this;
@@ -52929,7 +52819,7 @@ function App(canvas) {
 
     cameraZ *= 1.25; // zoom out a little so that objects don't fill the screen
 
-    this.camera.position.set(center.x, center.y, cameraZ);
+    this.camera.position.z = cameraZ;
 
     var minZ = boundingBox.min.z;
     var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
@@ -53234,9 +53124,9 @@ var LightingSetup = function () {
     return LightingSetup;
 }();
 
-var RobotCanvas = function () {
-  function RobotCanvas(canvas) {
-    classCallCheck(this, RobotCanvas);
+var Canvas = function () {
+  function Canvas(canvas) {
+    classCallCheck(this, Canvas);
 
 
     var self = this;
@@ -53273,7 +53163,7 @@ var RobotCanvas = function () {
     this.initReset();
   }
 
-  RobotCanvas.prototype.addObjectToScene = function addObjectToScene(object) {
+  Canvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
     if (object === undefined) {
 
@@ -53291,7 +53181,7 @@ var RobotCanvas = function () {
     this.app.play();
   };
 
-  RobotCanvas.prototype.initReset = function initReset() {
+  Canvas.prototype.initReset = function initReset() {
     var _this = this;
 
     HTMLControl.reset.addEventListener('click', function () {
@@ -53302,10 +53192,10 @@ var RobotCanvas = function () {
     });
   };
 
-  return RobotCanvas;
+  return Canvas;
 }();
 
-var robotCanvas = new RobotCanvas(HTMLControl.canvas);
+var canvas$1 = new Canvas(HTMLControl.canvas);
 
 function DDSLoader() {
 
@@ -72726,54 +72616,49 @@ var Loaders = function Loaders() {
 
 var loaders = new Loaders();
 
-var OnLoadCallbacks = function () {
-  function OnLoadCallbacks() {
-    classCallCheck(this, OnLoadCallbacks);
-  }
-
-  OnLoadCallbacks.onFBXLoad = function onFBXLoad(file) {
-
-    console.log('Using THREE.FBXLoader');
-
-    var promise = loaders.fbxLoader(file);
-
-    promise.then(function (result) {
-
-      robotCanvas.addObjectToScene(result);
-    });
-
-    return promise;
-  };
-
-  return OnLoadCallbacks;
-}();
-
 var Simulation = function () {
     function Simulation() {
         classCallCheck(this, Simulation);
 
 
+        this.loadingPromises = [];
+
         this.loadModels();
 
-        this.tempBall();
+        canvas$1.app.controls.rotateUp(Math.PI / 12);
     }
 
     Simulation.prototype.loadModels = function loadModels() {
+        var _this = this;
 
-        OnLoadCallbacks.onFBXLoad('/assets/models/robot/field_01.fbx');
-        OnLoadCallbacks.onFBXLoad('/assets/models/robot/nao_01.fbx');
-    };
+        var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (result) {
 
-    Simulation.prototype.tempBall = function tempBall() {
+            // field width width ~140cm, length ~200cm
+            canvas$1.addObjectToScene(result);
+        });
 
-        var geo = new SphereBufferGeometry(50, 16, 16);
-        geo.translate(0, 37.5, 0);
+        var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (result) {
 
-        var mat = new MeshStandardMaterial({ color: 0xefefef });
+            result.position.set(-50, 0, 0);
 
-        var ballMesh = new Mesh(geo, mat);
+            canvas$1.addObjectToScene(result);
 
-        robotCanvas.addObjectToScene(ballMesh);
+            _this.nao = result;
+        });
+
+        var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (result) {
+
+            result.position.set(0, 5, 0);
+            result.rotation.set(0, -Math.PI / 2, 0);
+
+            canvas$1.addObjectToScene(result);
+
+            _this.ball = result;
+
+            console.log(result);
+        });
+
+        this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
     };
 
     return Simulation;

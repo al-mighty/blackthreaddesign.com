@@ -260,7 +260,7 @@ function App( canvas ) {
 
     cameraZ *= 1.25; // zoom out a little so that objects don't fill the screen
 
-    this.camera.position.set( center.x, center.y, cameraZ );
+    this.camera.position.z = cameraZ;
 
     const minZ = boundingBox.min.z;
     const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
