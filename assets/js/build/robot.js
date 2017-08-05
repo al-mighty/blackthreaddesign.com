@@ -72654,8 +72654,6 @@ var Simulation = function () {
             canvas$1.addObjectToScene(result);
 
             _this.ball = result;
-
-            console.log(result);
         });
 
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];

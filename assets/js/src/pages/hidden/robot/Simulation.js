@@ -40,13 +40,11 @@ export default class Simulation {
     const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( result ) => {
 
       result.position.set( 0, 5, 0 );
-      result.rotation.set( 0, - Math.PI / 2, 0 );
+      result.rotation.set( 0, -Math.PI / 2, 0 );
 
       canvas.addObjectToScene( result );
 
       this.ball = result;
-
-      console.log( result )
 
     } );
 
