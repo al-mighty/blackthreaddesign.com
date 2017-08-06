@@ -225,10 +225,14 @@ export default class OnLoadCallbacks {
 
       promise.then( ( result ) => {
 
+
+
         const object = result.scene;
 
         if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
 
+        // object.scale.set( 1, 1, 1)
+        // console.log( object)
         loaderCanvas.addObjectToScene( object );
 
         // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually

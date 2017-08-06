@@ -2,11 +2,12 @@ import * as THREE from 'three';
 
 import App from 'App/App.js';
 
-import AnimationControls from './utilities/AnimationControls.js';
-
 import LightingSetup from './utilities/LightingSetup.js';
 
 import HTMLControl from './utilities/HTMLControl.js';
+
+import animationControls from './utilities/AnimationControls.js';
+
 
 /* ******************************************************** */
 
@@ -25,13 +26,11 @@ class Canvas {
 
     this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
 
-    this.animationControls = new AnimationControls();
-
     // Put any per frame calculation here
     this.app.onUpdate = function () {
       // NB: use self inside this function
 
-      self.animationControls.update( self.app.delta );
+      animationControls.update( self.app.delta );
 
     };
 
@@ -62,15 +61,10 @@ class Canvas {
       return;
 
     }
-
-    this.animationControls.initAnimation( object );
-
     this.loadedObjects.add( object );
 
     // fit camera to all loaded objects
     this.app.fitCameraToObject( this.loadedObjects );
-
-    this.app.play();
 
   }
 
@@ -78,7 +72,8 @@ class Canvas {
   initReset() {
 
     HTMLControl.reset.addEventListener( 'click', () => {
-      this.animationControls.reset();
+
+      animationControls.reset();
       this.app.controls.reset();
 
       HTMLControl.setInitialState();

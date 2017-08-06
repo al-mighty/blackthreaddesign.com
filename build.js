@@ -95,12 +95,33 @@ const eventHandler = ( file ) => {
   };
 };
 
-// Read all files in a folder
-fs.readdir( 'assets/js/src/entry', ( err, files ) => {
-  files.forEach( ( file ) => {
-    const entryConfig = config( 'assets/js/src/entry/' + file, 'assets/js/build/' + file, file, defaultPlugins );
-    const watcher = watch( rollup, entryConfig );
-    const entryEventHandler = eventHandler( file );
-    watcher.on( 'event', entryEventHandler );
+// pass in a single filename, e.g. 'main' to process only that file
+if ( process.argv[ 2 ] !== undefined ) {
+
+  const name = process.argv[ 2 ] + '.js';
+
+  fs.readdir( 'assets/js/src/entry', ( err, files ) => {
+    files.forEach( ( file ) => {
+
+      if ( file !== name ) return;
+
+      const entryConfig = config( 'assets/js/src/entry/' + file, 'assets/js/build/' + file, file, defaultPlugins );
+      const watcher = watch( rollup, entryConfig );
+      const entryEventHandler = eventHandler( file );
+      watcher.on( 'event', entryEventHandler );
+    } );
+
   } );
-} );
+
+} else {
+
+  fs.readdir( 'assets/js/src/entry', ( err, files ) => {
+    files.forEach( ( file ) => {
+      const entryConfig = config( 'assets/js/src/entry/' + file, 'assets/js/build/' + file, file, defaultPlugins );
+      const watcher = watch( rollup, entryConfig );
+      const entryEventHandler = eventHandler( file );
+      watcher.on( 'event', entryEventHandler );
+    } );
+  } );
+
+}

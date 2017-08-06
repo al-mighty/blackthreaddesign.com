@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 import HTMLControl from './HTMLControl.js';
 
-export default class AnimationControls {
+class AnimationControls {
 
   constructor( ) {
 
@@ -18,22 +18,6 @@ export default class AnimationControls {
   }
 
   reset() {
-
-    this.clips = [];
-    this.mixers = [];
-    this.actions = [];
-    this.animationNames = [];
-
-    this.currentMixer = null;
-    this.currentAction = null;
-    this.isPaused = false;
-    this.pauseButtonActive = false;
-
-    HTMLControl.animation.playbackControl.removeEventListener( 'click', this.playPause, false );
-    HTMLControl.animation.slider.removeEventListener( 'mousedown', this.sliderMouseDownEvent, false );
-    HTMLControl.animation.slider.removeEventListener( 'input', this.sliderInputEvent, false );
-    HTMLControl.animation.slider.removeEventListener( 'mouseup', this.sliderMouseupEvent, false );
-    HTMLControl.animation.clipsSelection.removeEventListener( 'change', this.clipsChangeEvent, false );
 
   }
 
@@ -52,36 +36,28 @@ export default class AnimationControls {
 
   }
 
-  initAnimation( object ) {
+  initAnimation( object, animationClip, name ) {
 
-    // don't do anything if the object has no animations
-    if ( !object.animations || object.animations.length === 0 ) return;
+    if ( !( animationClip instanceof THREE.AnimationClip ) ) {
 
-    object.animations.forEach( ( animation ) => {
+      console.warn( 'Some animations are not valid THREE.AnimationClips. Skipping these.' );
 
-      if ( !( animation instanceof THREE.AnimationClip ) ) {
+      return;
 
-        console.warn( 'Some animations are not valid THREE.AnimationClips. Skipping these.' );
+    }
 
-        return;
+    if ( name !== undefined ) animationClip.name = name;
 
-      }
+    const mixer = new THREE.AnimationMixer( object );
 
-      const mixer = new THREE.AnimationMixer( object );
+    const action = mixer.clipAction( animationClip );
 
-      const action = mixer.clipAction( animation );
+    this.clips.push( animationClip );
+    this.mixers.push( mixer );
+    this.actions.push( action );
+    this.animationNames.push( animationClip.name );
 
-      this.clips.push( animation );
-      this.mixers.push( mixer );
-      this.actions.push( action );
-      this.animationNames.push( animation.name );
-
-      HTMLControl.animation.clipsSelection.appendChild( new Option( animation.name, animation.name ) );
-
-    } );
-
-    // If all animations have been skipped, return
-    if ( this.animationNames.length === 0 ) return;
+    HTMLControl.animation.clipsSelection.appendChild( new Option( animationClip.name, animationClip.name ) );
 
     this.selectCurrentAnimation( this.animationNames[ 0 ] );
 
@@ -229,3 +205,7 @@ export default class AnimationControls {
   }
 
 }
+
+const animationControls = new AnimationControls();
+
+export default animationControls;
