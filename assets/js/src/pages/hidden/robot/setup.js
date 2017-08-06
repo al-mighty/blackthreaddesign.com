@@ -25,7 +25,7 @@ const goFullscreen = ( elem ) => {
 
 };
 
-HTMLControl.fullscreenButton.addEventListener( 'click', ( e ) => {
+HTMLControl.controls.fullscreen.addEventListener( 'click', ( e ) => {
 
   e.preventDefault();
   goFullscreen( HTMLControl.canvas );

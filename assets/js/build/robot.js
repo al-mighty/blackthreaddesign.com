@@ -9078,13 +9078,7 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
-// const loadOverlay =
 var canvas = document.querySelector('#viewer-canvas');
-var reset = document.querySelector('#reset');
-
-var fullscreenButton = document.querySelector('#fullscreen-button');
-var slope = document.querySelector('#slope');
-var simulate = document.querySelector('#simulate');
 
 var error = {
   overlay: document.querySelector('#error-overlay'),
@@ -9110,8 +9104,10 @@ var loading = {
 
 var controls = {
   links: document.querySelector('#controls').querySelectorAll('span'),
-  button: document.querySelector('#toggle-background'),
-  sliders: document.querySelectorAll('.loader-slider')
+  reset: document.querySelector('#reset'),
+  slope: document.querySelector('#slope'),
+  simulate: document.querySelector('#simulate'),
+  fullscreen: document.querySelector('#fullscreen-button')
 };
 
 var HTMLControl = function () {
@@ -9120,10 +9116,14 @@ var HTMLControl = function () {
   }
 
   HTMLControl.setInitialState = function setInitialState() {
-    slope.value = 0;
+    controls.slope.value = 0;
 
     error.overlay.classList.add('hide');
     error.messages.innerHTML = '';
+
+    controls.simulate.disabled = false;
+    controls.slope.disabled = false;
+    controls.reset.disabled = true;
   };
 
   HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
@@ -9144,30 +9144,14 @@ var HTMLControl = function () {
     }
   };
 
-  HTMLControl.setBlackBackgroundState = function setBlackBackgroundState() {
-    for (var i = 0; i < controls.links.length; i++) {
-
-      controls.links[i].style.color = 'white';
-    }
-
-    for (var _i2 = 0; _i2 < controls.sliders.length; _i2++) {
-
-      controls.sliders[_i2].style.backgroundColor = 'white';
-    }
-  };
-
   return HTMLControl;
 }();
 
 HTMLControl.canvas = canvas;
-HTMLControl.reset = reset;
-HTMLControl.fullscreenButton = fullscreenButton;
 HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
-HTMLControl.slope = slope;
-HTMLControl.simulate = simulate;
 
 var cachedMessages = {};
 
@@ -9217,7 +9201,7 @@ var goFullscreen = function (elem) {
   }
 };
 
-HTMLControl.fullscreenButton.addEventListener('click', function (e) {
+HTMLControl.controls.fullscreen.addEventListener('click', function (e) {
 
   e.preventDefault();
   goFullscreen(HTMLControl.canvas);
@@ -53118,9 +53102,16 @@ var Canvas = function () {
     this.app.scene.add(this.loadedObjects);
 
     this.app.initControls();
+    this.initControls();
 
     this.initReset();
   }
+
+  Canvas.prototype.initControls = function initControls() {
+
+    this.app.controls.minPolarAngle = 0;
+    this.app.controls.maxPolarAngle = Math.PI / 2;
+  };
 
   Canvas.prototype.addObjectToScene = function addObjectToScene(object) {
 
@@ -53138,7 +53129,7 @@ var Canvas = function () {
   Canvas.prototype.initReset = function initReset() {
     var _this = this;
 
-    HTMLControl.reset.addEventListener('click', function () {
+    HTMLControl.controls.reset.addEventListener('click', function () {
 
       animationControls.reset();
       _this.app.controls.reset();
@@ -58503,53 +58494,53 @@ var Simulation = function () {
 
         this.loadModels();
 
-        canvas$1.app.controls.rotateUp(Math.PI / 12);
+        // canvas.app.controls.rotateUp( Math.PI / 12 );
 
         canvas$1.app.play();
 
         Promise.all(this.loadingPromises).then(function () {
 
+            HTMLControl.controls.simulate.disabled = false;
+
+            _this.initPositions();
             _this.initNaoAnimations();
-            _this.initBallAnimations();
+
+            _this.initSimulation();
         });
     }
 
-    Simulation.prototype.initBallAnimations = function initBallAnimations() {
+    // set up positions for the animations
+
+
+    Simulation.prototype.initPositions = function initPositions() {
         var _this2 = this;
 
-        var initialPos = Object.keys(this.ball.position).map(function (key) {
+        this.naoInitialPos = Object.keys(this.nao.position).map(function (key) {
+            return _this2.nao.position[key];
+        });
+        this.ballInitialPos = Object.keys(this.ball.position).map(function (key) {
             return _this2.ball.position[key];
         });
 
-        //roll
-        animationControls.initAnimation(this.ball, this.ball.animations[0], 'ball_roll');
+        this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.naoInitialPos[2]];
 
-        //move (translate)
-        // This may need to be set up based on user inout
-        var moveKF = new VectorKeyframeTrack('.position', [0, 2], [].concat(initialPos, [this.ball.position.x + 90, // -10 = ball diameter
-        initialPos[1], initialPos[2]]));
-        var moveClip = new AnimationClip('ball_move', -1, [moveKF]);
-        animationControls.initAnimation(this.ball, moveClip);
+        this.ballFinalPos = [this.ballInitialPos[0] + 85, 0, // ball final y position - this will be set from the entered sloped
+        this.ballInitialPos[2]];
     };
 
+    // these can be set up before the user has entered the slope
+
+
     Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
-        var _this3 = this;
-
-        // const initialPos = this.nao.position;
-        var initialPos = Object.keys(this.nao.position).map(function (key) {
-            return _this3.nao.position[key];
-        });
-
-        var finalPos = [this.ball.position.x - 10, 0, this.ball.position.z];
 
         // walk
         // for now this is a dummy KF - replace with proper animation later
-        var walkKF = new VectorKeyframeTrack('.position', [0, 0.5], [].concat(finalPos, finalPos));
+        var walkKF = new VectorKeyframeTrack('.position', [0, 0.5], [].concat(this.naoFinalPos, this.naoFinalPos));
         var walkClip = new AnimationClip('nao_walk', -1, [walkKF]);
         animationControls.initAnimation(this.nao, walkClip);
 
         // move (translate)
-        var moveKF = new VectorKeyframeTrack('.position', [0, 3], [].concat(initialPos, finalPos));
+        var moveKF = new VectorKeyframeTrack('.position', [0, 3], [].concat(this.naoInitialPos, this.naoFinalPos));
         var moveClip = new AnimationClip('nao_move', -1, [moveKF]);
         animationControls.initAnimation(this.nao, moveClip);
 
@@ -58563,8 +58554,51 @@ var Simulation = function () {
         animationControls.initAnimation(this.nao, kickClip);
     };
 
+    // this is set up after the user has entered the slope
+
+
+    Simulation.prototype.initNaoTurnAnimation = function initNaoTurnAnimation(slope) {
+
+        // calculate rotation. Assume PI / 8 for now
+        var rotationAmount = Math.tan(-slope);
+
+        // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
+
+        // set up rotation about x axis
+        var yAxis = new Vector3(0, 1, 0);
+
+        var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
+        var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount);
+
+        var turnKF = new QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
+        var turnClip = new AnimationClip('nao_turn', -1, [turnKF]);
+        animationControls.initAnimation(this.nao, turnClip);
+    };
+
+    // this is set up after the user has entered the slope
+
+
+    Simulation.prototype.initBallAnimation = function initBallAnimation(slope) {
+
+        var finalZPos = slope * this.ballFinalPos[0];
+
+        this.ballFinalPos[2] = finalZPos;
+
+        console.log(this.ball.animations[0]);
+        // roll
+        animationControls.initAnimation(this.ball, this.ball.animations[0], 'ball_roll');
+
+        // move (translate)
+        // This may need to be set up based on user inout
+        var moveKF = new VectorKeyframeTrack('.position', [0, 2], [].concat(this.ballInitialPos, this.ballFinalPos));
+        var moveClip = new AnimationClip('ball_move', -1, [moveKF]);
+        animationControls.initAnimation(this.ball, moveClip);
+
+        console.log([].concat(this.ballInitialPos, this.ballFinalPos));
+    };
+
     Simulation.prototype.loadModels = function loadModels() {
-        var _this4 = this;
+        var _this3 = this;
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (result) {
 
@@ -58578,7 +58612,7 @@ var Simulation = function () {
 
             canvas$1.addObjectToScene(result);
 
-            _this4.nao = result;
+            _this3.nao = result;
         });
 
         var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (result) {
@@ -58588,10 +58622,28 @@ var Simulation = function () {
 
             canvas$1.addObjectToScene(result);
 
-            _this4.ball = result;
+            _this3.ball = result;
         });
 
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
+    };
+
+    Simulation.prototype.initSimulation = function initSimulation() {
+        var _this4 = this;
+
+        HTMLControl.controls.simulate.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            var slope = HTMLControl.controls.slope.value;
+
+            HTMLControl.controls.simulate.disabled = true;
+            HTMLControl.controls.reset.disabled = false;
+            HTMLControl.controls.slope.disabled = true;
+
+            _this4.initNaoTurnAnimation(slope);
+            _this4.initBallAnimation(slope);
+        }, false);
     };
 
     return Simulation;

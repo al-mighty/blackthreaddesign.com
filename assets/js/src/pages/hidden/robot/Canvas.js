@@ -47,8 +47,16 @@ class Canvas {
     this.app.scene.add( this.loadedObjects );
 
     this.app.initControls();
+    this.initControls();
 
     this.initReset();
+
+  }
+
+  initControls() {
+
+    this.app.controls.minPolarAngle = 0;
+    this.app.controls.maxPolarAngle = Math.PI / 2;
 
   }
 
@@ -71,7 +79,7 @@ class Canvas {
 
   initReset() {
 
-    HTMLControl.reset.addEventListener( 'click', () => {
+    HTMLControl.controls.reset.addEventListener( 'click', () => {
 
       animationControls.reset();
       this.app.controls.reset();
