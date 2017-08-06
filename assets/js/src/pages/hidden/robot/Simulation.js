@@ -21,6 +21,8 @@ export default class Simulation {
 
     canvas.app.play();
 
+    this.initAnimationTimings();
+
     Promise.all( this.loadingPromises ).then(
       () => {
 
@@ -52,6 +54,24 @@ export default class Simulation {
 
   }
 
+  initAnimationTimings() {
+
+    this.animationTimings = {
+
+      naoMoveStart: 0,
+
+      naoTurnStart: 2, // = naoMovEnd
+
+      naoKickStart: 2.5, // = naoTurnEnd
+
+      ballMoveStart: 3, // = naoKickEnd
+
+      ballMoveEnd: 4,
+
+    };
+
+  }
+
    // these can be set up before the user has entered the slope
   initNaoAnimations() {
 
@@ -64,6 +84,7 @@ export default class Simulation {
       ],
     );
     const walkClip = new THREE.AnimationClip( 'nao_walk', -1, [ walkKF ] );
+    walkClip.loop = THREE.LoopOnce;
     animationControls.initAnimation( this.nao, walkClip );
 
     // move (translate)
@@ -76,6 +97,7 @@ export default class Simulation {
       ],
     );
     const moveClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF ] );
+    moveClip.loop = THREE.LoopOnce;
     animationControls.initAnimation( this.nao, moveClip );
 
     // turn
@@ -85,6 +107,7 @@ export default class Simulation {
     // for now this is a dummy KF - replace with proper animation later
     const kickKF = walkKF;
     const kickClip = new THREE.AnimationClip( 'nao_kick', -1, [ kickKF ] );
+    kickClip.loop = THREE.LoopOnce;
     animationControls.initAnimation( this.nao, kickClip );
 
   }
@@ -105,7 +128,8 @@ export default class Simulation {
 
     const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion', [ 0, 1, 2 ], [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w ] );
     const turnClip = new THREE.AnimationClip( 'nao_turn', -1, [ turnKF ] );
-    animationControls.initAnimation( this.nao, turnClip );
+    turnClip.loop = THREE.LoopOnce;
+    animationControls.initAnimation( this.nao, turnClip, 'nao_turn' );
 
   }
 
@@ -117,8 +141,12 @@ export default class Simulation {
     this.ballFinalPos[ 2 ] = finalZPos;
 
     console.log( this.ball.animations[ 0 ] )
+
+    this.ball.animations[ 0 ].name = 'ball_roll';
+    this.ball.animations[ 0 ].loop = THREE.LoopOnce;
+
     // roll
-    animationControls.initAnimation( this.ball, this.ball.animations[ 0 ], 'ball_roll' );
+    animationControls.initAnimation( this.ball, this.ball.animations[ 0 ] );
 
     // move (translate)
     // This may need to be set up based on user inout
@@ -131,12 +159,9 @@ export default class Simulation {
       ],
     );
     const moveClip = new THREE.AnimationClip( 'ball_move', -1, [ moveKF ] );
+    moveClip.loop = THREE.LoopOnce;
     animationControls.initAnimation( this.ball, moveClip );
 
-    console.log( [
-        ...this.ballInitialPos,
-        ...this.ballFinalPos,
-      ])
   }
 
   loadModels() {
@@ -179,7 +204,7 @@ export default class Simulation {
 
       e.preventDefault();
 
-      const slope = HTMLControl.controls.slope.value;
+      const slope = -HTMLControl.controls.slope.value;
 
       HTMLControl.controls.simulate.disabled = true;
       HTMLControl.controls.reset.disabled = false;

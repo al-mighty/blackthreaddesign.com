@@ -21,6 +21,11 @@ class AnimationControls {
 
   }
 
+  scheduleAnimations() {
+
+
+  }
+
   update( delta ) {
 
     // delta is in seconds while animations are in milliseconds so convert here
@@ -36,7 +41,7 @@ class AnimationControls {
 
   }
 
-  initAnimation( object, animationClip, name ) {
+  initAnimation( object, animationClip, name) {
 
     if ( !( animationClip instanceof THREE.AnimationClip ) ) {
 
