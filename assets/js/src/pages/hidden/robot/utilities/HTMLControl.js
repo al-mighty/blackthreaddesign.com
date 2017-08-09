@@ -1,6 +1,10 @@
 const canvas = document.querySelector( '#viewer-canvas' );
 const container = document.querySelector( '#view-container' );
 
+const ballPosition = document.querySelector( '#ball_position' );
+const equation = document.querySelector( '#equation' );
+
+
 const error = {
   overlay: document.querySelector( '#error-overlay' ),
   messages: document.querySelector( '#error-messages' ),
@@ -69,6 +73,8 @@ export default class HTMLControl {
 
 HTMLControl.canvas = canvas;
 HTMLControl.container = container;
+HTMLControl.ballPosition = ballPosition;
+HTMLControl.equation = equation;
 HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;

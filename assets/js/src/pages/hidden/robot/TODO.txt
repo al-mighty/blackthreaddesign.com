@@ -1,4 +1,5 @@
-Set up animations
 Set width of goals in 3ds max
 Set up equation based on ball pos
 Move equation and reset / run buttons into canvas to allow fullscreen to work
+
+Remove error overlay once done

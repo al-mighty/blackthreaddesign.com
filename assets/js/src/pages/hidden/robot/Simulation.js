@@ -50,6 +50,8 @@ export default class Simulation {
 
     this.initPositions();
 
+    this.updateEquation();
+
     this.initReset();
 
   }
@@ -109,9 +111,9 @@ export default class Simulation {
   // set up positions for the animations
   initPositions() {
     this.ballInitialPos = [
-      THREE.Math.randFloat( -30, 30 ),
+      THREE.Math.randInt( -30, 30 ),
       5,
-      THREE.Math.randFloat( -30, 30 ),
+      THREE.Math.randInt( -30, 30 ),
     ];
 
     this.naoInitialPos = [ this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2] ];
@@ -123,6 +125,22 @@ export default class Simulation {
       0, // // ball final y position - this will be set from the entered sloped
     ];
 
+  }
+
+  updateEquation() {
+
+    HTMLControl.ballPosition.innerHTML = this.ballInitialPos[0] + ', ' + this.ballInitialPos[2];
+
+    const signA = this.ballInitialPos[0] > 0 ? ' - ' : '';
+    const signB = this.ballInitialPos[2] > 0 ? ' ) + ' : ' ) ';
+
+    HTMLControl.equation.innerHTML =
+      '( '
+      + 'x '
+      + signA
+      + this.ballInitialPos[0]
+      + signB
+      + this.ballInitialPos[2];
   }
 
   initReset() {
@@ -253,8 +271,10 @@ export default class Simulation {
   initBallAnimation( slope ) {
 
     // the ball will always stop at the same final x position, however the z position will be calculated
-    // from the slop
-    const finalZPos = slope * ( this.ballFinalPos[ 0 ] );
+    // from the slope
+    // y2 - y1 = m(x2 - x1)
+    // -> y2 = m(m2 - x1) + y1
+    const finalZPos = slope * ( this.ballFinalPos[ 0 ] - this.ballInitialPos[ 0 ] ) + this.ballInitialPos[ 2 ];
 
     this.ballFinalPos[ 2 ] = finalZPos;
 
