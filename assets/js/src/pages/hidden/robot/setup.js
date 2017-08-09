@@ -1,4 +1,3 @@
-import errorHandler from './utilities/errorHandler.js';
 import HTMLControl from './utilities/HTMLControl.js';
 
 const goFullscreen = ( elem ) => {
@@ -31,7 +30,3 @@ HTMLControl.controls.fullscreen.addEventListener( 'click', ( e ) => {
   goFullscreen( HTMLControl.container );
 
 }, false );
-
-// override console functions to show errors and warnings on the page
-console.warn = errorHandler;
-console.error = errorHandler;

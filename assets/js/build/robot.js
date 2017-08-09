@@ -9160,31 +9160,6 @@ HTMLControl.animation = animation;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
 
-var cachedMessages = {};
-
-var errorHandler = function (msg) {
-
-  // cache the message to prevent it being displayed multiple times
-  if (cachedMessages[msg] === true) return;
-  cachedMessages[msg] = true;
-
-  // if ( !( msg instanceof String ) ) {
-
-  //   console.log( msg );
-  //   return;
-
-  // }
-
-  // bug in three.js or WebGL returns this error on Chrome
-  if (msg.indexOf('gl.getProgramInfoLog()') !== -1) return;
-
-  HTMLControl.error.overlay.classList.remove('hide');
-  var p = document.createElement('p');
-  p.innerHTML = msg;
-
-  HTMLControl.error.messages.appendChild(p);
-};
-
 var goFullscreen = function (elem) {
 
   if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
@@ -9213,10 +9188,6 @@ HTMLControl.controls.fullscreen.addEventListener('click', function (e) {
   e.preventDefault();
   goFullscreen(HTMLControl.container);
 }, false);
-
-// override console functions to show errors and warnings on the page
-console.warn = errorHandler;
-console.error = errorHandler;
 
 // Polyfills
 
