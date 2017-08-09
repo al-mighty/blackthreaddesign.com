@@ -46,10 +46,18 @@ class Canvas {
     this.loadedObjects = new THREE.Group();
     this.app.scene.add( this.loadedObjects );
 
+    this.initCamera();
     this.app.initControls();
     this.initControls();
 
-    this.initReset();
+  }
+
+  initCamera() {
+
+    this.app.camera.far = 1500;
+    this.app.camera.fov = 30;
+    this.app.camera.position.set( 250, 120, 200 );
+    this.app.camera.updateProjectionMatrix();
 
   }
 
@@ -73,20 +81,6 @@ class Canvas {
 
     // fit camera to all loaded objects
     this.app.fitCameraToObject( this.loadedObjects );
-
-  }
-
-
-  initReset() {
-
-    HTMLControl.controls.reset.addEventListener( 'click', () => {
-
-      animationControls.reset();
-      this.app.controls.reset();
-
-      HTMLControl.setInitialState();
-
-    } );
 
   }
 

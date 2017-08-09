@@ -1501,7 +1501,13 @@ function parseScene( FBXTree, connections, deformers, geometryMap, materialMap )
 
     if ( 'Lcl_Scaling' in node.properties ) {
 
-      model.scale.fromArray( parseFloatArray( node.properties.Lcl_Scaling.value ) );
+      var scaleFactor = parseFloatArray( node.properties.Lcl_Scaling.value );
+
+      scaleFactor[0] = Math.abs( scaleFactor[0] );
+      scaleFactor[1] = Math.abs( scaleFactor[1] );
+      scaleFactor[2] = Math.abs( scaleFactor[2] );
+
+      model.scale.fromArray( scaleFactor );
 
     }
 
@@ -1512,6 +1518,23 @@ function parseScene( FBXTree, connections, deformers, geometryMap, materialMap )
       const currentRotation = new THREE.Quaternion().setFromEuler( model.rotation );
       preRotations.multiply( currentRotation );
       model.rotation.setFromQuaternion( preRotations, 'ZYX' );
+
+    }
+
+    if ( 'GeometricTranslation' in node.properties ) {
+
+      // console.log( model)
+      // console.log( 'testing translations ')
+      var array = node.properties.GeometricTranslation.value;
+      model.traverse( ( child ) => {
+
+        if( child.geometry ) {
+
+          child.geometry.translate( array[ 0 ], array[ 1 ], array[ 2 ] );
+
+        }
+
+      } );
 
     }
 

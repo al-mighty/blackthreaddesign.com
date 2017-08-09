@@ -9,29 +9,97 @@ import animationControls from './utilities/AnimationControls.js';
 
 const loaders = new Loaders();
 
+const timing = {
+
+  noaMoveStart: 0,
+
+  naoMoveDuration: 3,
+
+  get naoTurnStart() { return this.noaMoveStart + this.naoMoveDuration; }, // = naoMovEnd
+
+  naoTurnDuration: 0.5,
+
+  get naoKickStart() { return this.naoTurnStart + this.naoTurnDuration; }, // = naoTurnEnd
+
+  naoKickDuration: 0.5,
+
+  get ballMoveStart() { return this.naoKickStart + this.naoKickDuration; }, // = naoKickEnd
+
+  ballMoveDuration: 2,
+
+  get ballMoveEnd() { return this.ballMoveStart + this.ballMoveDuration; },
+
+};
+
 export default class Simulation {
 
   constructor() {
 
-    this.loadingPromises = [];
+    this.preLoad();
 
     this.loadModels();
 
-    // canvas.app.controls.rotateUp( Math.PI / 12 );
+    this.postLoad();
 
-    canvas.app.play();
+  }
 
-    this.initAnimationTimings();
+  // everything done before loading is called here
+  preLoad() {
+
+    this.loadingPromises = [];
+
+    this.initPositions();
+
+    this.initReset();
+
+  }
+
+  // load the models
+  loadModels() {
+
+    const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( result ) => {
+
+      // field width width ~140cm, length ~200cm
+      canvas.app.scene.add( result );
+
+    } );
+
+    const naoPromise = loaders.fbxLoader( '/assets/models/robot/nao.fbx' ).then( ( result ) => {
+
+      this.nao = result;
+
+    } );
+
+    const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( result ) => {
+
+       // rotate to make the roll animation play correctly
+      result.rotation.set( 0, -Math.PI / 2, 0 );
+
+      this.ball = result;
+
+    } );
+
+    this.loadingPromises = [ fieldPromise, naoPromise, ballPromise ];
+
+  }
+
+  // everything done after loading is called here
+  postLoad() {
 
     Promise.all( this.loadingPromises ).then(
       () => {
 
         HTMLControl.controls.simulate.disabled = false;
 
-        this.initPositions();
+        this.positionAndAddObjects();
+
+        this.initMixers();
+
         this.initNaoAnimations();
 
         this.initSimulation();
+
+        canvas.app.play();
 
       },
     );
@@ -40,35 +108,52 @@ export default class Simulation {
 
   // set up positions for the animations
   initPositions() {
+    this.ballInitialPos = [
+      THREE.Math.randFloat( -30, 30 ),
+      5,
+      THREE.Math.randFloat( -30, 30 ),
+    ];
 
-    this.naoInitialPos = Object.keys( this.nao.position ).map( ( key ) => this.nao.position[key] );
-    this.ballInitialPos = Object.keys( this.ball.position ).map( ( key ) => this.ball.position[key] );
-
-    this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.naoInitialPos[2] ];
+    this.naoInitialPos = [ this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2] ];
+    this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] ];
 
     this.ballFinalPos = [
-      this.ballInitialPos[0] + 85,
-      0, // ball final y position - this will be set from the entered sloped
-      this.ballInitialPos[2]
+      85,
+      this.ballInitialPos[ 1 ], // height will not change
+      0, // // ball final y position - this will be set from the entered sloped
     ];
 
   }
 
-  initAnimationTimings() {
+  initReset() {
 
-    this.animationTimings = {
+    HTMLControl.controls.reset.addEventListener( 'click', () => {
 
-      naoMoveStart: 0,
+      animationControls.reset();
+      canvas.app.controls.reset();
 
-      naoTurnStart: 2, // = naoMovEnd
+      HTMLControl.setInitialState();
 
-      naoKickStart: 2.5, // = naoTurnEnd
+    } );
 
-      ballMoveStart: 3, // = naoKickEnd
+  }
 
-      ballMoveEnd: 4,
+  positionAndAddObjects() {
 
-    };
+    this.ball.position.set( this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2] )
+    this.nao.position.set( this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2] );
+
+
+    canvas.app.scene.add( this.nao, this.ball );
+
+  }
+
+  initMixers() {
+
+    this.ballMixer = new THREE.AnimationMixer( this.ball );
+    this.ballMixer.name = 'ball mixer';
+    this.naoMixer = new THREE.AnimationMixer( this.nao );
+    this.naoMixer.name = 'nao mixer';
 
   }
 
@@ -77,124 +162,43 @@ export default class Simulation {
 
     // walk
     // for now this is a dummy KF - replace with proper animation later
-    const walkKF = new THREE.VectorKeyframeTrack( '.position', [ 0, 0.5 ],
+    const walkKF = new THREE.VectorKeyframeTrack( '.scale',
+      [ 0, timing.naoMoveDuration ],
       [
-        ...this.naoFinalPos,
-        ...this.naoFinalPos,
+        1, 1, 1,
+        1, 1, 1,
       ],
     );
-    const walkClip = new THREE.AnimationClip( 'nao_walk', -1, [ walkKF ] );
-    walkClip.loop = THREE.LoopOnce;
-    animationControls.initAnimation( this.nao, walkClip );
 
     // move (translate)
     const moveKF = new THREE.VectorKeyframeTrack(
       '.position',
-      [ 0, 3 ],
+      [ 0, timing.naoMoveDuration ],
       [
         ...this.naoInitialPos,
         ...this.naoFinalPos,
       ],
     );
-    const moveClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF ] );
-    moveClip.loop = THREE.LoopOnce;
-    animationControls.initAnimation( this.nao, moveClip );
+    // const moveWalkClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF, walkKF ] );
+    const moveWalkClip = new THREE.AnimationClip( 'nao_move', timing.naoMoveDuration, [ moveKF, walkKF ] );
+
+    animationControls.initAnimation( this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart );
 
     // turn
-    // Set up based on input from user
+    // Set up later based on input from user
 
     // kick
     // for now this is a dummy KF - replace with proper animation later
-    const kickKF = walkKF;
-    const kickClip = new THREE.AnimationClip( 'nao_kick', -1, [ kickKF ] );
-    kickClip.loop = THREE.LoopOnce;
-    animationControls.initAnimation( this.nao, kickClip );
-
-  }
-
-  // this is set up after the user has entered the slope
-  initNaoTurnAnimation( slope ) {
-
-    // calculate rotation. Assume PI / 8 for now
-    const rotationAmount = Math.tan( -slope );
-
-    // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
-
-    // set up rotation about x axis
-    const yAxis = new THREE.Vector3( 0, 1, 0 );
-
-    const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount );
-
-    const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion', [ 0, 1, 2 ], [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w ] );
-    const turnClip = new THREE.AnimationClip( 'nao_turn', -1, [ turnKF ] );
-    turnClip.loop = THREE.LoopOnce;
-    animationControls.initAnimation( this.nao, turnClip, 'nao_turn' );
-
-  }
-
-  // this is set up after the user has entered the slope
-  initBallAnimation( slope ) {
-
-    const finalZPos = slope * ( this.ballFinalPos[ 0 ] );
-
-    this.ballFinalPos[ 2 ] = finalZPos;
-
-    console.log( this.ball.animations[ 0 ] )
-
-    this.ball.animations[ 0 ].name = 'ball_roll';
-    this.ball.animations[ 0 ].loop = THREE.LoopOnce;
-
-    // roll
-    animationControls.initAnimation( this.ball, this.ball.animations[ 0 ] );
-
-    // move (translate)
-    // This may need to be set up based on user inout
-    const moveKF = new THREE.VectorKeyframeTrack(
-      '.position',
-      [ 0, 2 ],
+    const kickKF = new THREE.VectorKeyframeTrack( '.scale',
+      [ 0, timing.naoKickDuration ],
       [
-        ...this.ballInitialPos,
-        ...this.ballFinalPos,
+        1, 1, 1,
+        1, 1, 1,
       ],
     );
-    const moveClip = new THREE.AnimationClip( 'ball_move', -1, [ moveKF ] );
-    moveClip.loop = THREE.LoopOnce;
-    animationControls.initAnimation( this.ball, moveClip );
+    const kickClip = new THREE.AnimationClip( 'nao_kick', timing.naoKickDuration, [ kickKF ] );
 
-  }
-
-  loadModels() {
-
-    const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( result ) => {
-
-      // field width width ~140cm, length ~200cm
-      canvas.addObjectToScene( result );
-
-    } );
-
-    const naoPromise = loaders.fbxLoader( '/assets/models/robot/nao.fbx' ).then( ( result ) => {
-
-      result.position.set( -50, 0, 0 );
-
-      canvas.addObjectToScene( result );
-
-      this.nao = result;
-
-    } );
-
-    const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( result ) => {
-
-      result.position.set( 0, 5, 0 );
-      result.rotation.set( 0, -Math.PI / 2, 0 );
-
-      canvas.addObjectToScene( result );
-
-      this.ball = result;
-
-    } );
-
-    this.loadingPromises = [ fieldPromise, naoPromise, ballPromise ];
+    animationControls.initAnimation( this.nao, kickClip, this.naoMixer, timing.naoKickStart );
 
   }
 
@@ -213,10 +217,65 @@ export default class Simulation {
       this.initNaoTurnAnimation( slope );
       this.initBallAnimation( slope );
 
+      animationControls.play();
+
     }, false );
 
   }
 
+    // this is set up after the user has entered the slope
+  initNaoTurnAnimation( slope ) {
+
+    // calculate rotation based on slope
+    const rotationAmount = Math.tan( -slope );
+
+    // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
+
+    // set up rotation about x axis
+    const yAxis = new THREE.Vector3( 0, 1, 0 );
+
+    const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
+    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount );
+
+    // turn from initial angle to final angle over 0.5 seconds
+    const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
+    [ 0, timing.naoTurnDuration ],
+    [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+    );
+
+    const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
+
+    animationControls.initAnimation( this.nao, turnClip, this.naoMixer, timing.naoTurnStart );
+
+  }
+
+  // this is set up after the user has entered the slope
+  initBallAnimation( slope ) {
+
+    // the ball will always stop at the same final x position, however the z position will be calculated
+    // from the slop
+    const finalZPos = slope * ( this.ballFinalPos[ 0 ] );
+
+    this.ballFinalPos[ 2 ] = finalZPos;
+
+    const rollTrack = this.ball.animations[ 0 ].tracks[1];
+
+    // move (translate)
+    const moveKF = new THREE.VectorKeyframeTrack(
+      '.position',
+      [ 0, 2 ],
+      [
+        ...this.ballInitialPos,
+        ...this.ballFinalPos,
+      ],
+    );
+
+    // combine roll and move into a 2 second clip - the length could be adjusted based on balls
+    // initial position
+    const moveClip = new THREE.AnimationClip( 'ball_move', 2, [ moveKF, rollTrack ] );
+    animationControls.initAnimation( this.ball, moveClip, this.ballMixer, timing.ballMoveStart );
+
+  }
 
 }
 

@@ -51,6 +51,8 @@ export default class OnLoadCallbacks {
     const promise = loaders.bufferGeometryLoader( file );
     promise.then( ( geometry ) => {
 
+      console.log( geometry );
+
       const object = new THREE.Mesh( geometry, defaultMat );
       loaderCanvas.addObjectToScene( object );
 
@@ -66,6 +68,8 @@ export default class OnLoadCallbacks {
 
     const promise = loaders.jsonLoader( file );
     promise.then( ( geometry ) => {
+
+      console.log( geometry );
 
       const object = new THREE.Mesh( geometry, defaultMat );
       loaderCanvas.addObjectToScene( object );
@@ -83,6 +87,8 @@ export default class OnLoadCallbacks {
     const promise = loaders.objectLoader( file );
     promise.then( ( object ) => {
 
+      console.log( object );
+
       loaderCanvas.addObjectToScene( object );
 
     } );
@@ -98,6 +104,8 @@ export default class OnLoadCallbacks {
     const promise = loaders.fbxLoader( file );
 
     promise.then( ( result ) => {
+
+      console.log( result );
 
       loaderCanvas.addObjectToScene( result );
 
@@ -135,6 +143,8 @@ export default class OnLoadCallbacks {
     promise = loaders.gltf2Loader( file );
 
     promise.then( ( gltf ) => {
+
+      console.log( gltf );
 
       if ( gltf.scenes.length > 1 ) {
 
@@ -189,6 +199,8 @@ export default class OnLoadCallbacks {
 
       promise.then( ( object ) => {
 
+        console.log( object );
+
         loaderCanvas.addObjectToScene( object );
 
         // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
@@ -225,7 +237,7 @@ export default class OnLoadCallbacks {
 
       promise.then( ( result ) => {
 
-
+        console.log( result );
 
         const object = result.scene;
 

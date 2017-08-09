@@ -9079,6 +9079,7 @@ var classCallCheck = function (instance, Constructor) {
 };
 
 var canvas = document.querySelector('#viewer-canvas');
+var container = document.querySelector('#view-container');
 
 var error = {
   overlay: document.querySelector('#error-overlay'),
@@ -9148,6 +9149,7 @@ var HTMLControl = function () {
 }();
 
 HTMLControl.canvas = canvas;
+HTMLControl.container = container;
 HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;
@@ -9204,7 +9206,7 @@ var goFullscreen = function (elem) {
 HTMLControl.controls.fullscreen.addEventListener('click', function (e) {
 
   e.preventDefault();
-  goFullscreen(HTMLControl.canvas);
+  goFullscreen(HTMLControl.container);
 }, false);
 
 // override console functions to show errors and warnings on the page
@@ -52890,180 +52892,42 @@ var AnimationControls = function () {
     classCallCheck(this, AnimationControls);
 
 
-    this.isPaused = false;
-    this.pauseButtonActive = false;
+    this.isPaused = true;
 
-    this.clips = [];
-    this.mixers = [];
-    this.actions = [];
-    this.animationNames = [];
+    this.mixers = {};
   }
 
-  AnimationControls.prototype.reset = function reset() {};
+  AnimationControls.prototype.reset = function reset() {
 
-  AnimationControls.prototype.scheduleAnimations = function scheduleAnimations() {};
+    this.mixers = {};
+  };
 
   AnimationControls.prototype.update = function update(delta) {
 
-    // delta is in seconds while animations are in milliseconds so convert here
-    if (this.currentMixer && this.currentAction && !this.isPaused) {
+    if (this.isPaused) return;
 
-      this.currentMixer.update(delta / 1000);
+    Object.values(this.mixers).forEach(function (mixer) {
 
-      // this.currentMixer.time increases indefinitely, whereas this.currentAction.time
-      // increases modulo the animation duration, so set the slider value from that
-      this.setSliderValue(this.currentAction.time);
-    }
+      mixer.update(delta / 1000);
+    });
   };
 
-  AnimationControls.prototype.initAnimation = function initAnimation(object, animationClip, name) {
-
-    if (!(animationClip instanceof AnimationClip)) {
-
-      console.warn('Some animations are not valid THREE.AnimationClips. Skipping these.');
-
-      return;
-    }
-
-    if (name !== undefined) animationClip.name = name;
-
-    var mixer = new AnimationMixer(object);
+  AnimationControls.prototype.initAnimation = function initAnimation(object, animationClip, mixer, startAt) {
 
     var action = mixer.clipAction(animationClip);
+    action.clampWhenFinished = true;
+    action.loop = LoopOnce;
 
-    this.clips.push(animationClip);
-    this.mixers.push(mixer);
-    this.actions.push(action);
-    this.animationNames.push(animationClip.name);
+    if (startAt !== undefined) action.startAt(startAt);
 
-    HTMLControl.animation.clipsSelection.appendChild(new Option(animationClip.name, animationClip.name));
+    action.play();
 
-    this.selectCurrentAnimation(this.animationNames[0]);
-
-    HTMLControl.animation.controls.classList.remove('hide');
-
-    this.initPlayPauseControls();
-
-    this.initSlider();
-
-    this.initSelectionMenu();
-  };
-
-  AnimationControls.prototype.selectCurrentAnimation = function selectCurrentAnimation(name) {
-
-    var index = this.animationNames.indexOf(name);
-
-    if (index === -1) {
-
-      console.warn('Animation ' + name + ' not found.');
-    } else {
-
-      if (this.currentAction) this.currentAction.stop();
-
-      this.currentMixer = this.mixers[index];
-      this.currentAction = this.actions[index];
-      this.currentClip = this.clips[index];
-
-      // set animation slider max to length of animation
-      HTMLControl.animation.slider.max = String(this.currentClip.duration);
-
-      HTMLControl.animation.slider.step = String(this.currentClip.duration / 150);
-
-      this.currentAction.play();
-    }
-  };
-
-  AnimationControls.prototype.setSliderValue = function setSliderValue(val) {
-
-    HTMLControl.animation.slider.value = String(val);
-  };
-
-  AnimationControls.prototype.initPlayPauseControls = function initPlayPauseControls() {
-    var _this = this;
-
-    this.playPause = function (e) {
-
-      e.preventDefault();
-
-      _this.togglePause();
-    };
-
-    HTMLControl.animation.playbackControl.addEventListener('click', this.playPause, false);
-  };
-
-  AnimationControls.prototype.togglePause = function togglePause() {
-
-    if (!this.isPaused) {
-
-      this.pauseButtonActive = true;
-      this.pause();
-    } else {
-
-      this.pauseButtonActive = false;
-      this.play();
-    }
-  };
-
-  AnimationControls.prototype.pause = function pause() {
-
-    this.isPaused = true;
-    HTMLControl.animation.playButton.classList.remove('hide');
-    HTMLControl.animation.pauseButton.classList.add('hide');
+    if (!this.mixers[mixer.name]) this.mixers[mixer.name] = mixer;
   };
 
   AnimationControls.prototype.play = function play() {
 
     this.isPaused = false;
-    HTMLControl.animation.playButton.classList.add('hide');
-    HTMLControl.animation.pauseButton.classList.remove('hide');
-  };
-
-  AnimationControls.prototype.initSlider = function initSlider() {
-    var _this2 = this;
-
-    this.sliderMouseDownEvent = function (e) {
-
-      if (!_this2.pauseButtonActive) _this2.pause();
-    };
-
-    HTMLControl.animation.slider.addEventListener('mousedown', this.sliderMouseDownEvent, false);
-
-    this.sliderInputEvent = throttle(function (e) {
-
-      var oldTime = _this2.currentMixer.time;
-      var newTime = HTMLControl.animation.slider.value;
-
-      _this2.currentMixer.update(newTime - oldTime);
-    }, 17);
-
-    HTMLControl.animation.slider.addEventListener('input', this.sliderInputEvent, false); // throttling at ~17 ms will give approx 60fps while sliding the controls
-
-    this.sliderMouseupEvent = function (e) {
-
-      if (!_this2.pauseButtonActive) _this2.play();
-    };
-
-    HTMLControl.animation.slider.addEventListener('mouseup', this.sliderMouseupEvent, false);
-  };
-
-  AnimationControls.prototype.initSelectionMenu = function initSelectionMenu() {
-    var _this3 = this;
-
-    HTMLControl.animation.clipsSelection.selectedIndex = 1;
-
-    this.clipsChangeEvent = function (e) {
-
-      e.preventDefault();
-      if (e.target.value === 'static') {
-
-        _this3.currentAction.stop();
-      } else {
-
-        _this3.selectCurrentAnimation(e.target.value);
-      }
-    };
-
-    HTMLControl.animation.clipsSelection.addEventListener('change', this.clipsChangeEvent, false);
   };
 
   return AnimationControls;
@@ -53103,11 +52967,18 @@ var Canvas = function () {
     this.loadedObjects = new Group();
     this.app.scene.add(this.loadedObjects);
 
+    this.initCamera();
     this.app.initControls();
     this.initControls();
-
-    this.initReset();
   }
+
+  Canvas.prototype.initCamera = function initCamera() {
+
+    this.app.camera.far = 1500;
+    this.app.camera.fov = 30;
+    this.app.camera.position.set(250, 120, 200);
+    this.app.camera.updateProjectionMatrix();
+  };
 
   Canvas.prototype.initControls = function initControls() {
 
@@ -53126,18 +52997,6 @@ var Canvas = function () {
 
     // fit camera to all loaded objects
     this.app.fitCameraToObject(this.loadedObjects);
-  };
-
-  Canvas.prototype.initReset = function initReset() {
-    var _this = this;
-
-    HTMLControl.controls.reset.addEventListener('click', function () {
-
-      animationControls.reset();
-      _this.app.controls.reset();
-
-      HTMLControl.setInitialState();
-    });
   };
 
   return Canvas;
@@ -55150,7 +55009,13 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
 
     if ('Lcl_Scaling' in node.properties) {
 
-      model.scale.fromArray(parseFloatArray(node.properties.Lcl_Scaling.value));
+      var scaleFactor = parseFloatArray(node.properties.Lcl_Scaling.value);
+
+      scaleFactor[0] = Math.abs(scaleFactor[0]);
+      scaleFactor[1] = Math.abs(scaleFactor[1]);
+      scaleFactor[2] = Math.abs(scaleFactor[2]);
+
+      model.scale.fromArray(scaleFactor);
     }
 
     if ('PreRotation' in node.properties) {
@@ -55160,6 +55025,20 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
       var currentRotation = new Quaternion().setFromEuler(model.rotation);
       preRotations.multiply(currentRotation);
       model.rotation.setFromQuaternion(preRotations, 'ZYX');
+    }
+
+    if ('GeometricTranslation' in node.properties) {
+
+      // console.log( model)
+      // console.log( 'testing translations ')
+      var array = node.properties.GeometricTranslation.value;
+      model.traverse(function (child) {
+
+        if (child.geometry) {
+
+          child.geometry.translate(array[0], array[1], array[2]);
+        }
+      });
     }
 
     var conns = connections.get(model.FBX_ID);
@@ -58485,196 +58364,244 @@ var Loaders = function Loaders() {
 
 var loaders = new Loaders();
 
+var timing = {
+
+  noaMoveStart: 0,
+
+  naoMoveDuration: 3,
+
+  get naoTurnStart() {
+    return this.noaMoveStart + this.naoMoveDuration;
+  }, // = naoMovEnd
+
+  naoTurnDuration: 0.5,
+
+  get naoKickStart() {
+    return this.naoTurnStart + this.naoTurnDuration;
+  }, // = naoTurnEnd
+
+  naoKickDuration: 0.5,
+
+  get ballMoveStart() {
+    return this.naoKickStart + this.naoKickDuration;
+  }, // = naoKickEnd
+
+  ballMoveDuration: 2,
+
+  get ballMoveEnd() {
+    return this.ballMoveStart + this.ballMoveDuration;
+  }
+
+};
+
 var Simulation = function () {
-    function Simulation() {
-        var _this = this;
+  function Simulation() {
+    classCallCheck(this, Simulation);
 
-        classCallCheck(this, Simulation);
 
+    this.preLoad();
 
-        this.loadingPromises = [];
+    this.loadModels();
 
-        this.loadModels();
+    this.postLoad();
+  }
 
-        // canvas.app.controls.rotateUp( Math.PI / 12 );
+  // everything done before loading is called here
 
-        canvas$1.app.play();
 
-        this.initAnimationTimings();
+  Simulation.prototype.preLoad = function preLoad() {
 
-        Promise.all(this.loadingPromises).then(function () {
+    this.loadingPromises = [];
 
-            HTMLControl.controls.simulate.disabled = false;
+    this.initPositions();
 
-            _this.initPositions();
-            _this.initNaoAnimations();
+    this.initReset();
+  };
 
-            _this.initSimulation();
-        });
-    }
+  // load the models
 
-    // set up positions for the animations
 
+  Simulation.prototype.loadModels = function loadModels() {
+    var _this = this;
 
-    Simulation.prototype.initPositions = function initPositions() {
-        var _this2 = this;
+    var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (result) {
 
-        this.naoInitialPos = Object.keys(this.nao.position).map(function (key) {
-            return _this2.nao.position[key];
-        });
-        this.ballInitialPos = Object.keys(this.ball.position).map(function (key) {
-            return _this2.ball.position[key];
-        });
+      // field width width ~140cm, length ~200cm
+      canvas$1.app.scene.add(result);
+    });
 
-        this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.naoInitialPos[2]];
+    var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (result) {
 
-        this.ballFinalPos = [this.ballInitialPos[0] + 85, 0, // ball final y position - this will be set from the entered sloped
-        this.ballInitialPos[2]];
-    };
+      _this.nao = result;
+    });
 
-    Simulation.prototype.initAnimationTimings = function initAnimationTimings() {
+    var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (result) {
 
-        this.animationTimings = {
+      // rotate to make the roll animation play correctly
+      result.rotation.set(0, -Math.PI / 2, 0);
 
-            naoMoveStart: 0,
+      _this.ball = result;
+    });
 
-            naoTurnStart: 2, // = naoMovEnd
+    this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
+  };
 
-            naoKickStart: 2.5, // = naoTurnEnd
+  // everything done after loading is called here
 
-            ballMoveStart: 3, // = naoKickEnd
 
-            ballMoveEnd: 4
+  Simulation.prototype.postLoad = function postLoad() {
+    var _this2 = this;
 
-        };
-    };
+    Promise.all(this.loadingPromises).then(function () {
 
-    // these can be set up before the user has entered the slope
+      HTMLControl.controls.simulate.disabled = false;
 
+      _this2.positionAndAddObjects();
 
-    Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
+      _this2.initMixers();
 
-        // walk
-        // for now this is a dummy KF - replace with proper animation later
-        var walkKF = new VectorKeyframeTrack('.position', [0, 0.5], [].concat(this.naoFinalPos, this.naoFinalPos));
-        var walkClip = new AnimationClip('nao_walk', -1, [walkKF]);
-        walkClip.loop = LoopOnce;
-        animationControls.initAnimation(this.nao, walkClip);
+      _this2.initNaoAnimations();
 
-        // move (translate)
-        var moveKF = new VectorKeyframeTrack('.position', [0, 3], [].concat(this.naoInitialPos, this.naoFinalPos));
-        var moveClip = new AnimationClip('nao_move', -1, [moveKF]);
-        moveClip.loop = LoopOnce;
-        animationControls.initAnimation(this.nao, moveClip);
+      _this2.initSimulation();
 
-        // turn
-        // Set up based on input from user
+      canvas$1.app.play();
+    });
+  };
 
-        // kick
-        // for now this is a dummy KF - replace with proper animation later
-        var kickKF = walkKF;
-        var kickClip = new AnimationClip('nao_kick', -1, [kickKF]);
-        kickClip.loop = LoopOnce;
-        animationControls.initAnimation(this.nao, kickClip);
-    };
+  // set up positions for the animations
 
-    // this is set up after the user has entered the slope
 
+  Simulation.prototype.initPositions = function initPositions() {
+    this.ballInitialPos = [_Math.randFloat(-30, 30), 5, _Math.randFloat(-30, 30)];
 
-    Simulation.prototype.initNaoTurnAnimation = function initNaoTurnAnimation(slope) {
+    this.naoInitialPos = [this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2]];
+    this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.ballInitialPos[2]];
 
-        // calculate rotation. Assume PI / 8 for now
-        var rotationAmount = Math.tan(-slope);
+    this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
+    0];
+  };
 
-        // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
+  Simulation.prototype.initReset = function initReset() {
 
-        // set up rotation about x axis
-        var yAxis = new Vector3(0, 1, 0);
+    HTMLControl.controls.reset.addEventListener('click', function () {
 
-        var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
-        var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount);
+      animationControls.reset();
+      canvas$1.app.controls.reset();
 
-        var turnKF = new QuaternionKeyframeTrack('.quaternion', [0, 1, 2], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w, qInitial.x, qInitial.y, qInitial.z, qInitial.w]);
-        var turnClip = new AnimationClip('nao_turn', -1, [turnKF]);
-        turnClip.loop = LoopOnce;
-        animationControls.initAnimation(this.nao, turnClip, 'nao_turn');
-    };
+      HTMLControl.setInitialState();
+    });
+  };
 
-    // this is set up after the user has entered the slope
+  Simulation.prototype.positionAndAddObjects = function positionAndAddObjects() {
 
+    this.ball.position.set(this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2]);
+    this.nao.position.set(this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2]);
 
-    Simulation.prototype.initBallAnimation = function initBallAnimation(slope) {
+    canvas$1.app.scene.add(this.nao, this.ball);
+  };
 
-        var finalZPos = slope * this.ballFinalPos[0];
+  Simulation.prototype.initMixers = function initMixers() {
 
-        this.ballFinalPos[2] = finalZPos;
+    this.ballMixer = new AnimationMixer(this.ball);
+    this.ballMixer.name = 'ball mixer';
+    this.naoMixer = new AnimationMixer(this.nao);
+    this.naoMixer.name = 'nao mixer';
+  };
 
-        console.log(this.ball.animations[0]);
+  // these can be set up before the user has entered the slope
 
-        this.ball.animations[0].name = 'ball_roll';
-        this.ball.animations[0].loop = LoopOnce;
 
-        // roll
-        animationControls.initAnimation(this.ball, this.ball.animations[0]);
+  Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
 
-        // move (translate)
-        // This may need to be set up based on user inout
-        var moveKF = new VectorKeyframeTrack('.position', [0, 2], [].concat(this.ballInitialPos, this.ballFinalPos));
-        var moveClip = new AnimationClip('ball_move', -1, [moveKF]);
-        moveClip.loop = LoopOnce;
-        animationControls.initAnimation(this.ball, moveClip);
-    };
+    // walk
+    // for now this is a dummy KF - replace with proper animation later
+    var walkKF = new VectorKeyframeTrack('.scale', [0, timing.naoMoveDuration], [1, 1, 1, 1, 1, 1]);
 
-    Simulation.prototype.loadModels = function loadModels() {
-        var _this3 = this;
+    // move (translate)
+    var moveKF = new VectorKeyframeTrack('.position', [0, timing.naoMoveDuration], [].concat(this.naoInitialPos, this.naoFinalPos));
+    // const moveWalkClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF, walkKF ] );
+    var moveWalkClip = new AnimationClip('nao_move', timing.naoMoveDuration, [moveKF, walkKF]);
 
-        var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (result) {
+    animationControls.initAnimation(this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart);
 
-            // field width width ~140cm, length ~200cm
-            canvas$1.addObjectToScene(result);
-        });
+    // turn
+    // Set up later based on input from user
 
-        var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (result) {
+    // kick
+    // for now this is a dummy KF - replace with proper animation later
+    var kickKF = new VectorKeyframeTrack('.scale', [0, timing.naoKickDuration], [1, 1, 1, 1, 1, 1]);
+    var kickClip = new AnimationClip('nao_kick', timing.naoKickDuration, [kickKF]);
 
-            result.position.set(-50, 0, 0);
+    animationControls.initAnimation(this.nao, kickClip, this.naoMixer, timing.naoKickStart);
+  };
 
-            canvas$1.addObjectToScene(result);
+  Simulation.prototype.initSimulation = function initSimulation() {
+    var _this3 = this;
 
-            _this3.nao = result;
-        });
+    HTMLControl.controls.simulate.addEventListener('click', function (e) {
 
-        var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (result) {
+      e.preventDefault();
 
-            result.position.set(0, 5, 0);
-            result.rotation.set(0, -Math.PI / 2, 0);
+      var slope = -HTMLControl.controls.slope.value;
 
-            canvas$1.addObjectToScene(result);
+      HTMLControl.controls.simulate.disabled = true;
+      HTMLControl.controls.reset.disabled = false;
+      HTMLControl.controls.slope.disabled = true;
 
-            _this3.ball = result;
-        });
+      _this3.initNaoTurnAnimation(slope);
+      _this3.initBallAnimation(slope);
 
-        this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
-    };
+      animationControls.play();
+    }, false);
+  };
 
-    Simulation.prototype.initSimulation = function initSimulation() {
-        var _this4 = this;
+  // this is set up after the user has entered the slope
 
-        HTMLControl.controls.simulate.addEventListener('click', function (e) {
 
-            e.preventDefault();
+  Simulation.prototype.initNaoTurnAnimation = function initNaoTurnAnimation(slope) {
 
-            var slope = -HTMLControl.controls.slope.value;
+    // calculate rotation based on slope
+    var rotationAmount = Math.tan(-slope);
 
-            HTMLControl.controls.simulate.disabled = true;
-            HTMLControl.controls.reset.disabled = false;
-            HTMLControl.controls.slope.disabled = true;
+    // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
 
-            _this4.initNaoTurnAnimation(slope);
-            _this4.initBallAnimation(slope);
-        }, false);
-    };
+    // set up rotation about x axis
+    var yAxis = new Vector3(0, 1, 0);
 
-    return Simulation;
+    var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
+    var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount);
+
+    // turn from initial angle to final angle over 0.5 seconds
+    var turnKF = new QuaternionKeyframeTrack('.quaternion', [0, timing.naoTurnDuration], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w]);
+
+    var turnClip = new AnimationClip('nao_turn', timing.naoTurnDuration, [turnKF]);
+
+    animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoTurnStart);
+  };
+
+  // this is set up after the user has entered the slope
+
+
+  Simulation.prototype.initBallAnimation = function initBallAnimation(slope) {
+
+    // the ball will always stop at the same final x position, however the z position will be calculated
+    // from the slop
+    var finalZPos = slope * this.ballFinalPos[0];
+
+    this.ballFinalPos[2] = finalZPos;
+
+    var rollTrack = this.ball.animations[0].tracks[1];
+
+    // move (translate)
+    var moveKF = new VectorKeyframeTrack('.position', [0, 2], [].concat(this.ballInitialPos, this.ballFinalPos));
+
+    // combine roll and move into a 2 second clip - the length could be adjusted based on balls
+    // initial position
+    var moveClip = new AnimationClip('ball_move', 2, [moveKF, rollTrack]);
+    animationControls.initAnimation(this.ball, moveClip, this.ballMixer, timing.ballMoveStart);
+  };
+
+  return Simulation;
 }();
 
 initFooter();

@@ -1,4 +1,5 @@
 const canvas = document.querySelector( '#viewer-canvas' );
+const container = document.querySelector( '#view-container' );
 
 const error = {
   overlay: document.querySelector( '#error-overlay' ),
@@ -67,6 +68,7 @@ export default class HTMLControl {
 }
 
 HTMLControl.canvas = canvas;
+HTMLControl.container = container;
 HTMLControl.error = error;
 HTMLControl.animation = animation;
 HTMLControl.loading = loading;
