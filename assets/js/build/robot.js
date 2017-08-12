@@ -52869,12 +52869,17 @@ var AnimationControls = function () {
     this.isPaused = true;
 
     this.mixers = {};
+
+    this.actions = [];
   }
 
   AnimationControls.prototype.reset = function reset() {
 
     this.mixers = {};
+    this.actions = [];
     this.isPaused = true;
+
+    // this.setTimeScales( -3 );
   };
 
   AnimationControls.prototype.update = function update(delta) {
@@ -52884,6 +52889,14 @@ var AnimationControls = function () {
     Object.values(this.mixers).forEach(function (mixer) {
 
       mixer.update(delta / 1000);
+    });
+  };
+
+  AnimationControls.prototype.setTimeScales = function setTimeScales(timeScale) {
+
+    this.actions.forEach(function (action) {
+
+      action.timeScale = timeScale;
     });
   };
 
@@ -52898,6 +52911,8 @@ var AnimationControls = function () {
     action.play();
 
     if (!this.mixers[mixer.name]) this.mixers[mixer.name] = mixer;
+
+    this.actions.push(action);
   };
 
   AnimationControls.prototype.play = function play() {
@@ -52937,7 +52952,7 @@ var Canvas = function () {
 
     };
 
-    this.app.scene.fog = new Fog(0xf7f7f7, 200, 1500);
+    this.app.scene.fog = new Fog(0xf7f7f7, 400, 1500);
 
     this.lighting = new LightingSetup(this.app);
 
@@ -52961,8 +52976,11 @@ var Canvas = function () {
 
   Canvas.prototype.initControls = function initControls() {
 
-    this.app.controls.minPolarAngle = Math.PI / 12;
-    this.app.controls.maxPolarAngle = Math.PI / 2;
+    this.app.controls.minPolarAngle = 0;
+    this.app.controls.maxPolarAngle = Math.PI * 0.45;
+
+    this.app.controls.minDistance = 10;
+    this.app.controls.maxDistance = 500;
   };
 
   Canvas.prototype.addGround = function addGround() {
@@ -58565,6 +58583,11 @@ var Simulation = function () {
         this.ballMixer.name = 'ball mixer';
         this.naoMixer = new AnimationMixer(this.nao);
         this.naoMixer.name = 'nao mixer';
+
+        this.naoMixer.addEventListener('finished', function (e) {
+
+            console.log(e.action);
+        });
     };
 
     // these can be set up before the user has entered the slope
@@ -58592,26 +58615,6 @@ var Simulation = function () {
         var kickClip = new AnimationClip('nao_kick', timing.naoKickDuration, [kickKF]);
 
         animationControls.initAnimation(this.nao, kickClip, this.naoMixer, timing.naoKickStart);
-    };
-
-    Simulation.prototype.initSimulation = function initSimulation() {
-        var _this4 = this;
-
-        HTMLControl.setInitialState();
-
-        HTMLControl.controls.simulate.addEventListener('click', function (e) {
-
-            e.preventDefault();
-
-            var slope = -HTMLControl.controls.slope.value;
-
-            _this4.initNaoTurnAnimation(slope);
-            _this4.initBallAnimation(slope);
-
-            animationControls.play();
-
-            HTMLControl.controls.reset.disabled = false;
-        }, false);
     };
 
     // this is set up after the user has entered the slope
@@ -58660,6 +58663,27 @@ var Simulation = function () {
         // initial position
         var moveClip = new AnimationClip('ball_move', 2, [moveKF, rollTrack]);
         animationControls.initAnimation(this.ball, moveClip, this.ballMixer, timing.ballMoveStart);
+    };
+
+    Simulation.prototype.initSimulation = function initSimulation() {
+        var _this4 = this;
+
+        HTMLControl.setInitialState();
+
+        HTMLControl.controls.simulate.addEventListener('click', function (e) {
+
+            e.preventDefault();
+
+            var slope = -HTMLControl.controls.slope.value;
+
+            _this4.initNaoTurnAnimation(slope);
+            _this4.initBallAnimation(slope);
+
+            animationControls.play();
+
+            HTMLControl.controls.simulate.disabled = true;
+            HTMLControl.controls.reset.disabled = false;
+        }, false);
     };
 
     return Simulation;

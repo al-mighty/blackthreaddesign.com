@@ -190,6 +190,12 @@ export default class Simulation {
     this.naoMixer = new THREE.AnimationMixer( this.nao );
     this.naoMixer.name = 'nao mixer';
 
+    this.naoMixer.addEventListener( 'finished', ( e ) => {
+
+      console.log( e.action );
+
+    } );
+
   }
 
    // these can be set up before the user has entered the slope
@@ -228,27 +234,6 @@ export default class Simulation {
     const kickClip = new THREE.AnimationClip( 'nao_kick', timing.naoKickDuration, [ kickKF ] );
 
     animationControls.initAnimation( this.nao, kickClip, this.naoMixer, timing.naoKickStart );
-
-  }
-
-  initSimulation() {
-
-    HTMLControl.setInitialState();
-
-    HTMLControl.controls.simulate.addEventListener( 'click', ( e ) => {
-
-      e.preventDefault();
-
-      const slope = -HTMLControl.controls.slope.value;
-
-      this.initNaoTurnAnimation( slope );
-      this.initBallAnimation( slope );
-
-      animationControls.play();
-
-      HTMLControl.controls.reset.disabled = false;
-
-    }, false );
 
   }
 
@@ -305,6 +290,28 @@ export default class Simulation {
     // initial position
     const moveClip = new THREE.AnimationClip( 'ball_move', 2, [ moveKF, rollTrack ] );
     animationControls.initAnimation( this.ball, moveClip, this.ballMixer, timing.ballMoveStart );
+
+  }
+
+  initSimulation() {
+
+    HTMLControl.setInitialState();
+
+    HTMLControl.controls.simulate.addEventListener( 'click', ( e ) => {
+
+      e.preventDefault();
+
+      const slope = -HTMLControl.controls.slope.value;
+
+      this.initNaoTurnAnimation( slope );
+      this.initBallAnimation( slope );
+
+      animationControls.play();
+
+      HTMLControl.controls.simulate.disabled = true;
+      HTMLControl.controls.reset.disabled = false;
+
+    }, false );
 
   }
 

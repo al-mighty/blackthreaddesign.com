@@ -41,7 +41,7 @@ class Canvas {
 
     };
 
-    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 200, 1500 );
+    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
 
     this.lighting = new LightingSetup( this.app );
 
@@ -67,8 +67,11 @@ class Canvas {
 
   initControls() {
 
-    this.app.controls.minPolarAngle = Math.PI / 12;
-    this.app.controls.maxPolarAngle = Math.PI / 2;
+    this.app.controls.minPolarAngle = 0;
+    this.app.controls.maxPolarAngle = Math.PI * 0.45;
+
+    this.app.controls.minDistance = 10;
+	  this.app.controls.maxDistance = 500;
 
   }
 
@@ -76,8 +79,8 @@ class Canvas {
     const geometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
     const material = new THREE.MeshPhongMaterial( { shininess: 0.1 } );
     const ground = new THREE.Mesh( geometry, material );
-    ground.position.set( 0, - 1, 0 );
-    ground.rotation.x = - Math.PI / 2;
+    ground.position.set( 0, -1, 0 );
+    ground.rotation.x = -Math.PI / 2;
     this.app.scene.add( ground );
 
   }
