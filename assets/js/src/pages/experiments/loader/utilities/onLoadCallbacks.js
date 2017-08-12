@@ -103,11 +103,64 @@ export default class OnLoadCallbacks {
 
     const promise = loaders.fbxLoader( file );
 
-    promise.then( ( result ) => {
+    promise.then( ( object ) => {
 
-      console.log( result );
+      console.time( 'inverting meshes' );
 
-      loaderCanvas.addObjectToScene( result );
+      console.log( object );
+
+      object.traverse( ( child ) => {
+
+        if ( child instanceof THREE.Mesh ) {
+
+          if ( child.matrixWorld.determinant() < 0 ) {
+
+            const l = child.geometry.attributes.position.array.length;
+
+            for ( let i = 0; i < l; i += 9 ) {
+
+              // reverse winding order
+              const tempX = child.geometry.attributes.position.array[ i ];
+              const tempY = child.geometry.attributes.position.array[ i + 1 ];
+              const tempZ = child.geometry.attributes.position.array[ i + 2 ];
+
+              child.geometry.attributes.position.array[ i ] = child.geometry.attributes.position.array[ i + 6 ];
+              child.geometry.attributes.position.array[ i + 1 ] = child.geometry.attributes.position.array[ i + 7 ];
+              child.geometry.attributes.position.array[ i + 2 ] = child.geometry.attributes.position.array[ i + 8 ];
+
+
+              child.geometry.attributes.position.array[ i + 6 ] = tempX;
+              child.geometry.attributes.position.array[ i + 7 ] = tempY;
+              child.geometry.attributes.position.array[ i + 8 ] = tempZ;
+
+              // switch vertex normals
+              const tempNX = child.geometry.attributes.normal.array[ i ];
+              const tempNY = child.geometry.attributes.normal.array[ i + 1 ];
+              const tempNZ = child.geometry.attributes.normal.array[ i + 2 ];
+
+              child.geometry.attributes.normal.array[ i ] = child.geometry.attributes.normal.array[ i + 6 ];
+              child.geometry.attributes.normal.array[ i + 1 ] = child.geometry.attributes.normal.array[ i + 7 ];
+              child.geometry.attributes.normal.array[ i + 2 ] = child.geometry.attributes.normal.array[ i + 8 ];
+
+
+              child.geometry.attributes.normal.array[ i + 6 ] = tempNX;
+              child.geometry.attributes.normal.array[ i + 7 ] = tempNY;
+              child.geometry.attributes.normal.array[ i + 8 ] = tempNZ;
+
+            }
+
+
+          }
+
+
+        }
+
+      } );
+
+      console.timeEnd( 'inverting meshes' );
+
+
+      loaderCanvas.addObjectToScene( object );
 
     } );
 
@@ -235,17 +288,17 @@ export default class OnLoadCallbacks {
 
       // }
 
-      promise.then( ( result ) => {
+      promise.then( ( object ) => {
 
-        console.log( result );
+        console.log( object );
 
-        const object = result.scene;
+        const scene = object.scene;
 
-        if ( result.animations && result.animations.length > 0 ) object.animations = result.animations;
+        if ( object.animations && object.animations.length > 0 ) scene.animations = object.animations;
 
         // object.scale.set( 1, 1, 1)
         // console.log( object)
-        loaderCanvas.addObjectToScene( object );
+        loaderCanvas.addObjectToScene( scene );
 
         // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
         // if ( loader === 1 ) loadingManager.onLoad();

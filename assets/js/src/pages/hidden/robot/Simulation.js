@@ -4,6 +4,7 @@ import canvas from './Canvas.js';
 
 import Loaders from './utilities/Loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
+import invertMirroredFBX from './utilities/invertMirroredFBX.js';
 
 import animationControls from './utilities/AnimationControls.js';
 
@@ -13,7 +14,7 @@ const timing = {
 
   noaMoveStart: 0,
 
-  naoMoveDuration: 3,
+  naoMoveDuration: 4,
 
   get naoTurnStart() { return this.noaMoveStart + this.naoMoveDuration; }, // = naoMovEnd
 
@@ -59,25 +60,28 @@ export default class Simulation {
   // load the models
   loadModels() {
 
-    const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( result ) => {
+    const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
 
       // field width width ~140cm, length ~200cm
-      canvas.app.scene.add( result );
+      canvas.app.scene.add( object );
 
     } );
 
-    const naoPromise = loaders.fbxLoader( '/assets/models/robot/nao.fbx' ).then( ( result ) => {
+    const naoPromise = loaders.fbxLoader( '/assets/models/robot/nao.fbx' ).then( ( object ) => {
 
-      this.nao = result;
+      // NOTE: Will no longer be needed if https://github.com/mrdoob/three.js/issues/11911 is merged
+      invertMirroredFBX( object );
+
+      this.nao = object;
 
     } );
 
-    const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( result ) => {
+    const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( object ) => {
 
        // rotate to make the roll animation play correctly
-      result.rotation.set( 0, -Math.PI / 2, 0 );
+      object.rotation.set( 0, -Math.PI / 2, 0 );
 
-      this.ball = result;
+      this.ball = object;
 
     } );
 
@@ -93,7 +97,8 @@ export default class Simulation {
 
         HTMLControl.controls.simulate.disabled = false;
 
-        this.positionAndAddObjects();
+        this.setInitialTransforms();
+        this.addObjects();
 
         this.initMixers();
 
@@ -152,17 +157,29 @@ export default class Simulation {
 
       HTMLControl.setInitialState();
 
+      animationControls.reset();
+
+      this.setInitialTransforms();
+      this.initMixers();
+
+      this.initNaoAnimations();
+
     } );
 
   }
 
-  positionAndAddObjects() {
+  addObjects() {
+
+    canvas.app.scene.add( this.nao, this.ball );
+
+  }
+
+  setInitialTransforms() {
 
     this.ball.position.set( this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2] )
     this.nao.position.set( this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2] );
 
-
-    canvas.app.scene.add( this.nao, this.ball );
+    this.nao.rotation.set( 0, 0, 0 );
 
   }
 
@@ -179,16 +196,10 @@ export default class Simulation {
   initNaoAnimations() {
 
     // walk
-    // for now this is a dummy KF - replace with proper animation later
-    const walkKF = new THREE.VectorKeyframeTrack( '.scale',
-      [ 0, timing.naoMoveDuration ],
-      [
-        1, 1, 1,
-        1, 1, 1,
-      ],
-    );
+    // (pre built walk )
+    animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.noaMoveStart );
 
-    // move (translate)
+    // move (translate) while walking
     const moveKF = new THREE.VectorKeyframeTrack(
       '.position',
       [ 0, timing.naoMoveDuration ],
@@ -198,9 +209,9 @@ export default class Simulation {
       ],
     );
     // const moveWalkClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF, walkKF ] );
-    const moveWalkClip = new THREE.AnimationClip( 'nao_move', timing.naoMoveDuration, [ moveKF, walkKF ] );
+    const moveWalkClip = new THREE.AnimationClip( 'nao_move', timing.naoMoveDuration - 1, [ moveKF ] );
 
-    animationControls.initAnimation( this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart );
+    animationControls.initAnimation( this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart + 0.5 );
 
     // turn
     // Set up later based on input from user
@@ -222,20 +233,20 @@ export default class Simulation {
 
   initSimulation() {
 
+    HTMLControl.setInitialState();
+
     HTMLControl.controls.simulate.addEventListener( 'click', ( e ) => {
 
       e.preventDefault();
 
       const slope = -HTMLControl.controls.slope.value;
 
-      HTMLControl.controls.simulate.disabled = true;
-      HTMLControl.controls.reset.disabled = false;
-      HTMLControl.controls.slope.disabled = true;
-
       this.initNaoTurnAnimation( slope );
       this.initBallAnimation( slope );
 
       animationControls.play();
+
+      HTMLControl.controls.reset.disabled = false;
 
     }, false );
 

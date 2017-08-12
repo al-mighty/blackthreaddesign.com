@@ -9120,10 +9120,8 @@ var HTMLControl = function () {
   }
 
   HTMLControl.setInitialState = function setInitialState() {
-    controls.slope.value = 0;
 
-    error.overlay.classList.add('hide');
-    error.messages.innerHTML = '';
+    controls.slope.value = 0;
 
     controls.simulate.disabled = false;
     controls.slope.disabled = false;
@@ -52876,6 +52874,7 @@ var AnimationControls = function () {
   AnimationControls.prototype.reset = function reset() {
 
     this.mixers = {};
+    this.isPaused = true;
   };
 
   AnimationControls.prototype.update = function update(delta) {
@@ -52938,6 +52937,8 @@ var Canvas = function () {
 
     };
 
+    this.app.scene.fog = new Fog(0xf7f7f7, 200, 1500);
+
     this.lighting = new LightingSetup(this.app);
 
     this.loadedObjects = new Group();
@@ -52946,6 +52947,8 @@ var Canvas = function () {
     this.initCamera();
     this.app.initControls();
     this.initControls();
+
+    this.addGround();
   }
 
   Canvas.prototype.initCamera = function initCamera() {
@@ -52958,8 +52961,17 @@ var Canvas = function () {
 
   Canvas.prototype.initControls = function initControls() {
 
-    this.app.controls.minPolarAngle = 0;
+    this.app.controls.minPolarAngle = Math.PI / 12;
     this.app.controls.maxPolarAngle = Math.PI / 2;
+  };
+
+  Canvas.prototype.addGround = function addGround() {
+    var geometry = new PlaneBufferGeometry(20000, 20000);
+    var material = new MeshPhongMaterial({ shininess: 0.1 });
+    var ground = new Mesh(geometry, material);
+    ground.position.set(0, -1, 0);
+    ground.rotation.x = -Math.PI / 2;
+    this.app.scene.add(ground);
   };
 
   Canvas.prototype.addObjectToScene = function addObjectToScene(object) {
@@ -54987,11 +54999,10 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
 
       var scaleFactor = parseFloatArray(node.properties.Lcl_Scaling.value);
 
-      scaleFactor[0] = Math.abs(scaleFactor[0]);
-      scaleFactor[1] = Math.abs(scaleFactor[1]);
-      scaleFactor[2] = Math.abs(scaleFactor[2]);
-
       model.scale.fromArray(scaleFactor);
+
+      // original line
+      // model.scale.fromArray( parseFloatArray( node.properties.Lcl_Scaling.value ) );
     }
 
     if ('PreRotation' in node.properties) {
@@ -55004,17 +55015,17 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
     }
 
     if ('GeometricTranslation' in node.properties) {
+      (function () {
 
-      // console.log( model)
-      // console.log( 'testing translations ')
-      var array = node.properties.GeometricTranslation.value;
-      model.traverse(function (child) {
+        var array = node.properties.GeometricTranslation.value;
+        model.traverse(function (child) {
 
-        if (child.geometry) {
+          if (child.geometry) {
 
-          child.geometry.translate(array[0], array[1], array[2]);
-        }
-      });
+            child.geometry.translate(array[0], array[1], array[2]);
+          }
+        });
+      })();
     }
 
     var conns = connections.get(model.FBX_ID);
@@ -58338,13 +58349,56 @@ var Loaders = function Loaders() {
   };
 };
 
+function invertMirroredFBX(object) {
+
+          object.traverse(function (child) {
+
+                    if (child instanceof Mesh) {
+
+                              if (child.matrixWorld.determinant() < 0) {
+
+                                        var l = child.geometry.attributes.position.array.length;
+
+                                        for (var i = 0; i < l; i += 9) {
+
+                                                  // reverse winding order
+                                                  var tempX = child.geometry.attributes.position.array[i];
+                                                  var tempY = child.geometry.attributes.position.array[i + 1];
+                                                  var tempZ = child.geometry.attributes.position.array[i + 2];
+
+                                                  child.geometry.attributes.position.array[i] = child.geometry.attributes.position.array[i + 6];
+                                                  child.geometry.attributes.position.array[i + 1] = child.geometry.attributes.position.array[i + 7];
+                                                  child.geometry.attributes.position.array[i + 2] = child.geometry.attributes.position.array[i + 8];
+
+                                                  child.geometry.attributes.position.array[i + 6] = tempX;
+                                                  child.geometry.attributes.position.array[i + 7] = tempY;
+                                                  child.geometry.attributes.position.array[i + 8] = tempZ;
+
+                                                  // switch vertex normals
+                                                  var tempNX = child.geometry.attributes.normal.array[i];
+                                                  var tempNY = child.geometry.attributes.normal.array[i + 1];
+                                                  var tempNZ = child.geometry.attributes.normal.array[i + 2];
+
+                                                  child.geometry.attributes.normal.array[i] = child.geometry.attributes.normal.array[i + 6];
+                                                  child.geometry.attributes.normal.array[i + 1] = child.geometry.attributes.normal.array[i + 7];
+                                                  child.geometry.attributes.normal.array[i + 2] = child.geometry.attributes.normal.array[i + 8];
+
+                                                  child.geometry.attributes.normal.array[i + 6] = tempNX;
+                                                  child.geometry.attributes.normal.array[i + 7] = tempNY;
+                                                  child.geometry.attributes.normal.array[i + 8] = tempNZ;
+                                        }
+                              }
+                    }
+          });
+}
+
 var loaders = new Loaders();
 
 var timing = {
 
     noaMoveStart: 0,
 
-    naoMoveDuration: 3,
+    naoMoveDuration: 4,
 
     get naoTurnStart() {
         return this.noaMoveStart + this.naoMoveDuration;
@@ -58402,23 +58456,26 @@ var Simulation = function () {
     Simulation.prototype.loadModels = function loadModels() {
         var _this = this;
 
-        var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (result) {
+        var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
             // field width width ~140cm, length ~200cm
-            canvas$1.app.scene.add(result);
+            canvas$1.app.scene.add(object);
         });
 
-        var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (result) {
+        var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (object) {
 
-            _this.nao = result;
+            // NOTE: Will no longer be needed if https://github.com/mrdoob/three.js/issues/11911 is merged
+            invertMirroredFBX(object);
+
+            _this.nao = object;
         });
 
-        var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (result) {
+        var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (object) {
 
             // rotate to make the roll animation play correctly
-            result.rotation.set(0, -Math.PI / 2, 0);
+            object.rotation.set(0, -Math.PI / 2, 0);
 
-            _this.ball = result;
+            _this.ball = object;
         });
 
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
@@ -58434,7 +58491,8 @@ var Simulation = function () {
 
             HTMLControl.controls.simulate.disabled = false;
 
-            _this2.positionAndAddObjects();
+            _this2.setInitialTransforms();
+            _this2.addObjects();
 
             _this2.initMixers();
 
@@ -58470,6 +58528,7 @@ var Simulation = function () {
     };
 
     Simulation.prototype.initReset = function initReset() {
+        var _this3 = this;
 
         HTMLControl.controls.reset.addEventListener('click', function () {
 
@@ -58477,15 +58536,27 @@ var Simulation = function () {
             canvas$1.app.controls.reset();
 
             HTMLControl.setInitialState();
+
+            animationControls.reset();
+
+            _this3.setInitialTransforms();
+            _this3.initMixers();
+
+            _this3.initNaoAnimations();
         });
     };
 
-    Simulation.prototype.positionAndAddObjects = function positionAndAddObjects() {
+    Simulation.prototype.addObjects = function addObjects() {
+
+        canvas$1.app.scene.add(this.nao, this.ball);
+    };
+
+    Simulation.prototype.setInitialTransforms = function setInitialTransforms() {
 
         this.ball.position.set(this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2]);
         this.nao.position.set(this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2]);
 
-        canvas$1.app.scene.add(this.nao, this.ball);
+        this.nao.rotation.set(0, 0, 0);
     };
 
     Simulation.prototype.initMixers = function initMixers() {
@@ -58502,15 +58573,15 @@ var Simulation = function () {
     Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
 
         // walk
-        // for now this is a dummy KF - replace with proper animation later
-        var walkKF = new VectorKeyframeTrack('.scale', [0, timing.naoMoveDuration], [1, 1, 1, 1, 1, 1]);
+        // (pre built walk )
+        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.noaMoveStart);
 
-        // move (translate)
+        // move (translate) while walking
         var moveKF = new VectorKeyframeTrack('.position', [0, timing.naoMoveDuration], [].concat(this.naoInitialPos, this.naoFinalPos));
         // const moveWalkClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF, walkKF ] );
-        var moveWalkClip = new AnimationClip('nao_move', timing.naoMoveDuration, [moveKF, walkKF]);
+        var moveWalkClip = new AnimationClip('nao_move', timing.naoMoveDuration - 1, [moveKF]);
 
-        animationControls.initAnimation(this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart);
+        animationControls.initAnimation(this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart + 0.5);
 
         // turn
         // Set up later based on input from user
@@ -58524,7 +58595,9 @@ var Simulation = function () {
     };
 
     Simulation.prototype.initSimulation = function initSimulation() {
-        var _this3 = this;
+        var _this4 = this;
+
+        HTMLControl.setInitialState();
 
         HTMLControl.controls.simulate.addEventListener('click', function (e) {
 
@@ -58532,14 +58605,12 @@ var Simulation = function () {
 
             var slope = -HTMLControl.controls.slope.value;
 
-            HTMLControl.controls.simulate.disabled = true;
-            HTMLControl.controls.reset.disabled = false;
-            HTMLControl.controls.slope.disabled = true;
-
-            _this3.initNaoTurnAnimation(slope);
-            _this3.initBallAnimation(slope);
+            _this4.initNaoTurnAnimation(slope);
+            _this4.initBallAnimation(slope);
 
             animationControls.play();
+
+            HTMLControl.controls.reset.disabled = false;
         }, false);
     };
 

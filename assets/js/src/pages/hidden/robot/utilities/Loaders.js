@@ -2,13 +2,6 @@ import * as THREE from 'three';
 
 import 'modules/loaders/DDSLoader.module.js';
 import FBXLoader from 'modules/loaders/FBXLoader.module.js';
-// import GLTFLoader from 'modules/loaders/GltfLoader.module.js';
-// import GLTF2Loader from 'modules/loaders/Gltf2Loader.module.js';
-// import OBJLoader from 'modules/loaders/OBJLoader.module.js';
-// import OBJLoader2 from 'modules/loaders/OBJLoader2.module.js';
-// import MTLLoader from 'modules/loaders/MTLLoader.module.js';
-// import ColladaLoader from 'modules/loaders/ColladaLoader.module.js';
-// import ColladaLoader2 from 'modules/loaders/ColladaLoader2.module.js';
 
 import loadingManager from './loadingManager.js';
 

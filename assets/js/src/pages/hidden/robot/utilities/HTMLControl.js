@@ -38,10 +38,8 @@ const controls = {
 export default class HTMLControl {
 
   static setInitialState() {
-    controls.slope.value = 0;
 
-    error.overlay.classList.add( 'hide' );
-    error.messages.innerHTML = '';
+    controls.slope.value = 0;
 
     controls.simulate.disabled = false;
     controls.slope.disabled = false;

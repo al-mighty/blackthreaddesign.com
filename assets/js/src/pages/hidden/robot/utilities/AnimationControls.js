@@ -13,6 +13,7 @@ class AnimationControls {
   reset() {
 
     this.mixers = {};
+    this.isPaused = true;
 
   }
 
