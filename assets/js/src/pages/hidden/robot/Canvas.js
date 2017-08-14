@@ -71,7 +71,12 @@ class Canvas {
     this.app.controls.maxPolarAngle = Math.PI * 0.45;
 
     this.app.controls.minDistance = 10;
-	  this.app.controls.maxDistance = 500;
+    this.app.controls.maxDistance = 500;
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    this.app.controls.minAzimuthAngle = - Math.PI * 0.65; // radians
+    this.app.controls.maxAzimuthAngle = Math.PI * 0.75; // radians
 
   }
 
@@ -79,7 +84,7 @@ class Canvas {
     const geometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
     const material = new THREE.MeshPhongMaterial( { shininess: 0.1 } );
     const ground = new THREE.Mesh( geometry, material );
-    ground.position.set( 0, -1, 0 );
+    ground.position.set( 0, -2, 0 );
     ground.rotation.x = -Math.PI / 2;
     this.app.scene.add( ground );
 

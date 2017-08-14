@@ -14,6 +14,20 @@ class AnimationControls {
 
   reset() {
 
+    this.actions.forEach( ( action ) => {
+
+      action.stop();
+
+    } );
+
+    Object.values( this.mixers ).forEach( ( mixer ) => {
+
+      mixer.time = 0;
+      mixer.stopAllAction();
+
+    } );
+
+
     this.mixers = {};
     this.actions = [];
     this.isPaused = true;

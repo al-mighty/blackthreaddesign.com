@@ -52875,6 +52875,17 @@ var AnimationControls = function () {
 
   AnimationControls.prototype.reset = function reset() {
 
+    this.actions.forEach(function (action) {
+
+      action.stop();
+    });
+
+    Object.values(this.mixers).forEach(function (mixer) {
+
+      mixer.time = 0;
+      mixer.stopAllAction();
+    });
+
     this.mixers = {};
     this.actions = [];
     this.isPaused = true;
@@ -52981,13 +52992,18 @@ var Canvas = function () {
 
     this.app.controls.minDistance = 10;
     this.app.controls.maxDistance = 500;
+
+    // How far you can orbit horizontally, upper and lower limits.
+    // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
+    this.app.controls.minAzimuthAngle = -Math.PI * 0.65; // radians
+    this.app.controls.maxAzimuthAngle = Math.PI * 0.75; // radians
   };
 
   Canvas.prototype.addGround = function addGround() {
     var geometry = new PlaneBufferGeometry(20000, 20000);
     var material = new MeshPhongMaterial({ shininess: 0.1 });
     var ground = new Mesh(geometry, material);
-    ground.position.set(0, -1, 0);
+    ground.position.set(0, -2, 0);
     ground.rotation.x = -Math.PI / 2;
     this.app.scene.add(ground);
   };
@@ -58414,12 +58430,33 @@ var loaders = new Loaders();
 
 var timing = {
 
-    noaMoveStart: 0,
+    naoAnimStart: 0,
 
-    naoMoveDuration: 4,
+    // after pre built stand and turn head anims
+    naoFirstTurnStart: 3,
+
+    naoFirstTurnDuration: 1.5,
+
+    get naoFirstTurnEnd() {
+        return this.naoFirstTurnStart + this.naoFirstTurnDuration;
+    },
+
+    // Prebuilt walk anim starts at 4.5 seconds
+    // Start the translation anim ~1 sec after this
+    get naoMoveStart() {
+        return this.naoFirstTurnEnd + 0.75;
+    },
+
+    // prebuilt walk anim lasts 4 seconds. Translations needs to be timed
+    // shorter than this to look smooth
+    naoMoveDuration: 2,
+
+    get naoMoveEnd() {
+        return this.naoMoveStart + this.naoMoveDuration;
+    },
 
     get naoTurnStart() {
-        return this.noaMoveStart + this.naoMoveDuration;
+        return this.naoMoveStart + this.naoMoveDuration;
     }, // = naoMovEnd
 
     naoTurnDuration: 0.5,
@@ -58526,10 +58563,10 @@ var Simulation = function () {
 
 
     Simulation.prototype.initPositions = function initPositions() {
-        this.ballInitialPos = [_Math.randInt(-30, 30), 5, _Math.randInt(-30, 30)];
+        this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
 
-        this.naoInitialPos = [this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2]];
-        this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.ballInitialPos[2]];
+        this.naoInitialPos = [this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2] - 30];
+        this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.ballInitialPos[2] - 5];
 
         this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
         0];
@@ -58557,6 +58594,7 @@ var Simulation = function () {
 
             animationControls.reset();
 
+            _this3.initPositions();
             _this3.setInitialTransforms();
             _this3.initMixers();
 
@@ -58584,10 +58622,11 @@ var Simulation = function () {
         this.naoMixer = new AnimationMixer(this.nao);
         this.naoMixer.name = 'nao mixer';
 
-        this.naoMixer.addEventListener('finished', function (e) {
+        // this.naoMixer.addEventListener( 'finished', ( e ) => {
 
-            console.log(e.action);
-        });
+        //   console.log( e.action );
+
+        // } );
     };
 
     // these can be set up before the user has entered the slope
@@ -58595,26 +58634,47 @@ var Simulation = function () {
 
     Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
 
-        // walk
-        // (pre built walk )
-        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.noaMoveStart);
+        // set up rotation about y axis
+        var yAxis = new Vector3(0, 1, 0);
 
-        // move (translate) while walking
-        var moveKF = new VectorKeyframeTrack('.position', [0, timing.naoMoveDuration], [].concat(this.naoInitialPos, this.naoFinalPos));
-        // const moveWalkClip = new THREE.AnimationClip( 'nao_move', -1, [ moveKF, walkKF ] );
-        var moveWalkClip = new AnimationClip('nao_move', timing.naoMoveDuration - 1, [moveKF]);
+        var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
+        var qFinal = new Quaternion().setFromAxisAngle(yAxis, -Math.PI / 6);
 
-        animationControls.initAnimation(this.nao, moveWalkClip, this.naoMixer, timing.noaMoveStart + 0.5);
+        // turn from initial angle to final angle over 0.5 seconds
+        var turnKF = new QuaternionKeyframeTrack('.quaternion', [timing.naoFirstTurnStart, timing.naoFirstTurnEnd], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w]);
+
+        this.nao.animations[0].tracks.push(turnKF);
+
+        // move (translate) while walking keyframe
+        var moveKF = new VectorKeyframeTrack('.position', [timing.naoMoveStart, timing.naoMoveEnd], [].concat(this.naoInitialPos, this.naoFinalPos));
+
+        this.nao.animations[0].tracks.push(moveKF);
+
+        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
+
+        // const moveClip = new THREE.AnimationClip( 'nao_move', timing.naoMoveDuration - 1, [ moveKF ] );
+
+        // console.log( moveClip )
+
+        // animationControls.initAnimation( this.nao, moveClip, this.naoMixer, timing.naoMoveStart + 0.5 );
+
+        // console.log( timing.naoMoveDuration - 1, timing.naoMoveStart + 0.5 )
 
         // turn
         // Set up later based on input from user
 
         // kick
         // for now this is a dummy KF - replace with proper animation later
-        var kickKF = new VectorKeyframeTrack('.scale', [0, timing.naoKickDuration], [1, 1, 1, 1, 1, 1]);
-        var kickClip = new AnimationClip('nao_kick', timing.naoKickDuration, [kickKF]);
+        // const kickKF = new THREE.VectorKeyframeTrack( '.scale',
+        //   [ 0, timing.naoKickDuration ],
+        //   [
+        //     1, 1, 1,
+        //     1, 1, 1,
+        //   ],
+        // );
+        // const kickClip = new THREE.AnimationClip( 'nao_kick', timing.naoKickDuration, [ kickKF ] );
 
-        animationControls.initAnimation(this.nao, kickClip, this.naoMixer, timing.naoKickStart);
+        // animationControls.initAnimation( this.nao, kickClip, this.naoMixer, timing.naoKickStart );
     };
 
     // this is set up after the user has entered the slope
@@ -58627,7 +58687,7 @@ var Simulation = function () {
 
         // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
 
-        // set up rotation about x axis
+        // set up rotation about y axis
         var yAxis = new Vector3(0, 1, 0);
 
         var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
