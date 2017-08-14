@@ -32,23 +32,52 @@ const uglifyJSOptions = {
 
 };
 
-// Process js files
-fs.readdir( inputPath, ( err, files ) => {
 
-  files.forEach( ( file ) => {
+const minifyFile = ( file ) => {
 
-    const inputFile = inputPath + file;
-    const outputFile = outputPath + file;
+  console.log( 'Minifying ' + file );
 
-    const inputCode = fs.readFileSync( inputFile, 'utf8' );
+  const inputFile = inputPath + file;
+  const outputFile = outputPath + file;
 
-    // minify input code
-    const outputCode = UglifyJS.minify( inputCode, uglifyJSOptions ).code;
+  const inputCode = fs.readFileSync( inputFile, 'utf8' );
 
-    fs.writeFileSync( outputFile, outputCode, 'utf8' );
+  // minify input code
+  const outputCode = UglifyJS.minify( inputCode, uglifyJSOptions ).code;
+
+  fs.writeFileSync( outputFile, outputCode, 'utf8' );
+
+  console.log( 'Finished minifying ' + file );
+
+}
+
+// pass in a single filename, e.g. 'main' to process only that file
+if ( process.argv[ 2 ] !== undefined ) {
+
+  const name = process.argv[ 2 ] + '.js';
+
+  fs.readdir( 'assets/js/src/entry', ( err, files ) => {
+    files.forEach( ( file ) => {
+
+      if ( file !== name ) return;
+
+      minifyFile( file );
+
+    } );
 
   } );
 
-} );
+} else {
 
-// process css files
+  // Process js files
+  fs.readdir( inputPath, ( err, files ) => {
+
+    files.forEach( ( file ) => {
+
+      minifyFile( file );
+
+    } );
+
+  } );
+
+}
