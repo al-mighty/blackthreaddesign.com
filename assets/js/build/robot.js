@@ -52833,7 +52833,7 @@ var LightingSetup = function () {
 
     LightingSetup.prototype.initLights = function initLights() {
 
-        var ambientLight = new AmbientLight(0xffffff, 0.35);
+        var ambientLight = new AmbientLight(0xffffff, 0.3);
         this.app.scene.add(ambientLight);
 
         // ****  METHOD 1:   3 POINT LIGHTING ***************************
