@@ -52819,6 +52819,8 @@ function App(canvas) {
   };
 }
 
+// import HTMLControl from './HTMLControl.js';
+
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -52831,7 +52833,7 @@ var LightingSetup = function () {
 
     LightingSetup.prototype.initLights = function initLights() {
 
-        var ambientLight = new AmbientLight(0xffffff, 0.2);
+        var ambientLight = new AmbientLight(0xffffff, 0.3);
         this.app.scene.add(ambientLight);
 
         // ****  METHOD 1:   3 POINT LIGHTING ***************************
@@ -58544,6 +58546,7 @@ var Simulation = function () {
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
+            // console.log( object )
             object.getObjectByName('Field').receiveShadow = true;
 
             // console.log( object )
@@ -58605,7 +58608,7 @@ var Simulation = function () {
         this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
 
         this.naoInitialPos = [this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30];
-        this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.ballInitialPos[2] - 5];
+        // this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
 
         this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
         0];
@@ -58674,20 +58677,34 @@ var Simulation = function () {
     Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
 
         // set up rotation about y axis
-        var yAxis = new Vector3(0, 1, 0);
+        // const yAxis = new THREE.Vector3( 0, 1, 0 );
 
-        var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
-        var qFinal = new Quaternion().setFromAxisAngle(yAxis, -Math.PI / 6);
+        // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
+        // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, -Math.PI / 6 );
 
         // turn from initial angle to final angle over 0.5 seconds
-        var turnKF = new QuaternionKeyframeTrack('.quaternion', [timing.naoFirstTurnStart, timing.naoFirstTurnEnd], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w]);
+        // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
+        //   [ timing.naoFirstTurnStart, timing.naoFirstTurnEnd ],
+        //   [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+        // );
 
-        this.nao.animations[0].tracks.push(turnKF);
+        // this.nao.animations[ 0 ].tracks.push( turnKF );
 
         // move (translate) while walking keyframe
-        var moveKF = new VectorKeyframeTrack('.position', [timing.naoMoveStart, timing.naoMoveEnd], [].concat(this.naoInitialPos, this.naoFinalPos), InterpolateSmooth);
+        // const moveKF = new THREE.VectorKeyframeTrack(
+        //   '.position',
+        //   [
+        //     timing.naoMoveStart,
+        //     timing.naoMoveEnd,
+        //   ],
+        //   [
+        //     ...this.naoInitialPos,
+        //     ...this.naoFinalPos,
+        //   ],
+        //   THREE.InterpolateSmooth,
+        // );
 
-        this.nao.animations[0].tracks.push(moveKF);
+        // this.nao.animations[ 0 ].tracks.push( moveKF );
 
         animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
 

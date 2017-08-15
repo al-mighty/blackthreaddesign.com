@@ -77,6 +77,7 @@ export default class Simulation {
 
     const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
 
+      // console.log( object )
       object.getObjectByName( 'Field' ).receiveShadow = true;
 
       // console.log( object )
@@ -145,7 +146,7 @@ export default class Simulation {
     ];
 
     this.naoInitialPos = [ this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30 ];
-    this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
+    // this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
 
     this.ballFinalPos = [
       85,
@@ -226,34 +227,34 @@ export default class Simulation {
   initNaoAnimations() {
 
     // set up rotation about y axis
-    const yAxis = new THREE.Vector3( 0, 1, 0 );
+    // const yAxis = new THREE.Vector3( 0, 1, 0 );
 
-    const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, -Math.PI / 6 );
+    // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
+    // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, -Math.PI / 6 );
 
     // turn from initial angle to final angle over 0.5 seconds
-    const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
-      [ timing.naoFirstTurnStart, timing.naoFirstTurnEnd ],
-      [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
-    );
+    // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
+    //   [ timing.naoFirstTurnStart, timing.naoFirstTurnEnd ],
+    //   [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+    // );
 
-    this.nao.animations[ 0 ].tracks.push( turnKF );
+    // this.nao.animations[ 0 ].tracks.push( turnKF );
 
     // move (translate) while walking keyframe
-    const moveKF = new THREE.VectorKeyframeTrack(
-      '.position',
-      [
-        timing.naoMoveStart,
-        timing.naoMoveEnd,
-      ],
-      [
-        ...this.naoInitialPos,
-        ...this.naoFinalPos,
-      ],
-      THREE.InterpolateSmooth,
-    );
+    // const moveKF = new THREE.VectorKeyframeTrack(
+    //   '.position',
+    //   [
+    //     timing.naoMoveStart,
+    //     timing.naoMoveEnd,
+    //   ],
+    //   [
+    //     ...this.naoInitialPos,
+    //     ...this.naoFinalPos,
+    //   ],
+    //   THREE.InterpolateSmooth,
+    // );
 
-    this.nao.animations[ 0 ].tracks.push( moveKF );
+    // this.nao.animations[ 0 ].tracks.push( moveKF );
 
     animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
 
