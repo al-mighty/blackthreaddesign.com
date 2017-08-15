@@ -1520,6 +1520,7 @@ function parseScene( FBXTree, connections, deformers, geometryMap, materialMap )
 
     }
 
+    // https://github.com/mrdoob/three.js/issues/11895
     if ( 'GeometricTranslation' in node.properties ) {
 
       const array = node.properties.GeometricTranslation.value;

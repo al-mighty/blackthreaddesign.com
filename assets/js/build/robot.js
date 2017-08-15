@@ -52839,13 +52839,33 @@ var LightingSetup = function () {
         // two extra lights
 
         var backLight = new DirectionalLight(0xffffff, 0.325);
-        backLight.position.set(2.6, 1, 3);
+        backLight.position.set(130, 100, 150);
+        // backLight.castShadow = true;
+        // backLight.shadow.mapSize.width = 2048;
+        // backLight.shadow.mapSize.height = 2048;
+        // backLight.shadow.camera.near = 0.5;
+        // backLight.shadow.camera.far = 1500;
+        // backLight.shadow.camera.updateProjectionMatrix();
 
-        var keyLight = new DirectionalLight(0xffffff, 0.475);
-        keyLight.position.set(-2, -1, 0);
+        var keyLight = new DirectionalLight(0xffffff, 0.375);
+        keyLight.position.set(100, 50, 0);
+        // keyLight.castShadow = true;
+        // keyLight.shadow.mapSize.width = 2048;
+        // keyLight.shadow.mapSize.height = 2048;
+        // keyLight.shadow.camera.near = 0.5;
+        // keyLight.shadow.camera.far = 1500;
+        // keyLight.shadow.camera.updateProjectionMatrix();
 
-        var fillLight = new DirectionalLight(0xffffff, 0.65);
-        fillLight.position.set(3, 3, 2);
+        var fillLight = new DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(75, 75, 50);
+
+        // fillLight.castShadow = true;
+        // fillLight.shadow.bias = 0.0001;
+        // fillLight.shadow.mapSize.width = 2048;
+        // fillLight.shadow.mapSize.height = 2048;
+        // fillLight.shadow.camera.near = 0.5;
+        // fillLight.shadow.camera.far = 1500;
+        // fillLight.shadow.camera.updateProjectionMatrix();
 
         this.app.scene.add(backLight, keyLight, fillLight);
 
@@ -52974,8 +52994,17 @@ var Canvas = function () {
     this.app.initControls();
     this.initControls();
 
+    this.initShadows();
+
     this.addGround();
   }
+
+  Canvas.prototype.initShadows = function initShadows() {
+
+    this.app.renderer.shadowMap.enabled = true;
+    this.app.renderer.shadowMap.type = PCFShadowMap;
+    // PCFSoftShadowMap, PCFShadowMap
+  };
 
   Canvas.prototype.initCamera = function initCamera() {
 
@@ -55048,6 +55077,7 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
       model.rotation.setFromQuaternion(preRotations, 'ZYX');
     }
 
+    // https://github.com/mrdoob/three.js/issues/11895
     if ('GeometricTranslation' in node.properties) {
       (function () {
 
@@ -58455,17 +58485,18 @@ var timing = {
         return this.naoMoveStart + this.naoMoveDuration;
     },
 
-    get naoTurnStart() {
-        return this.naoMoveStart + this.naoMoveDuration;
+    // second turning anim - turn to face ball
+    get naoSecondTurnStart() {
+        return 8.5;
     }, // = naoMovEnd
 
-    naoTurnDuration: 0.5,
+    naoSecondTurnDuration: 1,
 
     get naoKickStart() {
-        return this.naoTurnStart + this.naoTurnDuration;
+        return 10;
     }, // = naoTurnEnd
 
-    naoKickDuration: 0.5,
+    naoKickDuration: 1,
 
     get ballMoveStart() {
         return this.naoKickStart + this.naoKickDuration;
@@ -58513,6 +58544,10 @@ var Simulation = function () {
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
+            object.getObjectByName('Field').receiveShadow = true;
+
+            // console.log( object )
+
             // field width width ~140cm, length ~200cm
             canvas$1.app.scene.add(object);
         });
@@ -58523,6 +58558,7 @@ var Simulation = function () {
             invertMirroredFBX(object);
 
             _this.nao = object;
+            _this.nao.castShadow = true;
         });
 
         var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (object) {
@@ -58531,6 +58567,9 @@ var Simulation = function () {
             object.rotation.set(0, -Math.PI / 2, 0);
 
             _this.ball = object;
+            _this.ball.children[0].castShadow = true;
+            // this.ball.castShadow = true;
+
         });
 
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
@@ -58565,7 +58604,7 @@ var Simulation = function () {
     Simulation.prototype.initPositions = function initPositions() {
         this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
 
-        this.naoInitialPos = [this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2] - 30];
+        this.naoInitialPos = [this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30];
         this.naoFinalPos = [this.ballInitialPos[0] - 10, 0, this.ballInitialPos[2] - 5];
 
         this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
@@ -58646,7 +58685,7 @@ var Simulation = function () {
         this.nao.animations[0].tracks.push(turnKF);
 
         // move (translate) while walking keyframe
-        var moveKF = new VectorKeyframeTrack('.position', [timing.naoMoveStart, timing.naoMoveEnd], [].concat(this.naoInitialPos, this.naoFinalPos));
+        var moveKF = new VectorKeyframeTrack('.position', [timing.naoMoveStart, timing.naoMoveEnd], [].concat(this.naoInitialPos, this.naoFinalPos), InterpolateSmooth);
 
         this.nao.animations[0].tracks.push(moveKF);
 
@@ -58698,7 +58737,7 @@ var Simulation = function () {
 
         var turnClip = new AnimationClip('nao_turn', timing.naoTurnDuration, [turnKF]);
 
-        animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoTurnStart);
+        animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoSecondTurnStart);
     };
 
     // this is set up after the user has entered the slope
@@ -58717,7 +58756,7 @@ var Simulation = function () {
         var rollTrack = this.ball.animations[0].tracks[1];
 
         // move (translate)
-        var moveKF = new VectorKeyframeTrack('.position', [0, 2], [].concat(this.ballInitialPos, this.ballFinalPos));
+        var moveKF = new VectorKeyframeTrack('.position', [0.05, 1.95], [].concat(this.ballInitialPos, this.ballFinalPos), InterpolateSmooth);
 
         // combine roll and move into a 2 second clip - the length could be adjusted based on balls
         // initial position

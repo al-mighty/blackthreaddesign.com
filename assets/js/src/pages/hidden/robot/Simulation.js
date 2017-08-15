@@ -30,13 +30,14 @@ const timing = {
 
   get naoMoveEnd() { return this.naoMoveStart + this.naoMoveDuration; },
 
-  get naoTurnStart() { return this.naoMoveStart + this.naoMoveDuration; }, // = naoMovEnd
+  // second turning anim - turn to face ball
+  get naoSecondTurnStart() { return 8.5; }, // = naoMovEnd
 
-  naoTurnDuration: 0.5,
+  naoSecondTurnDuration: 1,
 
-  get naoKickStart() { return this.naoTurnStart + this.naoTurnDuration; }, // = naoTurnEnd
+  get naoKickStart() { return 10; }, // = naoTurnEnd
 
-  naoKickDuration: 0.5,
+  naoKickDuration: 1,
 
   get ballMoveStart() { return this.naoKickStart + this.naoKickDuration; }, // = naoKickEnd
 
@@ -76,6 +77,10 @@ export default class Simulation {
 
     const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
 
+      object.getObjectByName( 'Field' ).receiveShadow = true;
+
+      // console.log( object )
+
       // field width width ~140cm, length ~200cm
       canvas.app.scene.add( object );
 
@@ -87,6 +92,7 @@ export default class Simulation {
       invertMirroredFBX( object );
 
       this.nao = object;
+      this.nao.castShadow = true;
 
     } );
 
@@ -96,6 +102,9 @@ export default class Simulation {
       object.rotation.set( 0, -Math.PI / 2, 0 );
 
       this.ball = object;
+      this.ball.children[0].castShadow = true;
+      // this.ball.castShadow = true;
+
 
     } );
 
@@ -135,7 +144,7 @@ export default class Simulation {
       THREE.Math.randInt( -15, 30 ),
     ];
 
-    this.naoInitialPos = [ this.ballInitialPos[0] - 60, 0, this.ballInitialPos[2] - 30 ];
+    this.naoInitialPos = [ this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30 ];
     this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
 
     this.ballFinalPos = [
@@ -241,6 +250,7 @@ export default class Simulation {
         ...this.naoInitialPos,
         ...this.naoFinalPos,
       ],
+      THREE.InterpolateSmooth,
     );
 
     this.nao.animations[ 0 ].tracks.push( moveKF );
@@ -296,7 +306,7 @@ export default class Simulation {
 
     const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
 
-    animationControls.initAnimation( this.nao, turnClip, this.naoMixer, timing.naoTurnStart );
+    animationControls.initAnimation( this.nao, turnClip, this.naoMixer, timing.naoSecondTurnStart );
 
   }
 
@@ -316,11 +326,12 @@ export default class Simulation {
     // move (translate)
     const moveKF = new THREE.VectorKeyframeTrack(
       '.position',
-      [ 0, 2 ],
+      [ 0.05, 1.95 ],
       [
         ...this.ballInitialPos,
         ...this.ballFinalPos,
       ],
+      THREE.InterpolateSmooth,
     );
 
     // combine roll and move into a 2 second clip - the length could be adjusted based on balls

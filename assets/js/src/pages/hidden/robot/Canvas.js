@@ -52,7 +52,17 @@ class Canvas {
     this.app.initControls();
     this.initControls();
 
+    this.initShadows();
+
     this.addGround();
+
+  }
+
+  initShadows() {
+
+    this.app.renderer.shadowMap.enabled = true;
+    this.app.renderer.shadowMap.type = THREE.PCFShadowMap;
+    // PCFSoftShadowMap, PCFShadowMap
 
   }
 

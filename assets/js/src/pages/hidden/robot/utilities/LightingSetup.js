@@ -22,13 +22,33 @@ export default class LightingSetup {
     // two extra lights
 
     const backLight = new THREE.DirectionalLight( 0xffffff, 0.325 );
-    backLight.position.set( 2.6, 1, 3 );
+    backLight.position.set( 130, 100, 150 );
+    // backLight.castShadow = true;
+    // backLight.shadow.mapSize.width = 2048;
+    // backLight.shadow.mapSize.height = 2048;
+    // backLight.shadow.camera.near = 0.5;
+    // backLight.shadow.camera.far = 1500;
+    // backLight.shadow.camera.updateProjectionMatrix();
 
-    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
-    keyLight.position.set( -2, -1, 0 );
+    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.375 );
+    keyLight.position.set( 100, 50, 0 );
+    // keyLight.castShadow = true;
+    // keyLight.shadow.mapSize.width = 2048;
+    // keyLight.shadow.mapSize.height = 2048;
+    // keyLight.shadow.camera.near = 0.5;
+    // keyLight.shadow.camera.far = 1500;
+    // keyLight.shadow.camera.updateProjectionMatrix();
 
-    const fillLight = new THREE.DirectionalLight( 0xffffff, 0.65 );
-    fillLight.position.set( 3, 3, 2 );
+    const fillLight = new THREE.DirectionalLight( 0xffffff, 0.3 );
+    fillLight.position.set( 75, 75, 50 );
+
+    // fillLight.castShadow = true;
+    // fillLight.shadow.bias = 0.0001;
+    // fillLight.shadow.mapSize.width = 2048;
+    // fillLight.shadow.mapSize.height = 2048;
+    // fillLight.shadow.camera.near = 0.5;
+    // fillLight.shadow.camera.far = 1500;
+    // fillLight.shadow.camera.updateProjectionMatrix();
 
     this.app.scene.add( backLight, keyLight, fillLight );
 
