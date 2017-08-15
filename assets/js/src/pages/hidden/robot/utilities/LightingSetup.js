@@ -14,7 +14,7 @@ export default class LightingSetup {
 
   initLights() {
 
-    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 );
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.35 );
     this.app.scene.add( ambientLight );
 
     // ****  METHOD 1:   3 POINT LIGHTING ***************************
