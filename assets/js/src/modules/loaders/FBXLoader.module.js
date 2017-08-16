@@ -306,11 +306,14 @@ function parseTextures( FBXTree, loader, imageMap, connections ) {
 	 * @param {Map<number, {parents: {ID: number, relationship: string}[], children: {ID: number, relationship: string}[]}>} connections
 	 * @returns {THREE.Texture}
 	 */
+
 function parseTexture( textureNode, loader, imageMap, connections ) {
 
   const FBX_ID = textureNode.id;
 
   const name = textureNode.name;
+
+  console.log( name )
 
   let fileName;
 
