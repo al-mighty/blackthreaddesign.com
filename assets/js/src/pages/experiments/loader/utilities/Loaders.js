@@ -9,7 +9,7 @@ import OBJLoader2 from 'modules/loaders/OBJLoader2.module.js';
 import MTLLoader from 'modules/loaders/MTLLoader.module.js';
 import ColladaLoader from 'modules/loaders/ColladaLoader.module.js';
 import ColladaLoader2 from 'modules/loaders/ColladaLoader2.module.js';
-import TGALoader from 'modules/loaders/TGALoader.module.js';
+// import TGALoader from 'modules/loaders/TGALoader.module.js';
 
 import loadingManager from './loadingManager.js';
 
@@ -24,7 +24,7 @@ let objLoader2 = null;
 let mtlLoader = null;
 let colladaLoader = null;  // todo
 let colladaLoader2 = null;
-let tgaLoader = null;
+// let tgaLoader = null;
 
 // object loaders require access to .setMaterials function
 const oLoader = new OBJLoader( loadingManager );
@@ -42,7 +42,7 @@ const promisifyLoader = loader =>
 
   } );
 
-THREE.Loader.Handlers.add( /\.tga$/i, new TGALoader() );
+// THREE.Loader.Handlers.add( /\.tga$/i, new TGALoader() );
 
 export default class Loaders {
 

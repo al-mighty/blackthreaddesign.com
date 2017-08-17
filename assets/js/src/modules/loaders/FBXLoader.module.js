@@ -313,7 +313,7 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
   const name = textureNode.name;
 
-  console.log( name )
+  // console.log( name )
 
   let fileName;
 

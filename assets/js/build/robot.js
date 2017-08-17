@@ -8935,7 +8935,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -11138,10 +11137,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -22200,6 +22196,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -22229,10 +22227,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -33574,7 +33568,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -33603,7 +33597,6 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -45277,7 +45270,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -49247,9 +49243,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ * @author alteredq / http://alteredqualia.com/
+ */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
 
@@ -49594,7 +49589,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size ) {
@@ -49667,8 +49661,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
@@ -50261,26 +50254,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -50437,10 +50413,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -50476,7 +50448,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -50523,13 +50497,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 	
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -51577,6 +51550,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -51624,6 +51599,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -51746,21 +51723,6 @@ function Time() {
     this.paused = true;
   };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -52580,11 +52542,6 @@ function OrbitControls(object, domElement) {
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -52862,8 +52819,6 @@ function App(canvas) {
   };
 }
 
-// import HTMLControl from './HTMLControl.js';
-
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -53100,10 +53055,6 @@ var Canvas = function () {
 
 var canvas$1 = new Canvas(HTMLControl.canvas);
 
-/*
- * @author mrdoob / http://mrdoob.com/
- */
-
 function DDSLoader() {
 
   this._parser = DDSLoader.parse;
@@ -53336,18 +53287,6 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -53742,20 +53681,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -53803,33 +53728,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -54090,7 +53988,7 @@ function parseTexture(textureNode, loader, imageMap, connections) {
 
   var name = textureNode.name;
 
-  console.log(name);
+  // console.log( name )
 
   var fileName = void 0;
 
@@ -58518,9 +58416,6 @@ var Loaders = function Loaders() {
   };
 };
 
-// Fix for bug in FBXLoader
-// https://github.com/mrdoob/three.js/issues/11911
-// This will hopefully be added to the FBXLoader eventually, in the meantime...
 function invertMirroredFBX(object) {
 
           object.traverse(function (child) {
@@ -58570,51 +58465,19 @@ var timing = {
 
     naoAnimStart: 0,
 
-    // after pre built stand and turn head anims
-    naoFirstTurnStart: 3,
+    // turn to correct direction to kick ball
+    naoTurnStart: 10.5,
 
-    naoFirstTurnDuration: 1.5,
+    naoTurnDuration: 2,
 
-    get naoFirstTurnEnd() {
-        return this.naoFirstTurnStart + this.naoFirstTurnDuration;
-    },
+    // point at which nao's kick makes connection
+    ballMoveStart: 13.5,
 
-    // Prebuilt walk anim starts at 4.5 seconds
-    // Start the translation anim ~1 sec after this
-    get naoMoveStart() {
-        return this.naoFirstTurnEnd + 0.75;
-    },
+    // ball rolls this long
+    ballMoveDuration: 3
 
-    // prebuilt walk anim lasts 4 seconds. Translations needs to be timed
-    // shorter than this to look smooth
-    naoMoveDuration: 2,
-
-    get naoMoveEnd() {
-        return this.naoMoveStart + this.naoMoveDuration;
-    },
-
-    // second turning anim - turn to face ball
-    get naoSecondTurnStart() {
-        return 8.5;
-    }, // = naoMovEnd
-
-    naoSecondTurnDuration: 1,
-
-    get naoKickStart() {
-        return 10;
-    }, // = naoTurnEnd
-
-    naoKickDuration: 1,
-
-    get ballMoveStart() {
-        return this.naoKickStart + this.naoKickDuration;
-    }, // = naoKickEnd
-
-    ballMoveDuration: 2,
-
-    get ballMoveEnd() {
-        return this.ballMoveStart + this.ballMoveDuration;
-    }
+    // all animations end
+    // get ballMoveEnd() { return this.ballMoveStart + this.ballMoveDuration; },
 
 };
 
@@ -58644,11 +58507,33 @@ var Simulation = function () {
         this.initReset();
     };
 
+    Simulation.prototype.addBallConstraintGuides = function addBallConstraintGuides() {
+
+        var groundGeo = new PlaneBufferGeometry(182, 120, 1, 1);
+
+        var groundMesh = new Mesh(groundGeo);
+
+        groundMesh.position.set(0, 2, 0);
+        groundMesh.rotation.x = -Math.PI / 2;
+
+        var postGeo = new CylinderBufferGeometry(2, 2, 40, 12, 12);
+
+        var farPostMesh = new Mesh(postGeo);
+        farPostMesh.position.set(78, 0, 24.5);
+
+        var nearPostMesh = new Mesh(postGeo);
+        nearPostMesh.position.set(78, 0, -25);
+
+        canvas$1.app.scene.add(groundMesh, farPostMesh, nearPostMesh);
+    };
+
     // load the models
 
 
     Simulation.prototype.loadModels = function loadModels() {
         var _this = this;
+
+        this.addBallConstraintGuides();
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
@@ -58699,7 +58584,7 @@ var Simulation = function () {
 
             _this2.initMixers();
 
-            _this2.initNaoAnimations();
+            _this2.initNaoPreBuiltAnimations();
 
             _this2.initSimulation();
 
@@ -58711,7 +58596,7 @@ var Simulation = function () {
 
 
     Simulation.prototype.initPositions = function initPositions() {
-        this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
+        this.ballInitialPos = [_Math.randInt(-15, 30), 0, _Math.randInt(-15, 30)];
 
         this.naoInitialPos = [this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30];
         // this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
@@ -58746,7 +58631,7 @@ var Simulation = function () {
             _this3.setInitialTransforms();
             _this3.initMixers();
 
-            _this3.initNaoAnimations();
+            _this3.initNaoPreBuiltAnimations();
         });
     };
 
@@ -58777,66 +58662,9 @@ var Simulation = function () {
         // } );
     };
 
-    // these can be set up before the user has entered the slope
-
-
-    Simulation.prototype.initNaoAnimations = function initNaoAnimations() {
-
-        // set up rotation about y axis
-        // const yAxis = new THREE.Vector3( 0, 1, 0 );
-
-        // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-        // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, -Math.PI / 6 );
-
-        // turn from initial angle to final angle over 0.5 seconds
-        // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
-        //   [ timing.naoFirstTurnStart, timing.naoFirstTurnEnd ],
-        //   [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
-        // );
-
-        // this.nao.animations[ 0 ].tracks.push( turnKF );
-
-        // move (translate) while walking keyframe
-        // const moveKF = new THREE.VectorKeyframeTrack(
-        //   '.position',
-        //   [
-        //     timing.naoMoveStart,
-        //     timing.naoMoveEnd,
-        //   ],
-        //   [
-        //     ...this.naoInitialPos,
-        //     ...this.naoFinalPos,
-        //   ],
-        //   THREE.InterpolateSmooth,
-        // );
-
-        // this.nao.animations[ 0 ].tracks.push( moveKF );
+    Simulation.prototype.initNaoPreBuiltAnimations = function initNaoPreBuiltAnimations() {
 
         animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
-
-        // const moveClip = new THREE.AnimationClip( 'nao_move', timing.naoMoveDuration - 1, [ moveKF ] );
-
-        // console.log( moveClip )
-
-        // animationControls.initAnimation( this.nao, moveClip, this.naoMixer, timing.naoMoveStart + 0.5 );
-
-        // console.log( timing.naoMoveDuration - 1, timing.naoMoveStart + 0.5 )
-
-        // turn
-        // Set up later based on input from user
-
-        // kick
-        // for now this is a dummy KF - replace with proper animation later
-        // const kickKF = new THREE.VectorKeyframeTrack( '.scale',
-        //   [ 0, timing.naoKickDuration ],
-        //   [
-        //     1, 1, 1,
-        //     1, 1, 1,
-        //   ],
-        // );
-        // const kickClip = new THREE.AnimationClip( 'nao_kick', timing.naoKickDuration, [ kickKF ] );
-
-        // animationControls.initAnimation( this.nao, kickClip, this.naoMixer, timing.naoKickStart );
     };
 
     // this is set up after the user has entered the slope
@@ -58852,6 +58680,8 @@ var Simulation = function () {
         // set up rotation about y axis
         var yAxis = new Vector3(0, 1, 0);
 
+        // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
+        // however the model registers as 0 degrees so rotate relative to 0
         var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
         var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount);
 
@@ -58860,7 +58690,7 @@ var Simulation = function () {
 
         var turnClip = new AnimationClip('nao_turn', timing.naoTurnDuration, [turnKF]);
 
-        animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoSecondTurnStart);
+        animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoTurnStart);
     };
 
     // this is set up after the user has entered the slope
