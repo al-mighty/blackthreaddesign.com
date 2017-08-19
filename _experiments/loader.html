@@ -147,6 +147,12 @@ vendor-js:
     three.js exporter, which has certain limitations (may not export animations for skinned meshes for example).
     JSON format is very fast to load, at the expense of larger file size.
   </p>
+  <p>
+    You can also export the animations only as JSON. This is useful for example if you are exporting as FBX, which only supports a single animation.
+    You can output one FBX for each animation (walk, jump, idle etc.), then use this to save the animations separately.
+
+    Note that this doesn't work properly if you have loaded multiple models.
+  </p>
 
   <h3>Grid</h3>
   <p>Each grid line is one unit - use this to get check the scale of your models.</p>
@@ -167,17 +173,21 @@ vendor-js:
   <p>
     FBX: Binary higher than version 6.1 and ASCII higher than version 7.0.<br>
     Note that the FBX loader has two fixes applied that the default three.js loader does not have.
-    See [here](https://github.com/mrdoob/three.js/issues/11895) and [here](https://github.com/mrdoob/three.js/issues/11911)for details. Hopefully these will be added the the loader in the next release.
+    See
+    <a href="https://github.com/mrdoob/three.js/issues/11895">here</a>
+    and
+    <a href="https://github.com/mrdoob/three.js/issues/11911">here</a>
+    for details. Hopefully these will be added the the loader in the next release.
   </p>
 
   <p>
-    GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files. These are loaded with THREE.GLTF2Loader, which
-    supports GLTF v2 files. GLTF v1 is not supported.
+    GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files.
+    Note that .bin, .frag, .vert files are GLTF V1 only. GLTF V2 will have single .gltf or .glb file and associated textures.
   </p>
 
-  <p>OBJ: Using THREE.OBJLoader2. Load any number of .obj and .mtl files and their associated textures.</p>
+  <p>OBJ: Uses THREE.OBJLoader2. Load any number of .obj and .mtl files and their associated textures.</p>
 
-  <p>DAE: Using THREE.ColladaLoader2.</p>
+  <p>DAE: Uses THREE.ColladaLoader2.</p>
 
   <h3>Supported texture formats</h3>
 

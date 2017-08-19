@@ -9,6 +9,7 @@ import ScreenshotHandler from './utilities/ScreenshotHandler.js';
 import Grid from './utilities/Grid.js';
 import HTMLControl from './utilities/HTMLControl.js';
 import exportAsJSON from './utilities/exportAsJSON.js';
+import exportAnimsAsJSON from './utilities/exportAnimsAsJSON.js';
 
 import './utilities/fileReader.js';
 
@@ -146,9 +147,9 @@ class LoaderCanvas {
 
       e.preventDefault();
 
-      if ( this.loadedObjects.children.length === 0 ) return;
+      if ( this.animationControls.clips.length === 0 ) return;
 
-      exportAsJSON( this.loadedObjects );
+      exportAnimsAsJSON( this.animationControls.clips );
 
     }, false );
 

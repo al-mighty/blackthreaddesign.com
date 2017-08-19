@@ -193,8 +193,8 @@ export default class OnLoadCallbacks {
 
     let promise = new Promise( ( resolve ) => {} );
 
-
-    console.log( 'Using THREE.ColladaLoader2' );
+    // no need for this as ColladaLoader2 reports plenty of information
+    // console.log( 'Using THREE.ColladaLoader2' );
 
     promise = loaders.colladaLoader( file );
 

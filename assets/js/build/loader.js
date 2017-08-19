@@ -45252,11 +45252,11 @@ var saveString = function (text, filename) {
 };
 
 var exportAsJSON = function (object) {
-  var animationsOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
 
   console.log(object);
   var output = object.toJSON();
+
+  console.log(output);
 
   output.metadata = {
     type: 'Object',
@@ -45267,7 +45267,50 @@ var exportAsJSON = function (object) {
   output = JSON.stringify(output, null, '\t');
   // output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
 
-  saveString(output, 'blackThreadConversion.json');
+  saveString(output, 'blackThreadJSONConversion.json');
+};
+
+var link$1 = document.createElement('a');
+link$1.style.display = 'none';
+document.body.appendChild(link$1); // Firefox workaround, see #6594
+
+var save$1 = function (blob, filename) {
+
+  link$1.href = URL.createObjectURL(blob);
+  link$1.download = filename || 'data.json';
+  link$1.click();
+};
+
+var saveString$1 = function (text, filename) {
+
+  save$1(new Blob([text], { type: 'text/plain' }), filename);
+};
+
+var exportAsJSON$1 = function (array) {
+
+  var anims = [];
+
+  array.forEach(function (anim) {
+
+    anims.push(AnimationClip.toJSON(anim));
+  });
+
+  var output = JSON.stringify(anims, null, '\t');
+  // console.log( output );
+
+  // remove first '[' and last ']' from json
+  output = output.replace(/[^{]*/i, '').replace(/\]$/i, '');
+
+  // array.metadata = {
+  //   type: 'Animation',
+  //   generator: 'Three.js',
+  //   version: '4',
+  // };
+
+  // output = JSON.stringify( output, null, '\t' );;
+  // output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
+
+  saveString$1(output, 'blackThreadAnimations.json');
 };
 
 var loadingManager = new LoadingManager();
@@ -57338,6 +57381,8 @@ var Loaders = function Loaders() {
   };
 };
 
+// import HTMLControl from './HTMLControl.js';
+
 var loaders$3 = new Loaders();
 var defaultMat$1 = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
@@ -57507,7 +57552,8 @@ var OnLoadCallbacks$1 = function () {
 
     var promise = new Promise(function (resolve) {});
 
-    console.log('Using THREE.ColladaLoader2');
+    // no need for this as ColladaLoader2 reports plenty of information
+    // console.log( 'Using THREE.ColladaLoader2' );
 
     promise = loaders$3.colladaLoader(file);
 
@@ -57895,9 +57941,9 @@ var LoaderCanvas = function () {
 
       e.preventDefault();
 
-      if (_this4.loadedObjects.children.length === 0) return;
+      if (_this4.animationControls.clips.length === 0) return;
 
-      exportAsJSON(_this4.loadedObjects);
+      exportAsJSON$1(_this4.animationControls.clips);
     }, false);
   };
 
@@ -57905,6 +57951,8 @@ var LoaderCanvas = function () {
 }();
 
 var loaderCanvas = new LoaderCanvas(HTMLControl.canvas);
+
+// import HTMLControl from './HTMLControl.js';
 
 var loaders$1 = new Loaders();
 var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
@@ -58075,7 +58123,8 @@ var OnLoadCallbacks = function () {
 
     var promise = new Promise(function (resolve) {});
 
-    console.log('Using THREE.ColladaLoader2');
+    // no need for this as ColladaLoader2 reports plenty of information
+    // console.log( 'Using THREE.ColladaLoader2' );
 
     promise = loaders$1.colladaLoader(file);
 
