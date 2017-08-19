@@ -45270,6 +45270,7 @@ var exportAsJSON = function (object) {
   saveString(output, 'blackThreadJSONConversion.json');
 };
 
+// saving function taken from three.js editor
 var link$1 = document.createElement('a');
 link$1.style.display = 'none';
 document.body.appendChild(link$1); // Firefox workaround, see #6594
@@ -45296,19 +45297,9 @@ var exportAsJSON$1 = function (array) {
   });
 
   var output = JSON.stringify(anims, null, '\t');
-  // console.log( output );
 
   // remove first '[' and last ']' from json
   output = output.replace(/[^{]*/i, '').replace(/\]$/i, '');
-
-  // array.metadata = {
-  //   type: 'Animation',
-  //   generator: 'Three.js',
-  //   version: '4',
-  // };
-
-  // output = JSON.stringify( output, null, '\t' );;
-  // output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
 
   saveString$1(output, 'blackThreadAnimations.json');
 };
@@ -57381,8 +57372,6 @@ var Loaders = function Loaders() {
   };
 };
 
-// import HTMLControl from './HTMLControl.js';
-
 var loaders$3 = new Loaders();
 var defaultMat$1 = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });
 
@@ -57951,8 +57940,6 @@ var LoaderCanvas = function () {
 }();
 
 var loaderCanvas = new LoaderCanvas(HTMLControl.canvas);
-
-// import HTMLControl from './HTMLControl.js';
 
 var loaders$1 = new Loaders();
 var defaultMat = new MeshBasicMaterial({ wireframe: true, color: 0x000000 });

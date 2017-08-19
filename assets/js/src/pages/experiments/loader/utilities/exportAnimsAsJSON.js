@@ -30,20 +30,10 @@ const exportAsJSON = ( array ) => {
   } );
 
   let output = JSON.stringify( anims, null, '\t' );
-  // console.log( output );
 
   // remove first '[' and last ']' from json
   output = output.replace( /[^{]*/i, '' ).replace( /\]$/i, '' );
 
-
-  // array.metadata = {
-  //   type: 'Animation',
-  //   generator: 'Three.js',
-  //   version: '4',
-  // };
-
-  // output = JSON.stringify( output, null, '\t' );;
-  // output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
 
   saveString( output, 'blackThreadAnimations.json' );
 
