@@ -58470,8 +58470,13 @@ var timing = {
 
     naoTurnDuration: 2,
 
+    get naoTurnEnd() {
+        return this.naoTurnStart + this.naoTurnDuration;
+    },
+
     // point at which nao's kick makes connection
-    ballMoveStart: 13.5,
+    ballMoveStart: 0, // for testing
+    // ballMoveStart: 13.5,
 
     // ball rolls this long
     ballMoveDuration: 3
@@ -58507,33 +58512,11 @@ var Simulation = function () {
         this.initReset();
     };
 
-    Simulation.prototype.addBallConstraintGuides = function addBallConstraintGuides() {
-
-        var groundGeo = new PlaneBufferGeometry(182, 120, 1, 1);
-
-        var groundMesh = new Mesh(groundGeo);
-
-        groundMesh.position.set(0, 2, 0);
-        groundMesh.rotation.x = -Math.PI / 2;
-
-        var postGeo = new CylinderBufferGeometry(2, 2, 40, 12, 12);
-
-        var farPostMesh = new Mesh(postGeo);
-        farPostMesh.position.set(78, 0, 24.5);
-
-        var nearPostMesh = new Mesh(postGeo);
-        nearPostMesh.position.set(78, 0, -25);
-
-        canvas$1.app.scene.add(groundMesh, farPostMesh, nearPostMesh);
-    };
-
     // load the models
 
 
     Simulation.prototype.loadModels = function loadModels() {
         var _this = this;
-
-        this.addBallConstraintGuides();
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
@@ -58552,7 +58535,14 @@ var Simulation = function () {
             invertMirroredFBX(object);
 
             _this.nao = object;
-            _this.nao.castShadow = true;
+
+            _this.naoPivot = new Group();
+            _this.naoPivot.add(object);
+
+            // this.nao.animations = object.animations;
+            // console.log( this.nao )
+            // this.nao = object;
+            // this.nao.castShadow = true;
         });
 
         var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (object) {
@@ -58561,7 +58551,7 @@ var Simulation = function () {
             object.rotation.set(0, -Math.PI / 2, 0);
 
             _this.ball = object;
-            _this.ball.children[0].castShadow = true;
+            // this.ball.children[0].castShadow = true;
             // this.ball.castShadow = true;
 
         });
@@ -58584,11 +58574,11 @@ var Simulation = function () {
 
             _this2.initMixers();
 
-            _this2.initNaoPreBuiltAnimations();
-
             _this2.initSimulation();
 
             canvas$1.app.play();
+
+            _this2.testingFunctions();
         });
     };
 
@@ -58598,8 +58588,9 @@ var Simulation = function () {
     Simulation.prototype.initPositions = function initPositions() {
         this.ballInitialPos = [_Math.randInt(-15, 30), 0, _Math.randInt(-15, 30)];
 
-        this.naoInitialPos = [this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30];
-        // this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
+        this.naoPivotPosition = [this.ballInitialPos[0] - 5, 0, this.ballInitialPos[2] - 5];
+
+        this.naoInitialPos = [this.naoPivotPosition[0] - 35, 0, this.naoPivotPosition[2] - 25];
 
         this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
         0];
@@ -58630,19 +58621,21 @@ var Simulation = function () {
             _this3.initPositions();
             _this3.setInitialTransforms();
             _this3.initMixers();
-
-            _this3.initNaoPreBuiltAnimations();
         });
     };
 
     Simulation.prototype.addObjects = function addObjects() {
 
+        // canvas.app.scene.add( this.naoPivot, this.ball );
         canvas$1.app.scene.add(this.nao, this.ball);
     };
 
     Simulation.prototype.setInitialTransforms = function setInitialTransforms() {
+        var _naoPivot$position;
 
         this.ball.position.set(this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2]);
+
+        (_naoPivot$position = this.naoPivot.position).set.apply(_naoPivot$position, this.naoPivotPosition);
         this.nao.position.set(this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2]);
 
         this.nao.rotation.set(0, 0, 0);
@@ -58654,6 +58647,8 @@ var Simulation = function () {
         this.ballMixer.name = 'ball mixer';
         this.naoMixer = new AnimationMixer(this.nao);
         this.naoMixer.name = 'nao mixer';
+        this.naoPivotMixer = new AnimationMixer(this.naoPivot);
+        this.naoPivotMixer.name = 'nao mixer';
 
         // this.naoMixer.addEventListener( 'finished', ( e ) => {
 
@@ -58662,7 +58657,7 @@ var Simulation = function () {
         // } );
     };
 
-    Simulation.prototype.initNaoPreBuiltAnimations = function initNaoPreBuiltAnimations() {
+    Simulation.prototype.initNaoPrebuiltAnimation = function initNaoPrebuiltAnimation() {
 
         animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
     };
@@ -58670,10 +58665,12 @@ var Simulation = function () {
     // this is set up after the user has entered the slope
 
 
-    Simulation.prototype.initNaoTurnAnimation = function initNaoTurnAnimation(slope) {
+    Simulation.prototype.initNaoAnimation = function initNaoAnimation(slope) {
+
+        this.initNaoPrebuiltAnimation();
 
         // calculate rotation based on slope
-        var rotationAmount = Math.tan(-slope);
+        var rotationAmount = Math.tan(slope);
 
         // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
 
@@ -58681,16 +58678,18 @@ var Simulation = function () {
         var yAxis = new Vector3(0, 1, 0);
 
         // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
-        // however the model registers as 0 degrees so rotate relative to 0
+        // apply this correction
+        var correction = _Math.degToRad(30);
+
         var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
-        var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount);
+        var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount + correction);
 
         // turn from initial angle to final angle over 0.5 seconds
         var turnKF = new QuaternionKeyframeTrack('.quaternion', [0, timing.naoTurnDuration], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w]);
 
         var turnClip = new AnimationClip('nao_turn', timing.naoTurnDuration, [turnKF]);
 
-        animationControls.initAnimation(this.nao, turnClip, this.naoMixer, timing.naoTurnStart);
+        animationControls.initAnimation(this.naoPivot, turnClip, this.naoPivotMixer, 0);
     };
 
     // this is set up after the user has entered the slope
@@ -58728,7 +58727,7 @@ var Simulation = function () {
 
             var slope = -HTMLControl.controls.slope.value;
 
-            _this4.initNaoTurnAnimation(slope);
+            // this.initNaoAnimation( slope );
             _this4.initBallAnimation(slope);
 
             animationControls.play();
@@ -58736,6 +58735,80 @@ var Simulation = function () {
             HTMLControl.controls.simulate.disabled = true;
             HTMLControl.controls.reset.disabled = false;
         }, false);
+    };
+
+    Simulation.prototype.testingFunctions = function testingFunctions() {
+
+        this.addBallConstraintGuides();
+        // this.pivotPointMarker();
+    };
+
+    Simulation.prototype.addBallConstraintGuides = function addBallConstraintGuides() {
+
+        var groundGeo = new PlaneBufferGeometry(182, 120, 1, 1);
+
+        var groundMesh = new Mesh(groundGeo);
+
+        groundMesh.position.set(0, 2, 0);
+        groundMesh.rotation.x = -Math.PI / 2;
+
+        var postGeo = new CylinderBufferGeometry(2, 2, 40, 12, 12);
+
+        var farPostMesh = new Mesh(postGeo);
+        farPostMesh.position.set(78, 0, 24.5);
+
+        var nearPostMesh = new Mesh(postGeo);
+        nearPostMesh.position.set(78, 0, -25);
+
+        canvas$1.app.scene.add(groundMesh, farPostMesh, nearPostMesh);
+    };
+
+    Simulation.prototype.pivotPointMarker = function pivotPointMarker() {
+        var _mesh$position;
+
+        var geo = new BoxBufferGeometry(8, 40, 2);
+        var mesh = new Mesh(geo);
+        (_mesh$position = mesh.position).set.apply(_mesh$position, this.naoPivotPosition);
+
+        this.naoPivotMarker = mesh;
+        canvas$1.app.scene.add(mesh);
+
+        // this.pivotMixer = new THREE.AnimationMixer( this.naoPivotMarker );
+        // this.pivotMixer.name = 'nao mixer';
+
+        // // this.initNaoPrebuiltAnimation();
+
+        // // calculate rotation based on slope
+        // const rotationAmount = 0;
+
+        // // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
+
+        // // set up rotation about y axis
+        // const yAxis = new THREE.Vector3( 0, 1, 0 );
+
+        // // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
+        // // apply this correction
+        // const correction = THREE.Math.degToRad( 30 );
+
+        // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
+        // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount + correction );
+
+        // // turn from initial angle to final angle over 0.5 seconds
+        // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
+        //   [
+        //     0,
+        //     timing.naoTurnDuration,
+        //   ],
+        //   [
+        //     qInitial.x, qInitial.y, qInitial.z, qInitial.w,
+        //     qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+        //     );
+
+        // const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
+
+        // animationControls.initAnimation( this.naoPivotMarker, turnClip, this.pivotMixer, 0 );
+
+        // console.log( timing.naoTurnDuration, timing.naoTurnStart );
     };
 
     return Simulation;

@@ -81,7 +81,7 @@ MTLLoader.prototype = {
 
 	setBaseUrl: function ( path ) {
 
-		console.warn( 'MTLLoader: .setBaseUrl() is deprecated. Use .setTexturePath( path ) for texture path or .setPath( path ) for general base path instead.' );
+		console.warn( 'THREE.MTLLoader: .setBaseUrl() is deprecated. Use .setTexturePath( path ) for texture path or .setPath( path ) for general base path instead.' );
 
 		this.setTexturePath( path );
 
@@ -103,7 +103,7 @@ MTLLoader.prototype = {
 	 * Parses a MTL file.
 	 *
 	 * @param {String} text - Content of MTL file
-	 * @return {MTLLoader.MaterialCreator}
+	 * @return {THREE.MTLLoader.MaterialCreator}
 	 *
 	 * @see setPath setTexturePath
 	 *
@@ -203,6 +203,8 @@ MTLLoader.MaterialCreator = function ( baseUrl, options ) {
 MTLLoader.MaterialCreator.prototype = {
 
 	constructor: MTLLoader.MaterialCreator,
+
+	crossOrigin: 'Anonymous',
 
 	setCrossOrigin: function ( value ) {
 
@@ -420,6 +422,12 @@ MTLLoader.MaterialCreator.prototype = {
 					// Specular map
 
 					setMapForType( "specularMap", value );
+
+					break;
+
+				case 'norm':
+
+					setMapForType( "normalMap", value );
 
 					break;
 

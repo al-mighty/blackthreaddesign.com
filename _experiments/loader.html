@@ -75,12 +75,6 @@ vendor-js:
       </span>
     </div>
 
-    <div id="loader-choice-form" class="hide">
-      <p>Please select the loader you would like to use for <span id="loader-select-type"></span>  files.</p>
-      <button id="loader1">Loader1</button>
-      <button id="loader2">Loader2</button>
-    </div>
-
   </div>
 
 </div>
@@ -88,7 +82,7 @@ vendor-js:
 <div id="info">
 
   <div class="hide reveal-on-load">
-    <br><button id="reset">Reset</button><button id="export">Export as JSON</button>
+    <br><button id="reset">Reset</button><button id="export">Export as JSON</button><button id="export-anims">Export animation(s) as JSON</button>
     <div id="screenshot-controls">
       <h3>Take a screenshot</h3>
       <span>Width: </span><input id="screenshot-width" type="number" min="2" value="800" max="8192">
@@ -170,7 +164,11 @@ vendor-js:
     Files containing only geometries or buffer geometries will be rendered in wireframe.
   </p>
 
-  <p>FBX: Binary higher than version 6.1 and ASCII higher than version 7.0</p>
+  <p>
+    FBX: Binary higher than version 6.1 and ASCII higher than version 7.0.<br>
+    Note that the FBX loader has two fixes applied that the default three.js loader does not have.
+    See [here](https://github.com/mrdoob/three.js/issues/11895) and [here](https://github.com/mrdoob/three.js/issues/11911)for details. Hopefully these will be added the the loader in the next release.
+  </p>
 
   <p>
     GLTF: .gltf or .glb files, as well as any associated .bin, .frag, .vert and texture files. These are loaded with THREE.GLTF2Loader, which
@@ -179,10 +177,10 @@ vendor-js:
 
   <p>OBJ: Using THREE.OBJLoader2. Load any number of .obj and .mtl files and their associated textures.</p>
 
-  <p>DAE: Uses the newer THREE.ColladaLoader2, which supports most Collada features (although it does not yet support skinned meshes).</p>
+  <p>DAE: Using THREE.ColladaLoader2.</p>
 
   <h3>Supported texture formats</h3>
 
-  <p>JPG, PNG, GIF, BMP, DDS</p>
+  <p>JPG, PNG, GIF, BMP, DDS (TGA support forthcoming).</p>
 
 </div>

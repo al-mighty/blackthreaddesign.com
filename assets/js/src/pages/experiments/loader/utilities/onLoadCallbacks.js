@@ -2,45 +2,10 @@ import * as THREE from 'three';
 
 import loaderCanvas from 'pages/experiments/loader/LoaderCanvas.js';
 import Loaders from './Loaders.js';
-import HTMLControl from './HTMLControl.js';
+// import HTMLControl from './HTMLControl.js';
 
 const loaders = new Loaders();
 const defaultMat = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x000000 } );
-
-// const selectLoader = ( loader1Name, loader2Name, type, callback ) => {
-
-//   document.querySelector( '#loader-select-type' ).innerHTML = type;
-
-//   const button1 = document.querySelector( '#loader1' );
-//   const button2 = document.querySelector( '#loader2' );
-
-//   button1.innerHTML = loader1Name;
-//   button2.innerHTML = loader2Name;
-
-//   document.querySelector( '#loader-choice-form' ).classList.remove( 'hide' );
-
-//   button1.addEventListener( 'click', ( e ) => {
-
-//     e.preventDefault();
-
-//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
-
-//     callback( 1 );
-
-
-//   }, false );
-
-//   button2.addEventListener( 'click', ( e ) => {
-
-//     e.preventDefault();
-
-//     document.querySelector( '#loader-choice-form' ).classList.add( 'hide' );
-
-//     callback( 2 );
-
-//   }, false );
-
-// };
 
 export default class OnLoadCallbacks {
 
@@ -105,10 +70,9 @@ export default class OnLoadCallbacks {
 
     promise.then( ( object ) => {
 
-      console.time( 'inverting meshes' );
-
       console.log( object );
 
+      // applying inverted meshes fix: https://github.com/mrdoob/three.js/issues/11911
       object.traverse( ( child ) => {
 
         if ( child instanceof THREE.Mesh ) {
@@ -149,9 +113,7 @@ export default class OnLoadCallbacks {
 
             }
 
-
           }
-
 
         }
 
@@ -172,28 +134,9 @@ export default class OnLoadCallbacks {
 
     let promise = new Promise( ( resolve, reject ) => {} );
 
-    // selectLoader( 'GLTFLoader', 'GLTFLoader2', 'gltf', ( loader ) => {
+    console.log( 'Using THREE.GLTFLoader' );
 
-      // Only GLTF2Loader seems to work
-
-
-      // if ( loader === 1 ) {
-
-      //   console.log( 'Using THREE.GLTFLoader' );
-
-      //   promise = loaders.gltfLoader( file );
-
-      // } else {
-
-      //   console.log( 'Using THREE.OBJLoader2' );
-
-      //   promise = loaders.gltf2Loader( file );
-
-      // }
-
-    console.log( 'Using THREE.OBJLoader2' );
-
-    promise = loaders.gltf2Loader( file );
+    promise = loaders.gltfLoader( file );
 
     promise.then( ( gltf ) => {
 
@@ -221,47 +164,27 @@ export default class OnLoadCallbacks {
 
     } );
 
-    // } );
-
     return promise;
 
   }
 
   static onOBJLoad( file ) {
 
-    // only objLoader2 is working
     let promise = new Promise( ( resolve, reject ) => {} );
 
-    // selectLoader( 'OBJLoader', 'OBJLoader2', 'obj', ( loader ) => {
+    // no need for this as OBJLoader2 reports logs it's version
+    // console.log( 'Using THREE.OBJLoader2' );
 
+    promise = loaders.objLoader( file );
 
-      // if ( loader === 1 ) {
+    promise.then( ( object ) => {
 
-      //   console.log( 'Using THREE.OBJLoader' );
+      console.log( object );
 
-      //   promise = loaders.objLoader( file );
+      loaderCanvas.addObjectToScene( object );
 
-      // } else {
+    } );
 
-        console.log( 'Using THREE.OBJLoader2' );
-
-        promise = loaders.objLoader2( file );
-
-      // }
-
-
-      promise.then( ( object ) => {
-
-        console.log( object );
-
-        loaderCanvas.addObjectToScene( object );
-
-        // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
-        // if ( loader === 1 ) loadingManager.onLoad();
-
-      } );
-
-    // } );
 
     return promise;
   }
@@ -270,42 +193,25 @@ export default class OnLoadCallbacks {
 
     let promise = new Promise( ( resolve ) => {} );
 
-    // selectLoader( 'ColladaLoader', 'ColladaLoader2', 'collada', ( loader ) => {
+
+    console.log( 'Using THREE.ColladaLoader2' );
+
+    promise = loaders.colladaLoader( file );
 
 
-      // if ( loader === 1 ) {
+    promise.then( ( object ) => {
 
-      //   console.log( 'Using THREE.ColladaLoader' );
-      //   console.warn( 'THREE.ColladaLoader uses an older animation system which is not supported here; animations will be ignored.' );
+      console.log( object );
 
-      //   promise = loaders.colladaLoader( file );
+      const scene = object.scene;
 
-      // } else {
+      if ( object.animations && object.animations.length > 0 ) scene.animations = object.animations;
 
-        console.log( 'Using THREE.ColladaLoader2' );
 
-        promise = loaders.colladaLoader2( file );
+      loaderCanvas.addObjectToScene( scene );
 
-      // }
 
-      promise.then( ( object ) => {
-
-        console.log( object );
-
-        const scene = object.scene;
-
-        if ( object.animations && object.animations.length > 0 ) scene.animations = object.animations;
-
-        // object.scale.set( 1, 1, 1)
-        // console.log( object)
-        loaderCanvas.addObjectToScene( scene );
-
-        // THREE.ColladaLoader doesn't support loadingManager so call onLoad() manually
-        // if ( loader === 1 ) loadingManager.onLoad();
-
-      } );
-
-    // } );
+    } );
 
     return promise;
 

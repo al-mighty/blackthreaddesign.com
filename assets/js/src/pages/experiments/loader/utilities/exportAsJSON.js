@@ -19,8 +19,9 @@ const saveString = ( text, filename ) => {
 
 };
 
-const exportAsJSON = ( object ) => {
+const exportAsJSON = ( object, animationsOnly = false ) => {
 
+  console.log( object );
   let output = object.toJSON();
 
   output.metadata = {

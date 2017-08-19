@@ -18,8 +18,11 @@ const timing = {
 
   naoTurnDuration: 2,
 
+  get naoTurnEnd() { return this.naoTurnStart + this.naoTurnDuration; },
+
   // point at which nao's kick makes connection
-  ballMoveStart: 13.5,
+  ballMoveStart: 0, // for testing
+  // ballMoveStart: 13.5,
 
   // ball rolls this long
   ballMoveDuration: 3,
@@ -54,31 +57,8 @@ export default class Simulation {
 
   }
 
-  addBallConstraintGuides() {
-
-    const groundGeo = new THREE.PlaneBufferGeometry( 182, 120, 1, 1 );
-
-    const groundMesh = new THREE.Mesh( groundGeo );
-
-    groundMesh.position.set( 0, 2, 0 );
-    groundMesh.rotation.x = -Math.PI / 2;
-
-    const postGeo = new THREE.CylinderBufferGeometry( 2, 2, 40, 12, 12 );
-
-    const farPostMesh = new THREE.Mesh( postGeo );
-    farPostMesh.position.set( 78, 0, 24.5 );
-
-    const nearPostMesh = new THREE.Mesh( postGeo );
-    nearPostMesh.position.set( 78, 0, -25 );
-
-    canvas.app.scene.add( groundMesh, farPostMesh, nearPostMesh );
-
-  }
-
   // load the models
   loadModels() {
-
-    this.addBallConstraintGuides();
 
     const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
 
@@ -98,7 +78,14 @@ export default class Simulation {
       invertMirroredFBX( object );
 
       this.nao = object;
-      this.nao.castShadow = true;
+
+      this.naoPivot = new THREE.Group();
+      this.naoPivot.add( object );
+
+      // this.nao.animations = object.animations;
+      // console.log( this.nao )
+      // this.nao = object;
+      // this.nao.castShadow = true;
 
     } );
 
@@ -108,7 +95,7 @@ export default class Simulation {
       object.rotation.set( 0, -Math.PI / 2, 0 );
 
       this.ball = object;
-      this.ball.children[0].castShadow = true;
+      // this.ball.children[0].castShadow = true;
       // this.ball.castShadow = true;
 
 
@@ -131,11 +118,11 @@ export default class Simulation {
 
         this.initMixers();
 
-        this.initNaoPreBuiltAnimations();
-
         this.initSimulation();
 
         canvas.app.play();
+
+        this.testingFunctions();
 
       },
     );
@@ -150,8 +137,9 @@ export default class Simulation {
       THREE.Math.randInt( -15, 30 ),
     ];
 
-    this.naoInitialPos = [ this.ballInitialPos[0] - 40, 0, this.ballInitialPos[2] - 30 ];
-    // this.naoFinalPos = [ this.ballInitialPos[ 0 ] - 10, 0, this.ballInitialPos[2] - 5 ];
+    this.naoPivotPosition = [ this.ballInitialPos[0] - 5, 0, this.ballInitialPos[2] - 5 ];
+
+    this.naoInitialPos = [ this.naoPivotPosition[0] - 35, 0, this.naoPivotPosition[2] - 25 ];
 
     this.ballFinalPos = [
       85,
@@ -192,21 +180,22 @@ export default class Simulation {
       this.setInitialTransforms();
       this.initMixers();
 
-      this.initNaoPreBuiltAnimations();
-
     } );
 
   }
 
   addObjects() {
 
+    // canvas.app.scene.add( this.naoPivot, this.ball );
     canvas.app.scene.add( this.nao, this.ball );
 
   }
 
   setInitialTransforms() {
 
-    this.ball.position.set( this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2] )
+    this.ball.position.set( this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2] );
+
+    this.naoPivot.position.set( ...this.naoPivotPosition );
     this.nao.position.set( this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2] );
 
     this.nao.rotation.set( 0, 0, 0 );
@@ -219,6 +208,8 @@ export default class Simulation {
     this.ballMixer.name = 'ball mixer';
     this.naoMixer = new THREE.AnimationMixer( this.nao );
     this.naoMixer.name = 'nao mixer';
+    this.naoPivotMixer = new THREE.AnimationMixer( this.naoPivot );
+    this.naoPivotMixer.name = 'nao mixer';
 
     // this.naoMixer.addEventListener( 'finished', ( e ) => {
 
@@ -228,17 +219,19 @@ export default class Simulation {
 
   }
 
-  initNaoPreBuiltAnimations() {
+  initNaoPrebuiltAnimation() {
 
     animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
 
   }
 
     // this is set up after the user has entered the slope
-  initNaoTurnAnimation( slope ) {
+  initNaoAnimation( slope ) {
+
+    this.initNaoPrebuiltAnimation();
 
     // calculate rotation based on slope
-    const rotationAmount = Math.tan( -slope );
+    const rotationAmount = Math.tan( slope );
 
     // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
 
@@ -246,19 +239,27 @@ export default class Simulation {
     const yAxis = new THREE.Vector3( 0, 1, 0 );
 
     // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
-    // however the model registers as 0 degrees so rotate relative to 0
+    // apply this correction
+    const correction = THREE.Math.degToRad( 30 );
+
     const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount );
+    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount + correction );
 
     // turn from initial angle to final angle over 0.5 seconds
     const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
-    [ 0, timing.naoTurnDuration ],
-    [ qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
-    );
+      [
+        0,
+        timing.naoTurnDuration,
+      ],
+      [
+        qInitial.x, qInitial.y, qInitial.z, qInitial.w,
+        qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+            );
 
     const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
 
-    animationControls.initAnimation( this.nao, turnClip, this.naoMixer, timing.naoTurnStart );
+    animationControls.initAnimation( this.naoPivot, turnClip, this.naoPivotMixer, 0 );
+
 
   }
 
@@ -303,7 +304,7 @@ export default class Simulation {
 
       const slope = -HTMLControl.controls.slope.value;
 
-      this.initNaoTurnAnimation( slope );
+      // this.initNaoAnimation( slope );
       this.initBallAnimation( slope );
 
       animationControls.play();
@@ -313,6 +314,81 @@ export default class Simulation {
 
     }, false );
 
+  }
+
+  testingFunctions() {
+
+    this.addBallConstraintGuides();
+    // this.pivotPointMarker();
+
+  }
+
+  addBallConstraintGuides() {
+
+    const groundGeo = new THREE.PlaneBufferGeometry( 182, 120, 1, 1 );
+
+    const groundMesh = new THREE.Mesh( groundGeo );
+
+    groundMesh.position.set( 0, 2, 0 );
+    groundMesh.rotation.x = -Math.PI / 2;
+
+    const postGeo = new THREE.CylinderBufferGeometry( 2, 2, 40, 12, 12 );
+
+    const farPostMesh = new THREE.Mesh( postGeo );
+    farPostMesh.position.set( 78, 0, 24.5 );
+
+    const nearPostMesh = new THREE.Mesh( postGeo );
+    nearPostMesh.position.set( 78, 0, -25 );
+
+    canvas.app.scene.add( groundMesh, farPostMesh, nearPostMesh );
+
+  }
+
+  pivotPointMarker() {
+
+    const geo = new THREE.BoxBufferGeometry( 8, 40, 2 );
+    const mesh = new THREE.Mesh( geo );
+    mesh.position.set( ...this.naoPivotPosition );
+
+    this.naoPivotMarker = mesh;
+    canvas.app.scene.add( mesh );
+
+    // this.pivotMixer = new THREE.AnimationMixer( this.naoPivotMarker );
+    // this.pivotMixer.name = 'nao mixer';
+
+    // // this.initNaoPrebuiltAnimation();
+
+    // // calculate rotation based on slope
+    // const rotationAmount = 0;
+
+    // // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
+
+    // // set up rotation about y axis
+    // const yAxis = new THREE.Vector3( 0, 1, 0 );
+
+    // // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
+    // // apply this correction
+    // const correction = THREE.Math.degToRad( 30 );
+
+    // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
+    // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount + correction );
+
+    // // turn from initial angle to final angle over 0.5 seconds
+    // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
+    //   [
+    //     0,
+    //     timing.naoTurnDuration,
+    //   ],
+    //   [
+    //     qInitial.x, qInitial.y, qInitial.z, qInitial.w,
+    //     qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
+    //     );
+
+    // const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
+
+    // animationControls.initAnimation( this.naoPivotMarker, turnClip, this.pivotMixer, 0 );
+
+    // console.log( timing.naoTurnDuration, timing.naoTurnStart );
   }
 
 }

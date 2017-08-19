@@ -1,7 +1,8 @@
 // const loadOverlay =
 const canvas = document.querySelector( '#viewer-canvas' );
 const reset = document.querySelector( '#reset' );
-const exportButton = document.querySelector( '#export' );
+const exportBtn = document.querySelector( '#export' );
+const exportAnims = document.querySelector( '#export-anims' );
 const fullscreenButton = document.querySelector( '#fullscreen-button' );
 const faces = document.querySelector( '#faces' );
 const vertices = document.querySelector( '#vertices' );
@@ -169,7 +170,8 @@ HTMLControl.lighting = lighting;
 HTMLControl.loading = loading;
 HTMLControl.screenshot = screenshot;
 HTMLControl.controls = controls;
-HTMLControl.export = exportButton;
+HTMLControl.export = exportBtn;
+HTMLControl.exportAnims = exportAnims;
 // HTMLControl.
 // HTMLControl.
 // HTMLControl.

@@ -64,6 +64,7 @@ class LoaderCanvas {
     this.initReset();
 
     this.initExport();
+    this.initExportAnims();
 
   }
 
@@ -130,10 +131,23 @@ class LoaderCanvas {
     HTMLControl.export.addEventListener( 'click', ( e ) => {
 
       e.preventDefault();
-      console.log( 'c')
+
       if ( this.loadedObjects.children.length === 0 ) return;
 
-      console.log( 'click')
+      exportAsJSON( this.loadedObjects );
+
+    }, false );
+
+  }
+
+  initExportAnims() {
+
+    HTMLControl.exportAnims.addEventListener( 'click', ( e ) => {
+
+      e.preventDefault();
+
+      if ( this.loadedObjects.children.length === 0 ) return;
+
       exportAsJSON( this.loadedObjects );
 
     }, false );
