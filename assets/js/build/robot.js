@@ -15,8 +15,10 @@ function createCommonjsModule(fn, module) {
 var _global = createCommonjsModule(function (module) {
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
-  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
+  // eslint-disable-next-line no-new-func
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 });
 
 var _global$1 = interopDefault(_global);
@@ -28,7 +30,7 @@ var require$$3 = Object.freeze({
 
 var _has = createCommonjsModule(function (module) {
 var hasOwnProperty = {}.hasOwnProperty;
-module.exports = function(it, key){
+module.exports = function (it, key) {
   return hasOwnProperty.call(it, key);
 };
 });
@@ -41,10 +43,10 @@ var require$$4 = Object.freeze({
 });
 
 var _fails = createCommonjsModule(function (module) {
-module.exports = function(exec){
+module.exports = function (exec) {
   try {
     return !!exec();
-  } catch(e){
+  } catch (e) {
     return true;
   }
 };
@@ -59,8 +61,8 @@ var require$$1$1 = Object.freeze({
 
 var _descriptors = createCommonjsModule(function (module) {
 // Thank's IE8 for his funny defineProperty
-module.exports = !interopDefault(require$$1$1)(function(){
-  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+module.exports = !interopDefault(require$$1$1)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 });
 
@@ -72,8 +74,8 @@ var require$$1 = Object.freeze({
 });
 
 var _core = createCommonjsModule(function (module) {
-var core = module.exports = {version: '2.4.0'};
-if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+var core = module.exports = { version: '2.5.0' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 });
 
 var _core$1 = interopDefault(_core);
@@ -85,7 +87,7 @@ var require$$0 = Object.freeze({
 });
 
 var _isObject = createCommonjsModule(function (module) {
-module.exports = function(it){
+module.exports = function (it) {
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
 });
@@ -93,14 +95,14 @@ module.exports = function(it){
 var _isObject$1 = interopDefault(_isObject);
 
 
-var require$$0$1 = Object.freeze({
+var require$$3$1 = Object.freeze({
   default: _isObject$1
 });
 
 var _anObject = createCommonjsModule(function (module) {
-var isObject = interopDefault(require$$0$1);
-module.exports = function(it){
-  if(!isObject(it))throw TypeError(it + ' is not an object!');
+var isObject = interopDefault(require$$3$1);
+module.exports = function (it) {
+  if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
 };
 });
@@ -113,11 +115,11 @@ var require$$5 = Object.freeze({
 });
 
 var _domCreate = createCommonjsModule(function (module) {
-var isObject = interopDefault(require$$0$1)
-  , document = interopDefault(require$$3).document
-  // in old IE typeof document.createElement is 'object'
-  , is = isObject(document) && isObject(document.createElement);
-module.exports = function(it){
+var isObject = interopDefault(require$$3$1);
+var document = interopDefault(require$$3).document;
+// typeof document.createElement is 'object' in old IE
+var is = isObject(document) && isObject(document.createElement);
+module.exports = function (it) {
   return is ? document.createElement(it) : {};
 };
 });
@@ -130,8 +132,8 @@ var require$$2$2 = Object.freeze({
 });
 
 var _ie8DomDefine = createCommonjsModule(function (module) {
-module.exports = !interopDefault(require$$1) && !interopDefault(require$$1$1)(function(){
-  return Object.defineProperty(interopDefault(require$$2$2)('div'), 'a', {get: function(){ return 7; }}).a != 7;
+module.exports = !interopDefault(require$$1) && !interopDefault(require$$1$1)(function () {
+  return Object.defineProperty(interopDefault(require$$2$2)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 });
 
@@ -144,15 +146,15 @@ var require$$1$3 = Object.freeze({
 
 var _toPrimitive = createCommonjsModule(function (module) {
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = interopDefault(require$$0$1);
+var isObject = interopDefault(require$$3$1);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
-module.exports = function(it, S){
-  if(!isObject(it))return it;
+module.exports = function (it, S) {
+  if (!isObject(it)) return it;
   var fn, val;
-  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
-  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
   throw TypeError("Can't convert object to primitive value");
 };
 });
@@ -165,20 +167,20 @@ var require$$4$1 = Object.freeze({
 });
 
 var _objectDp = createCommonjsModule(function (module, exports) {
-var anObject       = interopDefault(require$$5)
-  , IE8_DOM_DEFINE = interopDefault(require$$1$3)
-  , toPrimitive    = interopDefault(require$$4$1)
-  , dP             = Object.defineProperty;
+var anObject = interopDefault(require$$5);
+var IE8_DOM_DEFINE = interopDefault(require$$1$3);
+var toPrimitive = interopDefault(require$$4$1);
+var dP = Object.defineProperty;
 
-exports.f = interopDefault(require$$1) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+exports.f = interopDefault(require$$1) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
-  if(IE8_DOM_DEFINE)try {
+  if (IE8_DOM_DEFINE) try {
     return dP(O, P, Attributes);
-  } catch(e){ /* empty */ }
-  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
-  if('value' in Attributes)O[P] = Attributes.value;
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
   return O;
 };
 });
@@ -192,12 +194,12 @@ var require$$2$1 = Object.freeze({
 });
 
 var _propertyDesc = createCommonjsModule(function (module) {
-module.exports = function(bitmap, value){
+module.exports = function (bitmap, value) {
   return {
-    enumerable  : !(bitmap & 1),
+    enumerable: !(bitmap & 1),
     configurable: !(bitmap & 2),
-    writable    : !(bitmap & 4),
-    value       : value
+    writable: !(bitmap & 4),
+    value: value
   };
 };
 });
@@ -210,11 +212,11 @@ var require$$2$3 = Object.freeze({
 });
 
 var _hide = createCommonjsModule(function (module) {
-var dP         = interopDefault(require$$2$1)
-  , createDesc = interopDefault(require$$2$3);
-module.exports = interopDefault(require$$1) ? function(object, key, value){
+var dP = interopDefault(require$$2$1);
+var createDesc = interopDefault(require$$2$3);
+module.exports = interopDefault(require$$1) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
-} : function(object, key, value){
+} : function (object, key, value) {
   object[key] = value;
   return object;
 };
@@ -228,9 +230,9 @@ var require$$2 = Object.freeze({
 });
 
 var _uid = createCommonjsModule(function (module) {
-var id = 0
-  , px = Math.random();
-module.exports = function(key){
+var id = 0;
+var px = Math.random();
+module.exports = function (key) {
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
 });
@@ -243,36 +245,35 @@ var require$$12 = Object.freeze({
 });
 
 var _redefine = createCommonjsModule(function (module) {
-var global    = interopDefault(require$$3)
-  , hide      = interopDefault(require$$2)
-  , has       = interopDefault(require$$4)
-  , SRC       = interopDefault(require$$12)('src')
-  , TO_STRING = 'toString'
-  , $toString = Function[TO_STRING]
-  , TPL       = ('' + $toString).split(TO_STRING);
+var global = interopDefault(require$$3);
+var hide = interopDefault(require$$2);
+var has = interopDefault(require$$4);
+var SRC = interopDefault(require$$12)('src');
+var TO_STRING = 'toString';
+var $toString = Function[TO_STRING];
+var TPL = ('' + $toString).split(TO_STRING);
 
-interopDefault(require$$0).inspectSource = function(it){
+interopDefault(require$$0).inspectSource = function (it) {
   return $toString.call(it);
 };
 
-(module.exports = function(O, key, val, safe){
+(module.exports = function (O, key, val, safe) {
   var isFunction = typeof val == 'function';
-  if(isFunction)has(val, 'name') || hide(val, 'name', key);
-  if(O[key] === val)return;
-  if(isFunction)has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
-  if(O === global){
+  if (isFunction) has(val, 'name') || hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === global) {
+    O[key] = val;
+  } else if (!safe) {
+    delete O[key];
+    hide(O, key, val);
+  } else if (O[key]) {
     O[key] = val;
   } else {
-    if(!safe){
-      delete O[key];
-      hide(O, key, val);
-    } else {
-      if(O[key])O[key] = val;
-      else hide(O, key, val);
-    }
+    hide(O, key, val);
   }
 // add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, TO_STRING, function toString(){
+})(Function.prototype, TO_STRING, function toString() {
   return typeof this == 'function' && this[SRC] || $toString.call(this);
 });
 });
@@ -285,8 +286,8 @@ var require$$4$2 = Object.freeze({
 });
 
 var _aFunction = createCommonjsModule(function (module) {
-module.exports = function(it){
-  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
+module.exports = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
   return it;
 };
 });
@@ -294,28 +295,28 @@ module.exports = function(it){
 var _aFunction$1 = interopDefault(_aFunction);
 
 
-var require$$0$2 = Object.freeze({
+var require$$0$1 = Object.freeze({
   default: _aFunction$1
 });
 
 var _ctx = createCommonjsModule(function (module) {
 // optional / simple context binding
-var aFunction = interopDefault(require$$0$2);
-module.exports = function(fn, that, length){
+var aFunction = interopDefault(require$$0$1);
+module.exports = function (fn, that, length) {
   aFunction(fn);
-  if(that === undefined)return fn;
-  switch(length){
-    case 1: return function(a){
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
       return fn.call(that, a);
     };
-    case 2: return function(a, b){
+    case 2: return function (a, b) {
       return fn.call(that, a, b);
     };
-    case 3: return function(a, b, c){
+    case 3: return function (a, b, c) {
       return fn.call(that, a, b, c);
     };
   }
-  return function(/* ...args */){
+  return function (/* ...args */) {
     return fn.apply(that, arguments);
   };
 };
@@ -324,30 +325,30 @@ module.exports = function(fn, that, length){
 var _ctx$1 = interopDefault(_ctx);
 
 
-var require$$31 = Object.freeze({
+var require$$1$4 = Object.freeze({
   default: _ctx$1
 });
 
 var _export = createCommonjsModule(function (module) {
-var global    = interopDefault(require$$3)
-  , core      = interopDefault(require$$0)
-  , hide      = interopDefault(require$$2)
-  , redefine  = interopDefault(require$$4$2)
-  , ctx       = interopDefault(require$$31)
-  , PROTOTYPE = 'prototype';
+var global = interopDefault(require$$3);
+var core = interopDefault(require$$0);
+var hide = interopDefault(require$$2);
+var redefine = interopDefault(require$$4$2);
+var ctx = interopDefault(require$$1$4);
+var PROTOTYPE = 'prototype';
 
-var $export = function(type, name, source){
-  var IS_FORCED = type & $export.F
-    , IS_GLOBAL = type & $export.G
-    , IS_STATIC = type & $export.S
-    , IS_PROTO  = type & $export.P
-    , IS_BIND   = type & $export.B
-    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE]
-    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
-    , expProto  = exports[PROTOTYPE] || (exports[PROTOTYPE] = {})
-    , key, own, out, exp;
-  if(IS_GLOBAL)source = name;
-  for(key in source){
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
     // contains in native
     own = !IS_FORCED && target && target[key] !== undefined;
     // export native or passed
@@ -355,10 +356,10 @@ var $export = function(type, name, source){
     // bind timers to global for call from export context
     exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
     // extend global
-    if(target)redefine(target, key, out, type & $export.U);
+    if (target) redefine(target, key, out, type & $export.U);
     // export
-    if(exports[key] != out)hide(exports, key, exp);
-    if(IS_PROTO && expProto[key] != out)expProto[key] = out;
+    if (exports[key] != out) hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
   }
 };
 global.core = core;
@@ -370,7 +371,7 @@ $export.P = 8;   // proto
 $export.B = 16;  // bind
 $export.W = 32;  // wrap
 $export.U = 64;  // safe
-$export.R = 128; // real proto method for `library` 
+$export.R = 128; // real proto method for `library`
 module.exports = $export;
 });
 
@@ -382,57 +383,57 @@ var require$$1$2 = Object.freeze({
 });
 
 var _meta = createCommonjsModule(function (module) {
-var META     = interopDefault(require$$12)('meta')
-  , isObject = interopDefault(require$$0$1)
-  , has      = interopDefault(require$$4)
-  , setDesc  = interopDefault(require$$2$1).f
-  , id       = 0;
-var isExtensible = Object.isExtensible || function(){
+var META = interopDefault(require$$12)('meta');
+var isObject = interopDefault(require$$3$1);
+var has = interopDefault(require$$4);
+var setDesc = interopDefault(require$$2$1).f;
+var id = 0;
+var isExtensible = Object.isExtensible || function () {
   return true;
 };
-var FREEZE = !interopDefault(require$$1$1)(function(){
+var FREEZE = !interopDefault(require$$1$1)(function () {
   return isExtensible(Object.preventExtensions({}));
 });
-var setMeta = function(it){
-  setDesc(it, META, {value: {
+var setMeta = function (it) {
+  setDesc(it, META, { value: {
     i: 'O' + ++id, // object ID
     w: {}          // weak collections IDs
-  }});
+  } });
 };
-var fastKey = function(it, create){
+var fastKey = function (it, create) {
   // return primitive with prefix
-  if(!isObject(it))return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-  if(!has(it, META)){
+  if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+  if (!has(it, META)) {
     // can't set metadata to uncaught frozen object
-    if(!isExtensible(it))return 'F';
+    if (!isExtensible(it)) return 'F';
     // not necessary to add metadata
-    if(!create)return 'E';
+    if (!create) return 'E';
     // add missing metadata
     setMeta(it);
   // return object ID
   } return it[META].i;
 };
-var getWeak = function(it, create){
-  if(!has(it, META)){
+var getWeak = function (it, create) {
+  if (!has(it, META)) {
     // can't set metadata to uncaught frozen object
-    if(!isExtensible(it))return true;
+    if (!isExtensible(it)) return true;
     // not necessary to add metadata
-    if(!create)return false;
+    if (!create) return false;
     // add missing metadata
     setMeta(it);
   // return hash weak collections IDs
   } return it[META].w;
 };
 // add metadata on freeze-family methods calling
-var onFreeze = function(it){
-  if(FREEZE && meta.NEED && isExtensible(it) && !has(it, META))setMeta(it);
+var onFreeze = function (it) {
+  if (FREEZE && meta.NEED && isExtensible(it) && !has(it, META)) setMeta(it);
   return it;
 };
 var meta = module.exports = {
-  KEY:      META,
-  NEED:     false,
-  fastKey:  fastKey,
-  getWeak:  getWeak,
+  KEY: META,
+  NEED: false,
+  fastKey: fastKey,
+  getWeak: getWeak,
   onFreeze: onFreeze
 };
 });
@@ -444,7 +445,7 @@ var fastKey = _meta.fastKey;
 var getWeak = _meta.getWeak;
 var onFreeze = _meta.onFreeze;
 
-var require$$6 = Object.freeze({
+var require$$7 = Object.freeze({
   default: _meta$1,
   KEY: KEY,
   NEED: NEED,
@@ -454,10 +455,10 @@ var require$$6 = Object.freeze({
 });
 
 var _shared = createCommonjsModule(function (module) {
-var global = interopDefault(require$$3)
-  , SHARED = '__core-js_shared__'
-  , store  = global[SHARED] || (global[SHARED] = {});
-module.exports = function(key){
+var global = interopDefault(require$$3);
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+module.exports = function (key) {
   return store[key] || (store[key] = {});
 };
 });
@@ -465,17 +466,17 @@ module.exports = function(key){
 var _shared$1 = interopDefault(_shared);
 
 
-var require$$1$4 = Object.freeze({
+var require$$1$5 = Object.freeze({
   default: _shared$1
 });
 
 var _wks = createCommonjsModule(function (module) {
-var store      = interopDefault(require$$1$4)('wks')
-  , uid        = interopDefault(require$$12)
-  , Symbol     = interopDefault(require$$3).Symbol
-  , USE_SYMBOL = typeof Symbol == 'function';
+var store = interopDefault(require$$1$5)('wks');
+var uid = interopDefault(require$$12);
+var Symbol = interopDefault(require$$3).Symbol;
+var USE_SYMBOL = typeof Symbol == 'function';
 
-var $exports = module.exports = function(name){
+var $exports = module.exports = function (name) {
   return store[name] || (store[name] =
     USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
 };
@@ -486,35 +487,35 @@ $exports.store = store;
 var _wks$1 = interopDefault(_wks);
 
 
-var require$$0$4 = Object.freeze({
+var require$$0$3 = Object.freeze({
   default: _wks$1
 });
 
 var _setToStringTag = createCommonjsModule(function (module) {
-var def = interopDefault(require$$2$1).f
-  , has = interopDefault(require$$4)
-  , TAG = interopDefault(require$$0$4)('toStringTag');
+var def = interopDefault(require$$2$1).f;
+var has = interopDefault(require$$4);
+var TAG = interopDefault(require$$0$3)('toStringTag');
 
-module.exports = function(it, tag, stat){
-  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
+module.exports = function (it, tag, stat) {
+  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
 };
 });
 
 var _setToStringTag$1 = interopDefault(_setToStringTag);
 
 
-var require$$0$3 = Object.freeze({
+var require$$0$2 = Object.freeze({
   default: _setToStringTag$1
 });
 
 var _wksExt = createCommonjsModule(function (module, exports) {
-exports.f = interopDefault(require$$0$4);
+exports.f = interopDefault(require$$0$3);
 });
 
 var _wksExt$1 = interopDefault(_wksExt);
 var f$1 = _wksExt.f;
 
-var require$$1$5 = Object.freeze({
+var require$$1$6 = Object.freeze({
 	default: _wksExt$1,
 	f: f$1
 });
@@ -531,28 +532,28 @@ var require$$2$4 = Object.freeze({
 });
 
 var _wksDefine = createCommonjsModule(function (module) {
-var global         = interopDefault(require$$3)
-  , core           = interopDefault(require$$0)
-  , LIBRARY        = interopDefault(require$$2$4)
-  , wksExt         = interopDefault(require$$1$5)
-  , defineProperty = interopDefault(require$$2$1).f;
-module.exports = function(name){
+var global = interopDefault(require$$3);
+var core = interopDefault(require$$0);
+var LIBRARY = interopDefault(require$$2$4);
+var wksExt = interopDefault(require$$1$6);
+var defineProperty = interopDefault(require$$2$1).f;
+module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
-  if(name.charAt(0) != '_' && !(name in $Symbol))defineProperty($Symbol, name, {value: wksExt.f(name)});
+  if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
 };
 });
 
 var _wksDefine$1 = interopDefault(_wksDefine);
 
 
-var require$$0$5 = Object.freeze({
+var require$$0$4 = Object.freeze({
   default: _wksDefine$1
 });
 
 var _cof = createCommonjsModule(function (module) {
 var toString = {}.toString;
 
-module.exports = function(it){
+module.exports = function (it) {
   return toString.call(it).slice(8, -1);
 };
 });
@@ -560,14 +561,15 @@ module.exports = function(it){
 var _cof$1 = interopDefault(_cof);
 
 
-var require$$0$6 = Object.freeze({
+var require$$0$5 = Object.freeze({
   default: _cof$1
 });
 
 var _iobject = createCommonjsModule(function (module) {
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = interopDefault(require$$0$6);
-module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+var cof = interopDefault(require$$0$5);
+// eslint-disable-next-line no-prototype-builtins
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 });
@@ -575,14 +577,14 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
 var _iobject$1 = interopDefault(_iobject);
 
 
-var require$$1$8 = Object.freeze({
+var require$$1$9 = Object.freeze({
   default: _iobject$1
 });
 
 var _defined = createCommonjsModule(function (module) {
 // 7.2.1 RequireObjectCoercible(argument)
-module.exports = function(it){
-  if(it == undefined)throw TypeError("Can't call method on  " + it);
+module.exports = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
   return it;
 };
 });
@@ -596,9 +598,9 @@ var require$$4$3 = Object.freeze({
 
 var _toIobject = createCommonjsModule(function (module) {
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = interopDefault(require$$1$8)
-  , defined = interopDefault(require$$4$3);
-module.exports = function(it){
+var IObject = interopDefault(require$$1$9);
+var defined = interopDefault(require$$4$3);
+module.exports = function (it) {
   return IObject(defined(it));
 };
 });
@@ -606,15 +608,15 @@ module.exports = function(it){
 var _toIobject$1 = interopDefault(_toIobject);
 
 
-var require$$1$7 = Object.freeze({
+var require$$1$8 = Object.freeze({
   default: _toIobject$1
 });
 
 var _toInteger = createCommonjsModule(function (module) {
 // 7.1.4 ToInteger
-var ceil  = Math.ceil
-  , floor = Math.floor;
-module.exports = function(it){
+var ceil = Math.ceil;
+var floor = Math.floor;
+module.exports = function (it) {
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 });
@@ -622,15 +624,15 @@ module.exports = function(it){
 var _toInteger$1 = interopDefault(_toInteger);
 
 
-var require$$26 = Object.freeze({
+var require$$2$5 = Object.freeze({
   default: _toInteger$1
 });
 
 var _toLength = createCommonjsModule(function (module) {
 // 7.1.15 ToLength
-var toInteger = interopDefault(require$$26)
-  , min       = Math.min;
-module.exports = function(it){
+var toInteger = interopDefault(require$$2$5);
+var min = Math.min;
+module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
 });
@@ -638,46 +640,48 @@ module.exports = function(it){
 var _toLength$1 = interopDefault(_toLength);
 
 
-var require$$3$1 = Object.freeze({
+var require$$3$2 = Object.freeze({
   default: _toLength$1
 });
 
-var _toIndex = createCommonjsModule(function (module) {
-var toInteger = interopDefault(require$$26)
-  , max       = Math.max
-  , min       = Math.min;
-module.exports = function(index, length){
+var _toAbsoluteIndex = createCommonjsModule(function (module) {
+var toInteger = interopDefault(require$$2$5);
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
 });
 
-var _toIndex$1 = interopDefault(_toIndex);
+var _toAbsoluteIndex$1 = interopDefault(_toAbsoluteIndex);
 
 
-var require$$24 = Object.freeze({
-  default: _toIndex$1
+var require$$23 = Object.freeze({
+  default: _toAbsoluteIndex$1
 });
 
 var _arrayIncludes = createCommonjsModule(function (module) {
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = interopDefault(require$$1$7)
-  , toLength  = interopDefault(require$$3$1)
-  , toIndex   = interopDefault(require$$24);
-module.exports = function(IS_INCLUDES){
-  return function($this, el, fromIndex){
-    var O      = toIObject($this)
-      , length = toLength(O.length)
-      , index  = toIndex(fromIndex, length)
-      , value;
+var toIObject = interopDefault(require$$1$8);
+var toLength = interopDefault(require$$3$2);
+var toAbsoluteIndex = interopDefault(require$$23);
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
     // Array#includes uses SameValueZero equality algorithm
-    if(IS_INCLUDES && el != el)while(length > index){
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
       value = O[index++];
-      if(value != value)return true;
-    // Array#toIndex ignores holes, Array#includes - not
-    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
-      if(O[index] === el)return IS_INCLUDES || index || 0;
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
     } return !IS_INCLUDES && -1;
   };
 };
@@ -686,14 +690,14 @@ module.exports = function(IS_INCLUDES){
 var _arrayIncludes$1 = interopDefault(_arrayIncludes);
 
 
-var require$$1$9 = Object.freeze({
+var require$$1$10 = Object.freeze({
   default: _arrayIncludes$1
 });
 
 var _sharedKey = createCommonjsModule(function (module) {
-var shared = interopDefault(require$$1$4)('keys')
-  , uid    = interopDefault(require$$12);
-module.exports = function(key){
+var shared = interopDefault(require$$1$5)('keys');
+var uid = interopDefault(require$$12);
+module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 });
@@ -701,24 +705,24 @@ module.exports = function(key){
 var _sharedKey$1 = interopDefault(_sharedKey);
 
 
-var require$$0$7 = Object.freeze({
+var require$$0$6 = Object.freeze({
   default: _sharedKey$1
 });
 
 var _objectKeysInternal = createCommonjsModule(function (module) {
-var has          = interopDefault(require$$4)
-  , toIObject    = interopDefault(require$$1$7)
-  , arrayIndexOf = interopDefault(require$$1$9)(false)
-  , IE_PROTO     = interopDefault(require$$0$7)('IE_PROTO');
+var has = interopDefault(require$$4);
+var toIObject = interopDefault(require$$1$8);
+var arrayIndexOf = interopDefault(require$$1$10)(false);
+var IE_PROTO = interopDefault(require$$0$6)('IE_PROTO');
 
-module.exports = function(object, names){
-  var O      = toIObject(object)
-    , i      = 0
-    , result = []
-    , key;
-  for(key in O)if(key != IE_PROTO)has(O, key) && result.push(key);
+module.exports = function (object, names) {
+  var O = toIObject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
   // Don't enum bug & hidden keys
-  while(names.length > i)if(has(O, key = names[i++])){
+  while (names.length > i) if (has(O, key = names[i++])) {
     ~arrayIndexOf(result, key) || result.push(key);
   }
   return result;
@@ -728,7 +732,7 @@ module.exports = function(object, names){
 var _objectKeysInternal$1 = interopDefault(_objectKeysInternal);
 
 
-var require$$1$6 = Object.freeze({
+var require$$1$7 = Object.freeze({
   default: _objectKeysInternal$1
 });
 
@@ -742,16 +746,16 @@ module.exports = (
 var _enumBugKeys$1 = interopDefault(_enumBugKeys);
 
 
-var require$$0$8 = Object.freeze({
+var require$$0$7 = Object.freeze({
   default: _enumBugKeys$1
 });
 
 var _objectKeys = createCommonjsModule(function (module) {
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys       = interopDefault(require$$1$6)
-  , enumBugKeys = interopDefault(require$$0$8);
+var $keys = interopDefault(require$$1$7);
+var enumBugKeys = interopDefault(require$$0$7);
 
-module.exports = Object.keys || function keys(O){
+module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
 };
 });
@@ -759,20 +763,20 @@ module.exports = Object.keys || function keys(O){
 var _objectKeys$1 = interopDefault(_objectKeys);
 
 
-var require$$2$5 = Object.freeze({
+var require$$5$1 = Object.freeze({
   default: _objectKeys$1
 });
 
 var _keyof = createCommonjsModule(function (module) {
-var getKeys   = interopDefault(require$$2$5)
-  , toIObject = interopDefault(require$$1$7);
-module.exports = function(object, el){
-  var O      = toIObject(object)
-    , keys   = getKeys(O)
-    , length = keys.length
-    , index  = 0
-    , key;
-  while(length > index)if(O[key = keys[index++]] === el)return key;
+var getKeys = interopDefault(require$$5$1);
+var toIObject = interopDefault(require$$1$8);
+module.exports = function (object, el) {
+  var O = toIObject(object);
+  var keys = getKeys(O);
+  var length = keys.length;
+  var index = 0;
+  var key;
+  while (length > index) if (O[key = keys[index++]] === el) return key;
 };
 });
 
@@ -802,25 +806,25 @@ exports.f = {}.propertyIsEnumerable;
 var _objectPie$1 = interopDefault(_objectPie);
 var f$3 = _objectPie.f;
 
-var require$$0$9 = Object.freeze({
+var require$$0$8 = Object.freeze({
 	default: _objectPie$1,
 	f: f$3
 });
 
 var _enumKeys = createCommonjsModule(function (module) {
 // all enumerable object keys, includes symbols
-var getKeys = interopDefault(require$$2$5)
-  , gOPS    = interopDefault(require$$2$6)
-  , pIE     = interopDefault(require$$0$9);
-module.exports = function(it){
-  var result     = getKeys(it)
-    , getSymbols = gOPS.f;
-  if(getSymbols){
-    var symbols = getSymbols(it)
-      , isEnum  = pIE.f
-      , i       = 0
-      , key;
-    while(symbols.length > i)if(isEnum.call(it, key = symbols[i++]))result.push(key);
+var getKeys = interopDefault(require$$5$1);
+var gOPS = interopDefault(require$$2$6);
+var pIE = interopDefault(require$$0$8);
+module.exports = function (it) {
+  var result = getKeys(it);
+  var getSymbols = gOPS.f;
+  if (getSymbols) {
+    var symbols = getSymbols(it);
+    var isEnum = pIE.f;
+    var i = 0;
+    var key;
+    while (symbols.length > i) if (isEnum.call(it, key = symbols[i++])) result.push(key);
   } return result;
 };
 });
@@ -834,8 +838,8 @@ var require$$15 = Object.freeze({
 
 var _isArray = createCommonjsModule(function (module) {
 // 7.2.2 IsArray(argument)
-var cof = interopDefault(require$$0$6);
-module.exports = Array.isArray || function isArray(arg){
+var cof = interopDefault(require$$0$5);
+module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
 });
@@ -843,22 +847,22 @@ module.exports = Array.isArray || function isArray(arg){
 var _isArray$1 = interopDefault(_isArray);
 
 
-var require$$1$10 = Object.freeze({
+var require$$4$4 = Object.freeze({
   default: _isArray$1
 });
 
 var _objectDps = createCommonjsModule(function (module) {
-var dP       = interopDefault(require$$2$1)
-  , anObject = interopDefault(require$$5)
-  , getKeys  = interopDefault(require$$2$5);
+var dP = interopDefault(require$$2$1);
+var anObject = interopDefault(require$$5);
+var getKeys = interopDefault(require$$5$1);
 
-module.exports = interopDefault(require$$1) ? Object.defineProperties : function defineProperties(O, Properties){
+module.exports = interopDefault(require$$1) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
-  var keys   = getKeys(Properties)
-    , length = keys.length
-    , i = 0
-    , P;
-  while(length > i)dP.f(O, P = keys[i++], Properties[P]);
+  var keys = getKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
   return O;
 };
 });
@@ -866,40 +870,41 @@ module.exports = interopDefault(require$$1) ? Object.defineProperties : function
 var _objectDps$1 = interopDefault(_objectDps);
 
 
-var require$$0$10 = Object.freeze({
+var require$$0$9 = Object.freeze({
   default: _objectDps$1
 });
 
 var _html = createCommonjsModule(function (module) {
-module.exports = interopDefault(require$$3).document && document.documentElement;
+var document = interopDefault(require$$3).document;
+module.exports = document && document.documentElement;
 });
 
 var _html$1 = interopDefault(_html);
 
 
-var require$$3$2 = Object.freeze({
+var require$$3$3 = Object.freeze({
 	default: _html$1
 });
 
 var _objectCreate = createCommonjsModule(function (module) {
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject    = interopDefault(require$$5)
-  , dPs         = interopDefault(require$$0$10)
-  , enumBugKeys = interopDefault(require$$0$8)
-  , IE_PROTO    = interopDefault(require$$0$7)('IE_PROTO')
-  , Empty       = function(){ /* empty */ }
-  , PROTOTYPE   = 'prototype';
+var anObject = interopDefault(require$$5);
+var dPs = interopDefault(require$$0$9);
+var enumBugKeys = interopDefault(require$$0$7);
+var IE_PROTO = interopDefault(require$$0$6)('IE_PROTO');
+var Empty = function () { /* empty */ };
+var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
-var createDict = function(){
+var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = interopDefault(require$$2$2)('iframe')
-    , i      = enumBugKeys.length
-    , lt     = '<'
-    , gt     = '>'
-    , iframeDocument;
+  var iframe = interopDefault(require$$2$2)('iframe');
+  var i = enumBugKeys.length;
+  var lt = '<';
+  var gt = '>';
+  var iframeDocument;
   iframe.style.display = 'none';
-  interopDefault(require$$3$2).appendChild(iframe);
+  interopDefault(require$$3$3).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
   // html.removeChild(iframe);
@@ -908,15 +913,15 @@ var createDict = function(){
   iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
   iframeDocument.close();
   createDict = iframeDocument.F;
-  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
   return createDict();
 };
 
-module.exports = Object.create || function create(O, Properties){
+module.exports = Object.create || function create(O, Properties) {
   var result;
-  if(O !== null){
+  if (O !== null) {
     Empty[PROTOTYPE] = anObject(O);
-    result = new Empty;
+    result = new Empty();
     Empty[PROTOTYPE] = null;
     // add "__proto__" for Object.getPrototypeOf polyfill
     result[IE_PROTO] = O;
@@ -928,16 +933,16 @@ module.exports = Object.create || function create(O, Properties){
 var _objectCreate$1 = interopDefault(_objectCreate);
 
 
-var require$$6$1 = Object.freeze({
+var require$$6 = Object.freeze({
   default: _objectCreate$1
 });
 
 var _objectGopn = createCommonjsModule(function (module, exports) {
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys      = interopDefault(require$$1$6)
-  , hiddenKeys = interopDefault(require$$0$8).concat('length', 'prototype');
+var $keys = interopDefault(require$$1$7);
+var hiddenKeys = interopDefault(require$$0$7).concat('length', 'prototype');
 
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
 };
 });
@@ -945,29 +950,29 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 var _objectGopn$1 = interopDefault(_objectGopn);
 var f$5 = _objectGopn.f;
 
-var require$$3$3 = Object.freeze({
+var require$$3$4 = Object.freeze({
   default: _objectGopn$1,
   f: f$5
 });
 
 var _objectGopnExt = createCommonjsModule(function (module) {
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = interopDefault(require$$1$7)
-  , gOPN      = interopDefault(require$$3$3).f
-  , toString  = {}.toString;
+var toIObject = interopDefault(require$$1$8);
+var gOPN = interopDefault(require$$3$4).f;
+var toString = {}.toString;
 
 var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
   ? Object.getOwnPropertyNames(window) : [];
 
-var getWindowNames = function(it){
+var getWindowNames = function (it) {
   try {
     return gOPN(it);
-  } catch(e){
+  } catch (e) {
     return windowNames.slice();
   }
 };
 
-module.exports.f = function getOwnPropertyNames(it){
+module.exports.f = function getOwnPropertyNames(it) {
   return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 };
 });
@@ -975,27 +980,27 @@ module.exports.f = function getOwnPropertyNames(it){
 var _objectGopnExt$1 = interopDefault(_objectGopnExt);
 var f$4 = _objectGopnExt.f;
 
-var require$$0$11 = Object.freeze({
+var require$$0$10 = Object.freeze({
   default: _objectGopnExt$1,
   f: f$4
 });
 
 var _objectGopd = createCommonjsModule(function (module, exports) {
-var pIE            = interopDefault(require$$0$9)
-  , createDesc     = interopDefault(require$$2$3)
-  , toIObject      = interopDefault(require$$1$7)
-  , toPrimitive    = interopDefault(require$$4$1)
-  , has            = interopDefault(require$$4)
-  , IE8_DOM_DEFINE = interopDefault(require$$1$3)
-  , gOPD           = Object.getOwnPropertyDescriptor;
+var pIE = interopDefault(require$$0$8);
+var createDesc = interopDefault(require$$2$3);
+var toIObject = interopDefault(require$$1$8);
+var toPrimitive = interopDefault(require$$4$1);
+var has = interopDefault(require$$4);
+var IE8_DOM_DEFINE = interopDefault(require$$1$3);
+var gOPD = Object.getOwnPropertyDescriptor;
 
-exports.f = interopDefault(require$$1) ? gOPD : function getOwnPropertyDescriptor(O, P){
+exports.f = interopDefault(require$$1) ? gOPD : function getOwnPropertyDescriptor(O, P) {
   O = toIObject(O);
   P = toPrimitive(P, true);
-  if(IE8_DOM_DEFINE)try {
+  if (IE8_DOM_DEFINE) try {
     return gOPD(O, P);
-  } catch(e){ /* empty */ }
-  if(has(O, P))return createDesc(!pIE.f.call(O, P), O[P]);
+  } catch (e) { /* empty */ }
+  if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
 };
 });
 
@@ -1010,189 +1015,189 @@ var require$$2$7 = Object.freeze({
 var es6_symbol = createCommonjsModule(function (module) {
 'use strict';
 // ECMAScript 6 symbols shim
-var global         = interopDefault(require$$3)
-  , has            = interopDefault(require$$4)
-  , DESCRIPTORS    = interopDefault(require$$1)
-  , $export        = interopDefault(require$$1$2)
-  , redefine       = interopDefault(require$$4$2)
-  , META           = interopDefault(require$$6).KEY
-  , $fails         = interopDefault(require$$1$1)
-  , shared         = interopDefault(require$$1$4)
-  , setToStringTag = interopDefault(require$$0$3)
-  , uid            = interopDefault(require$$12)
-  , wks            = interopDefault(require$$0$4)
-  , wksExt         = interopDefault(require$$1$5)
-  , wksDefine      = interopDefault(require$$0$5)
-  , keyOf          = interopDefault(require$$16)
-  , enumKeys       = interopDefault(require$$15)
-  , isArray        = interopDefault(require$$1$10)
-  , anObject       = interopDefault(require$$5)
-  , toIObject      = interopDefault(require$$1$7)
-  , toPrimitive    = interopDefault(require$$4$1)
-  , createDesc     = interopDefault(require$$2$3)
-  , _create        = interopDefault(require$$6$1)
-  , gOPNExt        = interopDefault(require$$0$11)
-  , $GOPD          = interopDefault(require$$2$7)
-  , $DP            = interopDefault(require$$2$1)
-  , $keys          = interopDefault(require$$2$5)
-  , gOPD           = $GOPD.f
-  , dP             = $DP.f
-  , gOPN           = gOPNExt.f
-  , $Symbol        = global.Symbol
-  , $JSON          = global.JSON
-  , _stringify     = $JSON && $JSON.stringify
-  , PROTOTYPE      = 'prototype'
-  , HIDDEN         = wks('_hidden')
-  , TO_PRIMITIVE   = wks('toPrimitive')
-  , isEnum         = {}.propertyIsEnumerable
-  , SymbolRegistry = shared('symbol-registry')
-  , AllSymbols     = shared('symbols')
-  , OPSymbols      = shared('op-symbols')
-  , ObjectProto    = Object[PROTOTYPE]
-  , USE_NATIVE     = typeof $Symbol == 'function'
-  , QObject        = global.QObject;
+var global = interopDefault(require$$3);
+var has = interopDefault(require$$4);
+var DESCRIPTORS = interopDefault(require$$1);
+var $export = interopDefault(require$$1$2);
+var redefine = interopDefault(require$$4$2);
+var META = interopDefault(require$$7).KEY;
+var $fails = interopDefault(require$$1$1);
+var shared = interopDefault(require$$1$5);
+var setToStringTag = interopDefault(require$$0$2);
+var uid = interopDefault(require$$12);
+var wks = interopDefault(require$$0$3);
+var wksExt = interopDefault(require$$1$6);
+var wksDefine = interopDefault(require$$0$4);
+var keyOf = interopDefault(require$$16);
+var enumKeys = interopDefault(require$$15);
+var isArray = interopDefault(require$$4$4);
+var anObject = interopDefault(require$$5);
+var toIObject = interopDefault(require$$1$8);
+var toPrimitive = interopDefault(require$$4$1);
+var createDesc = interopDefault(require$$2$3);
+var _create = interopDefault(require$$6);
+var gOPNExt = interopDefault(require$$0$10);
+var $GOPD = interopDefault(require$$2$7);
+var $DP = interopDefault(require$$2$1);
+var $keys = interopDefault(require$$5$1);
+var gOPD = $GOPD.f;
+var dP = $DP.f;
+var gOPN = gOPNExt.f;
+var $Symbol = global.Symbol;
+var $JSON = global.JSON;
+var _stringify = $JSON && $JSON.stringify;
+var PROTOTYPE = 'prototype';
+var HIDDEN = wks('_hidden');
+var TO_PRIMITIVE = wks('toPrimitive');
+var isEnum = {}.propertyIsEnumerable;
+var SymbolRegistry = shared('symbol-registry');
+var AllSymbols = shared('symbols');
+var OPSymbols = shared('op-symbols');
+var ObjectProto = Object[PROTOTYPE];
+var USE_NATIVE = typeof $Symbol == 'function';
+var QObject = global.QObject;
 // Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
 var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
 
 // fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
-var setSymbolDesc = DESCRIPTORS && $fails(function(){
+var setSymbolDesc = DESCRIPTORS && $fails(function () {
   return _create(dP({}, 'a', {
-    get: function(){ return dP(this, 'a', {value: 7}).a; }
+    get: function () { return dP(this, 'a', { value: 7 }).a; }
   })).a != 7;
-}) ? function(it, key, D){
+}) ? function (it, key, D) {
   var protoDesc = gOPD(ObjectProto, key);
-  if(protoDesc)delete ObjectProto[key];
+  if (protoDesc) delete ObjectProto[key];
   dP(it, key, D);
-  if(protoDesc && it !== ObjectProto)dP(ObjectProto, key, protoDesc);
+  if (protoDesc && it !== ObjectProto) dP(ObjectProto, key, protoDesc);
 } : dP;
 
-var wrap = function(tag){
+var wrap = function (tag) {
   var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
   sym._k = tag;
   return sym;
 };
 
-var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function(it){
+var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function (it) {
   return typeof it == 'symbol';
-} : function(it){
+} : function (it) {
   return it instanceof $Symbol;
 };
 
-var $defineProperty = function defineProperty(it, key, D){
-  if(it === ObjectProto)$defineProperty(OPSymbols, key, D);
+var $defineProperty = function defineProperty(it, key, D) {
+  if (it === ObjectProto) $defineProperty(OPSymbols, key, D);
   anObject(it);
   key = toPrimitive(key, true);
   anObject(D);
-  if(has(AllSymbols, key)){
-    if(!D.enumerable){
-      if(!has(it, HIDDEN))dP(it, HIDDEN, createDesc(1, {}));
+  if (has(AllSymbols, key)) {
+    if (!D.enumerable) {
+      if (!has(it, HIDDEN)) dP(it, HIDDEN, createDesc(1, {}));
       it[HIDDEN][key] = true;
     } else {
-      if(has(it, HIDDEN) && it[HIDDEN][key])it[HIDDEN][key] = false;
-      D = _create(D, {enumerable: createDesc(0, false)});
+      if (has(it, HIDDEN) && it[HIDDEN][key]) it[HIDDEN][key] = false;
+      D = _create(D, { enumerable: createDesc(0, false) });
     } return setSymbolDesc(it, key, D);
   } return dP(it, key, D);
 };
-var $defineProperties = function defineProperties(it, P){
+var $defineProperties = function defineProperties(it, P) {
   anObject(it);
-  var keys = enumKeys(P = toIObject(P))
-    , i    = 0
-    , l = keys.length
-    , key;
-  while(l > i)$defineProperty(it, key = keys[i++], P[key]);
+  var keys = enumKeys(P = toIObject(P));
+  var i = 0;
+  var l = keys.length;
+  var key;
+  while (l > i) $defineProperty(it, key = keys[i++], P[key]);
   return it;
 };
-var $create = function create(it, P){
+var $create = function create(it, P) {
   return P === undefined ? _create(it) : $defineProperties(_create(it), P);
 };
-var $propertyIsEnumerable = function propertyIsEnumerable(key){
+var $propertyIsEnumerable = function propertyIsEnumerable(key) {
   var E = isEnum.call(this, key = toPrimitive(key, true));
-  if(this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key))return false;
+  if (this === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return false;
   return E || !has(this, key) || !has(AllSymbols, key) || has(this, HIDDEN) && this[HIDDEN][key] ? E : true;
 };
-var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key){
-  it  = toIObject(it);
+var $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(it, key) {
+  it = toIObject(it);
   key = toPrimitive(key, true);
-  if(it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key))return;
+  if (it === ObjectProto && has(AllSymbols, key) && !has(OPSymbols, key)) return;
   var D = gOPD(it, key);
-  if(D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key]))D.enumerable = true;
+  if (D && has(AllSymbols, key) && !(has(it, HIDDEN) && it[HIDDEN][key])) D.enumerable = true;
   return D;
 };
-var $getOwnPropertyNames = function getOwnPropertyNames(it){
-  var names  = gOPN(toIObject(it))
-    , result = []
-    , i      = 0
-    , key;
-  while(names.length > i){
-    if(!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META)result.push(key);
+var $getOwnPropertyNames = function getOwnPropertyNames(it) {
+  var names = gOPN(toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (!has(AllSymbols, key = names[i++]) && key != HIDDEN && key != META) result.push(key);
   } return result;
 };
-var $getOwnPropertySymbols = function getOwnPropertySymbols(it){
-  var IS_OP  = it === ObjectProto
-    , names  = gOPN(IS_OP ? OPSymbols : toIObject(it))
-    , result = []
-    , i      = 0
-    , key;
-  while(names.length > i){
-    if(has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true))result.push(AllSymbols[key]);
+var $getOwnPropertySymbols = function getOwnPropertySymbols(it) {
+  var IS_OP = it === ObjectProto;
+  var names = gOPN(IS_OP ? OPSymbols : toIObject(it));
+  var result = [];
+  var i = 0;
+  var key;
+  while (names.length > i) {
+    if (has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true)) result.push(AllSymbols[key]);
   } return result;
 };
 
 // 19.4.1.1 Symbol([description])
-if(!USE_NATIVE){
-  $Symbol = function Symbol(){
-    if(this instanceof $Symbol)throw TypeError('Symbol is not a constructor!');
+if (!USE_NATIVE) {
+  $Symbol = function Symbol() {
+    if (this instanceof $Symbol) throw TypeError('Symbol is not a constructor!');
     var tag = uid(arguments.length > 0 ? arguments[0] : undefined);
-    var $set = function(value){
-      if(this === ObjectProto)$set.call(OPSymbols, value);
-      if(has(this, HIDDEN) && has(this[HIDDEN], tag))this[HIDDEN][tag] = false;
+    var $set = function (value) {
+      if (this === ObjectProto) $set.call(OPSymbols, value);
+      if (has(this, HIDDEN) && has(this[HIDDEN], tag)) this[HIDDEN][tag] = false;
       setSymbolDesc(this, tag, createDesc(1, value));
     };
-    if(DESCRIPTORS && setter)setSymbolDesc(ObjectProto, tag, {configurable: true, set: $set});
+    if (DESCRIPTORS && setter) setSymbolDesc(ObjectProto, tag, { configurable: true, set: $set });
     return wrap(tag);
   };
-  redefine($Symbol[PROTOTYPE], 'toString', function toString(){
+  redefine($Symbol[PROTOTYPE], 'toString', function toString() {
     return this._k;
   });
 
   $GOPD.f = $getOwnPropertyDescriptor;
-  $DP.f   = $defineProperty;
-  interopDefault(require$$3$3).f = gOPNExt.f = $getOwnPropertyNames;
-  interopDefault(require$$0$9).f  = $propertyIsEnumerable;
+  $DP.f = $defineProperty;
+  interopDefault(require$$3$4).f = gOPNExt.f = $getOwnPropertyNames;
+  interopDefault(require$$0$8).f = $propertyIsEnumerable;
   interopDefault(require$$2$6).f = $getOwnPropertySymbols;
 
-  if(DESCRIPTORS && !interopDefault(require$$2$4)){
+  if (DESCRIPTORS && !interopDefault(require$$2$4)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
-  wksExt.f = function(name){
+  wksExt.f = function (name) {
     return wrap(wks(name));
-  }
+  };
 }
 
-$export($export.G + $export.W + $export.F * !USE_NATIVE, {Symbol: $Symbol});
+$export($export.G + $export.W + $export.F * !USE_NATIVE, { Symbol: $Symbol });
 
-for(var symbols = (
+for (var es6Symbols = (
   // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
   'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
-).split(','), i = 0; symbols.length > i; )wks(symbols[i++]);
+).split(','), j = 0; es6Symbols.length > j;)wks(es6Symbols[j++]);
 
-for(var symbols = $keys(wks.store), i = 0; symbols.length > i; )wksDefine(symbols[i++]);
+for (var wellKnownSymbols = $keys(wks.store), k = 0; wellKnownSymbols.length > k;) wksDefine(wellKnownSymbols[k++]);
 
 $export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
   // 19.4.2.1 Symbol.for(key)
-  'for': function(key){
+  'for': function (key) {
     return has(SymbolRegistry, key += '')
       ? SymbolRegistry[key]
       : SymbolRegistry[key] = $Symbol(key);
   },
   // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(key){
-    if(isSymbol(key))return keyOf(SymbolRegistry, key);
+  keyFor: function keyFor(key) {
+    if (isSymbol(key)) return keyOf(SymbolRegistry, key);
     throw TypeError(key + ' is not a symbol!');
   },
-  useSetter: function(){ setter = true; },
-  useSimple: function(){ setter = false; }
+  useSetter: function () { setter = true; },
+  useSimple: function () { setter = false; }
 });
 
 $export($export.S + $export.F * !USE_NATIVE, 'Object', {
@@ -1211,24 +1216,24 @@ $export($export.S + $export.F * !USE_NATIVE, 'Object', {
 });
 
 // 24.3.2 JSON.stringify(value [, replacer [, space]])
-$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function(){
+$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
   var S = $Symbol();
   // MS Edge converts symbol values to JSON as {}
   // WebKit converts symbol values to JSON as null
   // V8 throws on boxed symbols
-  return _stringify([S]) != '[null]' || _stringify({a: S}) != '{}' || _stringify(Object(S)) != '{}';
+  return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
 })), 'JSON', {
-  stringify: function stringify(it){
-    if(it === undefined || isSymbol(it))return; // IE8 returns string on undefined
-    var args = [it]
-      , i    = 1
-      , replacer, $replacer;
-    while(arguments.length > i)args.push(arguments[i++]);
+  stringify: function stringify(it) {
+    if (it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
+    var args = [it];
+    var i = 1;
+    var replacer, $replacer;
+    while (arguments.length > i) args.push(arguments[i++]);
     replacer = args[1];
-    if(typeof replacer == 'function')$replacer = replacer;
-    if($replacer || !isArray(replacer))replacer = function(key, value){
-      if($replacer)value = $replacer.call(this, key, value);
-      if(!isSymbol(value))return value;
+    if (typeof replacer == 'function') $replacer = replacer;
+    if ($replacer || !isArray(replacer)) replacer = function (key, value) {
+      if ($replacer) value = $replacer.call(this, key, value);
+      if (!isSymbol(value)) return value;
     };
     args[1] = replacer;
     return _stringify.apply($JSON, args);
@@ -1248,9 +1253,9 @@ setToStringTag(global.JSON, 'JSON', true);
 interopDefault(es6_symbol);
 
 var es6_object_create = createCommonjsModule(function (module) {
-var $export = interopDefault(require$$1$2)
+var $export = interopDefault(require$$1$2);
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-$export($export.S, 'Object', {create: interopDefault(require$$6$1)});
+$export($export.S, 'Object', { create: interopDefault(require$$6) });
 });
 
 interopDefault(es6_object_create);
@@ -1258,7 +1263,7 @@ interopDefault(es6_object_create);
 var es6_object_defineProperty = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !interopDefault(require$$1), 'Object', {defineProperty: interopDefault(require$$2$1).f});
+$export($export.S + $export.F * !interopDefault(require$$1), 'Object', { defineProperty: interopDefault(require$$2$1).f });
 });
 
 interopDefault(es6_object_defineProperty);
@@ -1266,38 +1271,38 @@ interopDefault(es6_object_defineProperty);
 var es6_object_defineProperties = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !interopDefault(require$$1), 'Object', {defineProperties: interopDefault(require$$0$10)});
+$export($export.S + $export.F * !interopDefault(require$$1), 'Object', { defineProperties: interopDefault(require$$0$9) });
 });
 
 interopDefault(es6_object_defineProperties);
 
 var _objectSap = createCommonjsModule(function (module) {
 // most Object methods by ES6 should accept primitives
-var $export = interopDefault(require$$1$2)
-  , core    = interopDefault(require$$0)
-  , fails   = interopDefault(require$$1$1);
-module.exports = function(KEY, exec){
-  var fn  = (core.Object || {})[KEY] || Object[KEY]
-    , exp = {};
+var $export = interopDefault(require$$1$2);
+var core = interopDefault(require$$0);
+var fails = interopDefault(require$$1$1);
+module.exports = function (KEY, exec) {
+  var fn = (core.Object || {})[KEY] || Object[KEY];
+  var exp = {};
   exp[KEY] = exec(fn);
-  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
 };
 });
 
 var _objectSap$1 = interopDefault(_objectSap);
 
 
-var require$$0$12 = Object.freeze({
+var require$$0$11 = Object.freeze({
   default: _objectSap$1
 });
 
 var es6_object_getOwnPropertyDescriptor = createCommonjsModule(function (module) {
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-var toIObject                 = interopDefault(require$$1$7)
-  , $getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
+var toIObject = interopDefault(require$$1$8);
+var $getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
 
-interopDefault(require$$0$12)('getOwnPropertyDescriptor', function(){
-  return function getOwnPropertyDescriptor(it, key){
+interopDefault(require$$0$11)('getOwnPropertyDescriptor', function () {
+  return function getOwnPropertyDescriptor(it, key) {
     return $getOwnPropertyDescriptor(toIObject(it), key);
   };
 });
@@ -1308,7 +1313,7 @@ interopDefault(es6_object_getOwnPropertyDescriptor);
 var _toObject = createCommonjsModule(function (module) {
 // 7.1.13 ToObject(argument)
 var defined = interopDefault(require$$4$3);
-module.exports = function(it){
+module.exports = function (it) {
   return Object(defined(it));
 };
 });
@@ -1316,21 +1321,21 @@ module.exports = function(it){
 var _toObject$1 = interopDefault(_toObject);
 
 
-var require$$5$1 = Object.freeze({
+var require$$5$2 = Object.freeze({
   default: _toObject$1
 });
 
 var _objectGpo = createCommonjsModule(function (module) {
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has         = interopDefault(require$$4)
-  , toObject    = interopDefault(require$$5$1)
-  , IE_PROTO    = interopDefault(require$$0$7)('IE_PROTO')
-  , ObjectProto = Object.prototype;
+var has = interopDefault(require$$4);
+var toObject = interopDefault(require$$5$2);
+var IE_PROTO = interopDefault(require$$0$6)('IE_PROTO');
+var ObjectProto = Object.prototype;
 
-module.exports = Object.getPrototypeOf || function(O){
+module.exports = Object.getPrototypeOf || function (O) {
   O = toObject(O);
-  if(has(O, IE_PROTO))return O[IE_PROTO];
-  if(typeof O.constructor == 'function' && O instanceof O.constructor){
+  if (has(O, IE_PROTO)) return O[IE_PROTO];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
     return O.constructor.prototype;
   } return O instanceof Object ? ObjectProto : null;
 };
@@ -1339,17 +1344,17 @@ module.exports = Object.getPrototypeOf || function(O){
 var _objectGpo$1 = interopDefault(_objectGpo);
 
 
-var require$$0$13 = Object.freeze({
+var require$$0$12 = Object.freeze({
   default: _objectGpo$1
 });
 
 var es6_object_getPrototypeOf = createCommonjsModule(function (module) {
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject        = interopDefault(require$$5$1)
-  , $getPrototypeOf = interopDefault(require$$0$13);
+var toObject = interopDefault(require$$5$2);
+var $getPrototypeOf = interopDefault(require$$0$12);
 
-interopDefault(require$$0$12)('getPrototypeOf', function(){
-  return function getPrototypeOf(it){
+interopDefault(require$$0$11)('getPrototypeOf', function () {
+  return function getPrototypeOf(it) {
     return $getPrototypeOf(toObject(it));
   };
 });
@@ -1359,11 +1364,11 @@ interopDefault(es6_object_getPrototypeOf);
 
 var es6_object_keys = createCommonjsModule(function (module) {
 // 19.1.2.14 Object.keys(O)
-var toObject = interopDefault(require$$5$1)
-  , $keys    = interopDefault(require$$2$5);
+var toObject = interopDefault(require$$5$2);
+var $keys = interopDefault(require$$5$1);
 
-interopDefault(require$$0$12)('keys', function(){
-  return function keys(it){
+interopDefault(require$$0$11)('keys', function () {
+  return function keys(it) {
     return $keys(toObject(it));
   };
 });
@@ -1373,8 +1378,8 @@ interopDefault(es6_object_keys);
 
 var es6_object_getOwnPropertyNames = createCommonjsModule(function (module) {
 // 19.1.2.7 Object.getOwnPropertyNames(O)
-interopDefault(require$$0$12)('getOwnPropertyNames', function(){
-  return interopDefault(require$$0$11).f;
+interopDefault(require$$0$11)('getOwnPropertyNames', function () {
+  return interopDefault(require$$0$10).f;
 });
 });
 
@@ -1382,11 +1387,11 @@ interopDefault(es6_object_getOwnPropertyNames);
 
 var es6_object_freeze = createCommonjsModule(function (module) {
 // 19.1.2.5 Object.freeze(O)
-var isObject = interopDefault(require$$0$1)
-  , meta     = interopDefault(require$$6).onFreeze;
+var isObject = interopDefault(require$$3$1);
+var meta = interopDefault(require$$7).onFreeze;
 
-interopDefault(require$$0$12)('freeze', function($freeze){
-  return function freeze(it){
+interopDefault(require$$0$11)('freeze', function ($freeze) {
+  return function freeze(it) {
     return $freeze && isObject(it) ? $freeze(meta(it)) : it;
   };
 });
@@ -1396,11 +1401,11 @@ interopDefault(es6_object_freeze);
 
 var es6_object_seal = createCommonjsModule(function (module) {
 // 19.1.2.17 Object.seal(O)
-var isObject = interopDefault(require$$0$1)
-  , meta     = interopDefault(require$$6).onFreeze;
+var isObject = interopDefault(require$$3$1);
+var meta = interopDefault(require$$7).onFreeze;
 
-interopDefault(require$$0$12)('seal', function($seal){
-  return function seal(it){
+interopDefault(require$$0$11)('seal', function ($seal) {
+  return function seal(it) {
     return $seal && isObject(it) ? $seal(meta(it)) : it;
   };
 });
@@ -1410,11 +1415,11 @@ interopDefault(es6_object_seal);
 
 var es6_object_preventExtensions = createCommonjsModule(function (module) {
 // 19.1.2.15 Object.preventExtensions(O)
-var isObject = interopDefault(require$$0$1)
-  , meta     = interopDefault(require$$6).onFreeze;
+var isObject = interopDefault(require$$3$1);
+var meta = interopDefault(require$$7).onFreeze;
 
-interopDefault(require$$0$12)('preventExtensions', function($preventExtensions){
-  return function preventExtensions(it){
+interopDefault(require$$0$11)('preventExtensions', function ($preventExtensions) {
+  return function preventExtensions(it) {
     return $preventExtensions && isObject(it) ? $preventExtensions(meta(it)) : it;
   };
 });
@@ -1424,10 +1429,10 @@ interopDefault(es6_object_preventExtensions);
 
 var es6_object_isFrozen = createCommonjsModule(function (module) {
 // 19.1.2.12 Object.isFrozen(O)
-var isObject = interopDefault(require$$0$1);
+var isObject = interopDefault(require$$3$1);
 
-interopDefault(require$$0$12)('isFrozen', function($isFrozen){
-  return function isFrozen(it){
+interopDefault(require$$0$11)('isFrozen', function ($isFrozen) {
+  return function isFrozen(it) {
     return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
   };
 });
@@ -1437,10 +1442,10 @@ interopDefault(es6_object_isFrozen);
 
 var es6_object_isSealed = createCommonjsModule(function (module) {
 // 19.1.2.13 Object.isSealed(O)
-var isObject = interopDefault(require$$0$1);
+var isObject = interopDefault(require$$3$1);
 
-interopDefault(require$$0$12)('isSealed', function($isSealed){
-  return function isSealed(it){
+interopDefault(require$$0$11)('isSealed', function ($isSealed) {
+  return function isSealed(it) {
     return isObject(it) ? $isSealed ? $isSealed(it) : false : true;
   };
 });
@@ -1450,10 +1455,10 @@ interopDefault(es6_object_isSealed);
 
 var es6_object_isExtensible = createCommonjsModule(function (module) {
 // 19.1.2.11 Object.isExtensible(O)
-var isObject = interopDefault(require$$0$1);
+var isObject = interopDefault(require$$3$1);
 
-interopDefault(require$$0$12)('isExtensible', function($isExtensible){
-  return function isExtensible(it){
+interopDefault(require$$0$11)('isExtensible', function ($isExtensible) {
+  return function isExtensible(it) {
     return isObject(it) ? $isExtensible ? $isExtensible(it) : true : false;
   };
 });
@@ -1464,35 +1469,36 @@ interopDefault(es6_object_isExtensible);
 var _objectAssign = createCommonjsModule(function (module) {
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
-var getKeys  = interopDefault(require$$2$5)
-  , gOPS     = interopDefault(require$$2$6)
-  , pIE      = interopDefault(require$$0$9)
-  , toObject = interopDefault(require$$5$1)
-  , IObject  = interopDefault(require$$1$8)
-  , $assign  = Object.assign;
+var getKeys = interopDefault(require$$5$1);
+var gOPS = interopDefault(require$$2$6);
+var pIE = interopDefault(require$$0$8);
+var toObject = interopDefault(require$$5$2);
+var IObject = interopDefault(require$$1$9);
+var $assign = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !$assign || interopDefault(require$$1$1)(function(){
-  var A = {}
-    , B = {}
-    , S = Symbol()
-    , K = 'abcdefghijklmnopqrst';
+module.exports = !$assign || interopDefault(require$$1$1)(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
   A[S] = 7;
-  K.split('').forEach(function(k){ B[k] = k; });
+  K.split('').forEach(function (k) { B[k] = k; });
   return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
-}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
-  var T     = toObject(target)
-    , aLen  = arguments.length
-    , index = 1
-    , getSymbols = gOPS.f
-    , isEnum     = pIE.f;
-  while(aLen > index){
-    var S      = IObject(arguments[index++])
-      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
-      , length = keys.length
-      , j      = 0
-      , key;
-    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
   } return T;
 } : $assign;
 });
@@ -1500,7 +1506,7 @@ module.exports = !$assign || interopDefault(require$$1$1)(function(){
 var _objectAssign$1 = interopDefault(_objectAssign);
 
 
-var require$$3$4 = Object.freeze({
+var require$$5$3 = Object.freeze({
   default: _objectAssign$1
 });
 
@@ -1508,14 +1514,15 @@ var es6_object_assign = createCommonjsModule(function (module) {
 // 19.1.3.1 Object.assign(target, source)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S + $export.F, 'Object', {assign: interopDefault(require$$3$4)});
+$export($export.S + $export.F, 'Object', { assign: interopDefault(require$$5$3) });
 });
 
 interopDefault(es6_object_assign);
 
 var _sameValue = createCommonjsModule(function (module) {
 // 7.2.9 SameValue(x, y)
-module.exports = Object.is || function is(x, y){
+module.exports = Object.is || function is(x, y) {
+  // eslint-disable-next-line no-self-compare
   return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
 };
 });
@@ -1523,14 +1530,14 @@ module.exports = Object.is || function is(x, y){
 var _sameValue$1 = interopDefault(_sameValue);
 
 
-var require$$21 = Object.freeze({
+var require$$0$13 = Object.freeze({
   default: _sameValue$1
 });
 
 var es6_object_is = createCommonjsModule(function (module) {
 // 19.1.3.10 Object.is(value1, value2)
 var $export = interopDefault(require$$1$2);
-$export($export.S, 'Object', {is: interopDefault(require$$21)});
+$export($export.S, 'Object', { is: interopDefault(require$$0$13) });
 });
 
 interopDefault(es6_object_is);
@@ -1538,23 +1545,23 @@ interopDefault(es6_object_is);
 var _setProto = createCommonjsModule(function (module) {
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
-var isObject = interopDefault(require$$0$1)
-  , anObject = interopDefault(require$$5);
-var check = function(O, proto){
+var isObject = interopDefault(require$$3$1);
+var anObject = interopDefault(require$$5);
+var check = function (O, proto) {
   anObject(O);
-  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
+  if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
 };
 module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
-    function(test, buggy, set){
+    function (test, buggy, set) {
       try {
-        set = interopDefault(require$$31)(Function.call, interopDefault(require$$2$7).f(Object.prototype, '__proto__').set, 2);
+        set = interopDefault(require$$1$4)(Function.call, interopDefault(require$$2$7).f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
-      } catch(e){ buggy = true; }
-      return function setPrototypeOf(O, proto){
+      } catch (e) { buggy = true; }
+      return function setPrototypeOf(O, proto) {
         check(O, proto);
-        if(buggy)O.__proto__ = proto;
+        if (buggy) O.__proto__ = proto;
         else set(O, proto);
         return O;
       };
@@ -1576,26 +1583,26 @@ var require$$0$14 = Object.freeze({
 var es6_object_setPrototypeOf = createCommonjsModule(function (module) {
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export = interopDefault(require$$1$2);
-$export($export.S, 'Object', {setPrototypeOf: interopDefault(require$$0$14).set});
+$export($export.S, 'Object', { setPrototypeOf: interopDefault(require$$0$14).set });
 });
 
 interopDefault(es6_object_setPrototypeOf);
 
 var _classof = createCommonjsModule(function (module) {
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = interopDefault(require$$0$6)
-  , TAG = interopDefault(require$$0$4)('toStringTag')
-  // ES3 wrong here
-  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
+var cof = interopDefault(require$$0$5);
+var TAG = interopDefault(require$$0$3)('toStringTag');
+// ES3 wrong here
+var ARG = cof(function () { return arguments; }()) == 'Arguments';
 
 // fallback for IE11 Script Access Denied error
-var tryGet = function(it, key){
+var tryGet = function (it, key) {
   try {
     return it[key];
-  } catch(e){ /* empty */ }
+  } catch (e) { /* empty */ }
 };
 
-module.exports = function(it){
+module.exports = function (it) {
   var O, T, B;
   return it === undefined ? 'Undefined' : it === null ? 'Null'
     // @@toStringTag case
@@ -1617,11 +1624,11 @@ var require$$1$11 = Object.freeze({
 var es6_object_toString = createCommonjsModule(function (module) {
 'use strict';
 // 19.1.3.6 Object.prototype.toString()
-var classof = interopDefault(require$$1$11)
-  , test    = {};
-test[interopDefault(require$$0$4)('toStringTag')] = 'z';
-if(test + '' != '[object z]'){
-  interopDefault(require$$4$2)(Object.prototype, 'toString', function toString(){
+var classof = interopDefault(require$$1$11);
+var test = {};
+test[interopDefault(require$$0$3)('toStringTag')] = 'z';
+if (test + '' != '[object z]') {
+  interopDefault(require$$4$2)(Object.prototype, 'toString', function toString() {
     return '[object ' + classof(this) + ']';
   }, true);
 }
@@ -1631,9 +1638,9 @@ interopDefault(es6_object_toString);
 
 var _invoke = createCommonjsModule(function (module) {
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
-module.exports = function(fn, args, that){
+module.exports = function (fn, args, that) {
   var un = that === undefined;
-  switch(args.length){
+  switch (args.length) {
     case 0: return un ? fn()
                       : fn.call(that);
     case 1: return un ? fn(args[0])
@@ -1644,7 +1651,7 @@ module.exports = function(fn, args, that){
                       : fn.call(that, args[0], args[1], args[2]);
     case 4: return un ? fn(args[0], args[1], args[2], args[3])
                       : fn.call(that, args[0], args[1], args[2], args[3]);
-  } return              fn.apply(that, args);
+  } return fn.apply(that, args);
 };
 });
 
@@ -1657,27 +1664,28 @@ var require$$1$13 = Object.freeze({
 
 var _bind = createCommonjsModule(function (module) {
 'use strict';
-var aFunction  = interopDefault(require$$0$2)
-  , isObject   = interopDefault(require$$0$1)
-  , invoke     = interopDefault(require$$1$13)
-  , arraySlice = [].slice
-  , factories  = {};
+var aFunction = interopDefault(require$$0$1);
+var isObject = interopDefault(require$$3$1);
+var invoke = interopDefault(require$$1$13);
+var arraySlice = [].slice;
+var factories = {};
 
-var construct = function(F, len, args){
-  if(!(len in factories)){
-    for(var n = [], i = 0; i < len; i++)n[i] = 'a[' + i + ']';
+var construct = function (F, len, args) {
+  if (!(len in factories)) {
+    for (var n = [], i = 0; i < len; i++) n[i] = 'a[' + i + ']';
+    // eslint-disable-next-line no-new-func
     factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
   } return factories[len](F, args);
 };
 
-module.exports = Function.bind || function bind(that /*, args... */){
-  var fn       = aFunction(this)
-    , partArgs = arraySlice.call(arguments, 1);
-  var bound = function(/* args... */){
+module.exports = Function.bind || function bind(that /* , ...args */) {
+  var fn = aFunction(this);
+  var partArgs = arraySlice.call(arguments, 1);
+  var bound = function (/* args... */) {
     var args = partArgs.concat(arraySlice.call(arguments));
     return this instanceof bound ? construct(fn, args.length, args) : invoke(fn, args, that);
   };
-  if(isObject(fn.prototype))bound.prototype = fn.prototype;
+  if (isObject(fn.prototype)) bound.prototype = fn.prototype;
   return bound;
 };
 });
@@ -1693,33 +1701,24 @@ var es6_function_bind = createCommonjsModule(function (module) {
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = interopDefault(require$$1$2);
 
-$export($export.P, 'Function', {bind: interopDefault(require$$1$12)});
+$export($export.P, 'Function', { bind: interopDefault(require$$1$12) });
 });
 
 interopDefault(es6_function_bind);
 
 var es6_function_name = createCommonjsModule(function (module) {
-var dP         = interopDefault(require$$2$1).f
-  , createDesc = interopDefault(require$$2$3)
-  , has        = interopDefault(require$$4)
-  , FProto     = Function.prototype
-  , nameRE     = /^\s*function ([^ (]*)/
-  , NAME       = 'name';
-
-var isExtensible = Object.isExtensible || function(){
-  return true;
-};
+var dP = interopDefault(require$$2$1).f;
+var FProto = Function.prototype;
+var nameRE = /^\s*function ([^ (]*)/;
+var NAME = 'name';
 
 // 19.2.4.2 name
 NAME in FProto || interopDefault(require$$1) && dP(FProto, NAME, {
   configurable: true,
-  get: function(){
+  get: function () {
     try {
-      var that = this
-        , name = ('' + that).match(nameRE)[1];
-      has(that, NAME) || !isExtensible(that) || dP(that, NAME, createDesc(5, name));
-      return name;
-    } catch(e){
+      return ('' + this).match(nameRE)[1];
+    } catch (e) {
       return '';
     }
   }
@@ -1730,18 +1729,18 @@ interopDefault(es6_function_name);
 
 var es6_function_hasInstance = createCommonjsModule(function (module) {
 'use strict';
-var isObject       = interopDefault(require$$0$1)
-  , getPrototypeOf = interopDefault(require$$0$13)
-  , HAS_INSTANCE   = interopDefault(require$$0$4)('hasInstance')
-  , FunctionProto  = Function.prototype;
+var isObject = interopDefault(require$$3$1);
+var getPrototypeOf = interopDefault(require$$0$12);
+var HAS_INSTANCE = interopDefault(require$$0$3)('hasInstance');
+var FunctionProto = Function.prototype;
 // 19.2.3.6 Function.prototype[@@hasInstance](V)
-if(!(HAS_INSTANCE in FunctionProto))interopDefault(require$$2$1).f(FunctionProto, HAS_INSTANCE, {value: function(O){
-  if(typeof this != 'function' || !isObject(O))return false;
-  if(!isObject(this.prototype))return O instanceof this;
+if (!(HAS_INSTANCE in FunctionProto)) interopDefault(require$$2$1).f(FunctionProto, HAS_INSTANCE, { value: function (O) {
+  if (typeof this != 'function' || !isObject(O)) return false;
+  if (!isObject(this.prototype)) return O instanceof this;
   // for environment w/o native `@@hasInstance` logic enough `instanceof`, but add this:
-  while(O = getPrototypeOf(O))if(this.prototype === O)return true;
+  while (O = getPrototypeOf(O)) if (this.prototype === O) return true;
   return false;
-}});
+} });
 });
 
 interopDefault(es6_function_hasInstance);
@@ -1759,32 +1758,32 @@ var require$$0$17 = Object.freeze({
 });
 
 var _stringTrim = createCommonjsModule(function (module) {
-var $export = interopDefault(require$$1$2)
-  , defined = interopDefault(require$$4$3)
-  , fails   = interopDefault(require$$1$1)
-  , spaces  = interopDefault(require$$0$17)
-  , space   = '[' + spaces + ']'
-  , non     = '\u200b\u0085'
-  , ltrim   = RegExp('^' + space + space + '*')
-  , rtrim   = RegExp(space + space + '*$');
+var $export = interopDefault(require$$1$2);
+var defined = interopDefault(require$$4$3);
+var fails = interopDefault(require$$1$1);
+var spaces = interopDefault(require$$0$17);
+var space = '[' + spaces + ']';
+var non = '\u200b\u0085';
+var ltrim = RegExp('^' + space + space + '*');
+var rtrim = RegExp(space + space + '*$');
 
-var exporter = function(KEY, exec, ALIAS){
-  var exp   = {};
-  var FORCE = fails(function(){
+var exporter = function (KEY, exec, ALIAS) {
+  var exp = {};
+  var FORCE = fails(function () {
     return !!spaces[KEY]() || non[KEY]() != non;
   });
   var fn = exp[KEY] = FORCE ? exec(trim) : spaces[KEY];
-  if(ALIAS)exp[ALIAS] = fn;
+  if (ALIAS) exp[ALIAS] = fn;
   $export($export.P + $export.F * FORCE, 'String', exp);
 };
 
 // 1 -> String#trimLeft
 // 2 -> String#trimRight
 // 3 -> String#trim
-var trim = exporter.trim = function(string, TYPE){
+var trim = exporter.trim = function (string, TYPE) {
   string = String(defined(string));
-  if(TYPE & 1)string = string.replace(ltrim, '');
-  if(TYPE & 2)string = string.replace(rtrim, '');
+  if (TYPE & 1) string = string.replace(ltrim, '');
+  if (TYPE & 2) string = string.replace(rtrim, '');
   return string;
 };
 
@@ -1799,12 +1798,12 @@ var require$$0$16 = Object.freeze({
 });
 
 var _parseInt = createCommonjsModule(function (module) {
-var $parseInt = interopDefault(require$$3).parseInt
-  , $trim     = interopDefault(require$$0$16).trim
-  , ws        = interopDefault(require$$0$17)
-  , hex       = /^[\-+]?0[xX]/;
+var $parseInt = interopDefault(require$$3).parseInt;
+var $trim = interopDefault(require$$0$16).trim;
+var ws = interopDefault(require$$0$17);
+var hex = /^[-+]?0[xX]/;
 
-module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix){
+module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix) {
   var string = $trim(String(str), 3);
   return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
 } : $parseInt;
@@ -1818,21 +1817,21 @@ var require$$0$15 = Object.freeze({
 });
 
 var es6_parseInt = createCommonjsModule(function (module) {
-var $export   = interopDefault(require$$1$2)
-  , $parseInt = interopDefault(require$$0$15);
+var $export = interopDefault(require$$1$2);
+var $parseInt = interopDefault(require$$0$15);
 // 18.2.5 parseInt(string, radix)
-$export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
+$export($export.G + $export.F * (parseInt != $parseInt), { parseInt: $parseInt });
 });
 
 interopDefault(es6_parseInt);
 
 var _parseFloat = createCommonjsModule(function (module) {
-var $parseFloat = interopDefault(require$$3).parseFloat
-  , $trim       = interopDefault(require$$0$16).trim;
+var $parseFloat = interopDefault(require$$3).parseFloat;
+var $trim = interopDefault(require$$0$16).trim;
 
-module.exports = 1 / $parseFloat(interopDefault(require$$0$17) + '-0') !== -Infinity ? function parseFloat(str){
-  var string = $trim(String(str), 3)
-    , result = $parseFloat(string);
+module.exports = 1 / $parseFloat(interopDefault(require$$0$17) + '-0') !== -Infinity ? function parseFloat(str) {
+  var string = $trim(String(str), 3);
+  var result = $parseFloat(string);
   return result === 0 && string.charAt(0) == '-' ? -0 : result;
 } : $parseFloat;
 });
@@ -1845,20 +1844,21 @@ var require$$0$18 = Object.freeze({
 });
 
 var es6_parseFloat = createCommonjsModule(function (module) {
-var $export     = interopDefault(require$$1$2)
-  , $parseFloat = interopDefault(require$$0$18);
+var $export = interopDefault(require$$1$2);
+var $parseFloat = interopDefault(require$$0$18);
 // 18.2.4 parseFloat(string)
-$export($export.G + $export.F * (parseFloat != $parseFloat), {parseFloat: $parseFloat});
+$export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $parseFloat });
 });
 
 interopDefault(es6_parseFloat);
 
 var _inheritIfRequired = createCommonjsModule(function (module) {
-var isObject       = interopDefault(require$$0$1)
-  , setPrototypeOf = interopDefault(require$$0$14).set;
-module.exports = function(that, target, C){
-  var P, S = target.constructor;
-  if(S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf){
+var isObject = interopDefault(require$$3$1);
+var setPrototypeOf = interopDefault(require$$0$14).set;
+module.exports = function (that, target, C) {
+  var S = target.constructor;
+  var P;
+  if (S !== C && typeof S == 'function' && (P = S.prototype) !== C.prototype && isObject(P) && setPrototypeOf) {
     setPrototypeOf(that, P);
   } return that;
 };
@@ -1873,67 +1873,67 @@ var require$$0$19 = Object.freeze({
 
 var es6_number_constructor = createCommonjsModule(function (module) {
 'use strict';
-var global            = interopDefault(require$$3)
-  , has               = interopDefault(require$$4)
-  , cof               = interopDefault(require$$0$6)
-  , inheritIfRequired = interopDefault(require$$0$19)
-  , toPrimitive       = interopDefault(require$$4$1)
-  , fails             = interopDefault(require$$1$1)
-  , gOPN              = interopDefault(require$$3$3).f
-  , gOPD              = interopDefault(require$$2$7).f
-  , dP                = interopDefault(require$$2$1).f
-  , $trim             = interopDefault(require$$0$16).trim
-  , NUMBER            = 'Number'
-  , $Number           = global[NUMBER]
-  , Base              = $Number
-  , proto             = $Number.prototype
-  // Opera ~12 has broken Object#toString
-  , BROKEN_COF        = cof(interopDefault(require$$6$1)(proto)) == NUMBER
-  , TRIM              = 'trim' in String.prototype;
+var global = interopDefault(require$$3);
+var has = interopDefault(require$$4);
+var cof = interopDefault(require$$0$5);
+var inheritIfRequired = interopDefault(require$$0$19);
+var toPrimitive = interopDefault(require$$4$1);
+var fails = interopDefault(require$$1$1);
+var gOPN = interopDefault(require$$3$4).f;
+var gOPD = interopDefault(require$$2$7).f;
+var dP = interopDefault(require$$2$1).f;
+var $trim = interopDefault(require$$0$16).trim;
+var NUMBER = 'Number';
+var $Number = global[NUMBER];
+var Base = $Number;
+var proto = $Number.prototype;
+// Opera ~12 has broken Object#toString
+var BROKEN_COF = cof(interopDefault(require$$6)(proto)) == NUMBER;
+var TRIM = 'trim' in String.prototype;
 
 // 7.1.3 ToNumber(argument)
-var toNumber = function(argument){
+var toNumber = function (argument) {
   var it = toPrimitive(argument, false);
-  if(typeof it == 'string' && it.length > 2){
+  if (typeof it == 'string' && it.length > 2) {
     it = TRIM ? it.trim() : $trim(it, 3);
-    var first = it.charCodeAt(0)
-      , third, radix, maxCode;
-    if(first === 43 || first === 45){
+    var first = it.charCodeAt(0);
+    var third, radix, maxCode;
+    if (first === 43 || first === 45) {
       third = it.charCodeAt(2);
-      if(third === 88 || third === 120)return NaN; // Number('+0x1') should be NaN, old V8 fix
-    } else if(first === 48){
-      switch(it.charCodeAt(1)){
-        case 66 : case 98  : radix = 2; maxCode = 49; break; // fast equal /^0b[01]+$/i
-        case 79 : case 111 : radix = 8; maxCode = 55; break; // fast equal /^0o[0-7]+$/i
-        default : return +it;
+      if (third === 88 || third === 120) return NaN; // Number('+0x1') should be NaN, old V8 fix
+    } else if (first === 48) {
+      switch (it.charCodeAt(1)) {
+        case 66: case 98: radix = 2; maxCode = 49; break; // fast equal /^0b[01]+$/i
+        case 79: case 111: radix = 8; maxCode = 55; break; // fast equal /^0o[0-7]+$/i
+        default: return +it;
       }
-      for(var digits = it.slice(2), i = 0, l = digits.length, code; i < l; i++){
+      for (var digits = it.slice(2), i = 0, l = digits.length, code; i < l; i++) {
         code = digits.charCodeAt(i);
         // parseInt parses a string to a first unavailable symbol
         // but ToNumber should return NaN if a string contains unavailable symbols
-        if(code < 48 || code > maxCode)return NaN;
+        if (code < 48 || code > maxCode) return NaN;
       } return parseInt(digits, radix);
     }
   } return +it;
 };
 
-if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
-  $Number = function Number(value){
-    var it = arguments.length < 1 ? 0 : value
-      , that = this;
+if (!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')) {
+  $Number = function Number(value) {
+    var it = arguments.length < 1 ? 0 : value;
+    var that = this;
     return that instanceof $Number
       // check on 1..constructor(foo) case
-      && (BROKEN_COF ? fails(function(){ proto.valueOf.call(that); }) : cof(that) != NUMBER)
+      && (BROKEN_COF ? fails(function () { proto.valueOf.call(that); }) : cof(that) != NUMBER)
         ? inheritIfRequired(new Base(toNumber(it)), that, $Number) : toNumber(it);
   };
-  for(var keys = interopDefault(require$$1) ? gOPN(Base) : (
+  for (var keys = interopDefault(require$$1) ? gOPN(Base) : (
     // ES3:
     'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' +
     // ES6 (in case, if modules with ES6 Number statics required before):
     'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' +
     'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger'
-  ).split(','), j = 0, key; keys.length > j; j++){
-    if(has(Base, key = keys[j]) && !has($Number, key)){
+  ).split(','), j = 0, key; keys.length > j; j++) {
+    if (has(Base, key = keys[j]) && !has($Number, key)) {
       dP($Number, key, gOPD(Base, key));
     }
   }
@@ -1946,9 +1946,9 @@ if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
 interopDefault(es6_number_constructor);
 
 var _aNumberValue = createCommonjsModule(function (module) {
-var cof = interopDefault(require$$0$6);
-module.exports = function(it, msg){
-  if(typeof it != 'number' && cof(it) != 'Number')throw TypeError(msg);
+var cof = interopDefault(require$$0$5);
+module.exports = function (it, msg) {
+  if (typeof it != 'number' && cof(it) != 'Number') throw TypeError(msg);
   return +it;
 };
 });
@@ -1962,15 +1962,15 @@ var require$$0$20 = Object.freeze({
 
 var _stringRepeat = createCommonjsModule(function (module) {
 'use strict';
-var toInteger = interopDefault(require$$26)
-  , defined   = interopDefault(require$$4$3);
+var toInteger = interopDefault(require$$2$5);
+var defined = interopDefault(require$$4$3);
 
-module.exports = function repeat(count){
-  var str = String(defined(this))
-    , res = ''
-    , n   = toInteger(count);
-  if(n < 0 || n == Infinity)throw RangeError("Count can't be negative");
-  for(;n > 0; (n >>>= 1) && (str += str))if(n & 1)res += str;
+module.exports = function repeat(count) {
+  var str = String(defined(this));
+  var res = '';
+  var n = toInteger(count);
+  if (n < 0 || n == Infinity) throw RangeError("Count can't be negative");
+  for (;n > 0; (n >>>= 1) && (str += str)) if (n & 1) res += str;
   return res;
 };
 });
@@ -1984,56 +1984,56 @@ var require$$1$14 = Object.freeze({
 
 var es6_number_toFixed = createCommonjsModule(function (module) {
 'use strict';
-var $export      = interopDefault(require$$1$2)
-  , toInteger    = interopDefault(require$$26)
-  , aNumberValue = interopDefault(require$$0$20)
-  , repeat       = interopDefault(require$$1$14)
-  , $toFixed     = 1..toFixed
-  , floor        = Math.floor
-  , data         = [0, 0, 0, 0, 0, 0]
-  , ERROR        = 'Number.toFixed: incorrect invocation!'
-  , ZERO         = '0';
+var $export = interopDefault(require$$1$2);
+var toInteger = interopDefault(require$$2$5);
+var aNumberValue = interopDefault(require$$0$20);
+var repeat = interopDefault(require$$1$14);
+var $toFixed = 1.0.toFixed;
+var floor = Math.floor;
+var data = [0, 0, 0, 0, 0, 0];
+var ERROR = 'Number.toFixed: incorrect invocation!';
+var ZERO = '0';
 
-var multiply = function(n, c){
-  var i  = -1
-    , c2 = c;
-  while(++i < 6){
+var multiply = function (n, c) {
+  var i = -1;
+  var c2 = c;
+  while (++i < 6) {
     c2 += n * data[i];
     data[i] = c2 % 1e7;
     c2 = floor(c2 / 1e7);
   }
 };
-var divide = function(n){
-  var i = 6
-    , c = 0;
-  while(--i >= 0){
+var divide = function (n) {
+  var i = 6;
+  var c = 0;
+  while (--i >= 0) {
     c += data[i];
     data[i] = floor(c / n);
     c = (c % n) * 1e7;
   }
 };
-var numToString = function(){
-  var i = 6
-    , s = '';
-  while(--i >= 0){
-    if(s !== '' || i === 0 || data[i] !== 0){
+var numToString = function () {
+  var i = 6;
+  var s = '';
+  while (--i >= 0) {
+    if (s !== '' || i === 0 || data[i] !== 0) {
       var t = String(data[i]);
       s = s === '' ? t : s + repeat.call(ZERO, 7 - t.length) + t;
     }
   } return s;
 };
-var pow = function(x, n, acc){
+var pow = function (x, n, acc) {
   return n === 0 ? acc : n % 2 === 1 ? pow(x, n - 1, acc * x) : pow(x * x, n / 2, acc);
 };
-var log = function(x){
-  var n  = 0
-    , x2 = x;
-  while(x2 >= 4096){
+var log = function (x) {
+  var n = 0;
+  var x2 = x;
+  while (x2 >= 4096) {
     n += 12;
     x2 /= 4096;
   }
-  while(x2 >= 2){
-    n  += 1;
+  while (x2 >= 2) {
+    n += 1;
     x2 /= 2;
   } return n;
 };
@@ -2042,39 +2042,40 @@ $export($export.P + $export.F * (!!$toFixed && (
   0.00008.toFixed(3) !== '0.000' ||
   0.9.toFixed(0) !== '1' ||
   1.255.toFixed(2) !== '1.25' ||
-  1000000000000000128..toFixed(0) !== '1000000000000000128'
-) || !interopDefault(require$$1$1)(function(){
+  1000000000000000128.0.toFixed(0) !== '1000000000000000128'
+) || !interopDefault(require$$1$1)(function () {
   // V8 ~ Android 4.3-
   $toFixed.call({});
 })), 'Number', {
-  toFixed: function toFixed(fractionDigits){
-    var x = aNumberValue(this, ERROR)
-      , f = toInteger(fractionDigits)
-      , s = ''
-      , m = ZERO
-      , e, z, j, k;
-    if(f < 0 || f > 20)throw RangeError(ERROR);
-    if(x != x)return 'NaN';
-    if(x <= -1e21 || x >= 1e21)return String(x);
-    if(x < 0){
+  toFixed: function toFixed(fractionDigits) {
+    var x = aNumberValue(this, ERROR);
+    var f = toInteger(fractionDigits);
+    var s = '';
+    var m = ZERO;
+    var e, z, j, k;
+    if (f < 0 || f > 20) throw RangeError(ERROR);
+    // eslint-disable-next-line no-self-compare
+    if (x != x) return 'NaN';
+    if (x <= -1e21 || x >= 1e21) return String(x);
+    if (x < 0) {
       s = '-';
       x = -x;
     }
-    if(x > 1e-21){
+    if (x > 1e-21) {
       e = log(x * pow(2, 69, 1)) - 69;
       z = e < 0 ? x * pow(2, -e, 1) : x / pow(2, e, 1);
       z *= 0x10000000000000;
       e = 52 - e;
-      if(e > 0){
+      if (e > 0) {
         multiply(0, z);
         j = f;
-        while(j >= 7){
+        while (j >= 7) {
           multiply(1e7, 0);
           j -= 7;
         }
         multiply(pow(10, j, 1), 0);
         j = e - 1;
-        while(j >= 23){
+        while (j >= 23) {
           divide(1 << 23);
           j -= 23;
         }
@@ -2088,7 +2089,7 @@ $export($export.P + $export.F * (!!$toFixed && (
         m = numToString() + repeat.call(ZERO, f);
       }
     }
-    if(f > 0){
+    if (f > 0) {
       k = m.length;
       m = s + (k <= f ? '0.' + repeat.call(ZERO, f - k) + m : m.slice(0, k - f) + '.' + m.slice(k - f));
     } else {
@@ -2102,21 +2103,21 @@ interopDefault(es6_number_toFixed);
 
 var es6_number_toPrecision = createCommonjsModule(function (module) {
 'use strict';
-var $export      = interopDefault(require$$1$2)
-  , $fails       = interopDefault(require$$1$1)
-  , aNumberValue = interopDefault(require$$0$20)
-  , $toPrecision = 1..toPrecision;
+var $export = interopDefault(require$$1$2);
+var $fails = interopDefault(require$$1$1);
+var aNumberValue = interopDefault(require$$0$20);
+var $toPrecision = 1.0.toPrecision;
 
-$export($export.P + $export.F * ($fails(function(){
+$export($export.P + $export.F * ($fails(function () {
   // IE7-
   return $toPrecision.call(1, undefined) !== '1';
-}) || !$fails(function(){
+}) || !$fails(function () {
   // V8 ~ Android 4.3-
   $toPrecision.call({});
 })), 'Number', {
-  toPrecision: function toPrecision(precision){
+  toPrecision: function toPrecision(precision) {
     var that = aNumberValue(this, 'Number#toPrecision: incorrect invocation!');
-    return precision === undefined ? $toPrecision.call(that) : $toPrecision.call(that, precision); 
+    return precision === undefined ? $toPrecision.call(that) : $toPrecision.call(that, precision);
   }
 });
 });
@@ -2127,18 +2128,18 @@ var es6_number_epsilon = createCommonjsModule(function (module) {
 // 20.1.2.1 Number.EPSILON
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
+$export($export.S, 'Number', { EPSILON: Math.pow(2, -52) });
 });
 
 interopDefault(es6_number_epsilon);
 
 var es6_number_isFinite = createCommonjsModule(function (module) {
 // 20.1.2.2 Number.isFinite(number)
-var $export   = interopDefault(require$$1$2)
-  , _isFinite = interopDefault(require$$3).isFinite;
+var $export = interopDefault(require$$1$2);
+var _isFinite = interopDefault(require$$3).isFinite;
 
 $export($export.S, 'Number', {
-  isFinite: function isFinite(it){
+  isFinite: function isFinite(it) {
     return typeof it == 'number' && _isFinite(it);
   }
 });
@@ -2148,9 +2149,9 @@ interopDefault(es6_number_isFinite);
 
 var _isInteger = createCommonjsModule(function (module) {
 // 20.1.2.3 Number.isInteger(number)
-var isObject = interopDefault(require$$0$1)
-  , floor    = Math.floor;
-module.exports = function isInteger(it){
+var isObject = interopDefault(require$$3$1);
+var floor = Math.floor;
+module.exports = function isInteger(it) {
   return !isObject(it) && isFinite(it) && floor(it) === it;
 };
 });
@@ -2166,7 +2167,7 @@ var es6_number_isInteger = createCommonjsModule(function (module) {
 // 20.1.2.3 Number.isInteger(number)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Number', {isInteger: interopDefault(require$$0$21)});
+$export($export.S, 'Number', { isInteger: interopDefault(require$$0$21) });
 });
 
 interopDefault(es6_number_isInteger);
@@ -2176,7 +2177,8 @@ var es6_number_isNan = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Number', {
-  isNaN: function isNaN(number){
+  isNaN: function isNaN(number) {
+    // eslint-disable-next-line no-self-compare
     return number != number;
   }
 });
@@ -2186,12 +2188,12 @@ interopDefault(es6_number_isNan);
 
 var es6_number_isSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.5 Number.isSafeInteger(number)
-var $export   = interopDefault(require$$1$2)
-  , isInteger = interopDefault(require$$0$21)
-  , abs       = Math.abs;
+var $export = interopDefault(require$$1$2);
+var isInteger = interopDefault(require$$0$21);
+var abs = Math.abs;
 
 $export($export.S, 'Number', {
-  isSafeInteger: function isSafeInteger(number){
+  isSafeInteger: function isSafeInteger(number) {
     return isInteger(number) && abs(number) <= 0x1fffffffffffff;
   }
 });
@@ -2203,7 +2205,7 @@ var es6_number_maxSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.6 Number.MAX_SAFE_INTEGER
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
+$export($export.S, 'Number', { MAX_SAFE_INTEGER: 0x1fffffffffffff });
 });
 
 interopDefault(es6_number_maxSafeInteger);
@@ -2212,32 +2214,32 @@ var es6_number_minSafeInteger = createCommonjsModule(function (module) {
 // 20.1.2.10 Number.MIN_SAFE_INTEGER
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
+$export($export.S, 'Number', { MIN_SAFE_INTEGER: -0x1fffffffffffff });
 });
 
 interopDefault(es6_number_minSafeInteger);
 
 var es6_number_parseFloat = createCommonjsModule(function (module) {
-var $export     = interopDefault(require$$1$2)
-  , $parseFloat = interopDefault(require$$0$18);
+var $export = interopDefault(require$$1$2);
+var $parseFloat = interopDefault(require$$0$18);
 // 20.1.2.12 Number.parseFloat(string)
-$export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', {parseFloat: $parseFloat});
+$export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { parseFloat: $parseFloat });
 });
 
 interopDefault(es6_number_parseFloat);
 
 var es6_number_parseInt = createCommonjsModule(function (module) {
-var $export   = interopDefault(require$$1$2)
-  , $parseInt = interopDefault(require$$0$15);
+var $export = interopDefault(require$$1$2);
+var $parseInt = interopDefault(require$$0$15);
 // 20.1.2.13 Number.parseInt(string, radix)
-$export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', {parseInt: $parseInt});
+$export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { parseInt: $parseInt });
 });
 
 interopDefault(es6_number_parseInt);
 
 var _mathLog1p = createCommonjsModule(function (module) {
 // 20.2.2.20 Math.log1p(x)
-module.exports = Math.log1p || function log1p(x){
+module.exports = Math.log1p || function log1p(x) {
   return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : Math.log(1 + x);
 };
 });
@@ -2251,18 +2253,18 @@ var require$$0$22 = Object.freeze({
 
 var es6_math_acosh = createCommonjsModule(function (module) {
 // 20.2.2.3 Math.acosh(x)
-var $export = interopDefault(require$$1$2)
-  , log1p   = interopDefault(require$$0$22)
-  , sqrt    = Math.sqrt
-  , $acosh  = Math.acosh;
+var $export = interopDefault(require$$1$2);
+var log1p = interopDefault(require$$0$22);
+var sqrt = Math.sqrt;
+var $acosh = Math.acosh;
 
 $export($export.S + $export.F * !($acosh
   // V8 bug: https://code.google.com/p/v8/issues/detail?id=3509
   && Math.floor($acosh(Number.MAX_VALUE)) == 710
-  // Tor Browser bug: Math.acosh(Infinity) -> NaN 
+  // Tor Browser bug: Math.acosh(Infinity) -> NaN
   && $acosh(Infinity) == Infinity
 ), 'Math', {
-  acosh: function acosh(x){
+  acosh: function acosh(x) {
     return (x = +x) < 1 ? NaN : x > 94906265.62425156
       ? Math.log(x) + Math.LN2
       : log1p(x - 1 + sqrt(x - 1) * sqrt(x + 1));
@@ -2274,27 +2276,27 @@ interopDefault(es6_math_acosh);
 
 var es6_math_asinh = createCommonjsModule(function (module) {
 // 20.2.2.5 Math.asinh(x)
-var $export = interopDefault(require$$1$2)
-  , $asinh  = Math.asinh;
+var $export = interopDefault(require$$1$2);
+var $asinh = Math.asinh;
 
-function asinh(x){
+function asinh(x) {
   return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : Math.log(x + Math.sqrt(x * x + 1));
 }
 
-// Tor Browser bug: Math.asinh(0) -> -0 
-$export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
+// Tor Browser bug: Math.asinh(0) -> -0
+$export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', { asinh: asinh });
 });
 
 interopDefault(es6_math_asinh);
 
 var es6_math_atanh = createCommonjsModule(function (module) {
 // 20.2.2.7 Math.atanh(x)
-var $export = interopDefault(require$$1$2)
-  , $atanh  = Math.atanh;
+var $export = interopDefault(require$$1$2);
+var $atanh = Math.atanh;
 
-// Tor Browser bug: Math.atanh(-0) -> 0 
+// Tor Browser bug: Math.atanh(-0) -> 0
 $export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
-  atanh: function atanh(x){
+  atanh: function atanh(x) {
     return (x = +x) == 0 ? x : Math.log((1 + x) / (1 - x)) / 2;
   }
 });
@@ -2304,7 +2306,8 @@ interopDefault(es6_math_atanh);
 
 var _mathSign = createCommonjsModule(function (module) {
 // 20.2.2.28 Math.sign(x)
-module.exports = Math.sign || function sign(x){
+module.exports = Math.sign || function sign(x) {
+  // eslint-disable-next-line no-self-compare
   return (x = +x) == 0 || x != x ? x : x < 0 ? -1 : 1;
 };
 });
@@ -2318,11 +2321,11 @@ var require$$0$23 = Object.freeze({
 
 var es6_math_cbrt = createCommonjsModule(function (module) {
 // 20.2.2.9 Math.cbrt(x)
-var $export = interopDefault(require$$1$2)
-  , sign    = interopDefault(require$$0$23);
+var $export = interopDefault(require$$1$2);
+var sign = interopDefault(require$$0$23);
 
 $export($export.S, 'Math', {
-  cbrt: function cbrt(x){
+  cbrt: function cbrt(x) {
     return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
   }
 });
@@ -2335,7 +2338,7 @@ var es6_math_clz32 = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  clz32: function clz32(x){
+  clz32: function clz32(x) {
     return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
   }
 });
@@ -2345,11 +2348,11 @@ interopDefault(es6_math_clz32);
 
 var es6_math_cosh = createCommonjsModule(function (module) {
 // 20.2.2.12 Math.cosh(x)
-var $export = interopDefault(require$$1$2)
-  , exp     = Math.exp;
+var $export = interopDefault(require$$1$2);
+var exp = Math.exp;
 
 $export($export.S, 'Math', {
-  cosh: function cosh(x){
+  cosh: function cosh(x) {
     return (exp(x = +x) + exp(-x)) / 2;
   }
 });
@@ -2365,7 +2368,7 @@ module.exports = (!$expm1
   || $expm1(10) > 22025.465794806719 || $expm1(10) < 22025.4657948067165168
   // Tor Browser bug
   || $expm1(-2e-17) != -2e-17
-) ? function expm1(x){
+) ? function expm1(x) {
   return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : Math.exp(x) - 1;
 } : $expm1;
 });
@@ -2379,65 +2382,76 @@ var require$$0$24 = Object.freeze({
 
 var es6_math_expm1 = createCommonjsModule(function (module) {
 // 20.2.2.14 Math.expm1(x)
-var $export = interopDefault(require$$1$2)
-  , $expm1  = interopDefault(require$$0$24);
+var $export = interopDefault(require$$1$2);
+var $expm1 = interopDefault(require$$0$24);
 
-$export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
+$export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 });
 });
 
 interopDefault(es6_math_expm1);
 
-var es6_math_fround = createCommonjsModule(function (module) {
+var _mathFround = createCommonjsModule(function (module) {
 // 20.2.2.16 Math.fround(x)
-var $export   = interopDefault(require$$1$2)
-  , sign      = interopDefault(require$$0$23)
-  , pow       = Math.pow
-  , EPSILON   = pow(2, -52)
-  , EPSILON32 = pow(2, -23)
-  , MAX32     = pow(2, 127) * (2 - EPSILON32)
-  , MIN32     = pow(2, -126);
+var sign = interopDefault(require$$0$23);
+var pow = Math.pow;
+var EPSILON = pow(2, -52);
+var EPSILON32 = pow(2, -23);
+var MAX32 = pow(2, 127) * (2 - EPSILON32);
+var MIN32 = pow(2, -126);
 
-var roundTiesToEven = function(n){
+var roundTiesToEven = function (n) {
   return n + 1 / EPSILON - 1 / EPSILON;
 };
 
-
-$export($export.S, 'Math', {
-  fround: function fround(x){
-    var $abs  = Math.abs(x)
-      , $sign = sign(x)
-      , a, result;
-    if($abs < MIN32)return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
-    a = (1 + EPSILON32 / EPSILON) * $abs;
-    result = a - (a - $abs);
-    if(result > MAX32 || result != result)return $sign * Infinity;
-    return $sign * result;
-  }
+module.exports = Math.fround || function fround(x) {
+  var $abs = Math.abs(x);
+  var $sign = sign(x);
+  var a, result;
+  if ($abs < MIN32) return $sign * roundTiesToEven($abs / MIN32 / EPSILON32) * MIN32 * EPSILON32;
+  a = (1 + EPSILON32 / EPSILON) * $abs;
+  result = a - (a - $abs);
+  // eslint-disable-next-line no-self-compare
+  if (result > MAX32 || result != result) return $sign * Infinity;
+  return $sign * result;
+};
 });
+
+var _mathFround$1 = interopDefault(_mathFround);
+
+
+var require$$0$25 = Object.freeze({
+  default: _mathFround$1
+});
+
+var es6_math_fround = createCommonjsModule(function (module) {
+// 20.2.2.16 Math.fround(x)
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'Math', { fround: interopDefault(require$$0$25) });
 });
 
 interopDefault(es6_math_fround);
 
 var es6_math_hypot = createCommonjsModule(function (module) {
 // 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
-var $export = interopDefault(require$$1$2)
-  , abs     = Math.abs;
+var $export = interopDefault(require$$1$2);
+var abs = Math.abs;
 
 $export($export.S, 'Math', {
-  hypot: function hypot(value1, value2){ // eslint-disable-line no-unused-vars
-    var sum  = 0
-      , i    = 0
-      , aLen = arguments.length
-      , larg = 0
-      , arg, div;
-    while(i < aLen){
+  hypot: function hypot(value1, value2) { // eslint-disable-line no-unused-vars
+    var sum = 0;
+    var i = 0;
+    var aLen = arguments.length;
+    var larg = 0;
+    var arg, div;
+    while (i < aLen) {
       arg = abs(arguments[i++]);
-      if(larg < arg){
-        div  = larg / arg;
-        sum  = sum * div * div + 1;
+      if (larg < arg) {
+        div = larg / arg;
+        sum = sum * div * div + 1;
         larg = arg;
-      } else if(arg > 0){
-        div  = arg / larg;
+      } else if (arg > 0) {
+        div = arg / larg;
         sum += div * div;
       } else sum += arg;
     }
@@ -2450,19 +2464,19 @@ interopDefault(es6_math_hypot);
 
 var es6_math_imul = createCommonjsModule(function (module) {
 // 20.2.2.18 Math.imul(x, y)
-var $export = interopDefault(require$$1$2)
-  , $imul   = Math.imul;
+var $export = interopDefault(require$$1$2);
+var $imul = Math.imul;
 
 // some WebKit versions fails with big numbers, some has wrong arity
-$export($export.S + $export.F * interopDefault(require$$1$1)(function(){
+$export($export.S + $export.F * interopDefault(require$$1$1)(function () {
   return $imul(0xffffffff, 5) != -5 || $imul.length != 2;
 }), 'Math', {
-  imul: function imul(x, y){
-    var UINT16 = 0xffff
-      , xn = +x
-      , yn = +y
-      , xl = UINT16 & xn
-      , yl = UINT16 & yn;
+  imul: function imul(x, y) {
+    var UINT16 = 0xffff;
+    var xn = +x;
+    var yn = +y;
+    var xl = UINT16 & xn;
+    var yl = UINT16 & yn;
     return 0 | xl * yl + ((UINT16 & xn >>> 16) * yl + xl * (UINT16 & yn >>> 16) << 16 >>> 0);
   }
 });
@@ -2475,8 +2489,8 @@ var es6_math_log10 = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  log10: function log10(x){
-    return Math.log(x) / Math.LN10;
+  log10: function log10(x) {
+    return Math.log(x) * Math.LOG10E;
   }
 });
 });
@@ -2487,7 +2501,7 @@ var es6_math_log1p = createCommonjsModule(function (module) {
 // 20.2.2.20 Math.log1p(x)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Math', {log1p: interopDefault(require$$0$22)});
+$export($export.S, 'Math', { log1p: interopDefault(require$$0$22) });
 });
 
 interopDefault(es6_math_log1p);
@@ -2497,7 +2511,7 @@ var es6_math_log2 = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  log2: function log2(x){
+  log2: function log2(x) {
     return Math.log(x) / Math.LN2;
   }
 });
@@ -2509,22 +2523,22 @@ var es6_math_sign = createCommonjsModule(function (module) {
 // 20.2.2.28 Math.sign(x)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Math', {sign: interopDefault(require$$0$23)});
+$export($export.S, 'Math', { sign: interopDefault(require$$0$23) });
 });
 
 interopDefault(es6_math_sign);
 
 var es6_math_sinh = createCommonjsModule(function (module) {
 // 20.2.2.30 Math.sinh(x)
-var $export = interopDefault(require$$1$2)
-  , expm1   = interopDefault(require$$0$24)
-  , exp     = Math.exp;
+var $export = interopDefault(require$$1$2);
+var expm1 = interopDefault(require$$0$24);
+var exp = Math.exp;
 
 // V8 near Chromium 38 has a problem with very small numbers
-$export($export.S + $export.F * interopDefault(require$$1$1)(function(){
+$export($export.S + $export.F * interopDefault(require$$1$1)(function () {
   return !Math.sinh(-2e-17) != -2e-17;
 }), 'Math', {
-  sinh: function sinh(x){
+  sinh: function sinh(x) {
     return Math.abs(x = +x) < 1
       ? (expm1(x) - expm1(-x)) / 2
       : (exp(x - 1) - exp(-x - 1)) * (Math.E / 2);
@@ -2536,14 +2550,14 @@ interopDefault(es6_math_sinh);
 
 var es6_math_tanh = createCommonjsModule(function (module) {
 // 20.2.2.33 Math.tanh(x)
-var $export = interopDefault(require$$1$2)
-  , expm1   = interopDefault(require$$0$24)
-  , exp     = Math.exp;
+var $export = interopDefault(require$$1$2);
+var expm1 = interopDefault(require$$0$24);
+var exp = Math.exp;
 
 $export($export.S, 'Math', {
-  tanh: function tanh(x){
-    var a = expm1(x = +x)
-      , b = expm1(-x);
+  tanh: function tanh(x) {
+    var a = expm1(x = +x);
+    var b = expm1(-x);
     return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp(x) + exp(-x));
   }
 });
@@ -2556,7 +2570,7 @@ var es6_math_trunc = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  trunc: function trunc(it){
+  trunc: function trunc(it) {
     return (it > 0 ? Math.floor : Math.ceil)(it);
   }
 });
@@ -2565,22 +2579,22 @@ $export($export.S, 'Math', {
 interopDefault(es6_math_trunc);
 
 var es6_string_fromCodePoint = createCommonjsModule(function (module) {
-var $export        = interopDefault(require$$1$2)
-  , toIndex        = interopDefault(require$$24)
-  , fromCharCode   = String.fromCharCode
-  , $fromCodePoint = String.fromCodePoint;
+var $export = interopDefault(require$$1$2);
+var toAbsoluteIndex = interopDefault(require$$23);
+var fromCharCode = String.fromCharCode;
+var $fromCodePoint = String.fromCodePoint;
 
 // length should be 1, old FF problem
 $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1), 'String', {
   // 21.1.2.2 String.fromCodePoint(...codePoints)
-  fromCodePoint: function fromCodePoint(x){ // eslint-disable-line no-unused-vars
-    var res  = []
-      , aLen = arguments.length
-      , i    = 0
-      , code;
-    while(aLen > i){
+  fromCodePoint: function fromCodePoint(x) { // eslint-disable-line no-unused-vars
+    var res = [];
+    var aLen = arguments.length;
+    var i = 0;
+    var code;
+    while (aLen > i) {
       code = +arguments[i++];
-      if(toIndex(code, 0x10ffff) !== code)throw RangeError(code + ' is not a valid code point');
+      if (toAbsoluteIndex(code, 0x10ffff) !== code) throw RangeError(code + ' is not a valid code point');
       res.push(code < 0x10000
         ? fromCharCode(code)
         : fromCharCode(((code -= 0x10000) >> 10) + 0xd800, code % 0x400 + 0xdc00)
@@ -2593,21 +2607,21 @@ $export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1)
 interopDefault(es6_string_fromCodePoint);
 
 var es6_string_raw = createCommonjsModule(function (module) {
-var $export   = interopDefault(require$$1$2)
-  , toIObject = interopDefault(require$$1$7)
-  , toLength  = interopDefault(require$$3$1);
+var $export = interopDefault(require$$1$2);
+var toIObject = interopDefault(require$$1$8);
+var toLength = interopDefault(require$$3$2);
 
 $export($export.S, 'String', {
   // 21.1.2.4 String.raw(callSite, ...substitutions)
-  raw: function raw(callSite){
-    var tpl  = toIObject(callSite.raw)
-      , len  = toLength(tpl.length)
-      , aLen = arguments.length
-      , res  = []
-      , i    = 0;
-    while(len > i){
+  raw: function raw(callSite) {
+    var tpl = toIObject(callSite.raw);
+    var len = toLength(tpl.length);
+    var aLen = arguments.length;
+    var res = [];
+    var i = 0;
+    while (len > i) {
       res.push(String(tpl[i++]));
-      if(i < aLen)res.push(String(arguments[i]));
+      if (i < aLen) res.push(String(arguments[i]));
     } return res.join('');
   }
 });
@@ -2618,8 +2632,8 @@ interopDefault(es6_string_raw);
 var es6_string_trim = createCommonjsModule(function (module) {
 'use strict';
 // 21.1.3.25 String.prototype.trim()
-interopDefault(require$$0$16)('trim', function($trim){
-  return function trim(){
+interopDefault(require$$0$16)('trim', function ($trim) {
+  return function trim() {
     return $trim(this, 3);
   };
 });
@@ -2628,17 +2642,17 @@ interopDefault(require$$0$16)('trim', function($trim){
 interopDefault(es6_string_trim);
 
 var _stringAt = createCommonjsModule(function (module) {
-var toInteger = interopDefault(require$$26)
-  , defined   = interopDefault(require$$4$3);
+var toInteger = interopDefault(require$$2$5);
+var defined = interopDefault(require$$4$3);
 // true  -> String#at
 // false -> String#codePointAt
-module.exports = function(TO_STRING){
-  return function(that, pos){
-    var s = String(defined(that))
-      , i = toInteger(pos)
-      , l = s.length
-      , a, b;
-    if(i < 0 || i >= l)return TO_STRING ? '' : undefined;
+module.exports = function (TO_STRING) {
+  return function (that, pos) {
+    var s = String(defined(that));
+    var i = toInteger(pos);
+    var l = s.length;
+    var a, b;
+    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;
     a = s.charCodeAt(i);
     return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
       ? TO_STRING ? s.charAt(i) : a
@@ -2650,7 +2664,7 @@ module.exports = function(TO_STRING){
 var _stringAt$1 = interopDefault(_stringAt);
 
 
-var require$$0$25 = Object.freeze({
+var require$$0$26 = Object.freeze({
   default: _stringAt$1
 });
 
@@ -2667,16 +2681,16 @@ var require$$1$15 = Object.freeze({
 
 var _iterCreate = createCommonjsModule(function (module) {
 'use strict';
-var create         = interopDefault(require$$6$1)
-  , descriptor     = interopDefault(require$$2$3)
-  , setToStringTag = interopDefault(require$$0$3)
-  , IteratorPrototype = {};
+var create = interopDefault(require$$6);
+var descriptor = interopDefault(require$$2$3);
+var setToStringTag = interopDefault(require$$0$2);
+var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-interopDefault(require$$2)(IteratorPrototype, interopDefault(require$$0$4)('iterator'), function(){ return this; });
+interopDefault(require$$2)(IteratorPrototype, interopDefault(require$$0$3)('iterator'), function () { return this; });
 
-module.exports = function(Constructor, NAME, next){
-  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
+module.exports = function (Constructor, NAME, next) {
+  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
   setToStringTag(Constructor, NAME + ' Iterator');
 };
 });
@@ -2684,77 +2698,77 @@ module.exports = function(Constructor, NAME, next){
 var _iterCreate$1 = interopDefault(_iterCreate);
 
 
-var require$$0$26 = Object.freeze({
+var require$$0$27 = Object.freeze({
   default: _iterCreate$1
 });
 
 var _iterDefine = createCommonjsModule(function (module) {
 'use strict';
-var LIBRARY        = interopDefault(require$$2$4)
-  , $export        = interopDefault(require$$1$2)
-  , redefine       = interopDefault(require$$4$2)
-  , hide           = interopDefault(require$$2)
-  , has            = interopDefault(require$$4)
-  , Iterators      = interopDefault(require$$1$15)
-  , $iterCreate    = interopDefault(require$$0$26)
-  , setToStringTag = interopDefault(require$$0$3)
-  , getPrototypeOf = interopDefault(require$$0$13)
-  , ITERATOR       = interopDefault(require$$0$4)('iterator')
-  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
-  , FF_ITERATOR    = '@@iterator'
-  , KEYS           = 'keys'
-  , VALUES         = 'values';
+var LIBRARY = interopDefault(require$$2$4);
+var $export = interopDefault(require$$1$2);
+var redefine = interopDefault(require$$4$2);
+var hide = interopDefault(require$$2);
+var has = interopDefault(require$$4);
+var Iterators = interopDefault(require$$1$15);
+var $iterCreate = interopDefault(require$$0$27);
+var setToStringTag = interopDefault(require$$0$2);
+var getPrototypeOf = interopDefault(require$$0$12);
+var ITERATOR = interopDefault(require$$0$3)('iterator');
+var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
+var FF_ITERATOR = '@@iterator';
+var KEYS = 'keys';
+var VALUES = 'values';
 
-var returnThis = function(){ return this; };
+var returnThis = function () { return this; };
 
-module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED){
+module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
   $iterCreate(Constructor, NAME, next);
-  var getMethod = function(kind){
-    if(!BUGGY && kind in proto)return proto[kind];
-    switch(kind){
-      case KEYS: return function keys(){ return new Constructor(this, kind); };
-      case VALUES: return function values(){ return new Constructor(this, kind); };
-    } return function entries(){ return new Constructor(this, kind); };
+  var getMethod = function (kind) {
+    if (!BUGGY && kind in proto) return proto[kind];
+    switch (kind) {
+      case KEYS: return function keys() { return new Constructor(this, kind); };
+      case VALUES: return function values() { return new Constructor(this, kind); };
+    } return function entries() { return new Constructor(this, kind); };
   };
-  var TAG        = NAME + ' Iterator'
-    , DEF_VALUES = DEFAULT == VALUES
-    , VALUES_BUG = false
-    , proto      = Base.prototype
-    , $native    = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT]
-    , $default   = $native || getMethod(DEFAULT)
-    , $entries   = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined
-    , $anyNative = NAME == 'Array' ? proto.entries || $native : $native
-    , methods, key, IteratorPrototype;
+  var TAG = NAME + ' Iterator';
+  var DEF_VALUES = DEFAULT == VALUES;
+  var VALUES_BUG = false;
+  var proto = Base.prototype;
+  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
+  var $default = $native || getMethod(DEFAULT);
+  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
+  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
+  var methods, key, IteratorPrototype;
   // Fix native
-  if($anyNative){
-    IteratorPrototype = getPrototypeOf($anyNative.call(new Base));
-    if(IteratorPrototype !== Object.prototype){
+  if ($anyNative) {
+    IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
+    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
       // Set @@toStringTag to native iterators
       setToStringTag(IteratorPrototype, TAG, true);
       // fix for some old engines
-      if(!LIBRARY && !has(IteratorPrototype, ITERATOR))hide(IteratorPrototype, ITERATOR, returnThis);
+      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
     }
   }
   // fix Array#{values, @@iterator}.name in V8 / FF
-  if(DEF_VALUES && $native && $native.name !== VALUES){
+  if (DEF_VALUES && $native && $native.name !== VALUES) {
     VALUES_BUG = true;
-    $default = function values(){ return $native.call(this); };
+    $default = function values() { return $native.call(this); };
   }
   // Define iterator
-  if((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])){
+  if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
     hide(proto, ITERATOR, $default);
   }
   // Plug for library
   Iterators[NAME] = $default;
-  Iterators[TAG]  = returnThis;
-  if(DEFAULT){
+  Iterators[TAG] = returnThis;
+  if (DEFAULT) {
     methods = {
-      values:  DEF_VALUES ? $default : getMethod(VALUES),
-      keys:    IS_SET     ? $default : getMethod(KEYS),
+      values: DEF_VALUES ? $default : getMethod(VALUES),
+      keys: IS_SET ? $default : getMethod(KEYS),
       entries: $entries
     };
-    if(FORCED)for(key in methods){
-      if(!(key in proto))redefine(proto, key, methods[key]);
+    if (FORCED) for (key in methods) {
+      if (!(key in proto)) redefine(proto, key, methods[key]);
     } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
   }
   return methods;
@@ -2764,27 +2778,27 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
 var _iterDefine$1 = interopDefault(_iterDefine);
 
 
-var require$$4$4 = Object.freeze({
+var require$$5$4 = Object.freeze({
   default: _iterDefine$1
 });
 
 var es6_string_iterator = createCommonjsModule(function (module) {
 'use strict';
-var $at  = interopDefault(require$$0$25)(true);
+var $at = interopDefault(require$$0$26)(true);
 
 // 21.1.3.27 String.prototype[@@iterator]()
-interopDefault(require$$4$4)(String, 'String', function(iterated){
+interopDefault(require$$5$4)(String, 'String', function (iterated) {
   this._t = String(iterated); // target
   this._i = 0;                // next index
 // 21.1.5.2.1 %StringIteratorPrototype%.next()
-}, function(){
-  var O     = this._t
-    , index = this._i
-    , point;
-  if(index >= O.length)return {value: undefined, done: true};
+}, function () {
+  var O = this._t;
+  var index = this._i;
+  var point;
+  if (index >= O.length) return { value: undefined, done: true };
   point = $at(O, index);
   this._i += point.length;
-  return {value: point, done: false};
+  return { value: point, done: false };
 });
 });
 
@@ -2792,11 +2806,11 @@ interopDefault(es6_string_iterator);
 
 var es6_string_codePointAt = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $at     = interopDefault(require$$0$25)(false);
+var $export = interopDefault(require$$1$2);
+var $at = interopDefault(require$$0$26)(false);
 $export($export.P, 'String', {
   // 21.1.3.3 String.prototype.codePointAt(pos)
-  codePointAt: function codePointAt(pos){
+  codePointAt: function codePointAt(pos) {
     return $at(this, pos);
   }
 });
@@ -2806,10 +2820,10 @@ interopDefault(es6_string_codePointAt);
 
 var _isRegexp = createCommonjsModule(function (module) {
 // 7.2.8 IsRegExp(argument)
-var isObject = interopDefault(require$$0$1)
-  , cof      = interopDefault(require$$0$6)
-  , MATCH    = interopDefault(require$$0$4)('match');
-module.exports = function(it){
+var isObject = interopDefault(require$$3$1);
+var cof = interopDefault(require$$0$5);
+var MATCH = interopDefault(require$$0$3)('match');
+module.exports = function (it) {
   var isRegExp;
   return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
 };
@@ -2824,11 +2838,11 @@ var require$$2$8 = Object.freeze({
 
 var _stringContext = createCommonjsModule(function (module) {
 // helper for String#{startsWith, endsWith, includes}
-var isRegExp = interopDefault(require$$2$8)
-  , defined  = interopDefault(require$$4$3);
+var isRegExp = interopDefault(require$$2$8);
+var defined = interopDefault(require$$4$3);
 
-module.exports = function(that, searchString, NAME){
-  if(isRegExp(searchString))throw TypeError('String#' + NAME + " doesn't accept regex!");
+module.exports = function (that, searchString, NAME) {
+  if (isRegExp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
   return String(defined(that));
 };
 });
@@ -2841,16 +2855,16 @@ var require$$1$16 = Object.freeze({
 });
 
 var _failsIsRegexp = createCommonjsModule(function (module) {
-var MATCH = interopDefault(require$$0$4)('match');
-module.exports = function(KEY){
+var MATCH = interopDefault(require$$0$3)('match');
+module.exports = function (KEY) {
   var re = /./;
   try {
     '/./'[KEY](re);
-  } catch(e){
+  } catch (e) {
     try {
       re[MATCH] = false;
       return !'/./'[KEY](re);
-    } catch(f){ /* empty */ }
+    } catch (f) { /* empty */ }
   } return true;
 };
 });
@@ -2858,26 +2872,26 @@ module.exports = function(KEY){
 var _failsIsRegexp$1 = interopDefault(_failsIsRegexp);
 
 
-var require$$0$27 = Object.freeze({
+var require$$0$28 = Object.freeze({
   default: _failsIsRegexp$1
 });
 
 var es6_string_endsWith = createCommonjsModule(function (module) {
 // 21.1.3.6 String.prototype.endsWith(searchString [, endPosition])
 'use strict';
-var $export   = interopDefault(require$$1$2)
-  , toLength  = interopDefault(require$$3$1)
-  , context   = interopDefault(require$$1$16)
-  , ENDS_WITH = 'endsWith'
-  , $endsWith = ''[ENDS_WITH];
+var $export = interopDefault(require$$1$2);
+var toLength = interopDefault(require$$3$2);
+var context = interopDefault(require$$1$16);
+var ENDS_WITH = 'endsWith';
+var $endsWith = ''[ENDS_WITH];
 
-$export($export.P + $export.F * interopDefault(require$$0$27)(ENDS_WITH), 'String', {
-  endsWith: function endsWith(searchString /*, endPosition = @length */){
-    var that = context(this, searchString, ENDS_WITH)
-      , endPosition = arguments.length > 1 ? arguments[1] : undefined
-      , len    = toLength(that.length)
-      , end    = endPosition === undefined ? len : Math.min(toLength(endPosition), len)
-      , search = String(searchString);
+$export($export.P + $export.F * interopDefault(require$$0$28)(ENDS_WITH), 'String', {
+  endsWith: function endsWith(searchString /* , endPosition = @length */) {
+    var that = context(this, searchString, ENDS_WITH);
+    var endPosition = arguments.length > 1 ? arguments[1] : undefined;
+    var len = toLength(that.length);
+    var end = endPosition === undefined ? len : Math.min(toLength(endPosition), len);
+    var search = String(searchString);
     return $endsWith
       ? $endsWith.call(that, search, end)
       : that.slice(end - search.length, end) === search;
@@ -2890,12 +2904,12 @@ interopDefault(es6_string_endsWith);
 var es6_string_includes = createCommonjsModule(function (module) {
 // 21.1.3.7 String.prototype.includes(searchString, position = 0)
 'use strict';
-var $export  = interopDefault(require$$1$2)
-  , context  = interopDefault(require$$1$16)
-  , INCLUDES = 'includes';
+var $export = interopDefault(require$$1$2);
+var context = interopDefault(require$$1$16);
+var INCLUDES = 'includes';
 
-$export($export.P + $export.F * interopDefault(require$$0$27)(INCLUDES), 'String', {
-  includes: function includes(searchString /*, position = 0 */){
+$export($export.P + $export.F * interopDefault(require$$0$28)(INCLUDES), 'String', {
+  includes: function includes(searchString /* , position = 0 */) {
     return !!~context(this, searchString, INCLUDES)
       .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
   }
@@ -2918,17 +2932,17 @@ interopDefault(es6_string_repeat);
 var es6_string_startsWith = createCommonjsModule(function (module) {
 // 21.1.3.18 String.prototype.startsWith(searchString [, position ])
 'use strict';
-var $export     = interopDefault(require$$1$2)
-  , toLength    = interopDefault(require$$3$1)
-  , context     = interopDefault(require$$1$16)
-  , STARTS_WITH = 'startsWith'
-  , $startsWith = ''[STARTS_WITH];
+var $export = interopDefault(require$$1$2);
+var toLength = interopDefault(require$$3$2);
+var context = interopDefault(require$$1$16);
+var STARTS_WITH = 'startsWith';
+var $startsWith = ''[STARTS_WITH];
 
-$export($export.P + $export.F * interopDefault(require$$0$27)(STARTS_WITH), 'String', {
-  startsWith: function startsWith(searchString /*, position = 0 */){
-    var that   = context(this, searchString, STARTS_WITH)
-      , index  = toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length))
-      , search = String(searchString);
+$export($export.P + $export.F * interopDefault(require$$0$28)(STARTS_WITH), 'String', {
+  startsWith: function startsWith(searchString /* , position = 0 */) {
+    var that = context(this, searchString, STARTS_WITH);
+    var index = toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length));
+    var search = String(searchString);
     return $startsWith
       ? $startsWith.call(that, search, index)
       : that.slice(index, index + search.length) === search;
@@ -2939,21 +2953,21 @@ $export($export.P + $export.F * interopDefault(require$$0$27)(STARTS_WITH), 'Str
 interopDefault(es6_string_startsWith);
 
 var _stringHtml = createCommonjsModule(function (module) {
-var $export = interopDefault(require$$1$2)
-  , fails   = interopDefault(require$$1$1)
-  , defined = interopDefault(require$$4$3)
-  , quot    = /"/g;
+var $export = interopDefault(require$$1$2);
+var fails = interopDefault(require$$1$1);
+var defined = interopDefault(require$$4$3);
+var quot = /"/g;
 // B.2.3.2.1 CreateHTML(string, tag, attribute, value)
-var createHTML = function(string, tag, attribute, value) {
-  var S  = String(defined(string))
-    , p1 = '<' + tag;
-  if(attribute !== '')p1 += ' ' + attribute + '="' + String(value).replace(quot, '&quot;') + '"';
+var createHTML = function (string, tag, attribute, value) {
+  var S = String(defined(string));
+  var p1 = '<' + tag;
+  if (attribute !== '') p1 += ' ' + attribute + '="' + String(value).replace(quot, '&quot;') + '"';
   return p1 + '>' + S + '</' + tag + '>';
 };
-module.exports = function(NAME, exec){
+module.exports = function (NAME, exec) {
   var O = {};
   O[NAME] = exec(createHTML);
-  $export($export.P + $export.F * fails(function(){
+  $export($export.P + $export.F * fails(function () {
     var test = ''[NAME]('"');
     return test !== test.toLowerCase() || test.split('"').length > 3;
   }), 'String', O);
@@ -2963,17 +2977,17 @@ module.exports = function(NAME, exec){
 var _stringHtml$1 = interopDefault(_stringHtml);
 
 
-var require$$0$28 = Object.freeze({
+var require$$0$29 = Object.freeze({
   default: _stringHtml$1
 });
 
 var es6_string_anchor = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.2 String.prototype.anchor(name)
-interopDefault(require$$0$28)('anchor', function(createHTML){
-  return function anchor(name){
+interopDefault(require$$0$29)('anchor', function (createHTML) {
+  return function anchor(name) {
     return createHTML(this, 'a', 'name', name);
-  }
+  };
 });
 });
 
@@ -2982,10 +2996,10 @@ interopDefault(es6_string_anchor);
 var es6_string_big = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.3 String.prototype.big()
-interopDefault(require$$0$28)('big', function(createHTML){
-  return function big(){
+interopDefault(require$$0$29)('big', function (createHTML) {
+  return function big() {
     return createHTML(this, 'big', '', '');
-  }
+  };
 });
 });
 
@@ -2994,10 +3008,10 @@ interopDefault(es6_string_big);
 var es6_string_blink = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.4 String.prototype.blink()
-interopDefault(require$$0$28)('blink', function(createHTML){
-  return function blink(){
+interopDefault(require$$0$29)('blink', function (createHTML) {
+  return function blink() {
     return createHTML(this, 'blink', '', '');
-  }
+  };
 });
 });
 
@@ -3006,10 +3020,10 @@ interopDefault(es6_string_blink);
 var es6_string_bold = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.5 String.prototype.bold()
-interopDefault(require$$0$28)('bold', function(createHTML){
-  return function bold(){
+interopDefault(require$$0$29)('bold', function (createHTML) {
+  return function bold() {
     return createHTML(this, 'b', '', '');
-  }
+  };
 });
 });
 
@@ -3018,10 +3032,10 @@ interopDefault(es6_string_bold);
 var es6_string_fixed = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.6 String.prototype.fixed()
-interopDefault(require$$0$28)('fixed', function(createHTML){
-  return function fixed(){
+interopDefault(require$$0$29)('fixed', function (createHTML) {
+  return function fixed() {
     return createHTML(this, 'tt', '', '');
-  }
+  };
 });
 });
 
@@ -3030,10 +3044,10 @@ interopDefault(es6_string_fixed);
 var es6_string_fontcolor = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.7 String.prototype.fontcolor(color)
-interopDefault(require$$0$28)('fontcolor', function(createHTML){
-  return function fontcolor(color){
+interopDefault(require$$0$29)('fontcolor', function (createHTML) {
+  return function fontcolor(color) {
     return createHTML(this, 'font', 'color', color);
-  }
+  };
 });
 });
 
@@ -3042,10 +3056,10 @@ interopDefault(es6_string_fontcolor);
 var es6_string_fontsize = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.8 String.prototype.fontsize(size)
-interopDefault(require$$0$28)('fontsize', function(createHTML){
-  return function fontsize(size){
+interopDefault(require$$0$29)('fontsize', function (createHTML) {
+  return function fontsize(size) {
     return createHTML(this, 'font', 'size', size);
-  }
+  };
 });
 });
 
@@ -3054,10 +3068,10 @@ interopDefault(es6_string_fontsize);
 var es6_string_italics = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.9 String.prototype.italics()
-interopDefault(require$$0$28)('italics', function(createHTML){
-  return function italics(){
+interopDefault(require$$0$29)('italics', function (createHTML) {
+  return function italics() {
     return createHTML(this, 'i', '', '');
-  }
+  };
 });
 });
 
@@ -3066,10 +3080,10 @@ interopDefault(es6_string_italics);
 var es6_string_link = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.10 String.prototype.link(url)
-interopDefault(require$$0$28)('link', function(createHTML){
-  return function link(url){
+interopDefault(require$$0$29)('link', function (createHTML) {
+  return function link(url) {
     return createHTML(this, 'a', 'href', url);
-  }
+  };
 });
 });
 
@@ -3078,10 +3092,10 @@ interopDefault(es6_string_link);
 var es6_string_small = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.11 String.prototype.small()
-interopDefault(require$$0$28)('small', function(createHTML){
-  return function small(){
+interopDefault(require$$0$29)('small', function (createHTML) {
+  return function small() {
     return createHTML(this, 'small', '', '');
-  }
+  };
 });
 });
 
@@ -3090,10 +3104,10 @@ interopDefault(es6_string_small);
 var es6_string_strike = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.12 String.prototype.strike()
-interopDefault(require$$0$28)('strike', function(createHTML){
-  return function strike(){
+interopDefault(require$$0$29)('strike', function (createHTML) {
+  return function strike() {
     return createHTML(this, 'strike', '', '');
-  }
+  };
 });
 });
 
@@ -3102,10 +3116,10 @@ interopDefault(es6_string_strike);
 var es6_string_sub = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.13 String.prototype.sub()
-interopDefault(require$$0$28)('sub', function(createHTML){
-  return function sub(){
+interopDefault(require$$0$29)('sub', function (createHTML) {
+  return function sub() {
     return createHTML(this, 'sub', '', '');
-  }
+  };
 });
 });
 
@@ -3114,10 +3128,10 @@ interopDefault(es6_string_sub);
 var es6_string_sup = createCommonjsModule(function (module) {
 'use strict';
 // B.2.3.14 String.prototype.sup()
-interopDefault(require$$0$28)('sup', function(createHTML){
-  return function sup(){
+interopDefault(require$$0$29)('sup', function (createHTML) {
+  return function sup() {
     return createHTML(this, 'sup', '', '');
-  }
+  };
 });
 });
 
@@ -3127,23 +3141,25 @@ var es6_date_now = createCommonjsModule(function (module) {
 // 20.3.3.1 / 15.9.4.4 Date.now()
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
+$export($export.S, 'Date', { now: function () { return new Date().getTime(); } });
 });
 
 interopDefault(es6_date_now);
 
 var es6_date_toJson = createCommonjsModule(function (module) {
 'use strict';
-var $export     = interopDefault(require$$1$2)
-  , toObject    = interopDefault(require$$5$1)
-  , toPrimitive = interopDefault(require$$4$1);
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var toPrimitive = interopDefault(require$$4$1);
 
-$export($export.P + $export.F * interopDefault(require$$1$1)(function(){
-  return new Date(NaN).toJSON() !== null || Date.prototype.toJSON.call({toISOString: function(){ return 1; }}) !== 1;
+$export($export.P + $export.F * interopDefault(require$$1$1)(function () {
+  return new Date(NaN).toJSON() !== null
+    || Date.prototype.toJSON.call({ toISOString: function () { return 1; } }) !== 1;
 }), 'Date', {
-  toJSON: function toJSON(key){
-    var O  = toObject(this)
-      , pv = toPrimitive(O);
+  // eslint-disable-next-line no-unused-vars
+  toJSON: function toJSON(key) {
+    var O = toObject(this);
+    var pv = toPrimitive(O);
     return typeof pv == 'number' && !isFinite(pv) ? null : O.toISOString();
   }
 });
@@ -3151,48 +3167,65 @@ $export($export.P + $export.F * interopDefault(require$$1$1)(function(){
 
 interopDefault(es6_date_toJson);
 
-var es6_date_toIsoString = createCommonjsModule(function (module) {
+var _dateToIsoString = createCommonjsModule(function (module) {
 'use strict';
 // 20.3.4.36 / 15.9.5.43 Date.prototype.toISOString()
-var $export = interopDefault(require$$1$2)
-  , fails   = interopDefault(require$$1$1)
-  , getTime = Date.prototype.getTime;
+var fails = interopDefault(require$$1$1);
+var getTime = Date.prototype.getTime;
+var $toISOString = Date.prototype.toISOString;
 
-var lz = function(num){
+var lz = function (num) {
   return num > 9 ? num : '0' + num;
 };
 
 // PhantomJS / old WebKit has a broken implementations
-$export($export.P + $export.F * (fails(function(){
-  return new Date(-5e13 - 1).toISOString() != '0385-07-25T07:06:39.999Z';
-}) || !fails(function(){
-  new Date(NaN).toISOString();
-})), 'Date', {
-  toISOString: function toISOString(){
-    if(!isFinite(getTime.call(this)))throw RangeError('Invalid time value');
-    var d = this
-      , y = d.getUTCFullYear()
-      , m = d.getUTCMilliseconds()
-      , s = y < 0 ? '-' : y > 9999 ? '+' : '';
-    return s + ('00000' + Math.abs(y)).slice(s ? -6 : -4) +
-      '-' + lz(d.getUTCMonth() + 1) + '-' + lz(d.getUTCDate()) +
-      'T' + lz(d.getUTCHours()) + ':' + lz(d.getUTCMinutes()) +
-      ':' + lz(d.getUTCSeconds()) + '.' + (m > 99 ? m : '0' + lz(m)) + 'Z';
-  }
+module.exports = (fails(function () {
+  return $toISOString.call(new Date(-5e13 - 1)) != '0385-07-25T07:06:39.999Z';
+}) || !fails(function () {
+  $toISOString.call(new Date(NaN));
+})) ? function toISOString() {
+  if (!isFinite(getTime.call(this))) throw RangeError('Invalid time value');
+  var d = this;
+  var y = d.getUTCFullYear();
+  var m = d.getUTCMilliseconds();
+  var s = y < 0 ? '-' : y > 9999 ? '+' : '';
+  return s + ('00000' + Math.abs(y)).slice(s ? -6 : -4) +
+    '-' + lz(d.getUTCMonth() + 1) + '-' + lz(d.getUTCDate()) +
+    'T' + lz(d.getUTCHours()) + ':' + lz(d.getUTCMinutes()) +
+    ':' + lz(d.getUTCSeconds()) + '.' + (m > 99 ? m : '0' + lz(m)) + 'Z';
+} : $toISOString;
+});
+
+var _dateToIsoString$1 = interopDefault(_dateToIsoString);
+
+
+var require$$0$30 = Object.freeze({
+  default: _dateToIsoString$1
+});
+
+var es6_date_toIsoString = createCommonjsModule(function (module) {
+// 20.3.4.36 / 15.9.5.43 Date.prototype.toISOString()
+var $export = interopDefault(require$$1$2);
+var toISOString = interopDefault(require$$0$30);
+
+// PhantomJS / old WebKit has a broken implementations
+$export($export.P + $export.F * (Date.prototype.toISOString !== toISOString), 'Date', {
+  toISOString: toISOString
 });
 });
 
 interopDefault(es6_date_toIsoString);
 
 var es6_date_toString = createCommonjsModule(function (module) {
-var DateProto    = Date.prototype
-  , INVALID_DATE = 'Invalid Date'
-  , TO_STRING    = 'toString'
-  , $toString    = DateProto[TO_STRING]
-  , getTime      = DateProto.getTime;
-if(new Date(NaN) + '' != INVALID_DATE){
-  interopDefault(require$$4$2)(DateProto, TO_STRING, function toString(){
+var DateProto = Date.prototype;
+var INVALID_DATE = 'Invalid Date';
+var TO_STRING = 'toString';
+var $toString = DateProto[TO_STRING];
+var getTime = DateProto.getTime;
+if (new Date(NaN) + '' != INVALID_DATE) {
+  interopDefault(require$$4$2)(DateProto, TO_STRING, function toString() {
     var value = getTime.call(this);
+    // eslint-disable-next-line no-self-compare
     return value === value ? $toString.call(this) : INVALID_DATE;
   });
 }
@@ -3202,12 +3235,12 @@ interopDefault(es6_date_toString);
 
 var _dateToPrimitive = createCommonjsModule(function (module) {
 'use strict';
-var anObject    = interopDefault(require$$5)
-  , toPrimitive = interopDefault(require$$4$1)
-  , NUMBER      = 'number';
+var anObject = interopDefault(require$$5);
+var toPrimitive = interopDefault(require$$4$1);
+var NUMBER = 'number';
 
-module.exports = function(hint){
-  if(hint !== 'string' && hint !== NUMBER && hint !== 'default')throw TypeError('Incorrect hint');
+module.exports = function (hint) {
+  if (hint !== 'string' && hint !== NUMBER && hint !== 'default') throw TypeError('Incorrect hint');
   return toPrimitive(anObject(this), hint != NUMBER);
 };
 });
@@ -3215,15 +3248,15 @@ module.exports = function(hint){
 var _dateToPrimitive$1 = interopDefault(_dateToPrimitive);
 
 
-var require$$0$29 = Object.freeze({
+var require$$0$31 = Object.freeze({
   default: _dateToPrimitive$1
 });
 
 var es6_date_toPrimitive = createCommonjsModule(function (module) {
-var TO_PRIMITIVE = interopDefault(require$$0$4)('toPrimitive')
-  , proto        = Date.prototype;
+var TO_PRIMITIVE = interopDefault(require$$0$3)('toPrimitive');
+var proto = Date.prototype;
 
-if(!(TO_PRIMITIVE in proto))interopDefault(require$$2)(proto, TO_PRIMITIVE, interopDefault(require$$0$29));
+if (!(TO_PRIMITIVE in proto)) interopDefault(require$$2)(proto, TO_PRIMITIVE, interopDefault(require$$0$31));
 });
 
 interopDefault(es6_date_toPrimitive);
@@ -3232,7 +3265,7 @@ var es6_array_isArray = createCommonjsModule(function (module) {
 // 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Array', {isArray: interopDefault(require$$1$10)});
+$export($export.S, 'Array', { isArray: interopDefault(require$$4$4) });
 });
 
 interopDefault(es6_array_isArray);
@@ -3240,13 +3273,13 @@ interopDefault(es6_array_isArray);
 var _iterCall = createCommonjsModule(function (module) {
 // call something on iterator step with safe closing on error
 var anObject = interopDefault(require$$5);
-module.exports = function(iterator, fn, value, entries){
+module.exports = function (iterator, fn, value, entries) {
   try {
     return entries ? fn(anObject(value)[0], value[1]) : fn(value);
   // 7.4.6 IteratorClose(iterator, completion)
-  } catch(e){
+  } catch (e) {
     var ret = iterator['return'];
-    if(ret !== undefined)anObject(ret.call(iterator));
+    if (ret !== undefined) anObject(ret.call(iterator));
     throw e;
   }
 };
@@ -3261,11 +3294,11 @@ var require$$4$5 = Object.freeze({
 
 var _isArrayIter = createCommonjsModule(function (module) {
 // check on default Array iterator
-var Iterators  = interopDefault(require$$1$15)
-  , ITERATOR   = interopDefault(require$$0$4)('iterator')
-  , ArrayProto = Array.prototype;
+var Iterators = interopDefault(require$$1$15);
+var ITERATOR = interopDefault(require$$0$3)('iterator');
+var ArrayProto = Array.prototype;
 
-module.exports = function(it){
+module.exports = function (it) {
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
 });
@@ -3279,11 +3312,11 @@ var require$$17 = Object.freeze({
 
 var _createProperty = createCommonjsModule(function (module) {
 'use strict';
-var $defineProperty = interopDefault(require$$2$1)
-  , createDesc      = interopDefault(require$$2$3);
+var $defineProperty = interopDefault(require$$2$1);
+var createDesc = interopDefault(require$$2$3);
 
-module.exports = function(object, index, value){
-  if(index in object)$defineProperty.f(object, index, createDesc(0, value));
+module.exports = function (object, index, value) {
+  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
   else object[index] = value;
 };
 });
@@ -3291,16 +3324,16 @@ module.exports = function(object, index, value){
 var _createProperty$1 = interopDefault(_createProperty);
 
 
-var require$$0$30 = Object.freeze({
+var require$$0$32 = Object.freeze({
   default: _createProperty$1
 });
 
 var core_getIteratorMethod = createCommonjsModule(function (module) {
-var classof   = interopDefault(require$$1$11)
-  , ITERATOR  = interopDefault(require$$0$4)('iterator')
-  , Iterators = interopDefault(require$$1$15);
-module.exports = interopDefault(require$$0).getIteratorMethod = function(it){
-  if(it != undefined)return it[ITERATOR]
+var classof = interopDefault(require$$1$11);
+var ITERATOR = interopDefault(require$$0$3)('iterator');
+var Iterators = interopDefault(require$$1$15);
+module.exports = interopDefault(require$$0).getIteratorMethod = function (it) {
+  if (it != undefined) return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
 };
@@ -3314,25 +3347,26 @@ var require$$13 = Object.freeze({
 });
 
 var _iterDetect = createCommonjsModule(function (module) {
-var ITERATOR     = interopDefault(require$$0$4)('iterator')
-  , SAFE_CLOSING = false;
+var ITERATOR = interopDefault(require$$0$3)('iterator');
+var SAFE_CLOSING = false;
 
 try {
   var riter = [7][ITERATOR]();
-  riter['return'] = function(){ SAFE_CLOSING = true; };
-  Array.from(riter, function(){ throw 2; });
-} catch(e){ /* empty */ }
+  riter['return'] = function () { SAFE_CLOSING = true; };
+  // eslint-disable-next-line no-throw-literal
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
 
-module.exports = function(exec, skipClosing){
-  if(!skipClosing && !SAFE_CLOSING)return false;
+module.exports = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
   var safe = false;
   try {
-    var arr  = [7]
-      , iter = arr[ITERATOR]();
-    iter.next = function(){ return {done: safe = true}; };
-    arr[ITERATOR] = function(){ return iter; };
+    var arr = [7];
+    var iter = arr[ITERATOR]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR] = function () { return iter; };
     exec(arr);
-  } catch(e){ /* empty */ }
+  } catch (e) { /* empty */ }
   return safe;
 };
 });
@@ -3340,41 +3374,41 @@ module.exports = function(exec, skipClosing){
 var _iterDetect$1 = interopDefault(_iterDetect);
 
 
-var require$$5$2 = Object.freeze({
+var require$$5$5 = Object.freeze({
   default: _iterDetect$1
 });
 
 var es6_array_from = createCommonjsModule(function (module) {
 'use strict';
-var ctx            = interopDefault(require$$31)
-  , $export        = interopDefault(require$$1$2)
-  , toObject       = interopDefault(require$$5$1)
-  , call           = interopDefault(require$$4$5)
-  , isArrayIter    = interopDefault(require$$17)
-  , toLength       = interopDefault(require$$3$1)
-  , createProperty = interopDefault(require$$0$30)
-  , getIterFn      = interopDefault(require$$13);
+var ctx = interopDefault(require$$1$4);
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var call = interopDefault(require$$4$5);
+var isArrayIter = interopDefault(require$$17);
+var toLength = interopDefault(require$$3$2);
+var createProperty = interopDefault(require$$0$32);
+var getIterFn = interopDefault(require$$13);
 
-$export($export.S + $export.F * !interopDefault(require$$5$2)(function(iter){ Array.from(iter); }), 'Array', {
+$export($export.S + $export.F * !interopDefault(require$$5$5)(function (iter) { Array.from(iter); }), 'Array', {
   // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
-  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
-    var O       = toObject(arrayLike)
-      , C       = typeof this == 'function' ? this : Array
-      , aLen    = arguments.length
-      , mapfn   = aLen > 1 ? arguments[1] : undefined
-      , mapping = mapfn !== undefined
-      , index   = 0
-      , iterFn  = getIterFn(O)
-      , length, result, step, iterator;
-    if(mapping)mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iterFn = getIterFn(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
     // if object isn't iterable or it's array with default iterator - use simple case
-    if(iterFn != undefined && !(C == Array && isArrayIter(iterFn))){
-      for(iterator = iterFn.call(O), result = new C; !(step = iterator.next()).done; index++){
+    if (iterFn != undefined && !(C == Array && isArrayIter(iterFn))) {
+      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
         createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
       }
     } else {
       length = toLength(O.length);
-      for(result = new C(length); length > index; index++){
+      for (result = new C(length); length > index; index++) {
         createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
       }
     }
@@ -3388,20 +3422,20 @@ interopDefault(es6_array_from);
 
 var es6_array_of = createCommonjsModule(function (module) {
 'use strict';
-var $export        = interopDefault(require$$1$2)
-  , createProperty = interopDefault(require$$0$30);
+var $export = interopDefault(require$$1$2);
+var createProperty = interopDefault(require$$0$32);
 
 // WebKit Array.of isn't generic
-$export($export.S + $export.F * interopDefault(require$$1$1)(function(){
-  function F(){}
+$export($export.S + $export.F * interopDefault(require$$1$1)(function () {
+  function F() { /* empty */ }
   return !(Array.of.call(F) instanceof F);
 }), 'Array', {
   // 22.1.2.3 Array.of( ...items)
-  of: function of(/* ...args */){
-    var index  = 0
-      , aLen   = arguments.length
-      , result = new (typeof this == 'function' ? this : Array)(aLen);
-    while(aLen > index)createProperty(result, index, arguments[index++]);
+  of: function of(/* ...args */) {
+    var index = 0;
+    var aLen = arguments.length;
+    var result = new (typeof this == 'function' ? this : Array)(aLen);
+    while (aLen > index) createProperty(result, index, arguments[index++]);
     result.length = aLen;
     return result;
   }
@@ -3411,11 +3445,13 @@ $export($export.S + $export.F * interopDefault(require$$1$1)(function(){
 interopDefault(es6_array_of);
 
 var _strictMethod = createCommonjsModule(function (module) {
+'use strict';
 var fails = interopDefault(require$$1$1);
 
-module.exports = function(method, arg){
-  return !!method && fails(function(){
-    arg ? method.call(null, function(){}, 1) : method.call(null);
+module.exports = function (method, arg) {
+  return !!method && fails(function () {
+    // eslint-disable-next-line no-useless-call
+    arg ? method.call(null, function () { /* empty */ }, 1) : method.call(null);
   });
 };
 });
@@ -3423,20 +3459,20 @@ module.exports = function(method, arg){
 var _strictMethod$1 = interopDefault(_strictMethod);
 
 
-var require$$0$31 = Object.freeze({
+var require$$0$33 = Object.freeze({
   default: _strictMethod$1
 });
 
 var es6_array_join = createCommonjsModule(function (module) {
 'use strict';
 // 22.1.3.13 Array.prototype.join(separator)
-var $export   = interopDefault(require$$1$2)
-  , toIObject = interopDefault(require$$1$7)
-  , arrayJoin = [].join;
+var $export = interopDefault(require$$1$2);
+var toIObject = interopDefault(require$$1$8);
+var arrayJoin = [].join;
 
 // fallback for not array-like strings
-$export($export.P + $export.F * (interopDefault(require$$1$8) != Object || !interopDefault(require$$0$31)(arrayJoin)), 'Array', {
-  join: function join(separator){
+$export($export.P + $export.F * (interopDefault(require$$1$9) != Object || !interopDefault(require$$0$33)(arrayJoin)), 'Array', {
+  join: function join(separator) {
     return arrayJoin.call(toIObject(this), separator === undefined ? ',' : separator);
   }
 });
@@ -3446,28 +3482,28 @@ interopDefault(es6_array_join);
 
 var es6_array_slice = createCommonjsModule(function (module) {
 'use strict';
-var $export    = interopDefault(require$$1$2)
-  , html       = interopDefault(require$$3$2)
-  , cof        = interopDefault(require$$0$6)
-  , toIndex    = interopDefault(require$$24)
-  , toLength   = interopDefault(require$$3$1)
-  , arraySlice = [].slice;
+var $export = interopDefault(require$$1$2);
+var html = interopDefault(require$$3$3);
+var cof = interopDefault(require$$0$5);
+var toAbsoluteIndex = interopDefault(require$$23);
+var toLength = interopDefault(require$$3$2);
+var arraySlice = [].slice;
 
 // fallback for not array-like ES3 strings and DOM objects
-$export($export.P + $export.F * interopDefault(require$$1$1)(function(){
-  if(html)arraySlice.call(html);
+$export($export.P + $export.F * interopDefault(require$$1$1)(function () {
+  if (html) arraySlice.call(html);
 }), 'Array', {
-  slice: function slice(begin, end){
-    var len   = toLength(this.length)
-      , klass = cof(this);
+  slice: function slice(begin, end) {
+    var len = toLength(this.length);
+    var klass = cof(this);
     end = end === undefined ? len : end;
-    if(klass == 'Array')return arraySlice.call(this, begin, end);
-    var start  = toIndex(begin, len)
-      , upTo   = toIndex(end, len)
-      , size   = toLength(upTo - start)
-      , cloned = Array(size)
-      , i      = 0;
-    for(; i < size; i++)cloned[i] = klass == 'String'
+    if (klass == 'Array') return arraySlice.call(this, begin, end);
+    var start = toAbsoluteIndex(begin, len);
+    var upTo = toAbsoluteIndex(end, len);
+    var size = toLength(upTo - start);
+    var cloned = Array(size);
+    var i = 0;
+    for (; i < size; i++) cloned[i] = klass == 'String'
       ? this.charAt(start + i)
       : this[start + i];
     return cloned;
@@ -3479,23 +3515,23 @@ interopDefault(es6_array_slice);
 
 var es6_array_sort = createCommonjsModule(function (module) {
 'use strict';
-var $export   = interopDefault(require$$1$2)
-  , aFunction = interopDefault(require$$0$2)
-  , toObject  = interopDefault(require$$5$1)
-  , fails     = interopDefault(require$$1$1)
-  , $sort     = [].sort
-  , test      = [1, 2, 3];
+var $export = interopDefault(require$$1$2);
+var aFunction = interopDefault(require$$0$1);
+var toObject = interopDefault(require$$5$2);
+var fails = interopDefault(require$$1$1);
+var $sort = [].sort;
+var test = [1, 2, 3];
 
-$export($export.P + $export.F * (fails(function(){
+$export($export.P + $export.F * (fails(function () {
   // IE8-
   test.sort(undefined);
-}) || !fails(function(){
+}) || !fails(function () {
   // V8 bug
   test.sort(null);
   // Old WebKit
-}) || !interopDefault(require$$0$31)($sort)), 'Array', {
+}) || !interopDefault(require$$0$33)($sort)), 'Array', {
   // 22.1.3.25 Array.prototype.sort(comparefn)
-  sort: function sort(comparefn){
+  sort: function sort(comparefn) {
     return comparefn === undefined
       ? $sort.call(toObject(this))
       : $sort.call(toObject(this), aFunction(comparefn));
@@ -3506,19 +3542,19 @@ $export($export.P + $export.F * (fails(function(){
 interopDefault(es6_array_sort);
 
 var _arraySpeciesConstructor = createCommonjsModule(function (module) {
-var isObject = interopDefault(require$$0$1)
-  , isArray  = interopDefault(require$$1$10)
-  , SPECIES  = interopDefault(require$$0$4)('species');
+var isObject = interopDefault(require$$3$1);
+var isArray = interopDefault(require$$4$4);
+var SPECIES = interopDefault(require$$0$3)('species');
 
-module.exports = function(original){
+module.exports = function (original) {
   var C;
-  if(isArray(original)){
+  if (isArray(original)) {
     C = original.constructor;
     // cross-realm fallback
-    if(typeof C == 'function' && (C === Array || isArray(C.prototype)))C = undefined;
-    if(isObject(C)){
+    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
+    if (isObject(C)) {
       C = C[SPECIES];
-      if(C === null)C = undefined;
+      if (C === null) C = undefined;
     }
   } return C === undefined ? Array : C;
 };
@@ -3527,15 +3563,15 @@ module.exports = function(original){
 var _arraySpeciesConstructor$1 = interopDefault(_arraySpeciesConstructor);
 
 
-var require$$0$33 = Object.freeze({
+var require$$0$34 = Object.freeze({
   default: _arraySpeciesConstructor$1
 });
 
 var _arraySpeciesCreate = createCommonjsModule(function (module) {
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = interopDefault(require$$0$33);
+var speciesConstructor = interopDefault(require$$0$34);
 
-module.exports = function(original, length){
+module.exports = function (original, length) {
   return new (speciesConstructor(original))(length);
 };
 });
@@ -3543,7 +3579,7 @@ module.exports = function(original, length){
 var _arraySpeciesCreate$1 = interopDefault(_arraySpeciesCreate);
 
 
-var require$$0$32 = Object.freeze({
+var require$$1$17 = Object.freeze({
   default: _arraySpeciesCreate$1
 });
 
@@ -3555,38 +3591,38 @@ var _arrayMethods = createCommonjsModule(function (module) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx      = interopDefault(require$$31)
-  , IObject  = interopDefault(require$$1$8)
-  , toObject = interopDefault(require$$5$1)
-  , toLength = interopDefault(require$$3$1)
-  , asc      = interopDefault(require$$0$32);
-module.exports = function(TYPE, $create){
-  var IS_MAP        = TYPE == 1
-    , IS_FILTER     = TYPE == 2
-    , IS_SOME       = TYPE == 3
-    , IS_EVERY      = TYPE == 4
-    , IS_FIND_INDEX = TYPE == 6
-    , NO_HOLES      = TYPE == 5 || IS_FIND_INDEX
-    , create        = $create || asc;
-  return function($this, callbackfn, that){
-    var O      = toObject($this)
-      , self   = IObject(O)
-      , f      = ctx(callbackfn, that, 3)
-      , length = toLength(self.length)
-      , index  = 0
-      , result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined
-      , val, res;
-    for(;length > index; index++)if(NO_HOLES || index in self){
+var ctx = interopDefault(require$$1$4);
+var IObject = interopDefault(require$$1$9);
+var toObject = interopDefault(require$$5$2);
+var toLength = interopDefault(require$$3$2);
+var asc = interopDefault(require$$1$17);
+module.exports = function (TYPE, $create) {
+  var IS_MAP = TYPE == 1;
+  var IS_FILTER = TYPE == 2;
+  var IS_SOME = TYPE == 3;
+  var IS_EVERY = TYPE == 4;
+  var IS_FIND_INDEX = TYPE == 6;
+  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+  var create = $create || asc;
+  return function ($this, callbackfn, that) {
+    var O = toObject($this);
+    var self = IObject(O);
+    var f = ctx(callbackfn, that, 3);
+    var length = toLength(self.length);
+    var index = 0;
+    var result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var val, res;
+    for (;length > index; index++) if (NO_HOLES || index in self) {
       val = self[index];
       res = f(val, index, O);
-      if(TYPE){
-        if(IS_MAP)result[index] = res;            // map
-        else if(res)switch(TYPE){
-          case 3: return true;                    // some
-          case 5: return val;                     // find
-          case 6: return index;                   // findIndex
-          case 2: result.push(val);               // filter
-        } else if(IS_EVERY)return false;          // every
+      if (TYPE) {
+        if (IS_MAP) result[index] = res;   // map
+        else if (res) switch (TYPE) {
+          case 3: return true;             // some
+          case 5: return val;              // find
+          case 6: return index;            // findIndex
+          case 2: result.push(val);        // filter
+        } else if (IS_EVERY) return false; // every
       }
     }
     return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
@@ -3603,13 +3639,13 @@ var require$$10 = Object.freeze({
 
 var es6_array_forEach = createCommonjsModule(function (module) {
 'use strict';
-var $export  = interopDefault(require$$1$2)
-  , $forEach = interopDefault(require$$10)(0)
-  , STRICT   = interopDefault(require$$0$31)([].forEach, true);
+var $export = interopDefault(require$$1$2);
+var $forEach = interopDefault(require$$10)(0);
+var STRICT = interopDefault(require$$0$33)([].forEach, true);
 
 $export($export.P + $export.F * !STRICT, 'Array', {
   // 22.1.3.10 / 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg])
-  forEach: function forEach(callbackfn /* , thisArg */){
+  forEach: function forEach(callbackfn /* , thisArg */) {
     return $forEach(this, callbackfn, arguments[1]);
   }
 });
@@ -3619,12 +3655,12 @@ interopDefault(es6_array_forEach);
 
 var es6_array_map = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $map    = interopDefault(require$$10)(1);
+var $export = interopDefault(require$$1$2);
+var $map = interopDefault(require$$10)(1);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].map, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].map, true), 'Array', {
   // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
-  map: function map(callbackfn /* , thisArg */){
+  map: function map(callbackfn /* , thisArg */) {
     return $map(this, callbackfn, arguments[1]);
   }
 });
@@ -3634,12 +3670,12 @@ interopDefault(es6_array_map);
 
 var es6_array_filter = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $filter = interopDefault(require$$10)(2);
+var $export = interopDefault(require$$1$2);
+var $filter = interopDefault(require$$10)(2);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].filter, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].filter, true), 'Array', {
   // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
-  filter: function filter(callbackfn /* , thisArg */){
+  filter: function filter(callbackfn /* , thisArg */) {
     return $filter(this, callbackfn, arguments[1]);
   }
 });
@@ -3649,12 +3685,12 @@ interopDefault(es6_array_filter);
 
 var es6_array_some = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $some   = interopDefault(require$$10)(3);
+var $export = interopDefault(require$$1$2);
+var $some = interopDefault(require$$10)(3);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].some, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].some, true), 'Array', {
   // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
-  some: function some(callbackfn /* , thisArg */){
+  some: function some(callbackfn /* , thisArg */) {
     return $some(this, callbackfn, arguments[1]);
   }
 });
@@ -3664,12 +3700,12 @@ interopDefault(es6_array_some);
 
 var es6_array_every = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $every  = interopDefault(require$$10)(4);
+var $export = interopDefault(require$$1$2);
+var $every = interopDefault(require$$10)(4);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].every, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].every, true), 'Array', {
   // 22.1.3.5 / 15.4.4.16 Array.prototype.every(callbackfn [, thisArg])
-  every: function every(callbackfn /* , thisArg */){
+  every: function every(callbackfn /* , thisArg */) {
     return $every(this, callbackfn, arguments[1]);
   }
 });
@@ -3678,30 +3714,30 @@ $export($export.P + $export.F * !interopDefault(require$$0$31)([].every, true), 
 interopDefault(es6_array_every);
 
 var _arrayReduce = createCommonjsModule(function (module) {
-var aFunction = interopDefault(require$$0$2)
-  , toObject  = interopDefault(require$$5$1)
-  , IObject   = interopDefault(require$$1$8)
-  , toLength  = interopDefault(require$$3$1);
+var aFunction = interopDefault(require$$0$1);
+var toObject = interopDefault(require$$5$2);
+var IObject = interopDefault(require$$1$9);
+var toLength = interopDefault(require$$3$2);
 
-module.exports = function(that, callbackfn, aLen, memo, isRight){
+module.exports = function (that, callbackfn, aLen, memo, isRight) {
   aFunction(callbackfn);
-  var O      = toObject(that)
-    , self   = IObject(O)
-    , length = toLength(O.length)
-    , index  = isRight ? length - 1 : 0
-    , i      = isRight ? -1 : 1;
-  if(aLen < 2)for(;;){
-    if(index in self){
+  var O = toObject(that);
+  var self = IObject(O);
+  var length = toLength(O.length);
+  var index = isRight ? length - 1 : 0;
+  var i = isRight ? -1 : 1;
+  if (aLen < 2) for (;;) {
+    if (index in self) {
       memo = self[index];
       index += i;
       break;
     }
     index += i;
-    if(isRight ? index < 0 : length <= index){
+    if (isRight ? index < 0 : length <= index) {
       throw TypeError('Reduce of empty array with no initial value');
     }
   }
-  for(;isRight ? index >= 0 : length > index; index += i)if(index in self){
+  for (;isRight ? index >= 0 : length > index; index += i) if (index in self) {
     memo = callbackfn(memo, self[index], index, O);
   }
   return memo;
@@ -3711,18 +3747,18 @@ module.exports = function(that, callbackfn, aLen, memo, isRight){
 var _arrayReduce$1 = interopDefault(_arrayReduce);
 
 
-var require$$1$17 = Object.freeze({
+var require$$1$18 = Object.freeze({
   default: _arrayReduce$1
 });
 
 var es6_array_reduce = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $reduce = interopDefault(require$$1$17);
+var $export = interopDefault(require$$1$2);
+var $reduce = interopDefault(require$$1$18);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].reduce, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].reduce, true), 'Array', {
   // 22.1.3.18 / 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue])
-  reduce: function reduce(callbackfn /* , initialValue */){
+  reduce: function reduce(callbackfn /* , initialValue */) {
     return $reduce(this, callbackfn, arguments.length, arguments[1], false);
   }
 });
@@ -3732,12 +3768,12 @@ interopDefault(es6_array_reduce);
 
 var es6_array_reduceRight = createCommonjsModule(function (module) {
 'use strict';
-var $export = interopDefault(require$$1$2)
-  , $reduce = interopDefault(require$$1$17);
+var $export = interopDefault(require$$1$2);
+var $reduce = interopDefault(require$$1$18);
 
-$export($export.P + $export.F * !interopDefault(require$$0$31)([].reduceRight, true), 'Array', {
+$export($export.P + $export.F * !interopDefault(require$$0$33)([].reduceRight, true), 'Array', {
   // 22.1.3.19 / 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue])
-  reduceRight: function reduceRight(callbackfn /* , initialValue */){
+  reduceRight: function reduceRight(callbackfn /* , initialValue */) {
     return $reduce(this, callbackfn, arguments.length, arguments[1], true);
   }
 });
@@ -3747,14 +3783,14 @@ interopDefault(es6_array_reduceRight);
 
 var es6_array_indexOf = createCommonjsModule(function (module) {
 'use strict';
-var $export       = interopDefault(require$$1$2)
-  , $indexOf      = interopDefault(require$$1$9)(false)
-  , $native       = [].indexOf
-  , NEGATIVE_ZERO = !!$native && 1 / [1].indexOf(1, -0) < 0;
+var $export = interopDefault(require$$1$2);
+var $indexOf = interopDefault(require$$1$10)(false);
+var $native = [].indexOf;
+var NEGATIVE_ZERO = !!$native && 1 / [1].indexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$31)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$33)($native)), 'Array', {
   // 22.1.3.11 / 15.4.4.14 Array.prototype.indexOf(searchElement [, fromIndex])
-  indexOf: function indexOf(searchElement /*, fromIndex = 0 */){
+  indexOf: function indexOf(searchElement /* , fromIndex = 0 */) {
     return NEGATIVE_ZERO
       // convert -0 to +0
       ? $native.apply(this, arguments) || 0
@@ -3767,24 +3803,24 @@ interopDefault(es6_array_indexOf);
 
 var es6_array_lastIndexOf = createCommonjsModule(function (module) {
 'use strict';
-var $export       = interopDefault(require$$1$2)
-  , toIObject     = interopDefault(require$$1$7)
-  , toInteger     = interopDefault(require$$26)
-  , toLength      = interopDefault(require$$3$1)
-  , $native       = [].lastIndexOf
-  , NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
+var $export = interopDefault(require$$1$2);
+var toIObject = interopDefault(require$$1$8);
+var toInteger = interopDefault(require$$2$5);
+var toLength = interopDefault(require$$3$2);
+var $native = [].lastIndexOf;
+var NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
 
-$export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$31)($native)), 'Array', {
+$export($export.P + $export.F * (NEGATIVE_ZERO || !interopDefault(require$$0$33)($native)), 'Array', {
   // 22.1.3.14 / 15.4.4.15 Array.prototype.lastIndexOf(searchElement [, fromIndex])
-  lastIndexOf: function lastIndexOf(searchElement /*, fromIndex = @[*-1] */){
+  lastIndexOf: function lastIndexOf(searchElement /* , fromIndex = @[*-1] */) {
     // convert -0 to +0
-    if(NEGATIVE_ZERO)return $native.apply(this, arguments) || 0;
-    var O      = toIObject(this)
-      , length = toLength(O.length)
-      , index  = length - 1;
-    if(arguments.length > 1)index = Math.min(index, toInteger(arguments[1]));
-    if(index < 0)index = length + index;
-    for(;index >= 0; index--)if(index in O)if(O[index] === searchElement)return index || 0;
+    if (NEGATIVE_ZERO) return $native.apply(this, arguments) || 0;
+    var O = toIObject(this);
+    var length = toLength(O.length);
+    var index = length - 1;
+    if (arguments.length > 1) index = Math.min(index, toInteger(arguments[1]));
+    if (index < 0) index = length + index;
+    for (;index >= 0; index--) if (index in O) if (O[index] === searchElement) return index || 0;
     return -1;
   }
 });
@@ -3795,27 +3831,27 @@ interopDefault(es6_array_lastIndexOf);
 var _arrayCopyWithin = createCommonjsModule(function (module) {
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 'use strict';
-var toObject = interopDefault(require$$5$1)
-  , toIndex  = interopDefault(require$$24)
-  , toLength = interopDefault(require$$3$1);
+var toObject = interopDefault(require$$5$2);
+var toAbsoluteIndex = interopDefault(require$$23);
+var toLength = interopDefault(require$$3$2);
 
-module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0, end = @length*/){
-  var O     = toObject(this)
-    , len   = toLength(O.length)
-    , to    = toIndex(target, len)
-    , from  = toIndex(start, len)
-    , end   = arguments.length > 2 ? arguments[2] : undefined
-    , count = Math.min((end === undefined ? len : toIndex(end, len)) - from, len - to)
-    , inc   = 1;
-  if(from < to && to < from + count){
-    inc  = -1;
+module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
+  var O = toObject(this);
+  var len = toLength(O.length);
+  var to = toAbsoluteIndex(target, len);
+  var from = toAbsoluteIndex(start, len);
+  var end = arguments.length > 2 ? arguments[2] : undefined;
+  var count = Math.min((end === undefined ? len : toAbsoluteIndex(end, len)) - from, len - to);
+  var inc = 1;
+  if (from < to && to < from + count) {
+    inc = -1;
     from += count - 1;
-    to   += count - 1;
+    to += count - 1;
   }
-  while(count-- > 0){
-    if(from in O)O[to] = O[from];
+  while (count-- > 0) {
+    if (from in O) O[to] = O[from];
     else delete O[to];
-    to   += inc;
+    to += inc;
     from += inc;
   } return O;
 };
@@ -3830,10 +3866,10 @@ var require$$2$9 = Object.freeze({
 
 var _addToUnscopables = createCommonjsModule(function (module) {
 // 22.1.3.31 Array.prototype[@@unscopables]
-var UNSCOPABLES = interopDefault(require$$0$4)('unscopables')
-  , ArrayProto  = Array.prototype;
-if(ArrayProto[UNSCOPABLES] == undefined)interopDefault(require$$2)(ArrayProto, UNSCOPABLES, {});
-module.exports = function(key){
+var UNSCOPABLES = interopDefault(require$$0$3)('unscopables');
+var ArrayProto = Array.prototype;
+if (ArrayProto[UNSCOPABLES] == undefined) interopDefault(require$$2)(ArrayProto, UNSCOPABLES, {});
+module.exports = function (key) {
   ArrayProto[UNSCOPABLES][key] = true;
 };
 });
@@ -3841,7 +3877,7 @@ module.exports = function(key){
 var _addToUnscopables$1 = interopDefault(_addToUnscopables);
 
 
-var require$$0$34 = Object.freeze({
+var require$$0$35 = Object.freeze({
   default: _addToUnscopables$1
 });
 
@@ -3849,9 +3885,9 @@ var es6_array_copyWithin = createCommonjsModule(function (module) {
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = interopDefault(require$$1$2);
 
-$export($export.P, 'Array', {copyWithin: interopDefault(require$$2$9)});
+$export($export.P, 'Array', { copyWithin: interopDefault(require$$2$9) });
 
-interopDefault(require$$0$34)('copyWithin');
+interopDefault(require$$0$35)('copyWithin');
 });
 
 interopDefault(es6_array_copyWithin);
@@ -3859,17 +3895,17 @@ interopDefault(es6_array_copyWithin);
 var _arrayFill = createCommonjsModule(function (module) {
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 'use strict';
-var toObject = interopDefault(require$$5$1)
-  , toIndex  = interopDefault(require$$24)
-  , toLength = interopDefault(require$$3$1);
-module.exports = function fill(value /*, start = 0, end = @length */){
-  var O      = toObject(this)
-    , length = toLength(O.length)
-    , aLen   = arguments.length
-    , index  = toIndex(aLen > 1 ? arguments[1] : undefined, length)
-    , end    = aLen > 2 ? arguments[2] : undefined
-    , endPos = end === undefined ? length : toIndex(end, length);
-  while(endPos > index)O[index++] = value;
+var toObject = interopDefault(require$$5$2);
+var toAbsoluteIndex = interopDefault(require$$23);
+var toLength = interopDefault(require$$3$2);
+module.exports = function fill(value /* , start = 0, end = @length */) {
+  var O = toObject(this);
+  var length = toLength(O.length);
+  var aLen = arguments.length;
+  var index = toAbsoluteIndex(aLen > 1 ? arguments[1] : undefined, length);
+  var end = aLen > 2 ? arguments[2] : undefined;
+  var endPos = end === undefined ? length : toAbsoluteIndex(end, length);
+  while (endPos > index) O[index++] = value;
   return O;
 };
 });
@@ -3885,9 +3921,9 @@ var es6_array_fill = createCommonjsModule(function (module) {
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 var $export = interopDefault(require$$1$2);
 
-$export($export.P, 'Array', {fill: interopDefault(require$$3$5)});
+$export($export.P, 'Array', { fill: interopDefault(require$$3$5) });
 
-interopDefault(require$$0$34)('fill');
+interopDefault(require$$0$35)('fill');
 });
 
 interopDefault(es6_array_fill);
@@ -3895,18 +3931,18 @@ interopDefault(es6_array_fill);
 var es6_array_find = createCommonjsModule(function (module) {
 'use strict';
 // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
-var $export = interopDefault(require$$1$2)
-  , $find   = interopDefault(require$$10)(5)
-  , KEY     = 'find'
-  , forced  = true;
+var $export = interopDefault(require$$1$2);
+var $find = interopDefault(require$$10)(5);
+var KEY = 'find';
+var forced = true;
 // Shouldn't skip holes
-if(KEY in [])Array(1)[KEY](function(){ forced = false; });
+if (KEY in []) Array(1)[KEY](function () { forced = false; });
 $export($export.P + $export.F * forced, 'Array', {
-  find: function find(callbackfn/*, that = undefined */){
+  find: function find(callbackfn /* , that = undefined */) {
     return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-interopDefault(require$$0$34)(KEY);
+interopDefault(require$$0$35)(KEY);
 });
 
 interopDefault(es6_array_find);
@@ -3914,34 +3950,34 @@ interopDefault(es6_array_find);
 var es6_array_findIndex = createCommonjsModule(function (module) {
 'use strict';
 // 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
-var $export = interopDefault(require$$1$2)
-  , $find   = interopDefault(require$$10)(6)
-  , KEY     = 'findIndex'
-  , forced  = true;
+var $export = interopDefault(require$$1$2);
+var $find = interopDefault(require$$10)(6);
+var KEY = 'findIndex';
+var forced = true;
 // Shouldn't skip holes
-if(KEY in [])Array(1)[KEY](function(){ forced = false; });
+if (KEY in []) Array(1)[KEY](function () { forced = false; });
 $export($export.P + $export.F * forced, 'Array', {
-  findIndex: function findIndex(callbackfn/*, that = undefined */){
+  findIndex: function findIndex(callbackfn /* , that = undefined */) {
     return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
-interopDefault(require$$0$34)(KEY);
+interopDefault(require$$0$35)(KEY);
 });
 
 interopDefault(es6_array_findIndex);
 
 var _setSpecies = createCommonjsModule(function (module) {
 'use strict';
-var global      = interopDefault(require$$3)
-  , dP          = interopDefault(require$$2$1)
-  , DESCRIPTORS = interopDefault(require$$1)
-  , SPECIES     = interopDefault(require$$0$4)('species');
+var global = interopDefault(require$$3);
+var dP = interopDefault(require$$2$1);
+var DESCRIPTORS = interopDefault(require$$1);
+var SPECIES = interopDefault(require$$0$3)('species');
 
-module.exports = function(KEY){
+module.exports = function (KEY) {
   var C = global[KEY];
-  if(DESCRIPTORS && C && !C[SPECIES])dP.f(C, SPECIES, {
+  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
     configurable: true,
-    get: function(){ return this; }
+    get: function () { return this; }
   });
 };
 });
@@ -3949,55 +3985,55 @@ module.exports = function(KEY){
 var _setSpecies$1 = interopDefault(_setSpecies);
 
 
-var require$$0$35 = Object.freeze({
+var require$$0$36 = Object.freeze({
   default: _setSpecies$1
 });
 
 var es6_array_species = createCommonjsModule(function (module) {
-interopDefault(require$$0$35)('Array');
+interopDefault(require$$0$36)('Array');
 });
 
 interopDefault(es6_array_species);
 
 var _iterStep = createCommonjsModule(function (module) {
-module.exports = function(done, value){
-  return {value: value, done: !!done};
+module.exports = function (done, value) {
+  return { value: value, done: !!done };
 };
 });
 
 var _iterStep$1 = interopDefault(_iterStep);
 
 
-var require$$3$6 = Object.freeze({
+var require$$4$6 = Object.freeze({
   default: _iterStep$1
 });
 
 var es6_array_iterator = createCommonjsModule(function (module) {
 'use strict';
-var addToUnscopables = interopDefault(require$$0$34)
-  , step             = interopDefault(require$$3$6)
-  , Iterators        = interopDefault(require$$1$15)
-  , toIObject        = interopDefault(require$$1$7);
+var addToUnscopables = interopDefault(require$$0$35);
+var step = interopDefault(require$$4$6);
+var Iterators = interopDefault(require$$1$15);
+var toIObject = interopDefault(require$$1$8);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
 // 22.1.3.29 Array.prototype.values()
 // 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = interopDefault(require$$4$4)(Array, 'Array', function(iterated, kind){
+module.exports = interopDefault(require$$5$4)(Array, 'Array', function (iterated, kind) {
   this._t = toIObject(iterated); // target
   this._i = 0;                   // next index
   this._k = kind;                // kind
 // 22.1.5.2.1 %ArrayIteratorPrototype%.next()
-}, function(){
-  var O     = this._t
-    , kind  = this._k
-    , index = this._i++;
-  if(!O || index >= O.length){
+}, function () {
+  var O = this._t;
+  var kind = this._k;
+  var index = this._i++;
+  if (!O || index >= O.length) {
     this._t = undefined;
     return step(1);
   }
-  if(kind == 'keys'  )return step(0, index);
-  if(kind == 'values')return step(0, O[index]);
+  if (kind == 'keys') return step(0, index);
+  if (kind == 'values') return step(0, O[index]);
   return step(0, [index, O[index]]);
 }, 'values');
 
@@ -4012,7 +4048,7 @@ addToUnscopables('entries');
 var es6_array_iterator$1 = interopDefault(es6_array_iterator);
 
 
-var require$$5$3 = Object.freeze({
+var require$$6$1 = Object.freeze({
   default: es6_array_iterator$1
 });
 
@@ -4020,14 +4056,14 @@ var _flags = createCommonjsModule(function (module) {
 'use strict';
 // 21.2.5.3 get RegExp.prototype.flags
 var anObject = interopDefault(require$$5);
-module.exports = function(){
-  var that   = anObject(this)
-    , result = '';
-  if(that.global)     result += 'g';
-  if(that.ignoreCase) result += 'i';
-  if(that.multiline)  result += 'm';
-  if(that.unicode)    result += 'u';
-  if(that.sticky)     result += 'y';
+module.exports = function () {
+  var that = anObject(this);
+  var result = '';
+  if (that.global) result += 'g';
+  if (that.ignoreCase) result += 'i';
+  if (that.multiline) result += 'm';
+  if (that.unicode) result += 'u';
+  if (that.sticky) result += 'y';
   return result;
 };
 });
@@ -4035,63 +4071,63 @@ module.exports = function(){
 var _flags$1 = interopDefault(_flags);
 
 
-var require$$1$18 = Object.freeze({
+var require$$1$19 = Object.freeze({
   default: _flags$1
 });
 
 var es6_regexp_constructor = createCommonjsModule(function (module) {
-var global            = interopDefault(require$$3)
-  , inheritIfRequired = interopDefault(require$$0$19)
-  , dP                = interopDefault(require$$2$1).f
-  , gOPN              = interopDefault(require$$3$3).f
-  , isRegExp          = interopDefault(require$$2$8)
-  , $flags            = interopDefault(require$$1$18)
-  , $RegExp           = global.RegExp
-  , Base              = $RegExp
-  , proto             = $RegExp.prototype
-  , re1               = /a/g
-  , re2               = /a/g
-  // "new" creates a new object, old webkit buggy here
-  , CORRECT_NEW       = new $RegExp(re1) !== re1;
+var global = interopDefault(require$$3);
+var inheritIfRequired = interopDefault(require$$0$19);
+var dP = interopDefault(require$$2$1).f;
+var gOPN = interopDefault(require$$3$4).f;
+var isRegExp = interopDefault(require$$2$8);
+var $flags = interopDefault(require$$1$19);
+var $RegExp = global.RegExp;
+var Base = $RegExp;
+var proto = $RegExp.prototype;
+var re1 = /a/g;
+var re2 = /a/g;
+// "new" creates a new object, old webkit buggy here
+var CORRECT_NEW = new $RegExp(re1) !== re1;
 
-if(interopDefault(require$$1) && (!CORRECT_NEW || interopDefault(require$$1$1)(function(){
-  re2[interopDefault(require$$0$4)('match')] = false;
+if (interopDefault(require$$1) && (!CORRECT_NEW || interopDefault(require$$1$1)(function () {
+  re2[interopDefault(require$$0$3)('match')] = false;
   // RegExp constructor can alter flags and IsRegExp works correct with @@match
   return $RegExp(re1) != re1 || $RegExp(re2) == re2 || $RegExp(re1, 'i') != '/a/i';
-}))){
-  $RegExp = function RegExp(p, f){
-    var tiRE = this instanceof $RegExp
-      , piRE = isRegExp(p)
-      , fiU  = f === undefined;
+}))) {
+  $RegExp = function RegExp(p, f) {
+    var tiRE = this instanceof $RegExp;
+    var piRE = isRegExp(p);
+    var fiU = f === undefined;
     return !tiRE && piRE && p.constructor === $RegExp && fiU ? p
       : inheritIfRequired(CORRECT_NEW
         ? new Base(piRE && !fiU ? p.source : p, f)
         : Base((piRE = p instanceof $RegExp) ? p.source : p, piRE && fiU ? $flags.call(p) : f)
       , tiRE ? this : proto, $RegExp);
   };
-  var proxy = function(key){
+  var proxy = function (key) {
     key in $RegExp || dP($RegExp, key, {
       configurable: true,
-      get: function(){ return Base[key]; },
-      set: function(it){ Base[key] = it; }
+      get: function () { return Base[key]; },
+      set: function (it) { Base[key] = it; }
     });
   };
-  for(var keys = gOPN(Base), i = 0; keys.length > i; )proxy(keys[i++]);
+  for (var keys = gOPN(Base), i = 0; keys.length > i;) proxy(keys[i++]);
   proto.constructor = $RegExp;
   $RegExp.prototype = proto;
   interopDefault(require$$4$2)(global, 'RegExp', $RegExp);
 }
 
-interopDefault(require$$0$35)('RegExp');
+interopDefault(require$$0$36)('RegExp');
 });
 
 interopDefault(es6_regexp_constructor);
 
 var es6_regexp_flags = createCommonjsModule(function (module) {
 // 21.2.5.3 get RegExp.prototype.flags()
-if(interopDefault(require$$1) && /./g.flags != 'g')interopDefault(require$$2$1).f(RegExp.prototype, 'flags', {
+if (interopDefault(require$$1) && /./g.flags != 'g') interopDefault(require$$2$1).f(RegExp.prototype, 'flags', {
   configurable: true,
-  get: interopDefault(require$$1$18)
+  get: interopDefault(require$$1$19)
 });
 });
 
@@ -4100,26 +4136,26 @@ interopDefault(es6_regexp_flags);
 var es6_regexp_toString = createCommonjsModule(function (module) {
 'use strict';
 
-var anObject    = interopDefault(require$$5)
-  , $flags      = interopDefault(require$$1$18)
-  , DESCRIPTORS = interopDefault(require$$1)
-  , TO_STRING   = 'toString'
-  , $toString   = /./[TO_STRING];
+var anObject = interopDefault(require$$5);
+var $flags = interopDefault(require$$1$19);
+var DESCRIPTORS = interopDefault(require$$1);
+var TO_STRING = 'toString';
+var $toString = /./[TO_STRING];
 
-var define = function(fn){
+var define = function (fn) {
   interopDefault(require$$4$2)(RegExp.prototype, TO_STRING, fn, true);
 };
 
 // 21.2.5.14 RegExp.prototype.toString()
-if(interopDefault(require$$1$1)(function(){ return $toString.call({source: 'a', flags: 'b'}) != '/a/b'; })){
-  define(function toString(){
+if (interopDefault(require$$1$1)(function () { return $toString.call({ source: 'a', flags: 'b' }) != '/a/b'; })) {
+  define(function toString() {
     var R = anObject(this);
     return '/'.concat(R.source, '/',
       'flags' in R ? R.flags : !DESCRIPTORS && R instanceof RegExp ? $flags.call(R) : undefined);
   });
 // FF44- RegExp#toString has a wrong name
-} else if($toString.name != TO_STRING){
-  define(function toString(){
+} else if ($toString.name != TO_STRING) {
+  define(function toString() {
     return $toString.call(this);
   });
 }
@@ -4129,30 +4165,30 @@ interopDefault(es6_regexp_toString);
 
 var _fixReWks = createCommonjsModule(function (module) {
 'use strict';
-var hide     = interopDefault(require$$2)
-  , redefine = interopDefault(require$$4$2)
-  , fails    = interopDefault(require$$1$1)
-  , defined  = interopDefault(require$$4$3)
-  , wks      = interopDefault(require$$0$4);
+var hide = interopDefault(require$$2);
+var redefine = interopDefault(require$$4$2);
+var fails = interopDefault(require$$1$1);
+var defined = interopDefault(require$$4$3);
+var wks = interopDefault(require$$0$3);
 
-module.exports = function(KEY, length, exec){
-  var SYMBOL   = wks(KEY)
-    , fns      = exec(defined, SYMBOL, ''[KEY])
-    , strfn    = fns[0]
-    , rxfn     = fns[1];
-  if(fails(function(){
+module.exports = function (KEY, length, exec) {
+  var SYMBOL = wks(KEY);
+  var fns = exec(defined, SYMBOL, ''[KEY]);
+  var strfn = fns[0];
+  var rxfn = fns[1];
+  if (fails(function () {
     var O = {};
-    O[SYMBOL] = function(){ return 7; };
+    O[SYMBOL] = function () { return 7; };
     return ''[KEY](O) != 7;
-  })){
+  })) {
     redefine(String.prototype, KEY, strfn);
     hide(RegExp.prototype, SYMBOL, length == 2
       // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
       // 21.2.5.11 RegExp.prototype[@@split](string, limit)
-      ? function(string, arg){ return rxfn.call(string, this, arg); }
+      ? function (string, arg) { return rxfn.call(string, this, arg); }
       // 21.2.5.6 RegExp.prototype[@@match](string)
       // 21.2.5.9 RegExp.prototype[@@search](string)
-      : function(string){ return rxfn.call(string, this); }
+      : function (string) { return rxfn.call(string, this); }
     );
   }
 };
@@ -4161,18 +4197,18 @@ module.exports = function(KEY, length, exec){
 var _fixReWks$1 = interopDefault(_fixReWks);
 
 
-var require$$1$19 = Object.freeze({
+var require$$1$20 = Object.freeze({
   default: _fixReWks$1
 });
 
 var es6_regexp_match = createCommonjsModule(function (module) {
 // @@match logic
-interopDefault(require$$1$19)('match', 1, function(defined, MATCH, $match){
+interopDefault(require$$1$20)('match', 1, function (defined, MATCH, $match) {
   // 21.1.3.11 String.prototype.match(regexp)
-  return [function match(regexp){
+  return [function match(regexp) {
     'use strict';
-    var O  = defined(this)
-      , fn = regexp == undefined ? undefined : regexp[MATCH];
+    var O = defined(this);
+    var fn = regexp == undefined ? undefined : regexp[MATCH];
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[MATCH](String(O));
   }, $match];
 });
@@ -4182,12 +4218,12 @@ interopDefault(es6_regexp_match);
 
 var es6_regexp_replace = createCommonjsModule(function (module) {
 // @@replace logic
-interopDefault(require$$1$19)('replace', 2, function(defined, REPLACE, $replace){
+interopDefault(require$$1$20)('replace', 2, function (defined, REPLACE, $replace) {
   // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
-  return [function replace(searchValue, replaceValue){
+  return [function replace(searchValue, replaceValue) {
     'use strict';
-    var O  = defined(this)
-      , fn = searchValue == undefined ? undefined : searchValue[REPLACE];
+    var O = defined(this);
+    var fn = searchValue == undefined ? undefined : searchValue[REPLACE];
     return fn !== undefined
       ? fn.call(searchValue, O, replaceValue)
       : $replace.call(String(O), searchValue, replaceValue);
@@ -4199,12 +4235,12 @@ interopDefault(es6_regexp_replace);
 
 var es6_regexp_search = createCommonjsModule(function (module) {
 // @@search logic
-interopDefault(require$$1$19)('search', 1, function(defined, SEARCH, $search){
+interopDefault(require$$1$20)('search', 1, function (defined, SEARCH, $search) {
   // 21.1.3.15 String.prototype.search(regexp)
-  return [function search(regexp){
+  return [function search(regexp) {
     'use strict';
-    var O  = defined(this)
-      , fn = regexp == undefined ? undefined : regexp[SEARCH];
+    var O = defined(this);
+    var fn = regexp == undefined ? undefined : regexp[SEARCH];
     return fn !== undefined ? fn.call(regexp, O) : new RegExp(regexp)[SEARCH](String(O));
   }, $search];
 });
@@ -4214,29 +4250,29 @@ interopDefault(es6_regexp_search);
 
 var es6_regexp_split = createCommonjsModule(function (module) {
 // @@split logic
-interopDefault(require$$1$19)('split', 2, function(defined, SPLIT, $split){
+interopDefault(require$$1$20)('split', 2, function (defined, SPLIT, $split) {
   'use strict';
-  var isRegExp   = interopDefault(require$$2$8)
-    , _split     = $split
-    , $push      = [].push
-    , $SPLIT     = 'split'
-    , LENGTH     = 'length'
-    , LAST_INDEX = 'lastIndex';
-  if(
+  var isRegExp = interopDefault(require$$2$8);
+  var _split = $split;
+  var $push = [].push;
+  var $SPLIT = 'split';
+  var LENGTH = 'length';
+  var LAST_INDEX = 'lastIndex';
+  if (
     'abbc'[$SPLIT](/(b)*/)[1] == 'c' ||
     'test'[$SPLIT](/(?:)/, -1)[LENGTH] != 4 ||
     'ab'[$SPLIT](/(?:ab)*/)[LENGTH] != 2 ||
     '.'[$SPLIT](/(.?)(.?)/)[LENGTH] != 4 ||
     '.'[$SPLIT](/()()/)[LENGTH] > 1 ||
     ''[$SPLIT](/.?/)[LENGTH]
-  ){
+  ) {
     var NPCG = /()??/.exec('')[1] === undefined; // nonparticipating capturing group
     // based on es5-shim implementation, need to rework it
-    $split = function(separator, limit){
+    $split = function (separator, limit) {
       var string = String(this);
-      if(separator === undefined && limit === 0)return [];
+      if (separator === undefined && limit === 0) return [];
       // If `separator` is not a regex, use native split
-      if(!isRegExp(separator))return _split.call(string, separator, limit);
+      if (!isRegExp(separator)) return _split.call(string, separator, limit);
       var output = [];
       var flags = (separator.ignoreCase ? 'i' : '') +
                   (separator.multiline ? 'm' : '') +
@@ -4248,38 +4284,39 @@ interopDefault(require$$1$19)('split', 2, function(defined, SPLIT, $split){
       var separatorCopy = new RegExp(separator.source, flags + 'g');
       var separator2, match, lastIndex, lastLength, i;
       // Doesn't need flags gy, but they don't hurt
-      if(!NPCG)separator2 = new RegExp('^' + separatorCopy.source + '$(?!\\s)', flags);
-      while(match = separatorCopy.exec(string)){
+      if (!NPCG) separator2 = new RegExp('^' + separatorCopy.source + '$(?!\\s)', flags);
+      while (match = separatorCopy.exec(string)) {
         // `separatorCopy.lastIndex` is not reliable cross-browser
         lastIndex = match.index + match[0][LENGTH];
-        if(lastIndex > lastLastIndex){
+        if (lastIndex > lastLastIndex) {
           output.push(string.slice(lastLastIndex, match.index));
           // Fix browsers whose `exec` methods don't consistently return `undefined` for NPCG
-          if(!NPCG && match[LENGTH] > 1)match[0].replace(separator2, function(){
-            for(i = 1; i < arguments[LENGTH] - 2; i++)if(arguments[i] === undefined)match[i] = undefined;
+          // eslint-disable-next-line no-loop-func
+          if (!NPCG && match[LENGTH] > 1) match[0].replace(separator2, function () {
+            for (i = 1; i < arguments[LENGTH] - 2; i++) if (arguments[i] === undefined) match[i] = undefined;
           });
-          if(match[LENGTH] > 1 && match.index < string[LENGTH])$push.apply(output, match.slice(1));
+          if (match[LENGTH] > 1 && match.index < string[LENGTH]) $push.apply(output, match.slice(1));
           lastLength = match[0][LENGTH];
           lastLastIndex = lastIndex;
-          if(output[LENGTH] >= splitLimit)break;
+          if (output[LENGTH] >= splitLimit) break;
         }
-        if(separatorCopy[LAST_INDEX] === match.index)separatorCopy[LAST_INDEX]++; // Avoid an infinite loop
+        if (separatorCopy[LAST_INDEX] === match.index) separatorCopy[LAST_INDEX]++; // Avoid an infinite loop
       }
-      if(lastLastIndex === string[LENGTH]){
-        if(lastLength || !separatorCopy.test(''))output.push('');
+      if (lastLastIndex === string[LENGTH]) {
+        if (lastLength || !separatorCopy.test('')) output.push('');
       } else output.push(string.slice(lastLastIndex));
       return output[LENGTH] > splitLimit ? output.slice(0, splitLimit) : output;
     };
   // Chakra, V8
-  } else if('0'[$SPLIT](undefined, 0)[LENGTH]){
-    $split = function(separator, limit){
+  } else if ('0'[$SPLIT](undefined, 0)[LENGTH]) {
+    $split = function (separator, limit) {
       return separator === undefined && limit === 0 ? [] : _split.call(this, separator, limit);
     };
   }
   // 21.1.3.17 String.prototype.split(separator, limit)
-  return [function split(separator, limit){
-    var O  = defined(this)
-      , fn = separator == undefined ? undefined : separator[SPLIT];
+  return [function split(separator, limit) {
+    var O = defined(this);
+    var fn = separator == undefined ? undefined : separator[SPLIT];
     return fn !== undefined ? fn.call(separator, O, limit) : $split.call(String(O), separator, limit);
   }, $split];
 });
@@ -4288,8 +4325,8 @@ interopDefault(require$$1$19)('split', 2, function(defined, SPLIT, $split){
 interopDefault(es6_regexp_split);
 
 var _anInstance = createCommonjsModule(function (module) {
-module.exports = function(it, Constructor, name, forbiddenField){
-  if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
+module.exports = function (it, Constructor, name, forbiddenField) {
+  if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {
     throw TypeError(name + ': incorrect invocation!');
   } return it;
 };
@@ -4298,52 +4335,53 @@ module.exports = function(it, Constructor, name, forbiddenField){
 var _anInstance$1 = interopDefault(_anInstance);
 
 
-var require$$4$6 = Object.freeze({
+var require$$4$7 = Object.freeze({
   default: _anInstance$1
 });
 
 var _forOf = createCommonjsModule(function (module) {
-var ctx         = interopDefault(require$$31)
-  , call        = interopDefault(require$$4$5)
-  , isArrayIter = interopDefault(require$$17)
-  , anObject    = interopDefault(require$$5)
-  , toLength    = interopDefault(require$$3$1)
-  , getIterFn   = interopDefault(require$$13)
-  , BREAK       = {}
-  , RETURN      = {};
-var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
-  var iterFn = ITERATOR ? function(){ return iterable; } : getIterFn(iterable)
-    , f      = ctx(fn, that, entries ? 2 : 1)
-    , index  = 0
-    , length, step, iterator, result;
-  if(typeof iterFn != 'function')throw TypeError(iterable + ' is not iterable!');
+var ctx = interopDefault(require$$1$4);
+var call = interopDefault(require$$4$5);
+var isArrayIter = interopDefault(require$$17);
+var anObject = interopDefault(require$$5);
+var toLength = interopDefault(require$$3$2);
+var getIterFn = interopDefault(require$$13);
+var BREAK = {};
+var RETURN = {};
+var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
+  var iterFn = ITERATOR ? function () { return iterable; } : getIterFn(iterable);
+  var f = ctx(fn, that, entries ? 2 : 1);
+  var index = 0;
+  var length, step, iterator, result;
+  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');
   // fast case for arrays with default iterator
-  if(isArrayIter(iterFn))for(length = toLength(iterable.length); length > index; index++){
+  if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {
     result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
-    if(result === BREAK || result === RETURN)return result;
-  } else for(iterator = iterFn.call(iterable); !(step = iterator.next()).done; ){
+    if (result === BREAK || result === RETURN) return result;
+  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {
     result = call(iterator, f, step.value, entries);
-    if(result === BREAK || result === RETURN)return result;
+    if (result === BREAK || result === RETURN) return result;
   }
 };
-exports.BREAK  = BREAK;
+exports.BREAK = BREAK;
 exports.RETURN = RETURN;
 });
 
 var _forOf$1 = interopDefault(_forOf);
 
 
-var require$$1$20 = Object.freeze({
+var require$$1$21 = Object.freeze({
   default: _forOf$1
 });
 
 var _speciesConstructor = createCommonjsModule(function (module) {
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
-var anObject  = interopDefault(require$$5)
-  , aFunction = interopDefault(require$$0$2)
-  , SPECIES   = interopDefault(require$$0$4)('species');
-module.exports = function(O, D){
-  var C = anObject(O).constructor, S;
+var anObject = interopDefault(require$$5);
+var aFunction = interopDefault(require$$0$1);
+var SPECIES = interopDefault(require$$0$3)('species');
+module.exports = function (O, D) {
+  var C = anObject(O).constructor;
+  var S;
   return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
 };
 });
@@ -4351,84 +4389,93 @@ module.exports = function(O, D){
 var _speciesConstructor$1 = interopDefault(_speciesConstructor);
 
 
-var require$$8 = Object.freeze({
+var require$$1$22 = Object.freeze({
   default: _speciesConstructor$1
 });
 
 var _task = createCommonjsModule(function (module) {
-var ctx                = interopDefault(require$$31)
-  , invoke             = interopDefault(require$$1$13)
-  , html               = interopDefault(require$$3$2)
-  , cel                = interopDefault(require$$2$2)
-  , global             = interopDefault(require$$3)
-  , process            = global.process
-  , setTask            = global.setImmediate
-  , clearTask          = global.clearImmediate
-  , MessageChannel     = global.MessageChannel
-  , counter            = 0
-  , queue              = {}
-  , ONREADYSTATECHANGE = 'onreadystatechange'
-  , defer, channel, port;
-var run = function(){
+var ctx = interopDefault(require$$1$4);
+var invoke = interopDefault(require$$1$13);
+var html = interopDefault(require$$3$3);
+var cel = interopDefault(require$$2$2);
+var global = interopDefault(require$$3);
+var process = global.process;
+var setTask = global.setImmediate;
+var clearTask = global.clearImmediate;
+var MessageChannel = global.MessageChannel;
+var Dispatch = global.Dispatch;
+var counter = 0;
+var queue = {};
+var ONREADYSTATECHANGE = 'onreadystatechange';
+var defer, channel, port;
+var run = function () {
   var id = +this;
-  if(queue.hasOwnProperty(id)){
+  // eslint-disable-next-line no-prototype-builtins
+  if (queue.hasOwnProperty(id)) {
     var fn = queue[id];
     delete queue[id];
     fn();
   }
 };
-var listener = function(event){
+var listener = function (event) {
   run.call(event.data);
 };
 // Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if(!setTask || !clearTask){
-  setTask = function setImmediate(fn){
-    var args = [], i = 1;
-    while(arguments.length > i)args.push(arguments[i++]);
-    queue[++counter] = function(){
+if (!setTask || !clearTask) {
+  setTask = function setImmediate(fn) {
+    var args = [];
+    var i = 1;
+    while (arguments.length > i) args.push(arguments[i++]);
+    queue[++counter] = function () {
+      // eslint-disable-next-line no-new-func
       invoke(typeof fn == 'function' ? fn : Function(fn), args);
     };
     defer(counter);
     return counter;
   };
-  clearTask = function clearImmediate(id){
+  clearTask = function clearImmediate(id) {
     delete queue[id];
   };
   // Node.js 0.8-
-  if(interopDefault(require$$0$6)(process) == 'process'){
-    defer = function(id){
+  if (interopDefault(require$$0$5)(process) == 'process') {
+    defer = function (id) {
       process.nextTick(ctx(run, id, 1));
     };
+  // Sphere (JS game engine) Dispatch API
+  } else if (Dispatch && Dispatch.now) {
+    defer = function (id) {
+      Dispatch.now(ctx(run, id, 1));
+    };
   // Browsers with MessageChannel, includes WebWorkers
-  } else if(MessageChannel){
-    channel = new MessageChannel;
-    port    = channel.port2;
+  } else if (MessageChannel) {
+    channel = new MessageChannel();
+    port = channel.port2;
     channel.port1.onmessage = listener;
     defer = ctx(port.postMessage, port, 1);
   // Browsers with postMessage, skip WebWorkers
   // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if(global.addEventListener && typeof postMessage == 'function' && !global.importScripts){
-    defer = function(id){
+  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {
+    defer = function (id) {
       global.postMessage(id + '', '*');
     };
     global.addEventListener('message', listener, false);
   // IE8-
-  } else if(ONREADYSTATECHANGE in cel('script')){
-    defer = function(id){
-      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function(){
+  } else if (ONREADYSTATECHANGE in cel('script')) {
+    defer = function (id) {
+      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {
         html.removeChild(this);
         run.call(id);
       };
     };
   // Rest old browsers
   } else {
-    defer = function(id){
+    defer = function (id) {
       setTimeout(ctx(run, id, 1), 0);
     };
   }
 }
 module.exports = {
-  set:   setTask,
+  set: setTask,
   clear: clearTask
 };
 });
@@ -4437,57 +4484,57 @@ var _task$1 = interopDefault(_task);
 var set$1 = _task.set;
 var clear = _task.clear;
 
-var require$$0$36 = Object.freeze({
+var require$$0$37 = Object.freeze({
   default: _task$1,
   set: set$1,
   clear: clear
 });
 
 var _microtask = createCommonjsModule(function (module) {
-var global    = interopDefault(require$$3)
-  , macrotask = interopDefault(require$$0$36).set
-  , Observer  = global.MutationObserver || global.WebKitMutationObserver
-  , process   = global.process
-  , Promise   = global.Promise
-  , isNode    = interopDefault(require$$0$6)(process) == 'process';
+var global = interopDefault(require$$3);
+var macrotask = interopDefault(require$$0$37).set;
+var Observer = global.MutationObserver || global.WebKitMutationObserver;
+var process = global.process;
+var Promise = global.Promise;
+var isNode = interopDefault(require$$0$5)(process) == 'process';
 
-module.exports = function(){
+module.exports = function () {
   var head, last, notify;
 
-  var flush = function(){
+  var flush = function () {
     var parent, fn;
-    if(isNode && (parent = process.domain))parent.exit();
-    while(head){
-      fn   = head.fn;
+    if (isNode && (parent = process.domain)) parent.exit();
+    while (head) {
+      fn = head.fn;
       head = head.next;
       try {
         fn();
-      } catch(e){
-        if(head)notify();
+      } catch (e) {
+        if (head) notify();
         else last = undefined;
         throw e;
       }
     } last = undefined;
-    if(parent)parent.enter();
+    if (parent) parent.enter();
   };
 
   // Node.js
-  if(isNode){
-    notify = function(){
+  if (isNode) {
+    notify = function () {
       process.nextTick(flush);
     };
   // browsers with MutationObserver
-  } else if(Observer){
-    var toggle = true
-      , node   = document.createTextNode('');
-    new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
-    notify = function(){
+  } else if (Observer) {
+    var toggle = true;
+    var node = document.createTextNode('');
+    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
+    notify = function () {
       node.data = toggle = !toggle;
     };
   // environments with maybe non-completely correct, but existent Promise
-  } else if(Promise && Promise.resolve){
+  } else if (Promise && Promise.resolve) {
     var promise = Promise.resolve();
-    notify = function(){
+    notify = function () {
       promise.then(flush);
     };
   // for other environments - macrotask based on:
@@ -4497,16 +4544,16 @@ module.exports = function(){
   // - onreadystatechange
   // - setTimeout
   } else {
-    notify = function(){
+    notify = function () {
       // strange IE + webpack dev server bug - use .call(global)
       macrotask.call(global, flush);
     };
   }
 
-  return function(fn){
-    var task = {fn: fn, next: undefined};
-    if(last)last.next = task;
-    if(!head){
+  return function (fn) {
+    var task = { fn: fn, next: undefined };
+    if (last) last.next = task;
+    if (!head) {
       head = task;
       notify();
     } last = task;
@@ -4517,14 +4564,78 @@ module.exports = function(){
 var _microtask$1 = interopDefault(_microtask);
 
 
-var require$$8$1 = Object.freeze({
+var require$$8 = Object.freeze({
   default: _microtask$1
+});
+
+var _newPromiseCapability = createCommonjsModule(function (module) {
+'use strict';
+// 25.4.1.5 NewPromiseCapability(C)
+var aFunction = interopDefault(require$$0$1);
+
+function PromiseCapability(C) {
+  var resolve, reject;
+  this.promise = new C(function ($$resolve, $$reject) {
+    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
+    resolve = $$resolve;
+    reject = $$reject;
+  });
+  this.resolve = aFunction(resolve);
+  this.reject = aFunction(reject);
+}
+
+module.exports.f = function (C) {
+  return new PromiseCapability(C);
+};
+});
+
+var _newPromiseCapability$1 = interopDefault(_newPromiseCapability);
+var f$7 = _newPromiseCapability.f;
+
+var require$$1$23 = Object.freeze({
+  default: _newPromiseCapability$1,
+  f: f$7
+});
+
+var _perform = createCommonjsModule(function (module) {
+module.exports = function (exec) {
+  try {
+    return { e: false, v: exec() };
+  } catch (e) {
+    return { e: true, v: e };
+  }
+};
+});
+
+var _perform$1 = interopDefault(_perform);
+
+
+var require$$0$38 = Object.freeze({
+  default: _perform$1
+});
+
+var _promiseResolve = createCommonjsModule(function (module) {
+var newPromiseCapability = interopDefault(require$$1$23);
+
+module.exports = function (C, x) {
+  var promiseCapability = newPromiseCapability.f(C);
+  var resolve = promiseCapability.resolve;
+  resolve(x);
+  return promiseCapability.promise;
+};
+});
+
+var _promiseResolve$1 = interopDefault(_promiseResolve);
+
+
+var require$$0$39 = Object.freeze({
+  default: _promiseResolve$1
 });
 
 var _redefineAll = createCommonjsModule(function (module) {
 var redefine = interopDefault(require$$4$2);
-module.exports = function(target, src, safe){
-  for(var key in src)redefine(target, key, src[key], safe);
+module.exports = function (target, src, safe) {
+  for (var key in src) redefine(target, key, src[key], safe);
   return target;
 };
 });
@@ -4532,180 +4643,166 @@ module.exports = function(target, src, safe){
 var _redefineAll$1 = interopDefault(_redefineAll);
 
 
-var require$$3$7 = Object.freeze({
+var require$$3$6 = Object.freeze({
   default: _redefineAll$1
 });
 
 var es6_promise = createCommonjsModule(function (module) {
 'use strict';
-var LIBRARY            = interopDefault(require$$2$4)
-  , global             = interopDefault(require$$3)
-  , ctx                = interopDefault(require$$31)
-  , classof            = interopDefault(require$$1$11)
-  , $export            = interopDefault(require$$1$2)
-  , isObject           = interopDefault(require$$0$1)
-  , aFunction          = interopDefault(require$$0$2)
-  , anInstance         = interopDefault(require$$4$6)
-  , forOf              = interopDefault(require$$1$20)
-  , speciesConstructor = interopDefault(require$$8)
-  , task               = interopDefault(require$$0$36).set
-  , microtask          = interopDefault(require$$8$1)()
-  , PROMISE            = 'Promise'
-  , TypeError          = global.TypeError
-  , process            = global.process
-  , $Promise           = global[PROMISE]
-  , process            = global.process
-  , isNode             = classof(process) == 'process'
-  , empty              = function(){ /* empty */ }
-  , Internal, GenericPromiseCapability, Wrapper;
+var LIBRARY = interopDefault(require$$2$4);
+var global = interopDefault(require$$3);
+var ctx = interopDefault(require$$1$4);
+var classof = interopDefault(require$$1$11);
+var $export = interopDefault(require$$1$2);
+var isObject = interopDefault(require$$3$1);
+var aFunction = interopDefault(require$$0$1);
+var anInstance = interopDefault(require$$4$7);
+var forOf = interopDefault(require$$1$21);
+var speciesConstructor = interopDefault(require$$1$22);
+var task = interopDefault(require$$0$37).set;
+var microtask = interopDefault(require$$8)();
+var newPromiseCapabilityModule = interopDefault(require$$1$23);
+var perform = interopDefault(require$$0$38);
+var promiseResolve = interopDefault(require$$0$39);
+var PROMISE = 'Promise';
+var TypeError = global.TypeError;
+var process = global.process;
+var $Promise = global[PROMISE];
+var isNode = classof(process) == 'process';
+var empty = function () { /* empty */ };
+var Internal, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;
+var newPromiseCapability = newGenericPromiseCapability = newPromiseCapabilityModule.f;
 
-var USE_NATIVE = !!function(){
+var USE_NATIVE = !!function () {
   try {
     // correct subclassing with @@species support
-    var promise     = $Promise.resolve(1)
-      , FakePromise = (promise.constructor = {})[interopDefault(require$$0$4)('species')] = function(exec){ exec(empty, empty); };
+    var promise = $Promise.resolve(1);
+    var FakePromise = (promise.constructor = {})[interopDefault(require$$0$3)('species')] = function (exec) {
+      exec(empty, empty);
+    };
     // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
     return (isNode || typeof PromiseRejectionEvent == 'function') && promise.then(empty) instanceof FakePromise;
-  } catch(e){ /* empty */ }
+  } catch (e) { /* empty */ }
 }();
 
 // helpers
-var sameConstructor = function(a, b){
+var sameConstructor = LIBRARY ? function (a, b) {
   // with library wrapper special case
   return a === b || a === $Promise && b === Wrapper;
+} : function (a, b) {
+  return a === b;
 };
-var isThenable = function(it){
+var isThenable = function (it) {
   var then;
   return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
 };
-var newPromiseCapability = function(C){
-  return sameConstructor($Promise, C)
-    ? new PromiseCapability(C)
-    : new GenericPromiseCapability(C);
-};
-var PromiseCapability = GenericPromiseCapability = function(C){
-  var resolve, reject;
-  this.promise = new C(function($$resolve, $$reject){
-    if(resolve !== undefined || reject !== undefined)throw TypeError('Bad Promise constructor');
-    resolve = $$resolve;
-    reject  = $$reject;
-  });
-  this.resolve = aFunction(resolve);
-  this.reject  = aFunction(reject);
-};
-var perform = function(exec){
-  try {
-    exec();
-  } catch(e){
-    return {error: e};
-  }
-};
-var notify = function(promise, isReject){
-  if(promise._n)return;
+var notify = function (promise, isReject) {
+  if (promise._n) return;
   promise._n = true;
   var chain = promise._c;
-  microtask(function(){
-    var value = promise._v
-      , ok    = promise._s == 1
-      , i     = 0;
-    var run = function(reaction){
-      var handler = ok ? reaction.ok : reaction.fail
-        , resolve = reaction.resolve
-        , reject  = reaction.reject
-        , domain  = reaction.domain
-        , result, then;
+  microtask(function () {
+    var value = promise._v;
+    var ok = promise._s == 1;
+    var i = 0;
+    var run = function (reaction) {
+      var handler = ok ? reaction.ok : reaction.fail;
+      var resolve = reaction.resolve;
+      var reject = reaction.reject;
+      var domain = reaction.domain;
+      var result, then;
       try {
-        if(handler){
-          if(!ok){
-            if(promise._h == 2)onHandleUnhandled(promise);
+        if (handler) {
+          if (!ok) {
+            if (promise._h == 2) onHandleUnhandled(promise);
             promise._h = 1;
           }
-          if(handler === true)result = value;
+          if (handler === true) result = value;
           else {
-            if(domain)domain.enter();
+            if (domain) domain.enter();
             result = handler(value);
-            if(domain)domain.exit();
+            if (domain) domain.exit();
           }
-          if(result === reaction.promise){
+          if (result === reaction.promise) {
             reject(TypeError('Promise-chain cycle'));
-          } else if(then = isThenable(result)){
+          } else if (then = isThenable(result)) {
             then.call(result, resolve, reject);
           } else resolve(result);
         } else reject(value);
-      } catch(e){
+      } catch (e) {
         reject(e);
       }
     };
-    while(chain.length > i)run(chain[i++]); // variable length - can't use forEach
+    while (chain.length > i) run(chain[i++]); // variable length - can't use forEach
     promise._c = [];
     promise._n = false;
-    if(isReject && !promise._h)onUnhandled(promise);
+    if (isReject && !promise._h) onUnhandled(promise);
   });
 };
-var onUnhandled = function(promise){
-  task.call(global, function(){
-    var value = promise._v
-      , abrupt, handler, console;
-    if(isUnhandled(promise)){
-      abrupt = perform(function(){
-        if(isNode){
+var onUnhandled = function (promise) {
+  task.call(global, function () {
+    var value = promise._v;
+    var unhandled = isUnhandled(promise);
+    var result, handler, console;
+    if (unhandled) {
+      result = perform(function () {
+        if (isNode) {
           process.emit('unhandledRejection', value, promise);
-        } else if(handler = global.onunhandledrejection){
-          handler({promise: promise, reason: value});
-        } else if((console = global.console) && console.error){
+        } else if (handler = global.onunhandledrejection) {
+          handler({ promise: promise, reason: value });
+        } else if ((console = global.console) && console.error) {
           console.error('Unhandled promise rejection', value);
         }
       });
       // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
       promise._h = isNode || isUnhandled(promise) ? 2 : 1;
     } promise._a = undefined;
-    if(abrupt)throw abrupt.error;
+    if (unhandled && result.e) throw result.v;
   });
 };
-var isUnhandled = function(promise){
-  if(promise._h == 1)return false;
-  var chain = promise._a || promise._c
-    , i     = 0
-    , reaction;
-  while(chain.length > i){
+var isUnhandled = function (promise) {
+  if (promise._h == 1) return false;
+  var chain = promise._a || promise._c;
+  var i = 0;
+  var reaction;
+  while (chain.length > i) {
     reaction = chain[i++];
-    if(reaction.fail || !isUnhandled(reaction.promise))return false;
+    if (reaction.fail || !isUnhandled(reaction.promise)) return false;
   } return true;
 };
-var onHandleUnhandled = function(promise){
-  task.call(global, function(){
+var onHandleUnhandled = function (promise) {
+  task.call(global, function () {
     var handler;
-    if(isNode){
+    if (isNode) {
       process.emit('rejectionHandled', promise);
-    } else if(handler = global.onrejectionhandled){
-      handler({promise: promise, reason: promise._v});
+    } else if (handler = global.onrejectionhandled) {
+      handler({ promise: promise, reason: promise._v });
     }
   });
 };
-var $reject = function(value){
+var $reject = function (value) {
   var promise = this;
-  if(promise._d)return;
+  if (promise._d) return;
   promise._d = true;
   promise = promise._w || promise; // unwrap
   promise._v = value;
   promise._s = 2;
-  if(!promise._a)promise._a = promise._c.slice();
+  if (!promise._a) promise._a = promise._c.slice();
   notify(promise, true);
 };
-var $resolve = function(value){
-  var promise = this
-    , then;
-  if(promise._d)return;
+var $resolve = function (value) {
+  var promise = this;
+  var then;
+  if (promise._d) return;
   promise._d = true;
   promise = promise._w || promise; // unwrap
   try {
-    if(promise === value)throw TypeError("Promise can't be resolved itself");
-    if(then = isThenable(value)){
-      microtask(function(){
-        var wrapper = {_w: promise, _d: false}; // wrap
+    if (promise === value) throw TypeError("Promise can't be resolved itself");
+    if (then = isThenable(value)) {
+      microtask(function () {
+        var wrapper = { _w: promise, _d: false }; // wrap
         try {
           then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
-        } catch(e){
+        } catch (e) {
           $reject.call(wrapper, e);
         }
       });
@@ -4714,25 +4811,26 @@ var $resolve = function(value){
       promise._s = 1;
       notify(promise, false);
     }
-  } catch(e){
-    $reject.call({_w: promise, _d: false}, e); // wrap
+  } catch (e) {
+    $reject.call({ _w: promise, _d: false }, e); // wrap
   }
 };
 
 // constructor polyfill
-if(!USE_NATIVE){
+if (!USE_NATIVE) {
   // 25.4.3.1 Promise(executor)
-  $Promise = function Promise(executor){
+  $Promise = function Promise(executor) {
     anInstance(this, $Promise, PROMISE, '_h');
     aFunction(executor);
     Internal.call(this);
     try {
       executor(ctx($resolve, this, 1), ctx($reject, this, 1));
-    } catch(err){
+    } catch (err) {
       $reject.call(this, err);
     }
   };
-  Internal = function Promise(executor){
+  // eslint-disable-next-line no-unused-vars
+  Internal = function Promise(executor) {
     this._c = [];             // <- awaiting reactions
     this._a = undefined;      // <- checked in isUnhandled reactions
     this._s = 0;              // <- state
@@ -4741,98 +4839,100 @@ if(!USE_NATIVE){
     this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
     this._n = false;          // <- notify
   };
-  Internal.prototype = interopDefault(require$$3$7)($Promise.prototype, {
+  Internal.prototype = interopDefault(require$$3$6)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
-    then: function then(onFulfilled, onRejected){
-      var reaction    = newPromiseCapability(speciesConstructor(this, $Promise));
-      reaction.ok     = typeof onFulfilled == 'function' ? onFulfilled : true;
-      reaction.fail   = typeof onRejected == 'function' && onRejected;
+    then: function then(onFulfilled, onRejected) {
+      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
+      reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;
+      reaction.fail = typeof onRejected == 'function' && onRejected;
       reaction.domain = isNode ? process.domain : undefined;
       this._c.push(reaction);
-      if(this._a)this._a.push(reaction);
-      if(this._s)notify(this, false);
+      if (this._a) this._a.push(reaction);
+      if (this._s) notify(this, false);
       return reaction.promise;
     },
     // 25.4.5.1 Promise.prototype.catch(onRejected)
-    'catch': function(onRejected){
+    'catch': function (onRejected) {
       return this.then(undefined, onRejected);
     }
   });
-  PromiseCapability = function(){
-    var promise  = new Internal;
+  OwnPromiseCapability = function () {
+    var promise = new Internal();
     this.promise = promise;
     this.resolve = ctx($resolve, promise, 1);
-    this.reject  = ctx($reject, promise, 1);
+    this.reject = ctx($reject, promise, 1);
+  };
+  newPromiseCapabilityModule.f = newPromiseCapability = function (C) {
+    return sameConstructor($Promise, C)
+      ? new OwnPromiseCapability(C)
+      : newGenericPromiseCapability(C);
   };
 }
 
-$export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
-interopDefault(require$$0$3)($Promise, PROMISE);
-interopDefault(require$$0$35)(PROMISE);
+$export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
+interopDefault(require$$0$2)($Promise, PROMISE);
+interopDefault(require$$0$36)(PROMISE);
 Wrapper = interopDefault(require$$0)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
   // 25.4.4.5 Promise.reject(r)
-  reject: function reject(r){
-    var capability = newPromiseCapability(this)
-      , $$reject   = capability.reject;
+  reject: function reject(r) {
+    var capability = newPromiseCapability(this);
+    var $$reject = capability.reject;
     $$reject(r);
     return capability.promise;
   }
 });
 $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
   // 25.4.4.6 Promise.resolve(x)
-  resolve: function resolve(x){
+  resolve: function resolve(x) {
     // instanceof instead of internal slot check because we should fix it without replacement native Promise core
-    if(x instanceof $Promise && sameConstructor(x.constructor, this))return x;
-    var capability = newPromiseCapability(this)
-      , $$resolve  = capability.resolve;
-    $$resolve(x);
-    return capability.promise;
+    if (x instanceof $Promise && sameConstructor(x.constructor, this)) return x;
+    return promiseResolve(this, x);
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$5$2)(function(iter){
+$export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$5$5)(function (iter) {
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
-  all: function all(iterable){
-    var C          = this
-      , capability = newPromiseCapability(C)
-      , resolve    = capability.resolve
-      , reject     = capability.reject;
-    var abrupt = perform(function(){
-      var values    = []
-        , index     = 0
-        , remaining = 1;
-      forOf(iterable, false, function(promise){
-        var $index        = index++
-          , alreadyCalled = false;
+  all: function all(iterable) {
+    var C = this;
+    var capability = newPromiseCapability(C);
+    var resolve = capability.resolve;
+    var reject = capability.reject;
+    var result = perform(function () {
+      var values = [];
+      var index = 0;
+      var remaining = 1;
+      forOf(iterable, false, function (promise) {
+        var $index = index++;
+        var alreadyCalled = false;
         values.push(undefined);
         remaining++;
-        C.resolve(promise).then(function(value){
-          if(alreadyCalled)return;
-          alreadyCalled  = true;
+        C.resolve(promise).then(function (value) {
+          if (alreadyCalled) return;
+          alreadyCalled = true;
           values[$index] = value;
           --remaining || resolve(values);
         }, reject);
       });
       --remaining || resolve(values);
     });
-    if(abrupt)reject(abrupt.error);
+    if (result.e) reject(result.v);
     return capability.promise;
   },
   // 25.4.4.4 Promise.race(iterable)
-  race: function race(iterable){
-    var C          = this
-      , capability = newPromiseCapability(C)
-      , reject     = capability.reject;
-    var abrupt = perform(function(){
-      forOf(iterable, false, function(promise){
+  race: function race(iterable) {
+    var C = this;
+    var capability = newPromiseCapability(C);
+    var reject = capability.reject;
+    var result = perform(function () {
+      forOf(iterable, false, function (promise) {
         C.resolve(promise).then(capability.resolve, reject);
       });
     });
-    if(abrupt)reject(abrupt.error);
+    if (result.e) reject(result.v);
     return capability.promise;
   }
 });
@@ -4840,49 +4940,66 @@ $export($export.S + $export.F * !(USE_NATIVE && interopDefault(require$$5$2)(fun
 
 interopDefault(es6_promise);
 
+var _validateCollection = createCommonjsModule(function (module) {
+var isObject = interopDefault(require$$3$1);
+module.exports = function (it, TYPE) {
+  if (!isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
+  return it;
+};
+});
+
+var _validateCollection$1 = interopDefault(_validateCollection);
+
+
+var require$$1$24 = Object.freeze({
+  default: _validateCollection$1
+});
+
 var _collectionStrong = createCommonjsModule(function (module) {
 'use strict';
-var dP          = interopDefault(require$$2$1).f
-  , create      = interopDefault(require$$6$1)
-  , redefineAll = interopDefault(require$$3$7)
-  , ctx         = interopDefault(require$$31)
-  , anInstance  = interopDefault(require$$4$6)
-  , defined     = interopDefault(require$$4$3)
-  , forOf       = interopDefault(require$$1$20)
-  , $iterDefine = interopDefault(require$$4$4)
-  , step        = interopDefault(require$$3$6)
-  , setSpecies  = interopDefault(require$$0$35)
-  , DESCRIPTORS = interopDefault(require$$1)
-  , fastKey     = interopDefault(require$$6).fastKey
-  , SIZE        = DESCRIPTORS ? '_s' : 'size';
+var dP = interopDefault(require$$2$1).f;
+var create = interopDefault(require$$6);
+var redefineAll = interopDefault(require$$3$6);
+var ctx = interopDefault(require$$1$4);
+var anInstance = interopDefault(require$$4$7);
+var forOf = interopDefault(require$$1$21);
+var $iterDefine = interopDefault(require$$5$4);
+var step = interopDefault(require$$4$6);
+var setSpecies = interopDefault(require$$0$36);
+var DESCRIPTORS = interopDefault(require$$1);
+var fastKey = interopDefault(require$$7).fastKey;
+var validate = interopDefault(require$$1$24);
+var SIZE = DESCRIPTORS ? '_s' : 'size';
 
-var getEntry = function(that, key){
+var getEntry = function (that, key) {
   // fast case
-  var index = fastKey(key), entry;
-  if(index !== 'F')return that._i[index];
+  var index = fastKey(key);
+  var entry;
+  if (index !== 'F') return that._i[index];
   // frozen object case
-  for(entry = that._f; entry; entry = entry.n){
-    if(entry.k == key)return entry;
+  for (entry = that._f; entry; entry = entry.n) {
+    if (entry.k == key) return entry;
   }
 };
 
 module.exports = {
-  getConstructor: function(wrapper, NAME, IS_MAP, ADDER){
-    var C = wrapper(function(that, iterable){
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
       anInstance(that, C, NAME, '_i');
+      that._t = NAME;         // collection type
       that._i = create(null); // index
       that._f = undefined;    // first entry
       that._l = undefined;    // last entry
       that[SIZE] = 0;         // size
-      if(iterable != undefined)forOf(iterable, IS_MAP, that[ADDER], that);
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
     });
     redefineAll(C.prototype, {
       // 23.1.3.1 Map.prototype.clear()
       // 23.2.3.2 Set.prototype.clear()
-      clear: function clear(){
-        for(var that = this, data = that._i, entry = that._f; entry; entry = entry.n){
+      clear: function clear() {
+        for (var that = validate(this, NAME), data = that._i, entry = that._f; entry; entry = entry.n) {
           entry.r = true;
-          if(entry.p)entry.p = entry.p.n = undefined;
+          if (entry.p) entry.p = entry.p.n = undefined;
           delete data[entry.i];
         }
         that._f = that._l = undefined;
@@ -4890,51 +5007,51 @@ module.exports = {
       },
       // 23.1.3.3 Map.prototype.delete(key)
       // 23.2.3.4 Set.prototype.delete(value)
-      'delete': function(key){
-        var that  = this
-          , entry = getEntry(that, key);
-        if(entry){
-          var next = entry.n
-            , prev = entry.p;
+      'delete': function (key) {
+        var that = validate(this, NAME);
+        var entry = getEntry(that, key);
+        if (entry) {
+          var next = entry.n;
+          var prev = entry.p;
           delete that._i[entry.i];
           entry.r = true;
-          if(prev)prev.n = next;
-          if(next)next.p = prev;
-          if(that._f == entry)that._f = next;
-          if(that._l == entry)that._l = prev;
+          if (prev) prev.n = next;
+          if (next) next.p = prev;
+          if (that._f == entry) that._f = next;
+          if (that._l == entry) that._l = prev;
           that[SIZE]--;
         } return !!entry;
       },
       // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
       // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn /*, that = undefined */){
-        anInstance(this, C, 'forEach');
-        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3)
-          , entry;
-        while(entry = entry ? entry.n : this._f){
+      forEach: function forEach(callbackfn /* , that = undefined */) {
+        validate(this, NAME);
+        var f = ctx(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+        var entry;
+        while (entry = entry ? entry.n : this._f) {
           f(entry.v, entry.k, this);
           // revert to the last existing entry
-          while(entry && entry.r)entry = entry.p;
+          while (entry && entry.r) entry = entry.p;
         }
       },
       // 23.1.3.7 Map.prototype.has(key)
       // 23.2.3.7 Set.prototype.has(value)
-      has: function has(key){
-        return !!getEntry(this, key);
+      has: function has(key) {
+        return !!getEntry(validate(this, NAME), key);
       }
     });
-    if(DESCRIPTORS)dP(C.prototype, 'size', {
-      get: function(){
-        return defined(this[SIZE]);
+    if (DESCRIPTORS) dP(C.prototype, 'size', {
+      get: function () {
+        return validate(this, NAME)[SIZE];
       }
     });
     return C;
   },
-  def: function(that, key, value){
-    var entry = getEntry(that, key)
-      , prev, index;
+  def: function (that, key, value) {
+    var entry = getEntry(that, key);
+    var prev, index;
     // change existing entry
-    if(entry){
+    if (entry) {
       entry.v = value;
     // create new entry
     } else {
@@ -4946,38 +5063,38 @@ module.exports = {
         n: undefined,                  // <- next entry
         r: false                       // <- removed
       };
-      if(!that._f)that._f = entry;
-      if(prev)prev.n = entry;
+      if (!that._f) that._f = entry;
+      if (prev) prev.n = entry;
       that[SIZE]++;
       // add to index
-      if(index !== 'F')that._i[index] = entry;
+      if (index !== 'F') that._i[index] = entry;
     } return that;
   },
   getEntry: getEntry,
-  setStrong: function(C, NAME, IS_MAP){
+  setStrong: function (C, NAME, IS_MAP) {
     // add .keys, .values, .entries, [@@iterator]
     // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
-    $iterDefine(C, NAME, function(iterated, kind){
-      this._t = iterated;  // target
-      this._k = kind;      // kind
-      this._l = undefined; // previous
-    }, function(){
-      var that  = this
-        , kind  = that._k
-        , entry = that._l;
+    $iterDefine(C, NAME, function (iterated, kind) {
+      this._t = validate(iterated, NAME); // target
+      this._k = kind;                     // kind
+      this._l = undefined;                // previous
+    }, function () {
+      var that = this;
+      var kind = that._k;
+      var entry = that._l;
       // revert to the last existing entry
-      while(entry && entry.r)entry = entry.p;
+      while (entry && entry.r) entry = entry.p;
       // get next entry
-      if(!that._t || !(that._l = entry = entry ? entry.n : that._t._f)){
+      if (!that._t || !(that._l = entry = entry ? entry.n : that._t._f)) {
         // or finish the iteration
         that._t = undefined;
         return step(1);
       }
       // return step by kind
-      if(kind == 'keys'  )return step(0, entry.k);
-      if(kind == 'values')return step(0, entry.v);
+      if (kind == 'keys') return step(0, entry.k);
+      if (kind == 'values') return step(0, entry.v);
       return step(0, [entry.k, entry.v]);
-    }, IS_MAP ? 'entries' : 'values' , !IS_MAP, true);
+    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
 
     // add [@@species], 23.1.2.2, 23.2.2.2
     setSpecies(NAME);
@@ -4991,7 +5108,7 @@ var def = _collectionStrong.def;
 var getEntry = _collectionStrong.getEntry;
 var setStrong = _collectionStrong.setStrong;
 
-var require$$1$21 = Object.freeze({
+var require$$2$10 = Object.freeze({
   default: _collectionStrong$1,
   getConstructor: getConstructor,
   def: def,
@@ -5001,79 +5118,79 @@ var require$$1$21 = Object.freeze({
 
 var _collection = createCommonjsModule(function (module) {
 'use strict';
-var global            = interopDefault(require$$3)
-  , $export           = interopDefault(require$$1$2)
-  , redefine          = interopDefault(require$$4$2)
-  , redefineAll       = interopDefault(require$$3$7)
-  , meta              = interopDefault(require$$6)
-  , forOf             = interopDefault(require$$1$20)
-  , anInstance        = interopDefault(require$$4$6)
-  , isObject          = interopDefault(require$$0$1)
-  , fails             = interopDefault(require$$1$1)
-  , $iterDetect       = interopDefault(require$$5$2)
-  , setToStringTag    = interopDefault(require$$0$3)
-  , inheritIfRequired = interopDefault(require$$0$19);
+var global = interopDefault(require$$3);
+var $export = interopDefault(require$$1$2);
+var redefine = interopDefault(require$$4$2);
+var redefineAll = interopDefault(require$$3$6);
+var meta = interopDefault(require$$7);
+var forOf = interopDefault(require$$1$21);
+var anInstance = interopDefault(require$$4$7);
+var isObject = interopDefault(require$$3$1);
+var fails = interopDefault(require$$1$1);
+var $iterDetect = interopDefault(require$$5$5);
+var setToStringTag = interopDefault(require$$0$2);
+var inheritIfRequired = interopDefault(require$$0$19);
 
-module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
-  var Base  = global[NAME]
-    , C     = Base
-    , ADDER = IS_MAP ? 'set' : 'add'
-    , proto = C && C.prototype
-    , O     = {};
-  var fixMethod = function(KEY){
+module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
+  var Base = global[NAME];
+  var C = Base;
+  var ADDER = IS_MAP ? 'set' : 'add';
+  var proto = C && C.prototype;
+  var O = {};
+  var fixMethod = function (KEY) {
     var fn = proto[KEY];
     redefine(proto, KEY,
-      KEY == 'delete' ? function(a){
+      KEY == 'delete' ? function (a) {
         return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'has' ? function has(a){
+      } : KEY == 'has' ? function has(a) {
         return IS_WEAK && !isObject(a) ? false : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'get' ? function get(a){
+      } : KEY == 'get' ? function get(a) {
         return IS_WEAK && !isObject(a) ? undefined : fn.call(this, a === 0 ? 0 : a);
-      } : KEY == 'add' ? function add(a){ fn.call(this, a === 0 ? 0 : a); return this; }
-        : function set(a, b){ fn.call(this, a === 0 ? 0 : a, b); return this; }
+      } : KEY == 'add' ? function add(a) { fn.call(this, a === 0 ? 0 : a); return this; }
+        : function set(a, b) { fn.call(this, a === 0 ? 0 : a, b); return this; }
     );
   };
-  if(typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function(){
+  if (typeof C != 'function' || !(IS_WEAK || proto.forEach && !fails(function () {
     new C().entries().next();
-  }))){
+  }))) {
     // create collection constructor
     C = common.getConstructor(wrapper, NAME, IS_MAP, ADDER);
     redefineAll(C.prototype, methods);
     meta.NEED = true;
   } else {
-    var instance             = new C
-      // early implementations not supports chaining
-      , HASNT_CHAINING       = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance
-      // V8 ~  Chromium 40- weak-collections throws on primitives, but should return false
-      , THROWS_ON_PRIMITIVES = fails(function(){ instance.has(1); })
-      // most early implementations doesn't supports iterables, most modern - not close it correctly
-      , ACCEPT_ITERABLES     = $iterDetect(function(iter){ new C(iter); }) // eslint-disable-line no-new
-      // for early implementations -0 and +0 not the same
-      , BUGGY_ZERO = !IS_WEAK && fails(function(){
-        // V8 ~ Chromium 42- fails only with 5+ elements
-        var $instance = new C()
-          , index     = 5;
-        while(index--)$instance[ADDER](index, index);
-        return !$instance.has(-0);
-      });
-    if(!ACCEPT_ITERABLES){ 
-      C = wrapper(function(target, iterable){
+    var instance = new C();
+    // early implementations not supports chaining
+    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
+    // V8 ~  Chromium 40- weak-collections throws on primitives, but should return false
+    var THROWS_ON_PRIMITIVES = fails(function () { instance.has(1); });
+    // most early implementations doesn't supports iterables, most modern - not close it correctly
+    var ACCEPT_ITERABLES = $iterDetect(function (iter) { new C(iter); }); // eslint-disable-line no-new
+    // for early implementations -0 and +0 not the same
+    var BUGGY_ZERO = !IS_WEAK && fails(function () {
+      // V8 ~ Chromium 42- fails only with 5+ elements
+      var $instance = new C();
+      var index = 5;
+      while (index--) $instance[ADDER](index, index);
+      return !$instance.has(-0);
+    });
+    if (!ACCEPT_ITERABLES) {
+      C = wrapper(function (target, iterable) {
         anInstance(target, C, NAME);
-        var that = inheritIfRequired(new Base, target, C);
-        if(iterable != undefined)forOf(iterable, IS_MAP, that[ADDER], that);
+        var that = inheritIfRequired(new Base(), target, C);
+        if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
         return that;
       });
       C.prototype = proto;
       proto.constructor = C;
     }
-    if(THROWS_ON_PRIMITIVES || BUGGY_ZERO){
+    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
       fixMethod('delete');
       fixMethod('has');
       IS_MAP && fixMethod('get');
     }
-    if(BUGGY_ZERO || HASNT_CHAINING)fixMethod(ADDER);
+    if (BUGGY_ZERO || HASNT_CHAINING) fixMethod(ADDER);
     // weak collections should not contains .clear method
-    if(IS_WEAK && proto.clear)delete proto.clear;
+    if (IS_WEAK && proto.clear) delete proto.clear;
   }
 
   setToStringTag(C, NAME);
@@ -5081,7 +5198,7 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
   O[NAME] = C;
   $export($export.G + $export.W + $export.F * (C != Base), O);
 
-  if(!IS_WEAK)common.setStrong(C, NAME, IS_MAP);
+  if (!IS_WEAK) common.setStrong(C, NAME, IS_MAP);
 
   return C;
 };
@@ -5090,26 +5207,28 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 var _collection$1 = interopDefault(_collection);
 
 
-var require$$0$37 = Object.freeze({
+var require$$0$40 = Object.freeze({
   default: _collection$1
 });
 
 var es6_map = createCommonjsModule(function (module) {
 'use strict';
-var strong = interopDefault(require$$1$21);
+var strong = interopDefault(require$$2$10);
+var validate = interopDefault(require$$1$24);
+var MAP = 'Map';
 
 // 23.1 Map Objects
-module.exports = interopDefault(require$$0$37)('Map', function(get){
-  return function Map(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+module.exports = interopDefault(require$$0$40)(MAP, function (get) {
+  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.1.3.6 Map.prototype.get(key)
-  get: function get(key){
-    var entry = strong.getEntry(this, key);
+  get: function get(key) {
+    var entry = strong.getEntry(validate(this, MAP), key);
     return entry && entry.v;
   },
   // 23.1.3.9 Map.prototype.set(key, value)
-  set: function set(key, value){
-    return strong.def(this, key === 0 ? 0 : key, value);
+  set: function set(key, value) {
+    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
   }
 }, strong, true);
 });
@@ -5117,21 +5236,23 @@ module.exports = interopDefault(require$$0$37)('Map', function(get){
 var es6_map$1 = interopDefault(es6_map);
 
 
-var require$$3$8 = Object.freeze({
+var require$$3$7 = Object.freeze({
   default: es6_map$1
 });
 
 var es6_set = createCommonjsModule(function (module) {
 'use strict';
-var strong = interopDefault(require$$1$21);
+var strong = interopDefault(require$$2$10);
+var validate = interopDefault(require$$1$24);
+var SET = 'Set';
 
 // 23.2 Set Objects
-module.exports = interopDefault(require$$0$37)('Set', function(get){
-  return function Set(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+module.exports = interopDefault(require$$0$40)(SET, function (get) {
+  return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.2.3.1 Set.prototype.add(value)
-  add: function add(value){
-    return strong.def(this, value = value === 0 ? 0 : value, value);
+  add: function add(value) {
+    return strong.def(validate(this, SET), value = value === 0 ? 0 : value, value);
   }
 }, strong);
 });
@@ -5139,89 +5260,91 @@ module.exports = interopDefault(require$$0$37)('Set', function(get){
 var es6_set$1 = interopDefault(es6_set);
 
 
-var require$$4$7 = Object.freeze({
+var require$$4$8 = Object.freeze({
   default: es6_set$1
 });
 
 var _collectionWeak = createCommonjsModule(function (module) {
 'use strict';
-var redefineAll       = interopDefault(require$$3$7)
-  , getWeak           = interopDefault(require$$6).getWeak
-  , anObject          = interopDefault(require$$5)
-  , isObject          = interopDefault(require$$0$1)
-  , anInstance        = interopDefault(require$$4$6)
-  , forOf             = interopDefault(require$$1$20)
-  , createArrayMethod = interopDefault(require$$10)
-  , $has              = interopDefault(require$$4)
-  , arrayFind         = createArrayMethod(5)
-  , arrayFindIndex    = createArrayMethod(6)
-  , id                = 0;
+var redefineAll = interopDefault(require$$3$6);
+var getWeak = interopDefault(require$$7).getWeak;
+var anObject = interopDefault(require$$5);
+var isObject = interopDefault(require$$3$1);
+var anInstance = interopDefault(require$$4$7);
+var forOf = interopDefault(require$$1$21);
+var createArrayMethod = interopDefault(require$$10);
+var $has = interopDefault(require$$4);
+var validate = interopDefault(require$$1$24);
+var arrayFind = createArrayMethod(5);
+var arrayFindIndex = createArrayMethod(6);
+var id = 0;
 
 // fallback for uncaught frozen keys
-var uncaughtFrozenStore = function(that){
-  return that._l || (that._l = new UncaughtFrozenStore);
+var uncaughtFrozenStore = function (that) {
+  return that._l || (that._l = new UncaughtFrozenStore());
 };
-var UncaughtFrozenStore = function(){
+var UncaughtFrozenStore = function () {
   this.a = [];
 };
-var findUncaughtFrozen = function(store, key){
-  return arrayFind(store.a, function(it){
+var findUncaughtFrozen = function (store, key) {
+  return arrayFind(store.a, function (it) {
     return it[0] === key;
   });
 };
 UncaughtFrozenStore.prototype = {
-  get: function(key){
+  get: function (key) {
     var entry = findUncaughtFrozen(this, key);
-    if(entry)return entry[1];
+    if (entry) return entry[1];
   },
-  has: function(key){
+  has: function (key) {
     return !!findUncaughtFrozen(this, key);
   },
-  set: function(key, value){
+  set: function (key, value) {
     var entry = findUncaughtFrozen(this, key);
-    if(entry)entry[1] = value;
+    if (entry) entry[1] = value;
     else this.a.push([key, value]);
   },
-  'delete': function(key){
-    var index = arrayFindIndex(this.a, function(it){
+  'delete': function (key) {
+    var index = arrayFindIndex(this.a, function (it) {
       return it[0] === key;
     });
-    if(~index)this.a.splice(index, 1);
+    if (~index) this.a.splice(index, 1);
     return !!~index;
   }
 };
 
 module.exports = {
-  getConstructor: function(wrapper, NAME, IS_MAP, ADDER){
-    var C = wrapper(function(that, iterable){
+  getConstructor: function (wrapper, NAME, IS_MAP, ADDER) {
+    var C = wrapper(function (that, iterable) {
       anInstance(that, C, NAME, '_i');
+      that._t = NAME;      // collection type
       that._i = id++;      // collection id
       that._l = undefined; // leak store for uncaught frozen objects
-      if(iterable != undefined)forOf(iterable, IS_MAP, that[ADDER], that);
+      if (iterable != undefined) forOf(iterable, IS_MAP, that[ADDER], that);
     });
     redefineAll(C.prototype, {
       // 23.3.3.2 WeakMap.prototype.delete(key)
       // 23.4.3.3 WeakSet.prototype.delete(value)
-      'delete': function(key){
-        if(!isObject(key))return false;
+      'delete': function (key) {
+        if (!isObject(key)) return false;
         var data = getWeak(key);
-        if(data === true)return uncaughtFrozenStore(this)['delete'](key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME))['delete'](key);
         return data && $has(data, this._i) && delete data[this._i];
       },
       // 23.3.3.4 WeakMap.prototype.has(key)
       // 23.4.3.4 WeakSet.prototype.has(value)
-      has: function has(key){
-        if(!isObject(key))return false;
+      has: function has(key) {
+        if (!isObject(key)) return false;
         var data = getWeak(key);
-        if(data === true)return uncaughtFrozenStore(this).has(key);
+        if (data === true) return uncaughtFrozenStore(validate(this, NAME)).has(key);
         return data && $has(data, this._i);
       }
     });
     return C;
   },
-  def: function(that, key, value){
+  def: function (that, key, value) {
     var data = getWeak(anObject(key), true);
-    if(data === true)uncaughtFrozenStore(that).set(key, value);
+    if (data === true) uncaughtFrozenStore(that).set(key, value);
     else data[that._i] = value;
     return that;
   },
@@ -5234,7 +5357,7 @@ var getConstructor$1 = _collectionWeak.getConstructor;
 var def$1 = _collectionWeak.def;
 var ufstore = _collectionWeak.ufstore;
 
-var require$$1$22 = Object.freeze({
+var require$$2$11 = Object.freeze({
   default: _collectionWeak$1,
   getConstructor: getConstructor$1,
   def: def$1,
@@ -5243,54 +5366,57 @@ var require$$1$22 = Object.freeze({
 
 var es6_weakMap = createCommonjsModule(function (module) {
 'use strict';
-var each         = interopDefault(require$$10)(0)
-  , redefine     = interopDefault(require$$4$2)
-  , meta         = interopDefault(require$$6)
-  , assign       = interopDefault(require$$3$4)
-  , weak         = interopDefault(require$$1$22)
-  , isObject     = interopDefault(require$$0$1)
-  , getWeak      = meta.getWeak
-  , isExtensible = Object.isExtensible
-  , uncaughtFrozenStore = weak.ufstore
-  , tmp          = {}
-  , InternalMap;
+var each = interopDefault(require$$10)(0);
+var redefine = interopDefault(require$$4$2);
+var meta = interopDefault(require$$7);
+var assign = interopDefault(require$$5$3);
+var weak = interopDefault(require$$2$11);
+var isObject = interopDefault(require$$3$1);
+var fails = interopDefault(require$$1$1);
+var validate = interopDefault(require$$1$24);
+var WEAK_MAP = 'WeakMap';
+var getWeak = meta.getWeak;
+var isExtensible = Object.isExtensible;
+var uncaughtFrozenStore = weak.ufstore;
+var tmp = {};
+var InternalMap;
 
-var wrapper = function(get){
-  return function WeakMap(){
+var wrapper = function (get) {
+  return function WeakMap() {
     return get(this, arguments.length > 0 ? arguments[0] : undefined);
   };
 };
 
 var methods = {
   // 23.3.3.3 WeakMap.prototype.get(key)
-  get: function get(key){
-    if(isObject(key)){
+  get: function get(key) {
+    if (isObject(key)) {
       var data = getWeak(key);
-      if(data === true)return uncaughtFrozenStore(this).get(key);
+      if (data === true) return uncaughtFrozenStore(validate(this, WEAK_MAP)).get(key);
       return data ? data[this._i] : undefined;
     }
   },
   // 23.3.3.5 WeakMap.prototype.set(key, value)
-  set: function set(key, value){
-    return weak.def(this, key, value);
+  set: function set(key, value) {
+    return weak.def(validate(this, WEAK_MAP), key, value);
   }
 };
 
 // 23.3 WeakMap Objects
-var $WeakMap = module.exports = interopDefault(require$$0$37)('WeakMap', wrapper, methods, weak, true, true);
+var $WeakMap = module.exports = interopDefault(require$$0$40)(WEAK_MAP, wrapper, methods, weak, true, true);
 
 // IE11 WeakMap frozen keys fix
-if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
-  InternalMap = weak.getConstructor(wrapper);
+if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7; })) {
+  InternalMap = weak.getConstructor(wrapper, WEAK_MAP);
   assign(InternalMap.prototype, methods);
   meta.NEED = true;
-  each(['delete', 'has', 'get', 'set'], function(key){
-    var proto  = $WeakMap.prototype
-      , method = proto[key];
-    redefine(proto, key, function(a, b){
+  each(['delete', 'has', 'get', 'set'], function (key) {
+    var proto = $WeakMap.prototype;
+    var method = proto[key];
+    redefine(proto, key, function (a, b) {
       // store frozen objects on internal weakmap shim
-      if(isObject(a) && !isExtensible(a)){
-        if(!this._f)this._f = new InternalMap;
+      if (isObject(a) && !isExtensible(a)) {
+        if (!this._f) this._f = new InternalMap();
         var result = this._f[key](a, b);
         return key == 'set' ? this : result;
       // store all the rest on native weakmap
@@ -5303,21 +5429,23 @@ if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
 var es6_weakMap$1 = interopDefault(es6_weakMap);
 
 
-var require$$0$38 = Object.freeze({
+var require$$0$41 = Object.freeze({
   default: es6_weakMap$1
 });
 
 var es6_weakSet = createCommonjsModule(function (module) {
 'use strict';
-var weak = interopDefault(require$$1$22);
+var weak = interopDefault(require$$2$11);
+var validate = interopDefault(require$$1$24);
+var WEAK_SET = 'WeakSet';
 
 // 23.4 WeakSet Objects
-interopDefault(require$$0$37)('WeakSet', function(get){
-  return function WeakSet(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+interopDefault(require$$0$40)(WEAK_SET, function (get) {
+  return function WeakSet() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.4.3.1 WeakSet.prototype.add(value)
-  add: function add(value){
-    return weak.def(this, value, true);
+  add: function add(value) {
+    return weak.def(validate(this, WEAK_SET), value, true);
   }
 }, weak, false, true);
 });
@@ -5325,31 +5453,33 @@ interopDefault(require$$0$37)('WeakSet', function(get){
 interopDefault(es6_weakSet);
 
 var _typed = createCommonjsModule(function (module) {
-var global = interopDefault(require$$3)
-  , hide   = interopDefault(require$$2)
-  , uid    = interopDefault(require$$12)
-  , TYPED  = uid('typed_array')
-  , VIEW   = uid('view')
-  , ABV    = !!(global.ArrayBuffer && global.DataView)
-  , CONSTR = ABV
-  , i = 0, l = 9, Typed;
+var global = interopDefault(require$$3);
+var hide = interopDefault(require$$2);
+var uid = interopDefault(require$$12);
+var TYPED = uid('typed_array');
+var VIEW = uid('view');
+var ABV = !!(global.ArrayBuffer && global.DataView);
+var CONSTR = ABV;
+var i = 0;
+var l = 9;
+var Typed;
 
 var TypedArrayConstructors = (
   'Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array'
 ).split(',');
 
-while(i < l){
-  if(Typed = global[TypedArrayConstructors[i++]]){
+while (i < l) {
+  if (Typed = global[TypedArrayConstructors[i++]]) {
     hide(Typed.prototype, TYPED, true);
     hide(Typed.prototype, VIEW, true);
   } else CONSTR = false;
 }
 
 module.exports = {
-  ABV:    ABV,
+  ABV: ABV,
   CONSTR: CONSTR,
-  TYPED:  TYPED,
-  VIEW:   VIEW
+  TYPED: TYPED,
+  VIEW: VIEW
 };
 });
 
@@ -5367,78 +5497,102 @@ var require$$33 = Object.freeze({
   VIEW: VIEW
 });
 
+var _toIndex = createCommonjsModule(function (module) {
+// https://tc39.github.io/ecma262/#sec-toindex
+var toInteger = interopDefault(require$$2$5);
+var toLength = interopDefault(require$$3$2);
+module.exports = function (it) {
+  if (it === undefined) return 0;
+  var number = toInteger(it);
+  var length = toLength(number);
+  if (number !== length) throw RangeError('Wrong length!');
+  return length;
+};
+});
+
+var _toIndex$1 = interopDefault(_toIndex);
+
+
+var require$$24 = Object.freeze({
+  default: _toIndex$1
+});
+
 var _typedBuffer = createCommonjsModule(function (module, exports) {
 'use strict';
-var global         = interopDefault(require$$3)
-  , DESCRIPTORS    = interopDefault(require$$1)
-  , LIBRARY        = interopDefault(require$$2$4)
-  , $typed         = interopDefault(require$$33)
-  , hide           = interopDefault(require$$2)
-  , redefineAll    = interopDefault(require$$3$7)
-  , fails          = interopDefault(require$$1$1)
-  , anInstance     = interopDefault(require$$4$6)
-  , toInteger      = interopDefault(require$$26)
-  , toLength       = interopDefault(require$$3$1)
-  , gOPN           = interopDefault(require$$3$3).f
-  , dP             = interopDefault(require$$2$1).f
-  , arrayFill      = interopDefault(require$$3$5)
-  , setToStringTag = interopDefault(require$$0$3)
-  , ARRAY_BUFFER   = 'ArrayBuffer'
-  , DATA_VIEW      = 'DataView'
-  , PROTOTYPE      = 'prototype'
-  , WRONG_LENGTH   = 'Wrong length!'
-  , WRONG_INDEX    = 'Wrong index!'
-  , $ArrayBuffer   = global[ARRAY_BUFFER]
-  , $DataView      = global[DATA_VIEW]
-  , Math           = global.Math
-  , RangeError     = global.RangeError
-  , Infinity       = global.Infinity
-  , BaseBuffer     = $ArrayBuffer
-  , abs            = Math.abs
-  , pow            = Math.pow
-  , floor          = Math.floor
-  , log            = Math.log
-  , LN2            = Math.LN2
-  , BUFFER         = 'buffer'
-  , BYTE_LENGTH    = 'byteLength'
-  , BYTE_OFFSET    = 'byteOffset'
-  , $BUFFER        = DESCRIPTORS ? '_b' : BUFFER
-  , $LENGTH        = DESCRIPTORS ? '_l' : BYTE_LENGTH
-  , $OFFSET        = DESCRIPTORS ? '_o' : BYTE_OFFSET;
+var global = interopDefault(require$$3);
+var DESCRIPTORS = interopDefault(require$$1);
+var LIBRARY = interopDefault(require$$2$4);
+var $typed = interopDefault(require$$33);
+var hide = interopDefault(require$$2);
+var redefineAll = interopDefault(require$$3$6);
+var fails = interopDefault(require$$1$1);
+var anInstance = interopDefault(require$$4$7);
+var toInteger = interopDefault(require$$2$5);
+var toLength = interopDefault(require$$3$2);
+var toIndex = interopDefault(require$$24);
+var gOPN = interopDefault(require$$3$4).f;
+var dP = interopDefault(require$$2$1).f;
+var arrayFill = interopDefault(require$$3$5);
+var setToStringTag = interopDefault(require$$0$2);
+var ARRAY_BUFFER = 'ArrayBuffer';
+var DATA_VIEW = 'DataView';
+var PROTOTYPE = 'prototype';
+var WRONG_LENGTH = 'Wrong length!';
+var WRONG_INDEX = 'Wrong index!';
+var $ArrayBuffer = global[ARRAY_BUFFER];
+var $DataView = global[DATA_VIEW];
+var Math = global.Math;
+var RangeError = global.RangeError;
+// eslint-disable-next-line no-shadow-restricted-names
+var Infinity = global.Infinity;
+var BaseBuffer = $ArrayBuffer;
+var abs = Math.abs;
+var pow = Math.pow;
+var floor = Math.floor;
+var log = Math.log;
+var LN2 = Math.LN2;
+var BUFFER = 'buffer';
+var BYTE_LENGTH = 'byteLength';
+var BYTE_OFFSET = 'byteOffset';
+var $BUFFER = DESCRIPTORS ? '_b' : BUFFER;
+var $LENGTH = DESCRIPTORS ? '_l' : BYTE_LENGTH;
+var $OFFSET = DESCRIPTORS ? '_o' : BYTE_OFFSET;
 
 // IEEE754 conversions based on https://github.com/feross/ieee754
-var packIEEE754 = function(value, mLen, nBytes){
-  var buffer = Array(nBytes)
-    , eLen   = nBytes * 8 - mLen - 1
-    , eMax   = (1 << eLen) - 1
-    , eBias  = eMax >> 1
-    , rt     = mLen === 23 ? pow(2, -24) - pow(2, -77) : 0
-    , i      = 0
-    , s      = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0
-    , e, m, c;
-  value = abs(value)
-  if(value != value || value === Infinity){
+function packIEEE754(value, mLen, nBytes) {
+  var buffer = Array(nBytes);
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var rt = mLen === 23 ? pow(2, -24) - pow(2, -77) : 0;
+  var i = 0;
+  var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+  var e, m, c;
+  value = abs(value);
+  // eslint-disable-next-line no-self-compare
+  if (value != value || value === Infinity) {
+    // eslint-disable-next-line no-self-compare
     m = value != value ? 1 : 0;
     e = eMax;
   } else {
     e = floor(log(value) / LN2);
-    if(value * (c = pow(2, -e)) < 1){
+    if (value * (c = pow(2, -e)) < 1) {
       e--;
       c *= 2;
     }
-    if(e + eBias >= 1){
+    if (e + eBias >= 1) {
       value += rt / c;
     } else {
       value += rt * pow(2, 1 - eBias);
     }
-    if(value * c >= 2){
+    if (value * c >= 2) {
       e++;
       c /= 2;
     }
-    if(e + eBias >= eMax){
+    if (e + eBias >= eMax) {
       m = 0;
       e = eMax;
-    } else if(e + eBias >= 1){
+    } else if (e + eBias >= 1) {
       m = (value * c - 1) * pow(2, mLen);
       e = e + eBias;
     } else {
@@ -5446,109 +5600,102 @@ var packIEEE754 = function(value, mLen, nBytes){
       e = 0;
     }
   }
-  for(; mLen >= 8; buffer[i++] = m & 255, m /= 256, mLen -= 8);
+  for (; mLen >= 8; buffer[i++] = m & 255, m /= 256, mLen -= 8);
   e = e << mLen | m;
   eLen += mLen;
-  for(; eLen > 0; buffer[i++] = e & 255, e /= 256, eLen -= 8);
+  for (; eLen > 0; buffer[i++] = e & 255, e /= 256, eLen -= 8);
   buffer[--i] |= s * 128;
   return buffer;
-};
-var unpackIEEE754 = function(buffer, mLen, nBytes){
-  var eLen  = nBytes * 8 - mLen - 1
-    , eMax  = (1 << eLen) - 1
-    , eBias = eMax >> 1
-    , nBits = eLen - 7
-    , i     = nBytes - 1
-    , s     = buffer[i--]
-    , e     = s & 127
-    , m;
+}
+function unpackIEEE754(buffer, mLen, nBytes) {
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var nBits = eLen - 7;
+  var i = nBytes - 1;
+  var s = buffer[i--];
+  var e = s & 127;
+  var m;
   s >>= 7;
-  for(; nBits > 0; e = e * 256 + buffer[i], i--, nBits -= 8);
+  for (; nBits > 0; e = e * 256 + buffer[i], i--, nBits -= 8);
   m = e & (1 << -nBits) - 1;
   e >>= -nBits;
   nBits += mLen;
-  for(; nBits > 0; m = m * 256 + buffer[i], i--, nBits -= 8);
-  if(e === 0){
+  for (; nBits > 0; m = m * 256 + buffer[i], i--, nBits -= 8);
+  if (e === 0) {
     e = 1 - eBias;
-  } else if(e === eMax){
+  } else if (e === eMax) {
     return m ? NaN : s ? -Infinity : Infinity;
   } else {
     m = m + pow(2, mLen);
     e = e - eBias;
   } return (s ? -1 : 1) * m * pow(2, e - mLen);
-};
+}
 
-var unpackI32 = function(bytes){
+function unpackI32(bytes) {
   return bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0];
-};
-var packI8 = function(it){
+}
+function packI8(it) {
   return [it & 0xff];
-};
-var packI16 = function(it){
+}
+function packI16(it) {
   return [it & 0xff, it >> 8 & 0xff];
-};
-var packI32 = function(it){
+}
+function packI32(it) {
   return [it & 0xff, it >> 8 & 0xff, it >> 16 & 0xff, it >> 24 & 0xff];
-};
-var packF64 = function(it){
+}
+function packF64(it) {
   return packIEEE754(it, 52, 8);
-};
-var packF32 = function(it){
+}
+function packF32(it) {
   return packIEEE754(it, 23, 4);
-};
+}
 
-var addGetter = function(C, key, internal){
-  dP(C[PROTOTYPE], key, {get: function(){ return this[internal]; }});
-};
+function addGetter(C, key, internal) {
+  dP(C[PROTOTYPE], key, { get: function () { return this[internal]; } });
+}
 
-var get = function(view, bytes, index, isLittleEndian){
-  var numIndex = +index
-    , intIndex = toInteger(numIndex);
-  if(numIndex != intIndex || intIndex < 0 || intIndex + bytes > view[$LENGTH])throw RangeError(WRONG_INDEX);
-  var store = view[$BUFFER]._b
-    , start = intIndex + view[$OFFSET]
-    , pack  = store.slice(start, start + bytes);
+function get(view, bytes, index, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
+  var pack = store.slice(start, start + bytes);
   return isLittleEndian ? pack : pack.reverse();
-};
-var set = function(view, bytes, index, conversion, value, isLittleEndian){
-  var numIndex = +index
-    , intIndex = toInteger(numIndex);
-  if(numIndex != intIndex || intIndex < 0 || intIndex + bytes > view[$LENGTH])throw RangeError(WRONG_INDEX);
-  var store = view[$BUFFER]._b
-    , start = intIndex + view[$OFFSET]
-    , pack  = conversion(+value);
-  for(var i = 0; i < bytes; i++)store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
-};
+}
+function set(view, bytes, index, conversion, value, isLittleEndian) {
+  var numIndex = +index;
+  var intIndex = toIndex(numIndex);
+  if (intIndex + bytes > view[$LENGTH]) throw RangeError(WRONG_INDEX);
+  var store = view[$BUFFER]._b;
+  var start = intIndex + view[$OFFSET];
+  var pack = conversion(+value);
+  for (var i = 0; i < bytes; i++) store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
+}
 
-var validateArrayBufferArguments = function(that, length){
-  anInstance(that, $ArrayBuffer, ARRAY_BUFFER);
-  var numberLength = +length
-    , byteLength   = toLength(numberLength);
-  if(numberLength != byteLength)throw RangeError(WRONG_LENGTH);
-  return byteLength;
-};
-
-if(!$typed.ABV){
-  $ArrayBuffer = function ArrayBuffer(length){
-    var byteLength = validateArrayBufferArguments(this, length);
-    this._b       = arrayFill.call(Array(byteLength), 0);
+if (!$typed.ABV) {
+  $ArrayBuffer = function ArrayBuffer(length) {
+    anInstance(this, $ArrayBuffer, ARRAY_BUFFER);
+    var byteLength = toIndex(length);
+    this._b = arrayFill.call(Array(byteLength), 0);
     this[$LENGTH] = byteLength;
   };
 
-  $DataView = function DataView(buffer, byteOffset, byteLength){
+  $DataView = function DataView(buffer, byteOffset, byteLength) {
     anInstance(this, $DataView, DATA_VIEW);
     anInstance(buffer, $ArrayBuffer, DATA_VIEW);
-    var bufferLength = buffer[$LENGTH]
-      , offset       = toInteger(byteOffset);
-    if(offset < 0 || offset > bufferLength)throw RangeError('Wrong offset!');
+    var bufferLength = buffer[$LENGTH];
+    var offset = toInteger(byteOffset);
+    if (offset < 0 || offset > bufferLength) throw RangeError('Wrong offset!');
     byteLength = byteLength === undefined ? bufferLength - offset : toLength(byteLength);
-    if(offset + byteLength > bufferLength)throw RangeError(WRONG_LENGTH);
+    if (offset + byteLength > bufferLength) throw RangeError(WRONG_LENGTH);
     this[$BUFFER] = buffer;
     this[$OFFSET] = offset;
     this[$LENGTH] = byteLength;
   };
 
-  if(DESCRIPTORS){
+  if (DESCRIPTORS) {
     addGetter($ArrayBuffer, BYTE_LENGTH, '_l');
     addGetter($DataView, BUFFER, '_b');
     addGetter($DataView, BYTE_LENGTH, '_l');
@@ -5556,82 +5703,88 @@ if(!$typed.ABV){
   }
 
   redefineAll($DataView[PROTOTYPE], {
-    getInt8: function getInt8(byteOffset){
+    getInt8: function getInt8(byteOffset) {
       return get(this, 1, byteOffset)[0] << 24 >> 24;
     },
-    getUint8: function getUint8(byteOffset){
+    getUint8: function getUint8(byteOffset) {
       return get(this, 1, byteOffset)[0];
     },
-    getInt16: function getInt16(byteOffset /*, littleEndian */){
+    getInt16: function getInt16(byteOffset /* , littleEndian */) {
       var bytes = get(this, 2, byteOffset, arguments[1]);
       return (bytes[1] << 8 | bytes[0]) << 16 >> 16;
     },
-    getUint16: function getUint16(byteOffset /*, littleEndian */){
+    getUint16: function getUint16(byteOffset /* , littleEndian */) {
       var bytes = get(this, 2, byteOffset, arguments[1]);
       return bytes[1] << 8 | bytes[0];
     },
-    getInt32: function getInt32(byteOffset /*, littleEndian */){
+    getInt32: function getInt32(byteOffset /* , littleEndian */) {
       return unpackI32(get(this, 4, byteOffset, arguments[1]));
     },
-    getUint32: function getUint32(byteOffset /*, littleEndian */){
+    getUint32: function getUint32(byteOffset /* , littleEndian */) {
       return unpackI32(get(this, 4, byteOffset, arguments[1])) >>> 0;
     },
-    getFloat32: function getFloat32(byteOffset /*, littleEndian */){
+    getFloat32: function getFloat32(byteOffset /* , littleEndian */) {
       return unpackIEEE754(get(this, 4, byteOffset, arguments[1]), 23, 4);
     },
-    getFloat64: function getFloat64(byteOffset /*, littleEndian */){
+    getFloat64: function getFloat64(byteOffset /* , littleEndian */) {
       return unpackIEEE754(get(this, 8, byteOffset, arguments[1]), 52, 8);
     },
-    setInt8: function setInt8(byteOffset, value){
+    setInt8: function setInt8(byteOffset, value) {
       set(this, 1, byteOffset, packI8, value);
     },
-    setUint8: function setUint8(byteOffset, value){
+    setUint8: function setUint8(byteOffset, value) {
       set(this, 1, byteOffset, packI8, value);
     },
-    setInt16: function setInt16(byteOffset, value /*, littleEndian */){
+    setInt16: function setInt16(byteOffset, value /* , littleEndian */) {
       set(this, 2, byteOffset, packI16, value, arguments[2]);
     },
-    setUint16: function setUint16(byteOffset, value /*, littleEndian */){
+    setUint16: function setUint16(byteOffset, value /* , littleEndian */) {
       set(this, 2, byteOffset, packI16, value, arguments[2]);
     },
-    setInt32: function setInt32(byteOffset, value /*, littleEndian */){
+    setInt32: function setInt32(byteOffset, value /* , littleEndian */) {
       set(this, 4, byteOffset, packI32, value, arguments[2]);
     },
-    setUint32: function setUint32(byteOffset, value /*, littleEndian */){
+    setUint32: function setUint32(byteOffset, value /* , littleEndian */) {
       set(this, 4, byteOffset, packI32, value, arguments[2]);
     },
-    setFloat32: function setFloat32(byteOffset, value /*, littleEndian */){
+    setFloat32: function setFloat32(byteOffset, value /* , littleEndian */) {
       set(this, 4, byteOffset, packF32, value, arguments[2]);
     },
-    setFloat64: function setFloat64(byteOffset, value /*, littleEndian */){
+    setFloat64: function setFloat64(byteOffset, value /* , littleEndian */) {
       set(this, 8, byteOffset, packF64, value, arguments[2]);
     }
   });
 } else {
-  if(!fails(function(){
-    new $ArrayBuffer;     // eslint-disable-line no-new
-  }) || !fails(function(){
-    new $ArrayBuffer(.5); // eslint-disable-line no-new
-  })){
-    $ArrayBuffer = function ArrayBuffer(length){
-      return new BaseBuffer(validateArrayBufferArguments(this, length));
+  if (!fails(function () {
+    $ArrayBuffer(1);
+  }) || !fails(function () {
+    new $ArrayBuffer(-1); // eslint-disable-line no-new
+  }) || fails(function () {
+    new $ArrayBuffer(); // eslint-disable-line no-new
+    new $ArrayBuffer(1.5); // eslint-disable-line no-new
+    new $ArrayBuffer(NaN); // eslint-disable-line no-new
+    return $ArrayBuffer.name != ARRAY_BUFFER;
+  })) {
+    $ArrayBuffer = function ArrayBuffer(length) {
+      anInstance(this, $ArrayBuffer);
+      return new BaseBuffer(toIndex(length));
     };
     var ArrayBufferProto = $ArrayBuffer[PROTOTYPE] = BaseBuffer[PROTOTYPE];
-    for(var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j; ){
-      if(!((key = keys[j++]) in $ArrayBuffer))hide($ArrayBuffer, key, BaseBuffer[key]);
-    };
-    if(!LIBRARY)ArrayBufferProto.constructor = $ArrayBuffer;
+    for (var keys = gOPN(BaseBuffer), j = 0, key; keys.length > j;) {
+      if (!((key = keys[j++]) in $ArrayBuffer)) hide($ArrayBuffer, key, BaseBuffer[key]);
+    }
+    if (!LIBRARY) ArrayBufferProto.constructor = $ArrayBuffer;
   }
   // iOS Safari 7.x bug
-  var view = new $DataView(new $ArrayBuffer(2))
-    , $setInt8 = $DataView[PROTOTYPE].setInt8;
+  var view = new $DataView(new $ArrayBuffer(2));
+  var $setInt8 = $DataView[PROTOTYPE].setInt8;
   view.setInt8(0, 2147483648);
   view.setInt8(1, 2147483649);
-  if(view.getInt8(0) || !view.getInt8(1))redefineAll($DataView[PROTOTYPE], {
-    setInt8: function setInt8(byteOffset, value){
+  if (view.getInt8(0) || !view.getInt8(1)) redefineAll($DataView[PROTOTYPE], {
+    setInt8: function setInt8(byteOffset, value) {
       $setInt8.call(this, byteOffset, value << 24 >> 24);
     },
-    setUint8: function setUint8(byteOffset, value){
+    setUint8: function setUint8(byteOffset, value) {
       $setInt8.call(this, byteOffset, value << 24 >> 24);
     }
   }, true);
@@ -5652,51 +5805,51 @@ var require$$32 = Object.freeze({
 
 var es6_typed_arrayBuffer = createCommonjsModule(function (module) {
 'use strict';
-var $export      = interopDefault(require$$1$2)
-  , $typed       = interopDefault(require$$33)
-  , buffer       = interopDefault(require$$32)
-  , anObject     = interopDefault(require$$5)
-  , toIndex      = interopDefault(require$$24)
-  , toLength     = interopDefault(require$$3$1)
-  , isObject     = interopDefault(require$$0$1)
-  , ArrayBuffer  = interopDefault(require$$3).ArrayBuffer
-  , speciesConstructor = interopDefault(require$$8)
-  , $ArrayBuffer = buffer.ArrayBuffer
-  , $DataView    = buffer.DataView
-  , $isView      = $typed.ABV && ArrayBuffer.isView
-  , $slice       = $ArrayBuffer.prototype.slice
-  , VIEW         = $typed.VIEW
-  , ARRAY_BUFFER = 'ArrayBuffer';
+var $export = interopDefault(require$$1$2);
+var $typed = interopDefault(require$$33);
+var buffer = interopDefault(require$$32);
+var anObject = interopDefault(require$$5);
+var toAbsoluteIndex = interopDefault(require$$23);
+var toLength = interopDefault(require$$3$2);
+var isObject = interopDefault(require$$3$1);
+var ArrayBuffer = interopDefault(require$$3).ArrayBuffer;
+var speciesConstructor = interopDefault(require$$1$22);
+var $ArrayBuffer = buffer.ArrayBuffer;
+var $DataView = buffer.DataView;
+var $isView = $typed.ABV && ArrayBuffer.isView;
+var $slice = $ArrayBuffer.prototype.slice;
+var VIEW = $typed.VIEW;
+var ARRAY_BUFFER = 'ArrayBuffer';
 
-$export($export.G + $export.W + $export.F * (ArrayBuffer !== $ArrayBuffer), {ArrayBuffer: $ArrayBuffer});
+$export($export.G + $export.W + $export.F * (ArrayBuffer !== $ArrayBuffer), { ArrayBuffer: $ArrayBuffer });
 
 $export($export.S + $export.F * !$typed.CONSTR, ARRAY_BUFFER, {
   // 24.1.3.1 ArrayBuffer.isView(arg)
-  isView: function isView(it){
+  isView: function isView(it) {
     return $isView && $isView(it) || isObject(it) && VIEW in it;
   }
 });
 
-$export($export.P + $export.U + $export.F * interopDefault(require$$1$1)(function(){
+$export($export.P + $export.U + $export.F * interopDefault(require$$1$1)(function () {
   return !new $ArrayBuffer(2).slice(1, undefined).byteLength;
 }), ARRAY_BUFFER, {
   // 24.1.4.3 ArrayBuffer.prototype.slice(start, end)
-  slice: function slice(start, end){
-    if($slice !== undefined && end === undefined)return $slice.call(anObject(this), start); // FF fix
-    var len    = anObject(this).byteLength
-      , first  = toIndex(start, len)
-      , final  = toIndex(end === undefined ? len : end, len)
-      , result = new (speciesConstructor(this, $ArrayBuffer))(toLength(final - first))
-      , viewS  = new $DataView(this)
-      , viewT  = new $DataView(result)
-      , index  = 0;
-    while(first < final){
+  slice: function slice(start, end) {
+    if ($slice !== undefined && end === undefined) return $slice.call(anObject(this), start); // FF fix
+    var len = anObject(this).byteLength;
+    var first = toAbsoluteIndex(start, len);
+    var final = toAbsoluteIndex(end === undefined ? len : end, len);
+    var result = new (speciesConstructor(this, $ArrayBuffer))(toLength(final - first));
+    var viewS = new $DataView(this);
+    var viewT = new $DataView(result);
+    var index = 0;
+    while (first < final) {
       viewT.setUint8(index++, viewS.getUint8(first++));
     } return result;
   }
 });
 
-interopDefault(require$$0$35)(ARRAY_BUFFER);
+interopDefault(require$$0$36)(ARRAY_BUFFER);
 });
 
 interopDefault(es6_typed_arrayBuffer);
@@ -5712,287 +5865,280 @@ interopDefault(es6_typed_dataView);
 
 var _typedArray = createCommonjsModule(function (module) {
 'use strict';
-if(interopDefault(require$$1)){
-  var LIBRARY             = interopDefault(require$$2$4)
-    , global              = interopDefault(require$$3)
-    , fails               = interopDefault(require$$1$1)
-    , $export             = interopDefault(require$$1$2)
-    , $typed              = interopDefault(require$$33)
-    , $buffer             = interopDefault(require$$32)
-    , ctx                 = interopDefault(require$$31)
-    , anInstance          = interopDefault(require$$4$6)
-    , propertyDesc        = interopDefault(require$$2$3)
-    , hide                = interopDefault(require$$2)
-    , redefineAll         = interopDefault(require$$3$7)
-    , toInteger           = interopDefault(require$$26)
-    , toLength            = interopDefault(require$$3$1)
-    , toIndex             = interopDefault(require$$24)
-    , toPrimitive         = interopDefault(require$$4$1)
-    , has                 = interopDefault(require$$4)
-    , same                = interopDefault(require$$21)
-    , classof             = interopDefault(require$$1$11)
-    , isObject            = interopDefault(require$$0$1)
-    , toObject            = interopDefault(require$$5$1)
-    , isArrayIter         = interopDefault(require$$17)
-    , create              = interopDefault(require$$6$1)
-    , getPrototypeOf      = interopDefault(require$$0$13)
-    , gOPN                = interopDefault(require$$3$3).f
-    , getIterFn           = interopDefault(require$$13)
-    , uid                 = interopDefault(require$$12)
-    , wks                 = interopDefault(require$$0$4)
-    , createArrayMethod   = interopDefault(require$$10)
-    , createArrayIncludes = interopDefault(require$$1$9)
-    , speciesConstructor  = interopDefault(require$$8)
-    , ArrayIterators      = interopDefault(require$$5$3)
-    , Iterators           = interopDefault(require$$1$15)
-    , $iterDetect         = interopDefault(require$$5$2)
-    , setSpecies          = interopDefault(require$$0$35)
-    , arrayFill           = interopDefault(require$$3$5)
-    , arrayCopyWithin     = interopDefault(require$$2$9)
-    , $DP                 = interopDefault(require$$2$1)
-    , $GOPD               = interopDefault(require$$2$7)
-    , dP                  = $DP.f
-    , gOPD                = $GOPD.f
-    , RangeError          = global.RangeError
-    , TypeError           = global.TypeError
-    , Uint8Array          = global.Uint8Array
-    , ARRAY_BUFFER        = 'ArrayBuffer'
-    , SHARED_BUFFER       = 'Shared' + ARRAY_BUFFER
-    , BYTES_PER_ELEMENT   = 'BYTES_PER_ELEMENT'
-    , PROTOTYPE           = 'prototype'
-    , ArrayProto          = Array[PROTOTYPE]
-    , $ArrayBuffer        = $buffer.ArrayBuffer
-    , $DataView           = $buffer.DataView
-    , arrayForEach        = createArrayMethod(0)
-    , arrayFilter         = createArrayMethod(2)
-    , arraySome           = createArrayMethod(3)
-    , arrayEvery          = createArrayMethod(4)
-    , arrayFind           = createArrayMethod(5)
-    , arrayFindIndex      = createArrayMethod(6)
-    , arrayIncludes       = createArrayIncludes(true)
-    , arrayIndexOf        = createArrayIncludes(false)
-    , arrayValues         = ArrayIterators.values
-    , arrayKeys           = ArrayIterators.keys
-    , arrayEntries        = ArrayIterators.entries
-    , arrayLastIndexOf    = ArrayProto.lastIndexOf
-    , arrayReduce         = ArrayProto.reduce
-    , arrayReduceRight    = ArrayProto.reduceRight
-    , arrayJoin           = ArrayProto.join
-    , arraySort           = ArrayProto.sort
-    , arraySlice          = ArrayProto.slice
-    , arrayToString       = ArrayProto.toString
-    , arrayToLocaleString = ArrayProto.toLocaleString
-    , ITERATOR            = wks('iterator')
-    , TAG                 = wks('toStringTag')
-    , TYPED_CONSTRUCTOR   = uid('typed_constructor')
-    , DEF_CONSTRUCTOR     = uid('def_constructor')
-    , ALL_CONSTRUCTORS    = $typed.CONSTR
-    , TYPED_ARRAY         = $typed.TYPED
-    , VIEW                = $typed.VIEW
-    , WRONG_LENGTH        = 'Wrong length!';
+if (interopDefault(require$$1)) {
+  var LIBRARY = interopDefault(require$$2$4);
+  var global = interopDefault(require$$3);
+  var fails = interopDefault(require$$1$1);
+  var $export = interopDefault(require$$1$2);
+  var $typed = interopDefault(require$$33);
+  var $buffer = interopDefault(require$$32);
+  var ctx = interopDefault(require$$1$4);
+  var anInstance = interopDefault(require$$4$7);
+  var propertyDesc = interopDefault(require$$2$3);
+  var hide = interopDefault(require$$2);
+  var redefineAll = interopDefault(require$$3$6);
+  var toInteger = interopDefault(require$$2$5);
+  var toLength = interopDefault(require$$3$2);
+  var toIndex = interopDefault(require$$24);
+  var toAbsoluteIndex = interopDefault(require$$23);
+  var toPrimitive = interopDefault(require$$4$1);
+  var has = interopDefault(require$$4);
+  var classof = interopDefault(require$$1$11);
+  var isObject = interopDefault(require$$3$1);
+  var toObject = interopDefault(require$$5$2);
+  var isArrayIter = interopDefault(require$$17);
+  var create = interopDefault(require$$6);
+  var getPrototypeOf = interopDefault(require$$0$12);
+  var gOPN = interopDefault(require$$3$4).f;
+  var getIterFn = interopDefault(require$$13);
+  var uid = interopDefault(require$$12);
+  var wks = interopDefault(require$$0$3);
+  var createArrayMethod = interopDefault(require$$10);
+  var createArrayIncludes = interopDefault(require$$1$10);
+  var speciesConstructor = interopDefault(require$$1$22);
+  var ArrayIterators = interopDefault(require$$6$1);
+  var Iterators = interopDefault(require$$1$15);
+  var $iterDetect = interopDefault(require$$5$5);
+  var setSpecies = interopDefault(require$$0$36);
+  var arrayFill = interopDefault(require$$3$5);
+  var arrayCopyWithin = interopDefault(require$$2$9);
+  var $DP = interopDefault(require$$2$1);
+  var $GOPD = interopDefault(require$$2$7);
+  var dP = $DP.f;
+  var gOPD = $GOPD.f;
+  var RangeError = global.RangeError;
+  var TypeError = global.TypeError;
+  var Uint8Array = global.Uint8Array;
+  var ARRAY_BUFFER = 'ArrayBuffer';
+  var SHARED_BUFFER = 'Shared' + ARRAY_BUFFER;
+  var BYTES_PER_ELEMENT = 'BYTES_PER_ELEMENT';
+  var PROTOTYPE = 'prototype';
+  var ArrayProto = Array[PROTOTYPE];
+  var $ArrayBuffer = $buffer.ArrayBuffer;
+  var $DataView = $buffer.DataView;
+  var arrayForEach = createArrayMethod(0);
+  var arrayFilter = createArrayMethod(2);
+  var arraySome = createArrayMethod(3);
+  var arrayEvery = createArrayMethod(4);
+  var arrayFind = createArrayMethod(5);
+  var arrayFindIndex = createArrayMethod(6);
+  var arrayIncludes = createArrayIncludes(true);
+  var arrayIndexOf = createArrayIncludes(false);
+  var arrayValues = ArrayIterators.values;
+  var arrayKeys = ArrayIterators.keys;
+  var arrayEntries = ArrayIterators.entries;
+  var arrayLastIndexOf = ArrayProto.lastIndexOf;
+  var arrayReduce = ArrayProto.reduce;
+  var arrayReduceRight = ArrayProto.reduceRight;
+  var arrayJoin = ArrayProto.join;
+  var arraySort = ArrayProto.sort;
+  var arraySlice = ArrayProto.slice;
+  var arrayToString = ArrayProto.toString;
+  var arrayToLocaleString = ArrayProto.toLocaleString;
+  var ITERATOR = wks('iterator');
+  var TAG = wks('toStringTag');
+  var TYPED_CONSTRUCTOR = uid('typed_constructor');
+  var DEF_CONSTRUCTOR = uid('def_constructor');
+  var ALL_CONSTRUCTORS = $typed.CONSTR;
+  var TYPED_ARRAY = $typed.TYPED;
+  var VIEW = $typed.VIEW;
+  var WRONG_LENGTH = 'Wrong length!';
 
-  var $map = createArrayMethod(1, function(O, length){
+  var $map = createArrayMethod(1, function (O, length) {
     return allocate(speciesConstructor(O, O[DEF_CONSTRUCTOR]), length);
   });
 
-  var LITTLE_ENDIAN = fails(function(){
+  var LITTLE_ENDIAN = fails(function () {
+    // eslint-disable-next-line no-undef
     return new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
   });
 
-  var FORCED_SET = !!Uint8Array && !!Uint8Array[PROTOTYPE].set && fails(function(){
+  var FORCED_SET = !!Uint8Array && !!Uint8Array[PROTOTYPE].set && fails(function () {
     new Uint8Array(1).set({});
   });
 
-  var strictToLength = function(it, SAME){
-    if(it === undefined)throw TypeError(WRONG_LENGTH);
-    var number = +it
-      , length = toLength(it);
-    if(SAME && !same(number, length))throw RangeError(WRONG_LENGTH);
-    return length;
-  };
-
-  var toOffset = function(it, BYTES){
+  var toOffset = function (it, BYTES) {
     var offset = toInteger(it);
-    if(offset < 0 || offset % BYTES)throw RangeError('Wrong offset!');
+    if (offset < 0 || offset % BYTES) throw RangeError('Wrong offset!');
     return offset;
   };
 
-  var validate = function(it){
-    if(isObject(it) && TYPED_ARRAY in it)return it;
+  var validate = function (it) {
+    if (isObject(it) && TYPED_ARRAY in it) return it;
     throw TypeError(it + ' is not a typed array!');
   };
 
-  var allocate = function(C, length){
-    if(!(isObject(C) && TYPED_CONSTRUCTOR in C)){
+  var allocate = function (C, length) {
+    if (!(isObject(C) && TYPED_CONSTRUCTOR in C)) {
       throw TypeError('It is not a typed array constructor!');
     } return new C(length);
   };
 
-  var speciesFromList = function(O, list){
+  var speciesFromList = function (O, list) {
     return fromList(speciesConstructor(O, O[DEF_CONSTRUCTOR]), list);
   };
 
-  var fromList = function(C, list){
-    var index  = 0
-      , length = list.length
-      , result = allocate(C, length);
-    while(length > index)result[index] = list[index++];
+  var fromList = function (C, list) {
+    var index = 0;
+    var length = list.length;
+    var result = allocate(C, length);
+    while (length > index) result[index] = list[index++];
     return result;
   };
 
-  var addGetter = function(it, key, internal){
-    dP(it, key, {get: function(){ return this._d[internal]; }});
+  var addGetter = function (it, key, internal) {
+    dP(it, key, { get: function () { return this._d[internal]; } });
   };
 
-  var $from = function from(source /*, mapfn, thisArg */){
-    var O       = toObject(source)
-      , aLen    = arguments.length
-      , mapfn   = aLen > 1 ? arguments[1] : undefined
-      , mapping = mapfn !== undefined
-      , iterFn  = getIterFn(O)
-      , i, length, values, result, step, iterator;
-    if(iterFn != undefined && !isArrayIter(iterFn)){
-      for(iterator = iterFn.call(O), values = [], i = 0; !(step = iterator.next()).done; i++){
+  var $from = function from(source /* , mapfn, thisArg */) {
+    var O = toObject(source);
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var iterFn = getIterFn(O);
+    var i, length, values, result, step, iterator;
+    if (iterFn != undefined && !isArrayIter(iterFn)) {
+      for (iterator = iterFn.call(O), values = [], i = 0; !(step = iterator.next()).done; i++) {
         values.push(step.value);
       } O = values;
     }
-    if(mapping && aLen > 2)mapfn = ctx(mapfn, arguments[2], 2);
-    for(i = 0, length = toLength(O.length), result = allocate(this, length); length > i; i++){
+    if (mapping && aLen > 2) mapfn = ctx(mapfn, arguments[2], 2);
+    for (i = 0, length = toLength(O.length), result = allocate(this, length); length > i; i++) {
       result[i] = mapping ? mapfn(O[i], i) : O[i];
     }
     return result;
   };
 
-  var $of = function of(/*...items*/){
-    var index  = 0
-      , length = arguments.length
-      , result = allocate(this, length);
-    while(length > index)result[index] = arguments[index++];
+  var $of = function of(/* ...items */) {
+    var index = 0;
+    var length = arguments.length;
+    var result = allocate(this, length);
+    while (length > index) result[index] = arguments[index++];
     return result;
   };
 
   // iOS Safari 6.x fails here
-  var TO_LOCALE_BUG = !!Uint8Array && fails(function(){ arrayToLocaleString.call(new Uint8Array(1)); });
+  var TO_LOCALE_BUG = !!Uint8Array && fails(function () { arrayToLocaleString.call(new Uint8Array(1)); });
 
-  var $toLocaleString = function toLocaleString(){
+  var $toLocaleString = function toLocaleString() {
     return arrayToLocaleString.apply(TO_LOCALE_BUG ? arraySlice.call(validate(this)) : validate(this), arguments);
   };
 
   var proto = {
-    copyWithin: function copyWithin(target, start /*, end */){
+    copyWithin: function copyWithin(target, start /* , end */) {
       return arrayCopyWithin.call(validate(this), target, start, arguments.length > 2 ? arguments[2] : undefined);
     },
-    every: function every(callbackfn /*, thisArg */){
+    every: function every(callbackfn /* , thisArg */) {
       return arrayEvery(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     },
-    fill: function fill(value /*, start, end */){ // eslint-disable-line no-unused-vars
+    fill: function fill(value /* , start, end */) { // eslint-disable-line no-unused-vars
       return arrayFill.apply(validate(this), arguments);
     },
-    filter: function filter(callbackfn /*, thisArg */){
+    filter: function filter(callbackfn /* , thisArg */) {
       return speciesFromList(this, arrayFilter(validate(this), callbackfn,
         arguments.length > 1 ? arguments[1] : undefined));
     },
-    find: function find(predicate /*, thisArg */){
+    find: function find(predicate /* , thisArg */) {
       return arrayFind(validate(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
     },
-    findIndex: function findIndex(predicate /*, thisArg */){
+    findIndex: function findIndex(predicate /* , thisArg */) {
       return arrayFindIndex(validate(this), predicate, arguments.length > 1 ? arguments[1] : undefined);
     },
-    forEach: function forEach(callbackfn /*, thisArg */){
+    forEach: function forEach(callbackfn /* , thisArg */) {
       arrayForEach(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     },
-    indexOf: function indexOf(searchElement /*, fromIndex */){
+    indexOf: function indexOf(searchElement /* , fromIndex */) {
       return arrayIndexOf(validate(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
     },
-    includes: function includes(searchElement /*, fromIndex */){
+    includes: function includes(searchElement /* , fromIndex */) {
       return arrayIncludes(validate(this), searchElement, arguments.length > 1 ? arguments[1] : undefined);
     },
-    join: function join(separator){ // eslint-disable-line no-unused-vars
+    join: function join(separator) { // eslint-disable-line no-unused-vars
       return arrayJoin.apply(validate(this), arguments);
     },
-    lastIndexOf: function lastIndexOf(searchElement /*, fromIndex */){ // eslint-disable-line no-unused-vars
+    lastIndexOf: function lastIndexOf(searchElement /* , fromIndex */) { // eslint-disable-line no-unused-vars
       return arrayLastIndexOf.apply(validate(this), arguments);
     },
-    map: function map(mapfn /*, thisArg */){
+    map: function map(mapfn /* , thisArg */) {
       return $map(validate(this), mapfn, arguments.length > 1 ? arguments[1] : undefined);
     },
-    reduce: function reduce(callbackfn /*, initialValue */){ // eslint-disable-line no-unused-vars
+    reduce: function reduce(callbackfn /* , initialValue */) { // eslint-disable-line no-unused-vars
       return arrayReduce.apply(validate(this), arguments);
     },
-    reduceRight: function reduceRight(callbackfn /*, initialValue */){ // eslint-disable-line no-unused-vars
+    reduceRight: function reduceRight(callbackfn /* , initialValue */) { // eslint-disable-line no-unused-vars
       return arrayReduceRight.apply(validate(this), arguments);
     },
-    reverse: function reverse(){
-      var that   = this
-        , length = validate(that).length
-        , middle = Math.floor(length / 2)
-        , index  = 0
-        , value;
-      while(index < middle){
-        value         = that[index];
+    reverse: function reverse() {
+      var that = this;
+      var length = validate(that).length;
+      var middle = Math.floor(length / 2);
+      var index = 0;
+      var value;
+      while (index < middle) {
+        value = that[index];
         that[index++] = that[--length];
-        that[length]  = value;
+        that[length] = value;
       } return that;
     },
-    some: function some(callbackfn /*, thisArg */){
+    some: function some(callbackfn /* , thisArg */) {
       return arraySome(validate(this), callbackfn, arguments.length > 1 ? arguments[1] : undefined);
     },
-    sort: function sort(comparefn){
+    sort: function sort(comparefn) {
       return arraySort.call(validate(this), comparefn);
     },
-    subarray: function subarray(begin, end){
-      var O      = validate(this)
-        , length = O.length
-        , $begin = toIndex(begin, length);
+    subarray: function subarray(begin, end) {
+      var O = validate(this);
+      var length = O.length;
+      var $begin = toAbsoluteIndex(begin, length);
       return new (speciesConstructor(O, O[DEF_CONSTRUCTOR]))(
         O.buffer,
         O.byteOffset + $begin * O.BYTES_PER_ELEMENT,
-        toLength((end === undefined ? length : toIndex(end, length)) - $begin)
+        toLength((end === undefined ? length : toAbsoluteIndex(end, length)) - $begin)
       );
     }
   };
 
-  var $slice = function slice(start, end){
+  var $slice = function slice(start, end) {
     return speciesFromList(this, arraySlice.call(validate(this), start, end));
   };
 
-  var $set = function set(arrayLike /*, offset */){
+  var $set = function set(arrayLike /* , offset */) {
     validate(this);
-    var offset = toOffset(arguments[1], 1)
-      , length = this.length
-      , src    = toObject(arrayLike)
-      , len    = toLength(src.length)
-      , index  = 0;
-    if(len + offset > length)throw RangeError(WRONG_LENGTH);
-    while(index < len)this[offset + index] = src[index++];
+    var offset = toOffset(arguments[1], 1);
+    var length = this.length;
+    var src = toObject(arrayLike);
+    var len = toLength(src.length);
+    var index = 0;
+    if (len + offset > length) throw RangeError(WRONG_LENGTH);
+    while (index < len) this[offset + index] = src[index++];
   };
 
   var $iterators = {
-    entries: function entries(){
+    entries: function entries() {
       return arrayEntries.call(validate(this));
     },
-    keys: function keys(){
+    keys: function keys() {
       return arrayKeys.call(validate(this));
     },
-    values: function values(){
+    values: function values() {
       return arrayValues.call(validate(this));
     }
   };
 
-  var isTAIndex = function(target, key){
+  var isTAIndex = function (target, key) {
     return isObject(target)
       && target[TYPED_ARRAY]
       && typeof key != 'symbol'
       && key in target
       && String(+key) == String(key);
   };
-  var $getDesc = function getOwnPropertyDescriptor(target, key){
+  var $getDesc = function getOwnPropertyDescriptor(target, key) {
     return isTAIndex(target, key = toPrimitive(key, true))
       ? propertyDesc(2, target[key])
       : gOPD(target, key);
   };
-  var $setDesc = function defineProperty(target, key, desc){
-    if(isTAIndex(target, key = toPrimitive(key, true))
+  var $setDesc = function defineProperty(target, key, desc) {
+    if (isTAIndex(target, key = toPrimitive(key, true))
       && isObject(desc)
       && has(desc, 'value')
       && !has(desc, 'get')
@@ -6001,36 +6147,36 @@ if(interopDefault(require$$1)){
       && !desc.configurable
       && (!has(desc, 'writable') || desc.writable)
       && (!has(desc, 'enumerable') || desc.enumerable)
-    ){
+    ) {
       target[key] = desc.value;
       return target;
-    } else return dP(target, key, desc);
+    } return dP(target, key, desc);
   };
 
-  if(!ALL_CONSTRUCTORS){
+  if (!ALL_CONSTRUCTORS) {
     $GOPD.f = $getDesc;
-    $DP.f   = $setDesc;
+    $DP.f = $setDesc;
   }
 
   $export($export.S + $export.F * !ALL_CONSTRUCTORS, 'Object', {
     getOwnPropertyDescriptor: $getDesc,
-    defineProperty:           $setDesc
+    defineProperty: $setDesc
   });
 
-  if(fails(function(){ arrayToString.call({}); })){
-    arrayToString = arrayToLocaleString = function toString(){
+  if (fails(function () { arrayToString.call({}); })) {
+    arrayToString = arrayToLocaleString = function toString() {
       return arrayJoin.call(this);
-    }
+    };
   }
 
   var $TypedArrayPrototype$ = redefineAll({}, proto);
   redefineAll($TypedArrayPrototype$, $iterators);
   hide($TypedArrayPrototype$, ITERATOR, $iterators.values);
   redefineAll($TypedArrayPrototype$, {
-    slice:          $slice,
-    set:            $set,
-    constructor:    function(){ /* noop */ },
-    toString:       arrayToString,
+    slice: $slice,
+    set: $set,
+    constructor: function () { /* noop */ },
+    toString: arrayToString,
     toLocaleString: $toLocaleString
   });
   addGetter($TypedArrayPrototype$, 'buffer', 'b');
@@ -6038,65 +6184,65 @@ if(interopDefault(require$$1)){
   addGetter($TypedArrayPrototype$, 'byteLength', 'l');
   addGetter($TypedArrayPrototype$, 'length', 'e');
   dP($TypedArrayPrototype$, TAG, {
-    get: function(){ return this[TYPED_ARRAY]; }
+    get: function () { return this[TYPED_ARRAY]; }
   });
 
-  module.exports = function(KEY, BYTES, wrapper, CLAMPED){
+  // eslint-disable-next-line max-statements
+  module.exports = function (KEY, BYTES, wrapper, CLAMPED) {
     CLAMPED = !!CLAMPED;
-    var NAME       = KEY + (CLAMPED ? 'Clamped' : '') + 'Array'
-      , ISNT_UINT8 = NAME != 'Uint8Array'
-      , GETTER     = 'get' + KEY
-      , SETTER     = 'set' + KEY
-      , TypedArray = global[NAME]
-      , Base       = TypedArray || {}
-      , TAC        = TypedArray && getPrototypeOf(TypedArray)
-      , FORCED     = !TypedArray || !$typed.ABV
-      , O          = {}
-      , TypedArrayPrototype = TypedArray && TypedArray[PROTOTYPE];
-    var getter = function(that, index){
+    var NAME = KEY + (CLAMPED ? 'Clamped' : '') + 'Array';
+    var GETTER = 'get' + KEY;
+    var SETTER = 'set' + KEY;
+    var TypedArray = global[NAME];
+    var Base = TypedArray || {};
+    var TAC = TypedArray && getPrototypeOf(TypedArray);
+    var FORCED = !TypedArray || !$typed.ABV;
+    var O = {};
+    var TypedArrayPrototype = TypedArray && TypedArray[PROTOTYPE];
+    var getter = function (that, index) {
       var data = that._d;
       return data.v[GETTER](index * BYTES + data.o, LITTLE_ENDIAN);
     };
-    var setter = function(that, index, value){
+    var setter = function (that, index, value) {
       var data = that._d;
-      if(CLAMPED)value = (value = Math.round(value)) < 0 ? 0 : value > 0xff ? 0xff : value & 0xff;
+      if (CLAMPED) value = (value = Math.round(value)) < 0 ? 0 : value > 0xff ? 0xff : value & 0xff;
       data.v[SETTER](index * BYTES + data.o, value, LITTLE_ENDIAN);
     };
-    var addElement = function(that, index){
+    var addElement = function (that, index) {
       dP(that, index, {
-        get: function(){
+        get: function () {
           return getter(this, index);
         },
-        set: function(value){
+        set: function (value) {
           return setter(this, index, value);
         },
         enumerable: true
       });
     };
-    if(FORCED){
-      TypedArray = wrapper(function(that, data, $offset, $length){
+    if (FORCED) {
+      TypedArray = wrapper(function (that, data, $offset, $length) {
         anInstance(that, TypedArray, NAME, '_d');
-        var index  = 0
-          , offset = 0
-          , buffer, byteLength, length, klass;
-        if(!isObject(data)){
-          length     = strictToLength(data, true)
+        var index = 0;
+        var offset = 0;
+        var buffer, byteLength, length, klass;
+        if (!isObject(data)) {
+          length = toIndex(data);
           byteLength = length * BYTES;
-          buffer     = new $ArrayBuffer(byteLength);
-        } else if(data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER){
+          buffer = new $ArrayBuffer(byteLength);
+        } else if (data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER) {
           buffer = data;
           offset = toOffset($offset, BYTES);
           var $len = data.byteLength;
-          if($length === undefined){
-            if($len % BYTES)throw RangeError(WRONG_LENGTH);
+          if ($length === undefined) {
+            if ($len % BYTES) throw RangeError(WRONG_LENGTH);
             byteLength = $len - offset;
-            if(byteLength < 0)throw RangeError(WRONG_LENGTH);
+            if (byteLength < 0) throw RangeError(WRONG_LENGTH);
           } else {
             byteLength = toLength($length) * BYTES;
-            if(byteLength + offset > $len)throw RangeError(WRONG_LENGTH);
+            if (byteLength + offset > $len) throw RangeError(WRONG_LENGTH);
           }
           length = byteLength / BYTES;
-        } else if(TYPED_ARRAY in data){
+        } else if (TYPED_ARRAY in data) {
           return fromList(TypedArray, data);
         } else {
           return $from.call(TypedArray, data);
@@ -6108,49 +6254,54 @@ if(interopDefault(require$$1)){
           e: length,
           v: new $DataView(buffer)
         });
-        while(index < length)addElement(that, index++);
+        while (index < length) addElement(that, index++);
       });
       TypedArrayPrototype = TypedArray[PROTOTYPE] = create($TypedArrayPrototype$);
       hide(TypedArrayPrototype, 'constructor', TypedArray);
-    } else if(!$iterDetect(function(iter){
-      // V8 works with iterators, but fails in many other cases
-      // https://code.google.com/p/v8/issues/detail?id=4552
+    } else if (!fails(function () {
+      TypedArray(1);
+    }) || !fails(function () {
+      new TypedArray(-1); // eslint-disable-line no-new
+    }) || !$iterDetect(function (iter) {
+      new TypedArray(); // eslint-disable-line no-new
       new TypedArray(null); // eslint-disable-line no-new
+      new TypedArray(1.5); // eslint-disable-line no-new
       new TypedArray(iter); // eslint-disable-line no-new
-    }, true)){
-      TypedArray = wrapper(function(that, data, $offset, $length){
+    }, true)) {
+      TypedArray = wrapper(function (that, data, $offset, $length) {
         anInstance(that, TypedArray, NAME);
         var klass;
         // `ws` module bug, temporarily remove validation length for Uint8Array
         // https://github.com/websockets/ws/pull/645
-        if(!isObject(data))return new Base(strictToLength(data, ISNT_UINT8));
-        if(data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER){
+        if (!isObject(data)) return new Base(toIndex(data));
+        if (data instanceof $ArrayBuffer || (klass = classof(data)) == ARRAY_BUFFER || klass == SHARED_BUFFER) {
           return $length !== undefined
             ? new Base(data, toOffset($offset, BYTES), $length)
             : $offset !== undefined
               ? new Base(data, toOffset($offset, BYTES))
               : new Base(data);
         }
-        if(TYPED_ARRAY in data)return fromList(TypedArray, data);
+        if (TYPED_ARRAY in data) return fromList(TypedArray, data);
         return $from.call(TypedArray, data);
       });
-      arrayForEach(TAC !== Function.prototype ? gOPN(Base).concat(gOPN(TAC)) : gOPN(Base), function(key){
-        if(!(key in TypedArray))hide(TypedArray, key, Base[key]);
+      arrayForEach(TAC !== Function.prototype ? gOPN(Base).concat(gOPN(TAC)) : gOPN(Base), function (key) {
+        if (!(key in TypedArray)) hide(TypedArray, key, Base[key]);
       });
       TypedArray[PROTOTYPE] = TypedArrayPrototype;
-      if(!LIBRARY)TypedArrayPrototype.constructor = TypedArray;
+      if (!LIBRARY) TypedArrayPrototype.constructor = TypedArray;
     }
-    var $nativeIterator   = TypedArrayPrototype[ITERATOR]
-      , CORRECT_ITER_NAME = !!$nativeIterator && ($nativeIterator.name == 'values' || $nativeIterator.name == undefined)
-      , $iterator         = $iterators.values;
+    var $nativeIterator = TypedArrayPrototype[ITERATOR];
+    var CORRECT_ITER_NAME = !!$nativeIterator
+      && ($nativeIterator.name == 'values' || $nativeIterator.name == undefined);
+    var $iterator = $iterators.values;
     hide(TypedArray, TYPED_CONSTRUCTOR, true);
     hide(TypedArrayPrototype, TYPED_ARRAY, NAME);
     hide(TypedArrayPrototype, VIEW, true);
     hide(TypedArrayPrototype, DEF_CONSTRUCTOR, TypedArray);
 
-    if(CLAMPED ? new TypedArray(1)[TAG] != NAME : !(TAG in TypedArrayPrototype)){
+    if (CLAMPED ? new TypedArray(1)[TAG] != NAME : !(TAG in TypedArrayPrototype)) {
       dP(TypedArrayPrototype, TAG, {
-        get: function(){ return NAME; }
+        get: function () { return NAME; }
       });
     }
 
@@ -6159,49 +6310,52 @@ if(interopDefault(require$$1)){
     $export($export.G + $export.W + $export.F * (TypedArray != Base), O);
 
     $export($export.S, NAME, {
-      BYTES_PER_ELEMENT: BYTES,
+      BYTES_PER_ELEMENT: BYTES
+    });
+
+    $export($export.S + $export.F * fails(function () { Base.of.call(TypedArray, 1); }), NAME, {
       from: $from,
       of: $of
     });
 
-    if(!(BYTES_PER_ELEMENT in TypedArrayPrototype))hide(TypedArrayPrototype, BYTES_PER_ELEMENT, BYTES);
+    if (!(BYTES_PER_ELEMENT in TypedArrayPrototype)) hide(TypedArrayPrototype, BYTES_PER_ELEMENT, BYTES);
 
     $export($export.P, NAME, proto);
 
     setSpecies(NAME);
 
-    $export($export.P + $export.F * FORCED_SET, NAME, {set: $set});
+    $export($export.P + $export.F * FORCED_SET, NAME, { set: $set });
 
     $export($export.P + $export.F * !CORRECT_ITER_NAME, NAME, $iterators);
 
-    $export($export.P + $export.F * (TypedArrayPrototype.toString != arrayToString), NAME, {toString: arrayToString});
+    if (!LIBRARY && TypedArrayPrototype.toString != arrayToString) TypedArrayPrototype.toString = arrayToString;
 
-    $export($export.P + $export.F * fails(function(){
+    $export($export.P + $export.F * fails(function () {
       new TypedArray(1).slice();
-    }), NAME, {slice: $slice});
+    }), NAME, { slice: $slice });
 
-    $export($export.P + $export.F * (fails(function(){
-      return [1, 2].toLocaleString() != new TypedArray([1, 2]).toLocaleString()
-    }) || !fails(function(){
+    $export($export.P + $export.F * (fails(function () {
+      return [1, 2].toLocaleString() != new TypedArray([1, 2]).toLocaleString();
+    }) || !fails(function () {
       TypedArrayPrototype.toLocaleString.call([1, 2]);
-    })), NAME, {toLocaleString: $toLocaleString});
+    })), NAME, { toLocaleString: $toLocaleString });
 
     Iterators[NAME] = CORRECT_ITER_NAME ? $nativeIterator : $iterator;
-    if(!LIBRARY && !CORRECT_ITER_NAME)hide(TypedArrayPrototype, ITERATOR, $iterator);
+    if (!LIBRARY && !CORRECT_ITER_NAME) hide(TypedArrayPrototype, ITERATOR, $iterator);
   };
-} else module.exports = function(){ /* empty */ };
+} else module.exports = function () { /* empty */ };
 });
 
 var _typedArray$1 = interopDefault(_typedArray);
 
 
-var require$$0$39 = Object.freeze({
+var require$$0$42 = Object.freeze({
   default: _typedArray$1
 });
 
 var es6_typed_int8Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Int8', 1, function(init){
-  return function Int8Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Int8', 1, function (init) {
+  return function Int8Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6210,8 +6364,8 @@ interopDefault(require$$0$39)('Int8', 1, function(init){
 interopDefault(es6_typed_int8Array);
 
 var es6_typed_uint8Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Uint8', 1, function(init){
-  return function Uint8Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Uint8', 1, function (init) {
+  return function Uint8Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6220,8 +6374,8 @@ interopDefault(require$$0$39)('Uint8', 1, function(init){
 interopDefault(es6_typed_uint8Array);
 
 var es6_typed_uint8ClampedArray = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Uint8', 1, function(init){
-  return function Uint8ClampedArray(data, byteOffset, length){
+interopDefault(require$$0$42)('Uint8', 1, function (init) {
+  return function Uint8ClampedArray(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 }, true);
@@ -6230,8 +6384,8 @@ interopDefault(require$$0$39)('Uint8', 1, function(init){
 interopDefault(es6_typed_uint8ClampedArray);
 
 var es6_typed_int16Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Int16', 2, function(init){
-  return function Int16Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Int16', 2, function (init) {
+  return function Int16Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6240,8 +6394,8 @@ interopDefault(require$$0$39)('Int16', 2, function(init){
 interopDefault(es6_typed_int16Array);
 
 var es6_typed_uint16Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Uint16', 2, function(init){
-  return function Uint16Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Uint16', 2, function (init) {
+  return function Uint16Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6250,8 +6404,8 @@ interopDefault(require$$0$39)('Uint16', 2, function(init){
 interopDefault(es6_typed_uint16Array);
 
 var es6_typed_int32Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Int32', 4, function(init){
-  return function Int32Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Int32', 4, function (init) {
+  return function Int32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6260,8 +6414,8 @@ interopDefault(require$$0$39)('Int32', 4, function(init){
 interopDefault(es6_typed_int32Array);
 
 var es6_typed_uint32Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Uint32', 4, function(init){
-  return function Uint32Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Uint32', 4, function (init) {
+  return function Uint32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6270,8 +6424,8 @@ interopDefault(require$$0$39)('Uint32', 4, function(init){
 interopDefault(es6_typed_uint32Array);
 
 var es6_typed_float32Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Float32', 4, function(init){
-  return function Float32Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Float32', 4, function (init) {
+  return function Float32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6280,8 +6434,8 @@ interopDefault(require$$0$39)('Float32', 4, function(init){
 interopDefault(es6_typed_float32Array);
 
 var es6_typed_float64Array = createCommonjsModule(function (module) {
-interopDefault(require$$0$39)('Float64', 8, function(init){
-  return function Float64Array(data, byteOffset, length){
+interopDefault(require$$0$42)('Float64', 8, function (init) {
+  return function Float64Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
 });
@@ -6291,18 +6445,18 @@ interopDefault(es6_typed_float64Array);
 
 var es6_reflect_apply = createCommonjsModule(function (module) {
 // 26.1.1 Reflect.apply(target, thisArgument, argumentsList)
-var $export   = interopDefault(require$$1$2)
-  , aFunction = interopDefault(require$$0$2)
-  , anObject  = interopDefault(require$$5)
-  , rApply    = (interopDefault(require$$3).Reflect || {}).apply
-  , fApply    = Function.apply;
+var $export = interopDefault(require$$1$2);
+var aFunction = interopDefault(require$$0$1);
+var anObject = interopDefault(require$$5);
+var rApply = (interopDefault(require$$3).Reflect || {}).apply;
+var fApply = Function.apply;
 // MS Edge argumentsList argument is optional
-$export($export.S + $export.F * !interopDefault(require$$1$1)(function(){
-  rApply(function(){});
+$export($export.S + $export.F * !interopDefault(require$$1$1)(function () {
+  rApply(function () { /* empty */ });
 }), 'Reflect', {
-  apply: function apply(target, thisArgument, argumentsList){
-    var T = aFunction(target)
-      , L = anObject(argumentsList);
+  apply: function apply(target, thisArgument, argumentsList) {
+    var T = aFunction(target);
+    var L = anObject(argumentsList);
     return rApply ? rApply(T, thisArgument, L) : fApply.call(T, thisArgument, L);
   }
 });
@@ -6312,35 +6466,35 @@ interopDefault(es6_reflect_apply);
 
 var es6_reflect_construct = createCommonjsModule(function (module) {
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
-var $export    = interopDefault(require$$1$2)
-  , create     = interopDefault(require$$6$1)
-  , aFunction  = interopDefault(require$$0$2)
-  , anObject   = interopDefault(require$$5)
-  , isObject   = interopDefault(require$$0$1)
-  , fails      = interopDefault(require$$1$1)
-  , bind       = interopDefault(require$$1$12)
-  , rConstruct = (interopDefault(require$$3).Reflect || {}).construct;
+var $export = interopDefault(require$$1$2);
+var create = interopDefault(require$$6);
+var aFunction = interopDefault(require$$0$1);
+var anObject = interopDefault(require$$5);
+var isObject = interopDefault(require$$3$1);
+var fails = interopDefault(require$$1$1);
+var bind = interopDefault(require$$1$12);
+var rConstruct = (interopDefault(require$$3).Reflect || {}).construct;
 
 // MS Edge supports only 2 arguments and argumentsList argument is optional
 // FF Nightly sets third argument as `new.target`, but does not create `this` from it
-var NEW_TARGET_BUG = fails(function(){
-  function F(){}
-  return !(rConstruct(function(){}, [], F) instanceof F);
+var NEW_TARGET_BUG = fails(function () {
+  function F() { /* empty */ }
+  return !(rConstruct(function () { /* empty */ }, [], F) instanceof F);
 });
-var ARGS_BUG = !fails(function(){
-  rConstruct(function(){});
+var ARGS_BUG = !fails(function () {
+  rConstruct(function () { /* empty */ });
 });
 
 $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
-  construct: function construct(Target, args /*, newTarget*/){
+  construct: function construct(Target, args /* , newTarget */) {
     aFunction(Target);
     anObject(args);
     var newTarget = arguments.length < 3 ? Target : aFunction(arguments[2]);
-    if(ARGS_BUG && !NEW_TARGET_BUG)return rConstruct(Target, args, newTarget);
-    if(Target == newTarget){
+    if (ARGS_BUG && !NEW_TARGET_BUG) return rConstruct(Target, args, newTarget);
+    if (Target == newTarget) {
       // w/o altered newTarget, optimization for 0-4 arguments
-      switch(args.length){
-        case 0: return new Target;
+      switch (args.length) {
+        case 0: return new Target();
         case 1: return new Target(args[0]);
         case 2: return new Target(args[0], args[1]);
         case 3: return new Target(args[0], args[1], args[2]);
@@ -6349,12 +6503,12 @@ $export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
       // w/o altered newTarget, lot of arguments case
       var $args = [null];
       $args.push.apply($args, args);
-      return new (bind.apply(Target, $args));
+      return new (bind.apply(Target, $args))();
     }
     // with altered newTarget, not support built-in constructors
-    var proto    = newTarget.prototype
-      , instance = create(isObject(proto) ? proto : Object.prototype)
-      , result   = Function.apply.call(Target, instance, args);
+    var proto = newTarget.prototype;
+    var instance = create(isObject(proto) ? proto : Object.prototype);
+    var result = Function.apply.call(Target, instance, args);
     return isObject(result) ? result : instance;
   }
 });
@@ -6364,23 +6518,24 @@ interopDefault(es6_reflect_construct);
 
 var es6_reflect_defineProperty = createCommonjsModule(function (module) {
 // 26.1.3 Reflect.defineProperty(target, propertyKey, attributes)
-var dP          = interopDefault(require$$2$1)
-  , $export     = interopDefault(require$$1$2)
-  , anObject    = interopDefault(require$$5)
-  , toPrimitive = interopDefault(require$$4$1);
+var dP = interopDefault(require$$2$1);
+var $export = interopDefault(require$$1$2);
+var anObject = interopDefault(require$$5);
+var toPrimitive = interopDefault(require$$4$1);
 
 // MS Edge has broken Reflect.defineProperty - throwing instead of returning false
-$export($export.S + $export.F * interopDefault(require$$1$1)(function(){
-  Reflect.defineProperty(dP.f({}, 1, {value: 1}), 1, {value: 2});
+$export($export.S + $export.F * interopDefault(require$$1$1)(function () {
+  // eslint-disable-next-line no-undef
+  Reflect.defineProperty(dP.f({}, 1, { value: 1 }), 1, { value: 2 });
 }), 'Reflect', {
-  defineProperty: function defineProperty(target, propertyKey, attributes){
+  defineProperty: function defineProperty(target, propertyKey, attributes) {
     anObject(target);
     propertyKey = toPrimitive(propertyKey, true);
     anObject(attributes);
     try {
       dP.f(target, propertyKey, attributes);
       return true;
-    } catch(e){
+    } catch (e) {
       return false;
     }
   }
@@ -6391,12 +6546,12 @@ interopDefault(es6_reflect_defineProperty);
 
 var es6_reflect_deleteProperty = createCommonjsModule(function (module) {
 // 26.1.4 Reflect.deleteProperty(target, propertyKey)
-var $export  = interopDefault(require$$1$2)
-  , gOPD     = interopDefault(require$$2$7).f
-  , anObject = interopDefault(require$$5);
+var $export = interopDefault(require$$1$2);
+var gOPD = interopDefault(require$$2$7).f;
+var anObject = interopDefault(require$$5);
 
 $export($export.S, 'Reflect', {
-  deleteProperty: function deleteProperty(target, propertyKey){
+  deleteProperty: function deleteProperty(target, propertyKey) {
     var desc = gOPD(anObject(target), propertyKey);
     return desc && !desc.configurable ? false : delete target[propertyKey];
   }
@@ -6408,27 +6563,27 @@ interopDefault(es6_reflect_deleteProperty);
 var es6_reflect_enumerate = createCommonjsModule(function (module) {
 'use strict';
 // 26.1.5 Reflect.enumerate(target)
-var $export  = interopDefault(require$$1$2)
-  , anObject = interopDefault(require$$5);
-var Enumerate = function(iterated){
+var $export = interopDefault(require$$1$2);
+var anObject = interopDefault(require$$5);
+var Enumerate = function (iterated) {
   this._t = anObject(iterated); // target
   this._i = 0;                  // next index
-  var keys = this._k = []       // keys
-    , key;
-  for(key in iterated)keys.push(key);
+  var keys = this._k = [];      // keys
+  var key;
+  for (key in iterated) keys.push(key);
 };
-interopDefault(require$$0$26)(Enumerate, 'Object', function(){
-  var that = this
-    , keys = that._k
-    , key;
+interopDefault(require$$0$27)(Enumerate, 'Object', function () {
+  var that = this;
+  var keys = that._k;
+  var key;
   do {
-    if(that._i >= keys.length)return {value: undefined, done: true};
-  } while(!((key = keys[that._i++]) in that._t));
-  return {value: key, done: false};
+    if (that._i >= keys.length) return { value: undefined, done: true };
+  } while (!((key = keys[that._i++]) in that._t));
+  return { value: key, done: false };
 });
 
 $export($export.S, 'Reflect', {
-  enumerate: function enumerate(target){
+  enumerate: function enumerate(target) {
     return new Enumerate(target);
   }
 });
@@ -6438,38 +6593,38 @@ interopDefault(es6_reflect_enumerate);
 
 var es6_reflect_get = createCommonjsModule(function (module) {
 // 26.1.6 Reflect.get(target, propertyKey [, receiver])
-var gOPD           = interopDefault(require$$2$7)
-  , getPrototypeOf = interopDefault(require$$0$13)
-  , has            = interopDefault(require$$4)
-  , $export        = interopDefault(require$$1$2)
-  , isObject       = interopDefault(require$$0$1)
-  , anObject       = interopDefault(require$$5);
+var gOPD = interopDefault(require$$2$7);
+var getPrototypeOf = interopDefault(require$$0$12);
+var has = interopDefault(require$$4);
+var $export = interopDefault(require$$1$2);
+var isObject = interopDefault(require$$3$1);
+var anObject = interopDefault(require$$5);
 
-function get(target, propertyKey/*, receiver*/){
-  var receiver = arguments.length < 3 ? target : arguments[2]
-    , desc, proto;
-  if(anObject(target) === receiver)return target[propertyKey];
-  if(desc = gOPD.f(target, propertyKey))return has(desc, 'value')
+function get(target, propertyKey /* , receiver */) {
+  var receiver = arguments.length < 3 ? target : arguments[2];
+  var desc, proto;
+  if (anObject(target) === receiver) return target[propertyKey];
+  if (desc = gOPD.f(target, propertyKey)) return has(desc, 'value')
     ? desc.value
     : desc.get !== undefined
       ? desc.get.call(receiver)
       : undefined;
-  if(isObject(proto = getPrototypeOf(target)))return get(proto, propertyKey, receiver);
+  if (isObject(proto = getPrototypeOf(target))) return get(proto, propertyKey, receiver);
 }
 
-$export($export.S, 'Reflect', {get: get});
+$export($export.S, 'Reflect', { get: get });
 });
 
 interopDefault(es6_reflect_get);
 
 var es6_reflect_getOwnPropertyDescriptor = createCommonjsModule(function (module) {
 // 26.1.7 Reflect.getOwnPropertyDescriptor(target, propertyKey)
-var gOPD     = interopDefault(require$$2$7)
-  , $export  = interopDefault(require$$1$2)
-  , anObject = interopDefault(require$$5);
+var gOPD = interopDefault(require$$2$7);
+var $export = interopDefault(require$$1$2);
+var anObject = interopDefault(require$$5);
 
 $export($export.S, 'Reflect', {
-  getOwnPropertyDescriptor: function getOwnPropertyDescriptor(target, propertyKey){
+  getOwnPropertyDescriptor: function getOwnPropertyDescriptor(target, propertyKey) {
     return gOPD.f(anObject(target), propertyKey);
   }
 });
@@ -6479,12 +6634,12 @@ interopDefault(es6_reflect_getOwnPropertyDescriptor);
 
 var es6_reflect_getPrototypeOf = createCommonjsModule(function (module) {
 // 26.1.8 Reflect.getPrototypeOf(target)
-var $export  = interopDefault(require$$1$2)
-  , getProto = interopDefault(require$$0$13)
-  , anObject = interopDefault(require$$5);
+var $export = interopDefault(require$$1$2);
+var getProto = interopDefault(require$$0$12);
+var anObject = interopDefault(require$$5);
 
 $export($export.S, 'Reflect', {
-  getPrototypeOf: function getPrototypeOf(target){
+  getPrototypeOf: function getPrototypeOf(target) {
     return getProto(anObject(target));
   }
 });
@@ -6497,7 +6652,7 @@ var es6_reflect_has = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Reflect', {
-  has: function has(target, propertyKey){
+  has: function has(target, propertyKey) {
     return propertyKey in target;
   }
 });
@@ -6507,12 +6662,12 @@ interopDefault(es6_reflect_has);
 
 var es6_reflect_isExtensible = createCommonjsModule(function (module) {
 // 26.1.10 Reflect.isExtensible(target)
-var $export       = interopDefault(require$$1$2)
-  , anObject      = interopDefault(require$$5)
-  , $isExtensible = Object.isExtensible;
+var $export = interopDefault(require$$1$2);
+var anObject = interopDefault(require$$5);
+var $isExtensible = Object.isExtensible;
 
 $export($export.S, 'Reflect', {
-  isExtensible: function isExtensible(target){
+  isExtensible: function isExtensible(target) {
     anObject(target);
     return $isExtensible ? $isExtensible(target) : true;
   }
@@ -6523,13 +6678,13 @@ interopDefault(es6_reflect_isExtensible);
 
 var _ownKeys = createCommonjsModule(function (module) {
 // all object keys, includes non-enumerable and symbols
-var gOPN     = interopDefault(require$$3$3)
-  , gOPS     = interopDefault(require$$2$6)
-  , anObject = interopDefault(require$$5)
-  , Reflect  = interopDefault(require$$3).Reflect;
-module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
-  var keys       = gOPN.f(anObject(it))
-    , getSymbols = gOPS.f;
+var gOPN = interopDefault(require$$3$4);
+var gOPS = interopDefault(require$$2$6);
+var anObject = interopDefault(require$$5);
+var Reflect = interopDefault(require$$3).Reflect;
+module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
+  var keys = gOPN.f(anObject(it));
+  var getSymbols = gOPS.f;
   return getSymbols ? keys.concat(getSymbols(it)) : keys;
 };
 });
@@ -6537,7 +6692,7 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it){
 var _ownKeys$1 = interopDefault(_ownKeys);
 
 
-var require$$3$9 = Object.freeze({
+var require$$3$8 = Object.freeze({
   default: _ownKeys$1
 });
 
@@ -6545,24 +6700,24 @@ var es6_reflect_ownKeys = createCommonjsModule(function (module) {
 // 26.1.11 Reflect.ownKeys(target)
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'Reflect', {ownKeys: interopDefault(require$$3$9)});
+$export($export.S, 'Reflect', { ownKeys: interopDefault(require$$3$8) });
 });
 
 interopDefault(es6_reflect_ownKeys);
 
 var es6_reflect_preventExtensions = createCommonjsModule(function (module) {
 // 26.1.12 Reflect.preventExtensions(target)
-var $export            = interopDefault(require$$1$2)
-  , anObject           = interopDefault(require$$5)
-  , $preventExtensions = Object.preventExtensions;
+var $export = interopDefault(require$$1$2);
+var anObject = interopDefault(require$$5);
+var $preventExtensions = Object.preventExtensions;
 
 $export($export.S, 'Reflect', {
-  preventExtensions: function preventExtensions(target){
+  preventExtensions: function preventExtensions(target) {
     anObject(target);
     try {
-      if($preventExtensions)$preventExtensions(target);
+      if ($preventExtensions) $preventExtensions(target);
       return true;
-    } catch(e){
+    } catch (e) {
       return false;
     }
   }
@@ -6573,27 +6728,27 @@ interopDefault(es6_reflect_preventExtensions);
 
 var es6_reflect_set = createCommonjsModule(function (module) {
 // 26.1.13 Reflect.set(target, propertyKey, V [, receiver])
-var dP             = interopDefault(require$$2$1)
-  , gOPD           = interopDefault(require$$2$7)
-  , getPrototypeOf = interopDefault(require$$0$13)
-  , has            = interopDefault(require$$4)
-  , $export        = interopDefault(require$$1$2)
-  , createDesc     = interopDefault(require$$2$3)
-  , anObject       = interopDefault(require$$5)
-  , isObject       = interopDefault(require$$0$1);
+var dP = interopDefault(require$$2$1);
+var gOPD = interopDefault(require$$2$7);
+var getPrototypeOf = interopDefault(require$$0$12);
+var has = interopDefault(require$$4);
+var $export = interopDefault(require$$1$2);
+var createDesc = interopDefault(require$$2$3);
+var anObject = interopDefault(require$$5);
+var isObject = interopDefault(require$$3$1);
 
-function set(target, propertyKey, V/*, receiver*/){
-  var receiver = arguments.length < 4 ? target : arguments[3]
-    , ownDesc  = gOPD.f(anObject(target), propertyKey)
-    , existingDescriptor, proto;
-  if(!ownDesc){
-    if(isObject(proto = getPrototypeOf(target))){
+function set(target, propertyKey, V /* , receiver */) {
+  var receiver = arguments.length < 4 ? target : arguments[3];
+  var ownDesc = gOPD.f(anObject(target), propertyKey);
+  var existingDescriptor, proto;
+  if (!ownDesc) {
+    if (isObject(proto = getPrototypeOf(target))) {
       return set(proto, propertyKey, V, receiver);
     }
     ownDesc = createDesc(0);
   }
-  if(has(ownDesc, 'value')){
-    if(ownDesc.writable === false || !isObject(receiver))return false;
+  if (has(ownDesc, 'value')) {
+    if (ownDesc.writable === false || !isObject(receiver)) return false;
     existingDescriptor = gOPD.f(receiver, propertyKey) || createDesc(0);
     existingDescriptor.value = V;
     dP.f(receiver, propertyKey, existingDescriptor);
@@ -6602,23 +6757,23 @@ function set(target, propertyKey, V/*, receiver*/){
   return ownDesc.set === undefined ? false : (ownDesc.set.call(receiver, V), true);
 }
 
-$export($export.S, 'Reflect', {set: set});
+$export($export.S, 'Reflect', { set: set });
 });
 
 interopDefault(es6_reflect_set);
 
 var es6_reflect_setPrototypeOf = createCommonjsModule(function (module) {
 // 26.1.14 Reflect.setPrototypeOf(target, proto)
-var $export  = interopDefault(require$$1$2)
-  , setProto = interopDefault(require$$0$14);
+var $export = interopDefault(require$$1$2);
+var setProto = interopDefault(require$$0$14);
 
-if(setProto)$export($export.S, 'Reflect', {
-  setPrototypeOf: function setPrototypeOf(target, proto){
+if (setProto) $export($export.S, 'Reflect', {
+  setPrototypeOf: function setPrototypeOf(target, proto) {
     setProto.check(target, proto);
     try {
       setProto.set(target, proto);
       return true;
-    } catch(e){
+    } catch (e) {
       return false;
     }
   }
@@ -6630,28 +6785,130 @@ interopDefault(es6_reflect_setPrototypeOf);
 var es7_array_includes = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/tc39/Array.prototype.includes
-var $export   = interopDefault(require$$1$2)
-  , $includes = interopDefault(require$$1$9)(true);
+var $export = interopDefault(require$$1$2);
+var $includes = interopDefault(require$$1$10)(true);
 
 $export($export.P, 'Array', {
-  includes: function includes(el /*, fromIndex = 0 */){
+  includes: function includes(el /* , fromIndex = 0 */) {
     return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
   }
 });
 
-interopDefault(require$$0$34)('includes');
+interopDefault(require$$0$35)('includes');
 });
 
 interopDefault(es7_array_includes);
 
+var _flattenIntoArray = createCommonjsModule(function (module) {
+'use strict';
+// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
+var isArray = interopDefault(require$$4$4);
+var isObject = interopDefault(require$$3$1);
+var toLength = interopDefault(require$$3$2);
+var ctx = interopDefault(require$$1$4);
+var IS_CONCAT_SPREADABLE = interopDefault(require$$0$3)('isConcatSpreadable');
+
+function flattenIntoArray(target, original, source, sourceLen, start, depth, mapper, thisArg) {
+  var targetIndex = start;
+  var sourceIndex = 0;
+  var mapFn = mapper ? ctx(mapper, thisArg, 3) : false;
+  var element, spreadable;
+
+  while (sourceIndex < sourceLen) {
+    if (sourceIndex in source) {
+      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
+
+      spreadable = false;
+      if (isObject(element)) {
+        spreadable = element[IS_CONCAT_SPREADABLE];
+        spreadable = spreadable !== undefined ? !!spreadable : isArray(element);
+      }
+
+      if (spreadable && depth > 0) {
+        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
+      } else {
+        if (targetIndex >= 0x1fffffffffffff) throw TypeError();
+        target[targetIndex] = element;
+      }
+
+      targetIndex++;
+    }
+    sourceIndex++;
+  }
+  return targetIndex;
+}
+
+module.exports = flattenIntoArray;
+});
+
+var _flattenIntoArray$1 = interopDefault(_flattenIntoArray);
+
+
+var require$$5$6 = Object.freeze({
+  default: _flattenIntoArray$1
+});
+
+var es7_array_flatMap = createCommonjsModule(function (module) {
+'use strict';
+// https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
+var $export = interopDefault(require$$1$2);
+var flattenIntoArray = interopDefault(require$$5$6);
+var toObject = interopDefault(require$$5$2);
+var toLength = interopDefault(require$$3$2);
+var aFunction = interopDefault(require$$0$1);
+var arraySpeciesCreate = interopDefault(require$$1$17);
+
+$export($export.P, 'Array', {
+  flatMap: function flatMap(callbackfn /* , thisArg */) {
+    var O = toObject(this);
+    var sourceLen, A;
+    aFunction(callbackfn);
+    sourceLen = toLength(O.length);
+    A = arraySpeciesCreate(O, 0);
+    flattenIntoArray(A, O, O, sourceLen, 0, 1, callbackfn, arguments[1]);
+    return A;
+  }
+});
+
+interopDefault(require$$0$35)('flatMap');
+});
+
+interopDefault(es7_array_flatMap);
+
+var es7_array_flatten = createCommonjsModule(function (module) {
+'use strict';
+// https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatten
+var $export = interopDefault(require$$1$2);
+var flattenIntoArray = interopDefault(require$$5$6);
+var toObject = interopDefault(require$$5$2);
+var toLength = interopDefault(require$$3$2);
+var toInteger = interopDefault(require$$2$5);
+var arraySpeciesCreate = interopDefault(require$$1$17);
+
+$export($export.P, 'Array', {
+  flatten: function flatten(/* depthArg = 1 */) {
+    var depthArg = arguments[0];
+    var O = toObject(this);
+    var sourceLen = toLength(O.length);
+    var A = arraySpeciesCreate(O, 0);
+    flattenIntoArray(A, O, O, sourceLen, 0, depthArg === undefined ? 1 : toInteger(depthArg));
+    return A;
+  }
+});
+
+interopDefault(require$$0$35)('flatten');
+});
+
+interopDefault(es7_array_flatten);
+
 var es7_string_at = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/mathiasbynens/String.prototype.at
-var $export = interopDefault(require$$1$2)
-  , $at     = interopDefault(require$$0$25)(true);
+var $export = interopDefault(require$$1$2);
+var $at = interopDefault(require$$0$26)(true);
 
 $export($export.P, 'String', {
-  at: function at(pos){
+  at: function at(pos) {
     return $at(this, pos);
   }
 });
@@ -6661,19 +6918,19 @@ interopDefault(es7_string_at);
 
 var _stringPad = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-string-pad-start-end
-var toLength = interopDefault(require$$3$1)
-  , repeat   = interopDefault(require$$1$14)
-  , defined  = interopDefault(require$$4$3);
+var toLength = interopDefault(require$$3$2);
+var repeat = interopDefault(require$$1$14);
+var defined = interopDefault(require$$4$3);
 
-module.exports = function(that, maxLength, fillString, left){
-  var S            = String(defined(that))
-    , stringLength = S.length
-    , fillStr      = fillString === undefined ? ' ' : String(fillString)
-    , intMaxLength = toLength(maxLength);
-  if(intMaxLength <= stringLength || fillStr == '')return S;
-  var fillLen = intMaxLength - stringLength
-    , stringFiller = repeat.call(fillStr, Math.ceil(fillLen / fillStr.length));
-  if(stringFiller.length > fillLen)stringFiller = stringFiller.slice(0, fillLen);
+module.exports = function (that, maxLength, fillString, left) {
+  var S = String(defined(that));
+  var stringLength = S.length;
+  var fillStr = fillString === undefined ? ' ' : String(fillString);
+  var intMaxLength = toLength(maxLength);
+  if (intMaxLength <= stringLength || fillStr == '') return S;
+  var fillLen = intMaxLength - stringLength;
+  var stringFiller = repeat.call(fillStr, Math.ceil(fillLen / fillStr.length));
+  if (stringFiller.length > fillLen) stringFiller = stringFiller.slice(0, fillLen);
   return left ? stringFiller + S : S + stringFiller;
 };
 });
@@ -6681,18 +6938,18 @@ module.exports = function(that, maxLength, fillString, left){
 var _stringPad$1 = interopDefault(_stringPad);
 
 
-var require$$0$40 = Object.freeze({
+var require$$0$43 = Object.freeze({
   default: _stringPad$1
 });
 
 var es7_string_padStart = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
-var $export = interopDefault(require$$1$2)
-  , $pad    = interopDefault(require$$0$40);
+var $export = interopDefault(require$$1$2);
+var $pad = interopDefault(require$$0$43);
 
 $export($export.P, 'String', {
-  padStart: function padStart(maxLength /*, fillString = ' ' */){
+  padStart: function padStart(maxLength /* , fillString = ' ' */) {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, true);
   }
 });
@@ -6703,11 +6960,11 @@ interopDefault(es7_string_padStart);
 var es7_string_padEnd = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/tc39/proposal-string-pad-start-end
-var $export = interopDefault(require$$1$2)
-  , $pad    = interopDefault(require$$0$40);
+var $export = interopDefault(require$$1$2);
+var $pad = interopDefault(require$$0$43);
 
 $export($export.P, 'String', {
-  padEnd: function padEnd(maxLength /*, fillString = ' ' */){
+  padEnd: function padEnd(maxLength /* , fillString = ' ' */) {
     return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, false);
   }
 });
@@ -6718,8 +6975,8 @@ interopDefault(es7_string_padEnd);
 var es7_string_trimLeft = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-interopDefault(require$$0$16)('trimLeft', function($trim){
-  return function trimLeft(){
+interopDefault(require$$0$16)('trimLeft', function ($trim) {
+  return function trimLeft() {
     return $trim(this, 1);
   };
 }, 'trimStart');
@@ -6730,8 +6987,8 @@ interopDefault(es7_string_trimLeft);
 var es7_string_trimRight = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-interopDefault(require$$0$16)('trimRight', function($trim){
-  return function trimRight(){
+interopDefault(require$$0$16)('trimRight', function ($trim) {
+  return function trimRight() {
     return $trim(this, 2);
   };
 }, 'trimEnd');
@@ -6742,30 +6999,30 @@ interopDefault(es7_string_trimRight);
 var es7_string_matchAll = createCommonjsModule(function (module) {
 'use strict';
 // https://tc39.github.io/String.prototype.matchAll/
-var $export     = interopDefault(require$$1$2)
-  , defined     = interopDefault(require$$4$3)
-  , toLength    = interopDefault(require$$3$1)
-  , isRegExp    = interopDefault(require$$2$8)
-  , getFlags    = interopDefault(require$$1$18)
-  , RegExpProto = RegExp.prototype;
+var $export = interopDefault(require$$1$2);
+var defined = interopDefault(require$$4$3);
+var toLength = interopDefault(require$$3$2);
+var isRegExp = interopDefault(require$$2$8);
+var getFlags = interopDefault(require$$1$19);
+var RegExpProto = RegExp.prototype;
 
-var $RegExpStringIterator = function(regexp, string){
+var $RegExpStringIterator = function (regexp, string) {
   this._r = regexp;
   this._s = string;
 };
 
-interopDefault(require$$0$26)($RegExpStringIterator, 'RegExp String', function next(){
+interopDefault(require$$0$27)($RegExpStringIterator, 'RegExp String', function next() {
   var match = this._r.exec(this._s);
-  return {value: match, done: match === null};
+  return { value: match, done: match === null };
 });
 
 $export($export.P, 'String', {
-  matchAll: function matchAll(regexp){
+  matchAll: function matchAll(regexp) {
     defined(this);
-    if(!isRegExp(regexp))throw TypeError(regexp + ' is not a regexp!');
-    var S     = String(this)
-      , flags = 'flags' in RegExpProto ? String(regexp.flags) : getFlags.call(regexp)
-      , rx    = new RegExp(regexp.source, ~flags.indexOf('g') ? flags : 'g' + flags);
+    if (!isRegExp(regexp)) throw TypeError(regexp + ' is not a regexp!');
+    var S = String(this);
+    var flags = 'flags' in RegExpProto ? String(regexp.flags) : getFlags.call(regexp);
+    var rx = new RegExp(regexp.source, ~flags.indexOf('g') ? flags : 'g' + flags);
     rx.lastIndex = toLength(regexp.lastIndex);
     return new $RegExpStringIterator(rx, S);
   }
@@ -6775,34 +7032,37 @@ $export($export.P, 'String', {
 interopDefault(es7_string_matchAll);
 
 var es7_symbol_asyncIterator = createCommonjsModule(function (module) {
-interopDefault(require$$0$5)('asyncIterator');
+interopDefault(require$$0$4)('asyncIterator');
 });
 
 interopDefault(es7_symbol_asyncIterator);
 
 var es7_symbol_observable = createCommonjsModule(function (module) {
-interopDefault(require$$0$5)('observable');
+interopDefault(require$$0$4)('observable');
 });
 
 interopDefault(es7_symbol_observable);
 
 var es7_object_getOwnPropertyDescriptors = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
-var $export        = interopDefault(require$$1$2)
-  , ownKeys        = interopDefault(require$$3$9)
-  , toIObject      = interopDefault(require$$1$7)
-  , gOPD           = interopDefault(require$$2$7)
-  , createProperty = interopDefault(require$$0$30);
+var $export = interopDefault(require$$1$2);
+var ownKeys = interopDefault(require$$3$8);
+var toIObject = interopDefault(require$$1$8);
+var gOPD = interopDefault(require$$2$7);
+var createProperty = interopDefault(require$$0$32);
 
 $export($export.S, 'Object', {
-  getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object){
-    var O       = toIObject(object)
-      , getDesc = gOPD.f
-      , keys    = ownKeys(O)
-      , result  = {}
-      , i       = 0
-      , key;
-    while(keys.length > i)createProperty(result, key = keys[i++], getDesc(O, key));
+  getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object) {
+    var O = toIObject(object);
+    var getDesc = gOPD.f;
+    var keys = ownKeys(O);
+    var result = {};
+    var i = 0;
+    var key, desc;
+    while (keys.length > i) {
+      desc = getDesc(O, key = keys[i++]);
+      if (desc !== undefined) createProperty(result, key, desc);
+    }
     return result;
   }
 });
@@ -6811,18 +7071,18 @@ $export($export.S, 'Object', {
 interopDefault(es7_object_getOwnPropertyDescriptors);
 
 var _objectToArray = createCommonjsModule(function (module) {
-var getKeys   = interopDefault(require$$2$5)
-  , toIObject = interopDefault(require$$1$7)
-  , isEnum    = interopDefault(require$$0$9).f;
-module.exports = function(isEntries){
-  return function(it){
-    var O      = toIObject(it)
-      , keys   = getKeys(O)
-      , length = keys.length
-      , i      = 0
-      , result = []
-      , key;
-    while(length > i)if(isEnum.call(O, key = keys[i++])){
+var getKeys = interopDefault(require$$5$1);
+var toIObject = interopDefault(require$$1$8);
+var isEnum = interopDefault(require$$0$8).f;
+module.exports = function (isEntries) {
+  return function (it) {
+    var O = toIObject(it);
+    var keys = getKeys(O);
+    var length = keys.length;
+    var i = 0;
+    var result = [];
+    var key;
+    while (length > i) if (isEnum.call(O, key = keys[i++])) {
       result.push(isEntries ? [key, O[key]] : O[key]);
     } return result;
   };
@@ -6832,17 +7092,17 @@ module.exports = function(isEntries){
 var _objectToArray$1 = interopDefault(_objectToArray);
 
 
-var require$$0$41 = Object.freeze({
+var require$$0$44 = Object.freeze({
   default: _objectToArray$1
 });
 
 var es7_object_values = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-object-values-entries
-var $export = interopDefault(require$$1$2)
-  , $values = interopDefault(require$$0$41)(false);
+var $export = interopDefault(require$$1$2);
+var $values = interopDefault(require$$0$44)(false);
 
 $export($export.S, 'Object', {
-  values: function values(it){
+  values: function values(it) {
     return $values(it);
   }
 });
@@ -6852,11 +7112,11 @@ interopDefault(es7_object_values);
 
 var es7_object_entries = createCommonjsModule(function (module) {
 // https://github.com/tc39/proposal-object-values-entries
-var $export  = interopDefault(require$$1$2)
-  , $entries = interopDefault(require$$0$41)(true);
+var $export = interopDefault(require$$1$2);
+var $entries = interopDefault(require$$0$44)(true);
 
 $export($export.S, 'Object', {
-  entries: function entries(it){
+  entries: function entries(it) {
     return $entries(it);
   }
 });
@@ -6865,11 +7125,13 @@ $export($export.S, 'Object', {
 interopDefault(es7_object_entries);
 
 var _objectForcedPam = createCommonjsModule(function (module) {
+'use strict';
 // Forced replacement prototype accessors methods
-module.exports = interopDefault(require$$2$4)|| !interopDefault(require$$1$1)(function(){
+module.exports = interopDefault(require$$2$4) || !interopDefault(require$$1$1)(function () {
   var K = Math.random();
   // In FF throws only define methods
-  __defineSetter__.call(null, K, function(){ /* empty */});
+  // eslint-disable-next-line no-undef, no-useless-call
+  __defineSetter__.call(null, K, function () { /* empty */ });
   delete interopDefault(require$$3)[K];
 });
 });
@@ -6877,21 +7139,21 @@ module.exports = interopDefault(require$$2$4)|| !interopDefault(require$$1$1)(fu
 var _objectForcedPam$1 = interopDefault(_objectForcedPam);
 
 
-var require$$0$42 = Object.freeze({
+var require$$0$45 = Object.freeze({
   default: _objectForcedPam$1
 });
 
 var es7_object_defineGetter = createCommonjsModule(function (module) {
 'use strict';
-var $export         = interopDefault(require$$1$2)
-  , toObject        = interopDefault(require$$5$1)
-  , aFunction       = interopDefault(require$$0$2)
-  , $defineProperty = interopDefault(require$$2$1);
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var aFunction = interopDefault(require$$0$1);
+var $defineProperty = interopDefault(require$$2$1);
 
 // B.2.2.2 Object.prototype.__defineGetter__(P, getter)
-interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42), 'Object', {
-  __defineGetter__: function __defineGetter__(P, getter){
-    $defineProperty.f(toObject(this), P, {get: aFunction(getter), enumerable: true, configurable: true});
+interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$45), 'Object', {
+  __defineGetter__: function __defineGetter__(P, getter) {
+    $defineProperty.f(toObject(this), P, { get: aFunction(getter), enumerable: true, configurable: true });
   }
 });
 });
@@ -6900,15 +7162,15 @@ interopDefault(es7_object_defineGetter);
 
 var es7_object_defineSetter = createCommonjsModule(function (module) {
 'use strict';
-var $export         = interopDefault(require$$1$2)
-  , toObject        = interopDefault(require$$5$1)
-  , aFunction       = interopDefault(require$$0$2)
-  , $defineProperty = interopDefault(require$$2$1);
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var aFunction = interopDefault(require$$0$1);
+var $defineProperty = interopDefault(require$$2$1);
 
 // B.2.2.3 Object.prototype.__defineSetter__(P, setter)
-interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42), 'Object', {
-  __defineSetter__: function __defineSetter__(P, setter){
-    $defineProperty.f(toObject(this), P, {set: aFunction(setter), enumerable: true, configurable: true});
+interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$45), 'Object', {
+  __defineSetter__: function __defineSetter__(P, setter) {
+    $defineProperty.f(toObject(this), P, { set: aFunction(setter), enumerable: true, configurable: true });
   }
 });
 });
@@ -6917,21 +7179,21 @@ interopDefault(es7_object_defineSetter);
 
 var es7_object_lookupGetter = createCommonjsModule(function (module) {
 'use strict';
-var $export                  = interopDefault(require$$1$2)
-  , toObject                 = interopDefault(require$$5$1)
-  , toPrimitive              = interopDefault(require$$4$1)
-  , getPrototypeOf           = interopDefault(require$$0$13)
-  , getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var toPrimitive = interopDefault(require$$4$1);
+var getPrototypeOf = interopDefault(require$$0$12);
+var getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
 
 // B.2.2.4 Object.prototype.__lookupGetter__(P)
-interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42), 'Object', {
-  __lookupGetter__: function __lookupGetter__(P){
-    var O = toObject(this)
-      , K = toPrimitive(P, true)
-      , D;
+interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$45), 'Object', {
+  __lookupGetter__: function __lookupGetter__(P) {
+    var O = toObject(this);
+    var K = toPrimitive(P, true);
+    var D;
     do {
-      if(D = getOwnPropertyDescriptor(O, K))return D.get;
-    } while(O = getPrototypeOf(O));
+      if (D = getOwnPropertyDescriptor(O, K)) return D.get;
+    } while (O = getPrototypeOf(O));
   }
 });
 });
@@ -6940,21 +7202,21 @@ interopDefault(es7_object_lookupGetter);
 
 var es7_object_lookupSetter = createCommonjsModule(function (module) {
 'use strict';
-var $export                  = interopDefault(require$$1$2)
-  , toObject                 = interopDefault(require$$5$1)
-  , toPrimitive              = interopDefault(require$$4$1)
-  , getPrototypeOf           = interopDefault(require$$0$13)
-  , getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
+var $export = interopDefault(require$$1$2);
+var toObject = interopDefault(require$$5$2);
+var toPrimitive = interopDefault(require$$4$1);
+var getPrototypeOf = interopDefault(require$$0$12);
+var getOwnPropertyDescriptor = interopDefault(require$$2$7).f;
 
 // B.2.2.5 Object.prototype.__lookupSetter__(P)
-interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42), 'Object', {
-  __lookupSetter__: function __lookupSetter__(P){
-    var O = toObject(this)
-      , K = toPrimitive(P, true)
-      , D;
+interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$45), 'Object', {
+  __lookupSetter__: function __lookupSetter__(P) {
+    var O = toObject(this);
+    var K = toPrimitive(P, true);
+    var D;
     do {
-      if(D = getOwnPropertyDescriptor(O, K))return D.set;
-    } while(O = getPrototypeOf(O));
+      if (D = getOwnPropertyDescriptor(O, K)) return D.set;
+    } while (O = getPrototypeOf(O));
   }
 });
 });
@@ -6962,9 +7224,9 @@ interopDefault(require$$1) && $export($export.P + interopDefault(require$$0$42),
 interopDefault(es7_object_lookupSetter);
 
 var _arrayFromIterable = createCommonjsModule(function (module) {
-var forOf = interopDefault(require$$1$20);
+var forOf = interopDefault(require$$1$21);
 
-module.exports = function(iter, ITERATOR){
+module.exports = function (iter, ITERATOR) {
   var result = [];
   forOf(iter, false, result.push, result, ITERATOR);
   return result;
@@ -6974,17 +7236,17 @@ module.exports = function(iter, ITERATOR){
 var _arrayFromIterable$1 = interopDefault(_arrayFromIterable);
 
 
-var require$$3$10 = Object.freeze({
+var require$$3$9 = Object.freeze({
   default: _arrayFromIterable$1
 });
 
 var _collectionToJson = createCommonjsModule(function (module) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = interopDefault(require$$1$11)
-  , from    = interopDefault(require$$3$10);
-module.exports = function(NAME){
-  return function toJSON(){
-    if(classof(this) != NAME)throw TypeError(NAME + "#toJSON isn't generic");
+var classof = interopDefault(require$$1$11);
+var from = interopDefault(require$$3$9);
+module.exports = function (NAME) {
+  return function toJSON() {
+    if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
     return from(this);
   };
 };
@@ -6993,44 +7255,169 @@ module.exports = function(NAME){
 var _collectionToJson$1 = interopDefault(_collectionToJson);
 
 
-var require$$0$43 = Object.freeze({
+var require$$0$46 = Object.freeze({
   default: _collectionToJson$1
 });
 
 var es7_map_toJson = createCommonjsModule(function (module) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var $export  = interopDefault(require$$1$2);
+var $export = interopDefault(require$$1$2);
 
-$export($export.P + $export.R, 'Map', {toJSON: interopDefault(require$$0$43)('Map')});
+$export($export.P + $export.R, 'Map', { toJSON: interopDefault(require$$0$46)('Map') });
 });
 
 interopDefault(es7_map_toJson);
 
 var es7_set_toJson = createCommonjsModule(function (module) {
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var $export  = interopDefault(require$$1$2);
+var $export = interopDefault(require$$1$2);
 
-$export($export.P + $export.R, 'Set', {toJSON: interopDefault(require$$0$43)('Set')});
+$export($export.P + $export.R, 'Set', { toJSON: interopDefault(require$$0$46)('Set') });
 });
 
 interopDefault(es7_set_toJson);
 
-var es7_system_global = createCommonjsModule(function (module) {
-// https://github.com/ljharb/proposal-global
+var _setCollectionOf = createCommonjsModule(function (module) {
+'use strict';
+// https://tc39.github.io/proposal-setmap-offrom/
 var $export = interopDefault(require$$1$2);
 
-$export($export.S, 'System', {global: interopDefault(require$$3)});
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { of: function of() {
+    var length = arguments.length;
+    var A = Array(length);
+    while (length--) A[length] = arguments[length];
+    return new this(A);
+  } });
+};
+});
+
+var _setCollectionOf$1 = interopDefault(_setCollectionOf);
+
+
+var require$$0$47 = Object.freeze({
+  default: _setCollectionOf$1
+});
+
+var es7_map_of = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
+interopDefault(require$$0$47)('Map');
+});
+
+interopDefault(es7_map_of);
+
+var es7_set_of = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
+interopDefault(require$$0$47)('Set');
+});
+
+interopDefault(es7_set_of);
+
+var es7_weakMap_of = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.of
+interopDefault(require$$0$47)('WeakMap');
+});
+
+interopDefault(es7_weakMap_of);
+
+var es7_weakSet_of = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.of
+interopDefault(require$$0$47)('WeakSet');
+});
+
+interopDefault(es7_weakSet_of);
+
+var _setCollectionFrom = createCommonjsModule(function (module) {
+'use strict';
+// https://tc39.github.io/proposal-setmap-offrom/
+var $export = interopDefault(require$$1$2);
+var aFunction = interopDefault(require$$0$1);
+var ctx = interopDefault(require$$1$4);
+var forOf = interopDefault(require$$1$21);
+
+module.exports = function (COLLECTION) {
+  $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
+    var mapFn = arguments[1];
+    var mapping, A, n, cb;
+    aFunction(this);
+    mapping = mapFn !== undefined;
+    if (mapping) aFunction(mapFn);
+    if (source == undefined) return new this();
+    A = [];
+    if (mapping) {
+      n = 0;
+      cb = ctx(mapFn, arguments[2], 2);
+      forOf(source, false, function (nextItem) {
+        A.push(cb(nextItem, n++));
+      });
+    } else {
+      forOf(source, false, A.push, A);
+    }
+    return new this(A);
+  } });
+};
+});
+
+var _setCollectionFrom$1 = interopDefault(_setCollectionFrom);
+
+
+var require$$0$48 = Object.freeze({
+  default: _setCollectionFrom$1
+});
+
+var es7_map_from = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
+interopDefault(require$$0$48)('Map');
+});
+
+interopDefault(es7_map_from);
+
+var es7_set_from = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
+interopDefault(require$$0$48)('Set');
+});
+
+interopDefault(es7_set_from);
+
+var es7_weakMap_from = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakmap.from
+interopDefault(require$$0$48)('WeakMap');
+});
+
+interopDefault(es7_weakMap_from);
+
+var es7_weakSet_from = createCommonjsModule(function (module) {
+// https://tc39.github.io/proposal-setmap-offrom/#sec-weakset.from
+interopDefault(require$$0$48)('WeakSet');
+});
+
+interopDefault(es7_weakSet_from);
+
+var es7_global = createCommonjsModule(function (module) {
+// https://github.com/tc39/proposal-global
+var $export = interopDefault(require$$1$2);
+
+$export($export.G, { global: interopDefault(require$$3) });
+});
+
+interopDefault(es7_global);
+
+var es7_system_global = createCommonjsModule(function (module) {
+// https://github.com/tc39/proposal-global
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'System', { global: interopDefault(require$$3) });
 });
 
 interopDefault(es7_system_global);
 
 var es7_error_isError = createCommonjsModule(function (module) {
 // https://github.com/ljharb/proposal-is-error
-var $export = interopDefault(require$$1$2)
-  , cof     = interopDefault(require$$0$6);
+var $export = interopDefault(require$$1$2);
+var cof = interopDefault(require$$0$5);
 
 $export($export.S, 'Error', {
-  isError: function isError(it){
+  isError: function isError(it) {
     return cof(it) === 'Error';
   }
 });
@@ -7038,15 +7425,94 @@ $export($export.S, 'Error', {
 
 interopDefault(es7_error_isError);
 
+var es7_math_clamp = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'Math', {
+  clamp: function clamp(x, lower, upper) {
+    return Math.min(upper, Math.max(lower, x));
+  }
+});
+});
+
+interopDefault(es7_math_clamp);
+
+var es7_math_degPerRad = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'Math', { DEG_PER_RAD: Math.PI / 180 });
+});
+
+interopDefault(es7_math_degPerRad);
+
+var es7_math_degrees = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+var RAD_PER_DEG = 180 / Math.PI;
+
+$export($export.S, 'Math', {
+  degrees: function degrees(radians) {
+    return radians * RAD_PER_DEG;
+  }
+});
+});
+
+interopDefault(es7_math_degrees);
+
+var _mathScale = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh) {
+  if (
+    arguments.length === 0
+      // eslint-disable-next-line no-self-compare
+      || x != x
+      // eslint-disable-next-line no-self-compare
+      || inLow != inLow
+      // eslint-disable-next-line no-self-compare
+      || inHigh != inHigh
+      // eslint-disable-next-line no-self-compare
+      || outLow != outLow
+      // eslint-disable-next-line no-self-compare
+      || outHigh != outHigh
+  ) return NaN;
+  if (x === Infinity || x === -Infinity) return x;
+  return (x - inLow) * (outHigh - outLow) / (inHigh - inLow) + outLow;
+};
+});
+
+var _mathScale$1 = interopDefault(_mathScale);
+
+
+var require$$0$49 = Object.freeze({
+  default: _mathScale$1
+});
+
+var es7_math_fscale = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+var scale = interopDefault(require$$0$49);
+var fround = interopDefault(require$$0$25);
+
+$export($export.S, 'Math', {
+  fscale: function fscale(x, inLow, inHigh, outLow, outHigh) {
+    return fround(scale(x, inLow, inHigh, outLow, outHigh));
+  }
+});
+});
+
+interopDefault(es7_math_fscale);
+
 var es7_math_iaddh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  iaddh: function iaddh(x0, x1, y0, y1){
-    var $x0 = x0 >>> 0
-      , $x1 = x1 >>> 0
-      , $y0 = y0 >>> 0;
+  iaddh: function iaddh(x0, x1, y0, y1) {
+    var $x0 = x0 >>> 0;
+    var $x1 = x1 >>> 0;
+    var $y0 = y0 >>> 0;
     return $x1 + (y1 >>> 0) + (($x0 & $y0 | ($x0 | $y0) & ~($x0 + $y0 >>> 0)) >>> 31) | 0;
   }
 });
@@ -7059,10 +7525,10 @@ var es7_math_isubh = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  isubh: function isubh(x0, x1, y0, y1){
-    var $x0 = x0 >>> 0
-      , $x1 = x1 >>> 0
-      , $y0 = y0 >>> 0;
+  isubh: function isubh(x0, x1, y0, y1) {
+    var $x0 = x0 >>> 0;
+    var $x1 = x1 >>> 0;
+    var $y0 = y0 >>> 0;
     return $x1 - (y1 >>> 0) - ((~$x0 & $y0 | ~($x0 ^ $y0) & $x0 - $y0 >>> 0) >>> 31) | 0;
   }
 });
@@ -7075,15 +7541,15 @@ var es7_math_imulh = createCommonjsModule(function (module) {
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  imulh: function imulh(u, v){
-    var UINT16 = 0xffff
-      , $u = +u
-      , $v = +v
-      , u0 = $u & UINT16
-      , v0 = $v & UINT16
-      , u1 = $u >> 16
-      , v1 = $v >> 16
-      , t  = (u1 * v0 >>> 0) + (u0 * v0 >>> 16);
+  imulh: function imulh(u, v) {
+    var UINT16 = 0xffff;
+    var $u = +u;
+    var $v = +v;
+    var u0 = $u & UINT16;
+    var v0 = $v & UINT16;
+    var u1 = $u >> 16;
+    var v1 = $v >> 16;
+    var t = (u1 * v0 >>> 0) + (u0 * v0 >>> 16);
     return u1 * v1 + (t >> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >> 16);
   }
 });
@@ -7091,20 +7557,52 @@ $export($export.S, 'Math', {
 
 interopDefault(es7_math_imulh);
 
+var es7_math_radPerDeg = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'Math', { RAD_PER_DEG: 180 / Math.PI });
+});
+
+interopDefault(es7_math_radPerDeg);
+
+var es7_math_radians = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+var DEG_PER_RAD = Math.PI / 180;
+
+$export($export.S, 'Math', {
+  radians: function radians(degrees) {
+    return degrees * DEG_PER_RAD;
+  }
+});
+});
+
+interopDefault(es7_math_radians);
+
+var es7_math_scale = createCommonjsModule(function (module) {
+// https://rwaldron.github.io/proposal-math-extensions/
+var $export = interopDefault(require$$1$2);
+
+$export($export.S, 'Math', { scale: interopDefault(require$$0$49) });
+});
+
+interopDefault(es7_math_scale);
+
 var es7_math_umulh = createCommonjsModule(function (module) {
 // https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 var $export = interopDefault(require$$1$2);
 
 $export($export.S, 'Math', {
-  umulh: function umulh(u, v){
-    var UINT16 = 0xffff
-      , $u = +u
-      , $v = +v
-      , u0 = $u & UINT16
-      , v0 = $v & UINT16
-      , u1 = $u >>> 16
-      , v1 = $v >>> 16
-      , t  = (u1 * v0 >>> 0) + (u0 * v0 >>> 16);
+  umulh: function umulh(u, v) {
+    var UINT16 = 0xffff;
+    var $u = +u;
+    var $v = +v;
+    var u0 = $u & UINT16;
+    var v0 = $v & UINT16;
+    var u1 = $u >>> 16;
+    var v1 = $v >>> 16;
+    var t = (u1 * v0 >>> 0) + (u0 * v0 >>> 16);
     return u1 * v1 + (t >>> 16) + ((u0 * v1 >>> 0) + (t & UINT16) >>> 16);
   }
 });
@@ -7112,45 +7610,99 @@ $export($export.S, 'Math', {
 
 interopDefault(es7_math_umulh);
 
-var _metadata = createCommonjsModule(function (module) {
-var Map     = interopDefault(require$$3$8)
-  , $export = interopDefault(require$$1$2)
-  , shared  = interopDefault(require$$1$4)('metadata')
-  , store   = shared.store || (shared.store = new (interopDefault(require$$0$38)));
+var es7_math_signbit = createCommonjsModule(function (module) {
+// http://jfbastien.github.io/papers/Math.signbit.html
+var $export = interopDefault(require$$1$2);
 
-var getOrCreateMetadataMap = function(target, targetKey, create){
+$export($export.S, 'Math', { signbit: function signbit(x) {
+  // eslint-disable-next-line no-self-compare
+  return (x = +x) != x ? x : x == 0 ? 1 / x == Infinity : x > 0;
+} });
+});
+
+interopDefault(es7_math_signbit);
+
+var es7_promise_finally = createCommonjsModule(function (module) {
+// https://github.com/tc39/proposal-promise-finally
+'use strict';
+var $export = interopDefault(require$$1$2);
+var core = interopDefault(require$$0);
+var global = interopDefault(require$$3);
+var speciesConstructor = interopDefault(require$$1$22);
+var promiseResolve = interopDefault(require$$0$39);
+
+$export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
+  var C = speciesConstructor(this, core.Promise || global.Promise);
+  var isFunction = typeof onFinally == 'function';
+  return this.then(
+    isFunction ? function (x) {
+      return promiseResolve(C, onFinally()).then(function () { return x; });
+    } : onFinally,
+    isFunction ? function (e) {
+      return promiseResolve(C, onFinally()).then(function () { throw e; });
+    } : onFinally
+  );
+} });
+});
+
+interopDefault(es7_promise_finally);
+
+var es7_promise_try = createCommonjsModule(function (module) {
+'use strict';
+// https://github.com/tc39/proposal-promise-try
+var $export = interopDefault(require$$1$2);
+var newPromiseCapability = interopDefault(require$$1$23);
+var perform = interopDefault(require$$0$38);
+
+$export($export.S, 'Promise', { 'try': function (callbackfn) {
+  var promiseCapability = newPromiseCapability.f(this);
+  var result = perform(callbackfn);
+  (result.e ? promiseCapability.reject : promiseCapability.resolve)(result.v);
+  return promiseCapability.promise;
+} });
+});
+
+interopDefault(es7_promise_try);
+
+var _metadata = createCommonjsModule(function (module) {
+var Map = interopDefault(require$$3$7);
+var $export = interopDefault(require$$1$2);
+var shared = interopDefault(require$$1$5)('metadata');
+var store = shared.store || (shared.store = new (interopDefault(require$$0$41))());
+
+var getOrCreateMetadataMap = function (target, targetKey, create) {
   var targetMetadata = store.get(target);
-  if(!targetMetadata){
-    if(!create)return undefined;
-    store.set(target, targetMetadata = new Map);
+  if (!targetMetadata) {
+    if (!create) return undefined;
+    store.set(target, targetMetadata = new Map());
   }
   var keyMetadata = targetMetadata.get(targetKey);
-  if(!keyMetadata){
-    if(!create)return undefined;
-    targetMetadata.set(targetKey, keyMetadata = new Map);
+  if (!keyMetadata) {
+    if (!create) return undefined;
+    targetMetadata.set(targetKey, keyMetadata = new Map());
   } return keyMetadata;
 };
-var ordinaryHasOwnMetadata = function(MetadataKey, O, P){
+var ordinaryHasOwnMetadata = function (MetadataKey, O, P) {
   var metadataMap = getOrCreateMetadataMap(O, P, false);
   return metadataMap === undefined ? false : metadataMap.has(MetadataKey);
 };
-var ordinaryGetOwnMetadata = function(MetadataKey, O, P){
+var ordinaryGetOwnMetadata = function (MetadataKey, O, P) {
   var metadataMap = getOrCreateMetadataMap(O, P, false);
   return metadataMap === undefined ? undefined : metadataMap.get(MetadataKey);
 };
-var ordinaryDefineOwnMetadata = function(MetadataKey, MetadataValue, O, P){
+var ordinaryDefineOwnMetadata = function (MetadataKey, MetadataValue, O, P) {
   getOrCreateMetadataMap(O, P, true).set(MetadataKey, MetadataValue);
 };
-var ordinaryOwnMetadataKeys = function(target, targetKey){
-  var metadataMap = getOrCreateMetadataMap(target, targetKey, false)
-    , keys        = [];
-  if(metadataMap)metadataMap.forEach(function(_, key){ keys.push(key); });
+var ordinaryOwnMetadataKeys = function (target, targetKey) {
+  var metadataMap = getOrCreateMetadataMap(target, targetKey, false);
+  var keys = [];
+  if (metadataMap) metadataMap.forEach(function (_, key) { keys.push(key); });
   return keys;
 };
-var toMetaKey = function(it){
+var toMetaKey = function (it) {
   return it === undefined || typeof it == 'symbol' ? it : String(it);
 };
-var exp = function(O){
+var exp = function (O) {
   $export($export.S, 'Reflect', O);
 };
 
@@ -7176,7 +7728,7 @@ var keys = _metadata.keys;
 var key = _metadata.key;
 var exp = _metadata.exp;
 
-var require$$2$10 = Object.freeze({
+var require$$2$12 = Object.freeze({
   default: _metadata$1,
   store: store,
   map: map,
@@ -7189,175 +7741,175 @@ var require$$2$10 = Object.freeze({
 });
 
 var es7_reflect_defineMetadata = createCommonjsModule(function (module) {
-var metadata                  = interopDefault(require$$2$10)
-  , anObject                  = interopDefault(require$$5)
-  , toMetaKey                 = metadata.key
-  , ordinaryDefineOwnMetadata = metadata.set;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var toMetaKey = metadata.key;
+var ordinaryDefineOwnMetadata = metadata.set;
 
-metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue, target, targetKey){
+metadata.exp({ defineMetadata: function defineMetadata(metadataKey, metadataValue, target, targetKey) {
   ordinaryDefineOwnMetadata(metadataKey, metadataValue, anObject(target), toMetaKey(targetKey));
-}});
+} });
 });
 
 interopDefault(es7_reflect_defineMetadata);
 
 var es7_reflect_deleteMetadata = createCommonjsModule(function (module) {
-var metadata               = interopDefault(require$$2$10)
-  , anObject               = interopDefault(require$$5)
-  , toMetaKey              = metadata.key
-  , getOrCreateMetadataMap = metadata.map
-  , store                  = metadata.store;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var toMetaKey = metadata.key;
+var getOrCreateMetadataMap = metadata.map;
+var store = metadata.store;
 
-metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, targetKey */){
-  var targetKey   = arguments.length < 3 ? undefined : toMetaKey(arguments[2])
-    , metadataMap = getOrCreateMetadataMap(anObject(target), targetKey, false);
-  if(metadataMap === undefined || !metadataMap['delete'](metadataKey))return false;
-  if(metadataMap.size)return true;
+metadata.exp({ deleteMetadata: function deleteMetadata(metadataKey, target /* , targetKey */) {
+  var targetKey = arguments.length < 3 ? undefined : toMetaKey(arguments[2]);
+  var metadataMap = getOrCreateMetadataMap(anObject(target), targetKey, false);
+  if (metadataMap === undefined || !metadataMap['delete'](metadataKey)) return false;
+  if (metadataMap.size) return true;
   var targetMetadata = store.get(target);
   targetMetadata['delete'](targetKey);
   return !!targetMetadata.size || store['delete'](target);
-}});
+} });
 });
 
 interopDefault(es7_reflect_deleteMetadata);
 
 var es7_reflect_getMetadata = createCommonjsModule(function (module) {
-var metadata               = interopDefault(require$$2$10)
-  , anObject               = interopDefault(require$$5)
-  , getPrototypeOf         = interopDefault(require$$0$13)
-  , ordinaryHasOwnMetadata = metadata.has
-  , ordinaryGetOwnMetadata = metadata.get
-  , toMetaKey              = metadata.key;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var getPrototypeOf = interopDefault(require$$0$12);
+var ordinaryHasOwnMetadata = metadata.has;
+var ordinaryGetOwnMetadata = metadata.get;
+var toMetaKey = metadata.key;
 
-var ordinaryGetMetadata = function(MetadataKey, O, P){
+var ordinaryGetMetadata = function (MetadataKey, O, P) {
   var hasOwn = ordinaryHasOwnMetadata(MetadataKey, O, P);
-  if(hasOwn)return ordinaryGetOwnMetadata(MetadataKey, O, P);
+  if (hasOwn) return ordinaryGetOwnMetadata(MetadataKey, O, P);
   var parent = getPrototypeOf(O);
   return parent !== null ? ordinaryGetMetadata(MetadataKey, parent, P) : undefined;
 };
 
-metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKey */){
+metadata.exp({ getMetadata: function getMetadata(metadataKey, target /* , targetKey */) {
   return ordinaryGetMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_getMetadata);
 
 var es7_reflect_getMetadataKeys = createCommonjsModule(function (module) {
-var Set                     = interopDefault(require$$4$7)
-  , from                    = interopDefault(require$$3$10)
-  , metadata                = interopDefault(require$$2$10)
-  , anObject                = interopDefault(require$$5)
-  , getPrototypeOf          = interopDefault(require$$0$13)
-  , ordinaryOwnMetadataKeys = metadata.keys
-  , toMetaKey               = metadata.key;
+var Set = interopDefault(require$$4$8);
+var from = interopDefault(require$$3$9);
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var getPrototypeOf = interopDefault(require$$0$12);
+var ordinaryOwnMetadataKeys = metadata.keys;
+var toMetaKey = metadata.key;
 
-var ordinaryMetadataKeys = function(O, P){
-  var oKeys  = ordinaryOwnMetadataKeys(O, P)
-    , parent = getPrototypeOf(O);
-  if(parent === null)return oKeys;
-  var pKeys  = ordinaryMetadataKeys(parent, P);
+var ordinaryMetadataKeys = function (O, P) {
+  var oKeys = ordinaryOwnMetadataKeys(O, P);
+  var parent = getPrototypeOf(O);
+  if (parent === null) return oKeys;
+  var pKeys = ordinaryMetadataKeys(parent, P);
   return pKeys.length ? oKeys.length ? from(new Set(oKeys.concat(pKeys))) : pKeys : oKeys;
 };
 
-metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */){
+metadata.exp({ getMetadataKeys: function getMetadataKeys(target /* , targetKey */) {
   return ordinaryMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_getMetadataKeys);
 
 var es7_reflect_getOwnMetadata = createCommonjsModule(function (module) {
-var metadata               = interopDefault(require$$2$10)
-  , anObject               = interopDefault(require$$5)
-  , ordinaryGetOwnMetadata = metadata.get
-  , toMetaKey              = metadata.key;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var ordinaryGetOwnMetadata = metadata.get;
+var toMetaKey = metadata.key;
 
-metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, targetKey */){
+metadata.exp({ getOwnMetadata: function getOwnMetadata(metadataKey, target /* , targetKey */) {
   return ordinaryGetOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_getOwnMetadata);
 
 var es7_reflect_getOwnMetadataKeys = createCommonjsModule(function (module) {
-var metadata                = interopDefault(require$$2$10)
-  , anObject                = interopDefault(require$$5)
-  , ordinaryOwnMetadataKeys = metadata.keys
-  , toMetaKey               = metadata.key;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var ordinaryOwnMetadataKeys = metadata.keys;
+var toMetaKey = metadata.key;
 
-metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetKey */){
+metadata.exp({ getOwnMetadataKeys: function getOwnMetadataKeys(target /* , targetKey */) {
   return ordinaryOwnMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_getOwnMetadataKeys);
 
 var es7_reflect_hasMetadata = createCommonjsModule(function (module) {
-var metadata               = interopDefault(require$$2$10)
-  , anObject               = interopDefault(require$$5)
-  , getPrototypeOf         = interopDefault(require$$0$13)
-  , ordinaryHasOwnMetadata = metadata.has
-  , toMetaKey              = metadata.key;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var getPrototypeOf = interopDefault(require$$0$12);
+var ordinaryHasOwnMetadata = metadata.has;
+var toMetaKey = metadata.key;
 
-var ordinaryHasMetadata = function(MetadataKey, O, P){
+var ordinaryHasMetadata = function (MetadataKey, O, P) {
   var hasOwn = ordinaryHasOwnMetadata(MetadataKey, O, P);
-  if(hasOwn)return true;
+  if (hasOwn) return true;
   var parent = getPrototypeOf(O);
   return parent !== null ? ordinaryHasMetadata(MetadataKey, parent, P) : false;
 };
 
-metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKey */){
+metadata.exp({ hasMetadata: function hasMetadata(metadataKey, target /* , targetKey */) {
   return ordinaryHasMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_hasMetadata);
 
 var es7_reflect_hasOwnMetadata = createCommonjsModule(function (module) {
-var metadata               = interopDefault(require$$2$10)
-  , anObject               = interopDefault(require$$5)
-  , ordinaryHasOwnMetadata = metadata.has
-  , toMetaKey              = metadata.key;
+var metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var ordinaryHasOwnMetadata = metadata.has;
+var toMetaKey = metadata.key;
 
-metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, targetKey */){
+metadata.exp({ hasOwnMetadata: function hasOwnMetadata(metadataKey, target /* , targetKey */) {
   return ordinaryHasOwnMetadata(metadataKey, anObject(target)
     , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
-}});
+} });
 });
 
 interopDefault(es7_reflect_hasOwnMetadata);
 
 var es7_reflect_metadata = createCommonjsModule(function (module) {
-var metadata                  = interopDefault(require$$2$10)
-  , anObject                  = interopDefault(require$$5)
-  , aFunction                 = interopDefault(require$$0$2)
-  , toMetaKey                 = metadata.key
-  , ordinaryDefineOwnMetadata = metadata.set;
+var $metadata = interopDefault(require$$2$12);
+var anObject = interopDefault(require$$5);
+var aFunction = interopDefault(require$$0$1);
+var toMetaKey = $metadata.key;
+var ordinaryDefineOwnMetadata = $metadata.set;
 
-metadata.exp({metadata: function metadata(metadataKey, metadataValue){
-  return function decorator(target, targetKey){
+$metadata.exp({ metadata: function metadata(metadataKey, metadataValue) {
+  return function decorator(target, targetKey) {
     ordinaryDefineOwnMetadata(
       metadataKey, metadataValue,
       (targetKey !== undefined ? anObject : aFunction)(target),
       toMetaKey(targetKey)
     );
   };
-}});
+} });
 });
 
 interopDefault(es7_reflect_metadata);
 
 var es7_asap = createCommonjsModule(function (module) {
 // https://github.com/rwaldron/tc39-notes/blob/master/es6/2014-09/sept-25.md#510-globalasap-for-enqueuing-a-microtask
-var $export   = interopDefault(require$$1$2)
-  , microtask = interopDefault(require$$8$1)()
-  , process   = interopDefault(require$$3).process
-  , isNode    = interopDefault(require$$0$6)(process) == 'process';
+var $export = interopDefault(require$$1$2);
+var microtask = interopDefault(require$$8)();
+var process = interopDefault(require$$3).process;
+var isNode = interopDefault(require$$0$5)(process) == 'process';
 
 $export($export.G, {
-  asap: function asap(fn){
+  asap: function asap(fn) {
     var domain = isNode && process.domain;
     microtask(domain ? domain.bind(fn) : fn);
   }
@@ -7369,78 +7921,78 @@ interopDefault(es7_asap);
 var es7_observable = createCommonjsModule(function (module) {
 'use strict';
 // https://github.com/zenparsing/es-observable
-var $export     = interopDefault(require$$1$2)
-  , global      = interopDefault(require$$3)
-  , core        = interopDefault(require$$0)
-  , microtask   = interopDefault(require$$8$1)()
-  , OBSERVABLE  = interopDefault(require$$0$4)('observable')
-  , aFunction   = interopDefault(require$$0$2)
-  , anObject    = interopDefault(require$$5)
-  , anInstance  = interopDefault(require$$4$6)
-  , redefineAll = interopDefault(require$$3$7)
-  , hide        = interopDefault(require$$2)
-  , forOf       = interopDefault(require$$1$20)
-  , RETURN      = forOf.RETURN;
+var $export = interopDefault(require$$1$2);
+var global = interopDefault(require$$3);
+var core = interopDefault(require$$0);
+var microtask = interopDefault(require$$8)();
+var OBSERVABLE = interopDefault(require$$0$3)('observable');
+var aFunction = interopDefault(require$$0$1);
+var anObject = interopDefault(require$$5);
+var anInstance = interopDefault(require$$4$7);
+var redefineAll = interopDefault(require$$3$6);
+var hide = interopDefault(require$$2);
+var forOf = interopDefault(require$$1$21);
+var RETURN = forOf.RETURN;
 
-var getMethod = function(fn){
+var getMethod = function (fn) {
   return fn == null ? undefined : aFunction(fn);
 };
 
-var cleanupSubscription = function(subscription){
+var cleanupSubscription = function (subscription) {
   var cleanup = subscription._c;
-  if(cleanup){
+  if (cleanup) {
     subscription._c = undefined;
     cleanup();
   }
 };
 
-var subscriptionClosed = function(subscription){
+var subscriptionClosed = function (subscription) {
   return subscription._o === undefined;
 };
 
-var closeSubscription = function(subscription){
-  if(!subscriptionClosed(subscription)){
+var closeSubscription = function (subscription) {
+  if (!subscriptionClosed(subscription)) {
     subscription._o = undefined;
     cleanupSubscription(subscription);
   }
 };
 
-var Subscription = function(observer, subscriber){
+var Subscription = function (observer, subscriber) {
   anObject(observer);
   this._c = undefined;
   this._o = observer;
   observer = new SubscriptionObserver(this);
   try {
-    var cleanup      = subscriber(observer)
-      , subscription = cleanup;
-    if(cleanup != null){
-      if(typeof cleanup.unsubscribe === 'function')cleanup = function(){ subscription.unsubscribe(); };
+    var cleanup = subscriber(observer);
+    var subscription = cleanup;
+    if (cleanup != null) {
+      if (typeof cleanup.unsubscribe === 'function') cleanup = function () { subscription.unsubscribe(); };
       else aFunction(cleanup);
       this._c = cleanup;
     }
-  } catch(e){
+  } catch (e) {
     observer.error(e);
     return;
-  } if(subscriptionClosed(this))cleanupSubscription(this);
+  } if (subscriptionClosed(this)) cleanupSubscription(this);
 };
 
 Subscription.prototype = redefineAll({}, {
-  unsubscribe: function unsubscribe(){ closeSubscription(this); }
+  unsubscribe: function unsubscribe() { closeSubscription(this); }
 });
 
-var SubscriptionObserver = function(subscription){
+var SubscriptionObserver = function (subscription) {
   this._s = subscription;
 };
 
 SubscriptionObserver.prototype = redefineAll({}, {
-  next: function next(value){
+  next: function next(value) {
     var subscription = this._s;
-    if(!subscriptionClosed(subscription)){
+    if (!subscriptionClosed(subscription)) {
       var observer = subscription._o;
       try {
         var m = getMethod(observer.next);
-        if(m)return m.call(observer, value);
-      } catch(e){
+        if (m) return m.call(observer, value);
+      } catch (e) {
         try {
           closeSubscription(subscription);
         } finally {
@@ -7449,16 +8001,16 @@ SubscriptionObserver.prototype = redefineAll({}, {
       }
     }
   },
-  error: function error(value){
+  error: function error(value) {
     var subscription = this._s;
-    if(subscriptionClosed(subscription))throw value;
+    if (subscriptionClosed(subscription)) throw value;
     var observer = subscription._o;
     subscription._o = undefined;
     try {
       var m = getMethod(observer.error);
-      if(!m)throw value;
+      if (!m) throw value;
       value = m.call(observer, value);
-    } catch(e){
+    } catch (e) {
       try {
         cleanupSubscription(subscription);
       } finally {
@@ -7467,15 +8019,15 @@ SubscriptionObserver.prototype = redefineAll({}, {
     } cleanupSubscription(subscription);
     return value;
   },
-  complete: function complete(value){
+  complete: function complete(value) {
     var subscription = this._s;
-    if(!subscriptionClosed(subscription)){
+    if (!subscriptionClosed(subscription)) {
       var observer = subscription._o;
       subscription._o = undefined;
       try {
         var m = getMethod(observer.complete);
         value = m ? m.call(observer, value) : undefined;
-      } catch(e){
+      } catch (e) {
         try {
           cleanupSubscription(subscription);
         } finally {
@@ -7487,23 +8039,23 @@ SubscriptionObserver.prototype = redefineAll({}, {
   }
 });
 
-var $Observable = function Observable(subscriber){
+var $Observable = function Observable(subscriber) {
   anInstance(this, $Observable, 'Observable', '_f')._f = aFunction(subscriber);
 };
 
 redefineAll($Observable.prototype, {
-  subscribe: function subscribe(observer){
+  subscribe: function subscribe(observer) {
     return new Subscription(observer, this._f);
   },
-  forEach: function forEach(fn){
+  forEach: function forEach(fn) {
     var that = this;
-    return new (core.Promise || global.Promise)(function(resolve, reject){
+    return new (core.Promise || global.Promise)(function (resolve, reject) {
       aFunction(fn);
       var subscription = that.subscribe({
-        next : function(value){
+        next: function (value) {
           try {
             return fn(value);
-          } catch(e){
+          } catch (e) {
             reject(e);
             subscription.unsubscribe();
           }
@@ -7516,56 +8068,56 @@ redefineAll($Observable.prototype, {
 });
 
 redefineAll($Observable, {
-  from: function from(x){
+  from: function from(x) {
     var C = typeof this === 'function' ? this : $Observable;
     var method = getMethod(anObject(x)[OBSERVABLE]);
-    if(method){
+    if (method) {
       var observable = anObject(method.call(x));
-      return observable.constructor === C ? observable : new C(function(observer){
+      return observable.constructor === C ? observable : new C(function (observer) {
         return observable.subscribe(observer);
       });
     }
-    return new C(function(observer){
+    return new C(function (observer) {
       var done = false;
-      microtask(function(){
-        if(!done){
+      microtask(function () {
+        if (!done) {
           try {
-            if(forOf(x, false, function(it){
+            if (forOf(x, false, function (it) {
               observer.next(it);
-              if(done)return RETURN;
-            }) === RETURN)return;
-          } catch(e){
-            if(done)throw e;
+              if (done) return RETURN;
+            }) === RETURN) return;
+          } catch (e) {
+            if (done) throw e;
             observer.error(e);
             return;
           } observer.complete();
         }
       });
-      return function(){ done = true; };
+      return function () { done = true; };
     });
   },
-  of: function of(){
-    for(var i = 0, l = arguments.length, items = Array(l); i < l;)items[i] = arguments[i++];
-    return new (typeof this === 'function' ? this : $Observable)(function(observer){
+  of: function of() {
+    for (var i = 0, l = arguments.length, items = Array(l); i < l;) items[i] = arguments[i++];
+    return new (typeof this === 'function' ? this : $Observable)(function (observer) {
       var done = false;
-      microtask(function(){
-        if(!done){
-          for(var i = 0; i < items.length; ++i){
-            observer.next(items[i]);
-            if(done)return;
+      microtask(function () {
+        if (!done) {
+          for (var j = 0; j < items.length; ++j) {
+            observer.next(items[j]);
+            if (done) return;
           } observer.complete();
         }
       });
-      return function(){ done = true; };
+      return function () { done = true; };
     });
   }
 });
 
-hide($Observable.prototype, OBSERVABLE, function(){ return this; });
+hide($Observable.prototype, OBSERVABLE, function () { return this; });
 
-$export($export.G, {Observable: $Observable});
+$export($export.G, { Observable: $Observable });
 
-interopDefault(require$$0$35)('Observable');
+interopDefault(require$$0$36)('Observable');
 });
 
 interopDefault(es7_observable);
@@ -7577,31 +8129,33 @@ module.exports = interopDefault(require$$3);
 var _path$1 = interopDefault(_path);
 
 
-var require$$2$11 = Object.freeze({
+var require$$2$13 = Object.freeze({
 	default: _path$1
 });
 
 var _partial = createCommonjsModule(function (module) {
 'use strict';
-var path      = interopDefault(require$$2$11)
-  , invoke    = interopDefault(require$$1$13)
-  , aFunction = interopDefault(require$$0$2);
-module.exports = function(/* ...pargs */){
-  var fn     = aFunction(this)
-    , length = arguments.length
-    , pargs  = Array(length)
-    , i      = 0
-    , _      = path._
-    , holder = false;
-  while(length > i)if((pargs[i] = arguments[i++]) === _)holder = true;
-  return function(/* ...args */){
-    var that = this
-      , aLen = arguments.length
-      , j = 0, k = 0, args;
-    if(!holder && !aLen)return invoke(fn, pargs, that);
+var path = interopDefault(require$$2$13);
+var invoke = interopDefault(require$$1$13);
+var aFunction = interopDefault(require$$0$1);
+module.exports = function (/* ...pargs */) {
+  var fn = aFunction(this);
+  var length = arguments.length;
+  var pargs = Array(length);
+  var i = 0;
+  var _ = path._;
+  var holder = false;
+  while (length > i) if ((pargs[i] = arguments[i++]) === _) holder = true;
+  return function (/* ...args */) {
+    var that = this;
+    var aLen = arguments.length;
+    var j = 0;
+    var k = 0;
+    var args;
+    if (!holder && !aLen) return invoke(fn, pargs, that);
     args = pargs.slice();
-    if(holder)for(;length > j; j++)if(args[j] === _)args[j] = arguments[k++];
-    while(aLen > k)args.push(arguments[k++]);
+    if (holder) for (;length > j; j++) if (args[j] === _) args[j] = arguments[k++];
+    while (aLen > k) args.push(arguments[k++]);
     return invoke(fn, args, that);
   };
 };
@@ -7610,29 +8164,30 @@ module.exports = function(/* ...pargs */){
 var _partial$1 = interopDefault(_partial);
 
 
-var require$$0$44 = Object.freeze({
+var require$$0$50 = Object.freeze({
   default: _partial$1
 });
 
 var web_timers = createCommonjsModule(function (module) {
 // ie9- setTimeout & setInterval additional parameters fix
-var global     = interopDefault(require$$3)
-  , $export    = interopDefault(require$$1$2)
-  , invoke     = interopDefault(require$$1$13)
-  , partial    = interopDefault(require$$0$44)
-  , navigator  = global.navigator
-  , MSIE       = !!navigator && /MSIE .\./.test(navigator.userAgent); // <- dirty ie9- check
-var wrap = function(set){
-  return MSIE ? function(fn, time /*, ...args */){
+var global = interopDefault(require$$3);
+var $export = interopDefault(require$$1$2);
+var invoke = interopDefault(require$$1$13);
+var partial = interopDefault(require$$0$50);
+var navigator = global.navigator;
+var MSIE = !!navigator && /MSIE .\./.test(navigator.userAgent); // <- dirty ie9- check
+var wrap = function (set) {
+  return MSIE ? function (fn, time /* , ...args */) {
     return set(invoke(
       partial,
       [].slice.call(arguments, 2),
+      // eslint-disable-next-line no-new-func
       typeof fn == 'function' ? fn : Function(fn)
     ), time);
   } : set;
 };
 $export($export.G + $export.B + $export.F * MSIE, {
-  setTimeout:  wrap(global.setTimeout),
+  setTimeout: wrap(global.setTimeout),
   setInterval: wrap(global.setInterval)
 });
 });
@@ -7640,10 +8195,10 @@ $export($export.G + $export.B + $export.F * MSIE, {
 interopDefault(web_timers);
 
 var web_immediate = createCommonjsModule(function (module) {
-var $export = interopDefault(require$$1$2)
-  , $task   = interopDefault(require$$0$36);
+var $export = interopDefault(require$$1$2);
+var $task = interopDefault(require$$0$37);
 $export($export.G + $export.B, {
-  setImmediate:   $task.set,
+  setImmediate: $task.set,
   clearImmediate: $task.clear
 });
 });
@@ -7651,26 +8206,62 @@ $export($export.G + $export.B, {
 interopDefault(web_immediate);
 
 var web_dom_iterable = createCommonjsModule(function (module) {
-var $iterators    = interopDefault(require$$5$3)
-  , redefine      = interopDefault(require$$4$2)
-  , global        = interopDefault(require$$3)
-  , hide          = interopDefault(require$$2)
-  , Iterators     = interopDefault(require$$1$15)
-  , wks           = interopDefault(require$$0$4)
-  , ITERATOR      = wks('iterator')
-  , TO_STRING_TAG = wks('toStringTag')
-  , ArrayValues   = Iterators.Array;
+var $iterators = interopDefault(require$$6$1);
+var getKeys = interopDefault(require$$5$1);
+var redefine = interopDefault(require$$4$2);
+var global = interopDefault(require$$3);
+var hide = interopDefault(require$$2);
+var Iterators = interopDefault(require$$1$15);
+var wks = interopDefault(require$$0$3);
+var ITERATOR = wks('iterator');
+var TO_STRING_TAG = wks('toStringTag');
+var ArrayValues = Iterators.Array;
 
-for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
-  var NAME       = collections[i]
-    , Collection = global[NAME]
-    , proto      = Collection && Collection.prototype
-    , key;
-  if(proto){
-    if(!proto[ITERATOR])hide(proto, ITERATOR, ArrayValues);
-    if(!proto[TO_STRING_TAG])hide(proto, TO_STRING_TAG, NAME);
+var DOMIterables = {
+  CSSRuleList: true, // TODO: Not spec compliant, should be false.
+  CSSStyleDeclaration: false,
+  CSSValueList: false,
+  ClientRectList: false,
+  DOMRectList: false,
+  DOMStringList: false,
+  DOMTokenList: true,
+  DataTransferItemList: false,
+  FileList: false,
+  HTMLAllCollection: false,
+  HTMLCollection: false,
+  HTMLFormElement: false,
+  HTMLSelectElement: false,
+  MediaList: true, // TODO: Not spec compliant, should be false.
+  MimeTypeArray: false,
+  NamedNodeMap: false,
+  NodeList: true,
+  PaintRequestList: false,
+  Plugin: false,
+  PluginArray: false,
+  SVGLengthList: false,
+  SVGNumberList: false,
+  SVGPathSegList: false,
+  SVGPointList: false,
+  SVGStringList: false,
+  SVGTransformList: false,
+  SourceBufferList: false,
+  StyleSheetList: true, // TODO: Not spec compliant, should be false.
+  TextTrackCueList: false,
+  TextTrackList: false,
+  TouchList: false
+};
+
+for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++) {
+  var NAME = collections[i];
+  var explicit = DOMIterables[NAME];
+  var Collection = global[NAME];
+  var proto = Collection && Collection.prototype;
+  var key;
+  if (proto) {
+    if (!proto[ITERATOR]) hide(proto, ITERATOR, ArrayValues);
+    if (!proto[TO_STRING_TAG]) hide(proto, TO_STRING_TAG, NAME);
     Iterators[NAME] = ArrayValues;
-    for(key in $iterators)if(!proto[key])redefine(proto, key, $iterators[key], true);
+    if (explicit) for (key in $iterators) if (!proto[key]) redefine(proto, key, $iterators[key], true);
   }
 }
 });
@@ -8425,11 +9016,11 @@ var runtime = createCommonjsModule(function (module) {
 interopDefault(runtime);
 
 var _replacer = createCommonjsModule(function (module) {
-module.exports = function(regExp, replace){
-  var replacer = replace === Object(replace) ? function(part){
+module.exports = function (regExp, replace) {
+  var replacer = replace === Object(replace) ? function (part) {
     return replace[part];
   } : replace;
-  return function(it){
+  return function (it) {
     return String(it).replace(regExp, replacer);
   };
 };
@@ -8438,16 +9029,16 @@ module.exports = function(regExp, replace){
 var _replacer$1 = interopDefault(_replacer);
 
 
-var require$$0$45 = Object.freeze({
+var require$$0$51 = Object.freeze({
   default: _replacer$1
 });
 
 var core_regexp_escape = createCommonjsModule(function (module) {
 // https://github.com/benjamingr/RexExp.escape
-var $export = interopDefault(require$$1$2)
-  , $re     = interopDefault(require$$0$45)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+var $export = interopDefault(require$$1$2);
+var $re = interopDefault(require$$0$51)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
 
-$export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
+$export($export.S, 'RegExp', { escape: function escape(it) { return $re(it); } });
 });
 
 interopDefault(core_regexp_escape);
@@ -8935,6 +9526,7 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
+// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -9370,7 +9962,7 @@ Object.assign( EventDispatcher.prototype, {
 
 } );
 
-var REVISION = '86';
+var REVISION = '87';
 var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
 var CullFaceNone = 0;
 var CullFaceBack = 1;
@@ -9382,7 +9974,6 @@ var FrontSide = 0;
 var BackSide = 1;
 var DoubleSide = 2;
 var FlatShading = 1;
-var SmoothShading = 2;
 var NoColors = 0;
 var FaceColors = 1;
 var VertexColors = 2;
@@ -10258,7 +10849,7 @@ Object.assign( Texture.prototype, EventDispatcher.prototype, {
 
 			var canvas;
 
-			if ( image.toDataURL !== undefined ) {
+			if ( image instanceof HTMLCanvasElement ) {
 
 				canvas = image;
 
@@ -10268,7 +10859,17 @@ Object.assign( Texture.prototype, EventDispatcher.prototype, {
 				canvas.width = image.width;
 				canvas.height = image.height;
 
-				canvas.getContext( '2d' ).drawImage( image, 0, 0, image.width, image.height );
+				var context = canvas.getContext( '2d' );
+
+				if ( image instanceof ImageData ) {
+
+					context.putImageData( image, 0, 0 );
+
+				} else {
+
+					context.drawImage( image, 0, 0, image.width, image.height );
+
+				}
 
 			}
 
@@ -11137,7 +11738,10 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com
+ * @author mikael emtinger / http://gomo.se/
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author bhouston / http://clara.io
  */
 
 function Quaternion( x, y, z, w ) {
@@ -12623,7 +13227,7 @@ Object.assign( Matrix4.prototype, {
 
 		if ( ! ( euler && euler.isEuler ) ) {
 
-			console.error( 'THREE.Matrix: .makeRotationFromEuler() now expects a Euler rotation rather than a Vector3 and order.' );
+			console.error( 'THREE.Matrix4: .makeRotationFromEuler() now expects a Euler rotation rather than a Vector3 and order.' );
 
 		}
 
@@ -13034,7 +13638,7 @@ Object.assign( Matrix4.prototype, {
 
 		if ( det === 0 ) {
 
-			var msg = "THREE.Matrix4.getInverse(): can't invert matrix, determinant is 0";
+			var msg = "THREE.Matrix4: .getInverse() can't invert matrix, determinant is 0";
 
 			if ( throwOnDegenerate === true ) {
 
@@ -14027,7 +14631,7 @@ var ColorKeywords = { 'aliceblue': 0xF0F8FF, 'antiquewhite': 0xFAEBD7, 'aqua': 0
 	'mediumvioletred': 0xC71585, 'midnightblue': 0x191970, 'mintcream': 0xF5FFFA, 'mistyrose': 0xFFE4E1, 'moccasin': 0xFFE4B5, 'navajowhite': 0xFFDEAD,
 	'navy': 0x000080, 'oldlace': 0xFDF5E6, 'olive': 0x808000, 'olivedrab': 0x6B8E23, 'orange': 0xFFA500, 'orangered': 0xFF4500, 'orchid': 0xDA70D6,
 	'palegoldenrod': 0xEEE8AA, 'palegreen': 0x98FB98, 'paleturquoise': 0xAFEEEE, 'palevioletred': 0xDB7093, 'papayawhip': 0xFFEFD5, 'peachpuff': 0xFFDAB9,
-	'peru': 0xCD853F, 'pink': 0xFFC0CB, 'plum': 0xDDA0DD, 'powderblue': 0xB0E0E6, 'purple': 0x800080, 'red': 0xFF0000, 'rosybrown': 0xBC8F8F,
+	'peru': 0xCD853F, 'pink': 0xFFC0CB, 'plum': 0xDDA0DD, 'powderblue': 0xB0E0E6, 'purple': 0x800080, 'rebeccapurple': 0x663399, 'red': 0xFF0000, 'rosybrown': 0xBC8F8F,
 	'royalblue': 0x4169E1, 'saddlebrown': 0x8B4513, 'salmon': 0xFA8072, 'sandybrown': 0xF4A460, 'seagreen': 0x2E8B57, 'seashell': 0xFFF5EE,
 	'sienna': 0xA0522D, 'silver': 0xC0C0C0, 'skyblue': 0x87CEEB, 'slateblue': 0x6A5ACD, 'slategray': 0x708090, 'slategrey': 0x708090, 'snow': 0xFFFAFA,
 	'springgreen': 0x00FF7F, 'steelblue': 0x4682B4, 'tan': 0xD2B48C, 'teal': 0x008080, 'thistle': 0xD8BFD8, 'tomato': 0xFF6347, 'turquoise': 0x40E0D0,
@@ -14537,8 +15141,17 @@ var UniformsLib = {
 		map: { value: null },
 		offsetRepeat: { value: new Vector4( 0, 0, 1, 1 ) },
 
-		specularMap: { value: null },
 		alphaMap: { value: null },
+
+	},
+
+	specularmap: {
+
+		specularMap: { value: null },
+
+	},
+
+	envmap: {
 
 		envMap: { value: null },
 		flipEnvMap: { value: - 1 },
@@ -14660,7 +15273,9 @@ var UniformsLib = {
 			shadow: {},
 			shadowBias: {},
 			shadowRadius: {},
-			shadowMapSize: {}
+			shadowMapSize: {},
+			shadowCameraNear: {},
+			shadowCameraFar: {}
 		} },
 
 		pointShadowMap: { value: [] },
@@ -14812,7 +15427,7 @@ var encodings_fragment = "  gl_FragColor = linearToOutputTexel( gl_FragColor );\
 
 var encodings_pars_fragment = "\nvec4 LinearToLinear( in vec4 value ) {\n\treturn value;\n}\nvec4 GammaToLinear( in vec4 value, in float gammaFactor ) {\n\treturn vec4( pow( value.xyz, vec3( gammaFactor ) ), value.w );\n}\nvec4 LinearToGamma( in vec4 value, in float gammaFactor ) {\n\treturn vec4( pow( value.xyz, vec3( 1.0 / gammaFactor ) ), value.w );\n}\nvec4 sRGBToLinear( in vec4 value ) {\n\treturn vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.w );\n}\nvec4 LinearTosRGB( in vec4 value ) {\n\treturn vec4( mix( pow( value.rgb, vec3( 0.41666 ) ) * 1.055 - vec3( 0.055 ), value.rgb * 12.92, vec3( lessThanEqual( value.rgb, vec3( 0.0031308 ) ) ) ), value.w );\n}\nvec4 RGBEToLinear( in vec4 value ) {\n\treturn vec4( value.rgb * exp2( value.a * 255.0 - 128.0 ), 1.0 );\n}\nvec4 LinearToRGBE( in vec4 value ) {\n\tfloat maxComponent = max( max( value.r, value.g ), value.b );\n\tfloat fExp = clamp( ceil( log2( maxComponent ) ), -128.0, 127.0 );\n\treturn vec4( value.rgb / exp2( fExp ), ( fExp + 128.0 ) / 255.0 );\n}\nvec4 RGBMToLinear( in vec4 value, in float maxRange ) {\n\treturn vec4( value.xyz * value.w * maxRange, 1.0 );\n}\nvec4 LinearToRGBM( in vec4 value, in float maxRange ) {\n\tfloat maxRGB = max( value.x, max( value.g, value.b ) );\n\tfloat M      = clamp( maxRGB / maxRange, 0.0, 1.0 );\n\tM            = ceil( M * 255.0 ) / 255.0;\n\treturn vec4( value.rgb / ( M * maxRange ), M );\n}\nvec4 RGBDToLinear( in vec4 value, in float maxRange ) {\n\treturn vec4( value.rgb * ( ( maxRange / 255.0 ) / value.a ), 1.0 );\n}\nvec4 LinearToRGBD( in vec4 value, in float maxRange ) {\n\tfloat maxRGB = max( value.x, max( value.g, value.b ) );\n\tfloat D      = max( maxRange / maxRGB, 1.0 );\n\tD            = min( floor( D ) / 255.0, 1.0 );\n\treturn vec4( value.rgb * ( D * ( 255.0 / maxRange ) ), D );\n}\nconst mat3 cLogLuvM = mat3( 0.2209, 0.3390, 0.4184, 0.1138, 0.6780, 0.7319, 0.0102, 0.1130, 0.2969 );\nvec4 LinearToLogLuv( in vec4 value )  {\n\tvec3 Xp_Y_XYZp = value.rgb * cLogLuvM;\n\tXp_Y_XYZp = max(Xp_Y_XYZp, vec3(1e-6, 1e-6, 1e-6));\n\tvec4 vResult;\n\tvResult.xy = Xp_Y_XYZp.xy / Xp_Y_XYZp.z;\n\tfloat Le = 2.0 * log2(Xp_Y_XYZp.y) + 127.0;\n\tvResult.w = fract(Le);\n\tvResult.z = (Le - (floor(vResult.w*255.0))/255.0)/255.0;\n\treturn vResult;\n}\nconst mat3 cLogLuvInverseM = mat3( 6.0014, -2.7008, -1.7996, -1.3320, 3.1029, -5.7721, 0.3008, -1.0882, 5.6268 );\nvec4 LogLuvToLinear( in vec4 value ) {\n\tfloat Le = value.z * 255.0 + value.w;\n\tvec3 Xp_Y_XYZp;\n\tXp_Y_XYZp.y = exp2((Le - 127.0) / 2.0);\n\tXp_Y_XYZp.z = Xp_Y_XYZp.y / value.y;\n\tXp_Y_XYZp.x = value.x * Xp_Y_XYZp.z;\n\tvec3 vRGB = Xp_Y_XYZp.rgb * cLogLuvInverseM;\n\treturn vec4( max(vRGB, 0.0), 1.0 );\n}\n";
 
-var envmap_fragment = "#ifdef USE_ENVMAP\n\t#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\t\tvec3 cameraToVertex = normalize( vWorldPosition - cameraPosition );\n\t\tvec3 worldNormal = inverseTransformDirection( normal, viewMatrix );\n\t\t#ifdef ENVMAP_MODE_REFLECTION\n\t\t\tvec3 reflectVec = reflect( cameraToVertex, worldNormal );\n\t\t#else\n\t\t\tvec3 reflectVec = refract( cameraToVertex, worldNormal, refractionRatio );\n\t\t#endif\n\t#else\n\t\tvec3 reflectVec = vReflect;\n\t#endif\n\t#ifdef ENVMAP_TYPE_CUBE\n\t\tvec4 envColor = textureCube( envMap, flipNormal * vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );\n\t#elif defined( ENVMAP_TYPE_EQUIREC )\n\t\tvec2 sampleUV;\n\t\tsampleUV.y = asin( flipNormal * reflectVec.y ) * RECIPROCAL_PI + 0.5;\n\t\tsampleUV.x = atan( flipNormal * reflectVec.z, flipNormal * reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n\t\tvec4 envColor = texture2D( envMap, sampleUV );\n\t#elif defined( ENVMAP_TYPE_SPHERE )\n\t\tvec3 reflectView = flipNormal * normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0, 0.0, 1.0 ) );\n\t\tvec4 envColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5 );\n\t#else\n\t\tvec4 envColor = vec4( 0.0 );\n\t#endif\n\tenvColor = envMapTexelToLinear( envColor );\n\t#ifdef ENVMAP_BLENDING_MULTIPLY\n\t\toutgoingLight = mix( outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity );\n\t#elif defined( ENVMAP_BLENDING_MIX )\n\t\toutgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * reflectivity );\n\t#elif defined( ENVMAP_BLENDING_ADD )\n\t\toutgoingLight += envColor.xyz * specularStrength * reflectivity;\n\t#endif\n#endif\n";
+var envmap_fragment = "#ifdef USE_ENVMAP\n\t#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\t\tvec3 cameraToVertex = normalize( vWorldPosition - cameraPosition );\n\t\tvec3 worldNormal = inverseTransformDirection( normal, viewMatrix );\n\t\t#ifdef ENVMAP_MODE_REFLECTION\n\t\t\tvec3 reflectVec = reflect( cameraToVertex, worldNormal );\n\t\t#else\n\t\t\tvec3 reflectVec = refract( cameraToVertex, worldNormal, refractionRatio );\n\t\t#endif\n\t#else\n\t\tvec3 reflectVec = vReflect;\n\t#endif\n\t#ifdef ENVMAP_TYPE_CUBE\n\t\tvec4 envColor = textureCube( envMap, vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );\n\t#elif defined( ENVMAP_TYPE_EQUIREC )\n\t\tvec2 sampleUV;\n\t\treflectVec = normalize( reflectVec );\n\t\tsampleUV.y = asin( clamp( reflectVec.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;\n\t\tsampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n\t\tvec4 envColor = texture2D( envMap, sampleUV );\n\t#elif defined( ENVMAP_TYPE_SPHERE )\n\t\treflectVec = normalize( reflectVec );\n\t\tvec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0, 0.0, 1.0 ) );\n\t\tvec4 envColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5 );\n\t#else\n\t\tvec4 envColor = vec4( 0.0 );\n\t#endif\n\tenvColor = envMapTexelToLinear( envColor );\n\t#ifdef ENVMAP_BLENDING_MULTIPLY\n\t\toutgoingLight = mix( outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity );\n\t#elif defined( ENVMAP_BLENDING_MIX )\n\t\toutgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * reflectivity );\n\t#elif defined( ENVMAP_BLENDING_ADD )\n\t\toutgoingLight += envColor.xyz * specularStrength * reflectivity;\n\t#endif\n#endif\n";
 
 var envmap_pars_fragment = "#if defined( USE_ENVMAP ) || defined( PHYSICAL )\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n#endif\n#ifdef USE_ENVMAP\n\t#if ! defined( PHYSICAL ) && ( defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) )\n\t\tvarying vec3 vWorldPosition;\n\t#endif\n\t#ifdef ENVMAP_TYPE_CUBE\n\t\tuniform samplerCube envMap;\n\t#else\n\t\tuniform sampler2D envMap;\n\t#endif\n\tuniform float flipEnvMap;\n\t#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) || defined( PHYSICAL )\n\t\tuniform float refractionRatio;\n\t#else\n\t\tvarying vec3 vReflect;\n\t#endif\n#endif\n";
 
@@ -14836,7 +15451,7 @@ var lightmap_pars_fragment = "#ifdef USE_LIGHTMAP\n\tuniform sampler2D lightMap;
 
 var lights_lambert_vertex = "vec3 diffuse = vec3( 1.0 );\nGeometricContext geometry;\ngeometry.position = mvPosition.xyz;\ngeometry.normal = normalize( transformedNormal );\ngeometry.viewDir = normalize( -mvPosition.xyz );\nGeometricContext backGeometry;\nbackGeometry.position = geometry.position;\nbackGeometry.normal = -geometry.normal;\nbackGeometry.viewDir = geometry.viewDir;\nvLightFront = vec3( 0.0 );\n#ifdef DOUBLE_SIDED\n\tvLightBack = vec3( 0.0 );\n#endif\nIncidentLight directLight;\nfloat dotNL;\nvec3 directLightColor_Diffuse;\n#if NUM_POINT_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tgetPointDirectLightIrradiance( pointLights[ i ], geometry, directLight );\n\t\tdotNL = dot( geometry.normal, directLight.direction );\n\t\tdirectLightColor_Diffuse = PI * directLight.color;\n\t\tvLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n\t\t#ifdef DOUBLE_SIDED\n\t\t\tvLightBack += saturate( -dotNL ) * directLightColor_Diffuse;\n\t\t#endif\n\t}\n#endif\n#if NUM_SPOT_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tgetSpotDirectLightIrradiance( spotLights[ i ], geometry, directLight );\n\t\tdotNL = dot( geometry.normal, directLight.direction );\n\t\tdirectLightColor_Diffuse = PI * directLight.color;\n\t\tvLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n\t\t#ifdef DOUBLE_SIDED\n\t\t\tvLightBack += saturate( -dotNL ) * directLightColor_Diffuse;\n\t\t#endif\n\t}\n#endif\n#if NUM_DIR_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tgetDirectionalDirectLightIrradiance( directionalLights[ i ], geometry, directLight );\n\t\tdotNL = dot( geometry.normal, directLight.direction );\n\t\tdirectLightColor_Diffuse = PI * directLight.color;\n\t\tvLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n\t\t#ifdef DOUBLE_SIDED\n\t\t\tvLightBack += saturate( -dotNL ) * directLightColor_Diffuse;\n\t\t#endif\n\t}\n#endif\n#if NUM_HEMI_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\t\tvLightFront += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\t\t#ifdef DOUBLE_SIDED\n\t\t\tvLightBack += getHemisphereLightIrradiance( hemisphereLights[ i ], backGeometry );\n\t\t#endif\n\t}\n#endif\n";
 
-var lights_pars = "uniform vec3 ambientLightColor;\nvec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {\n\tvec3 irradiance = ambientLightColor;\n\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\tirradiance *= PI;\n\t#endif\n\treturn irradiance;\n}\n#if NUM_DIR_LIGHTS > 0\n\tstruct DirectionalLight {\n\t\tvec3 direction;\n\t\tvec3 color;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t};\n\tuniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];\n\tvoid getDirectionalDirectLightIrradiance( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight ) {\n\t\tdirectLight.color = directionalLight.color;\n\t\tdirectLight.direction = directionalLight.direction;\n\t\tdirectLight.visible = true;\n\t}\n#endif\n#if NUM_POINT_LIGHTS > 0\n\tstruct PointLight {\n\t\tvec3 position;\n\t\tvec3 color;\n\t\tfloat distance;\n\t\tfloat decay;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t};\n\tuniform PointLight pointLights[ NUM_POINT_LIGHTS ];\n\tvoid getPointDirectLightIrradiance( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight ) {\n\t\tvec3 lVector = pointLight.position - geometry.position;\n\t\tdirectLight.direction = normalize( lVector );\n\t\tfloat lightDistance = length( lVector );\n\t\tdirectLight.color = pointLight.color;\n\t\tdirectLight.color *= punctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );\n\t\tdirectLight.visible = ( directLight.color != vec3( 0.0 ) );\n\t}\n#endif\n#if NUM_SPOT_LIGHTS > 0\n\tstruct SpotLight {\n\t\tvec3 position;\n\t\tvec3 direction;\n\t\tvec3 color;\n\t\tfloat distance;\n\t\tfloat decay;\n\t\tfloat coneCos;\n\t\tfloat penumbraCos;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t};\n\tuniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];\n\tvoid getSpotDirectLightIrradiance( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight  ) {\n\t\tvec3 lVector = spotLight.position - geometry.position;\n\t\tdirectLight.direction = normalize( lVector );\n\t\tfloat lightDistance = length( lVector );\n\t\tfloat angleCos = dot( directLight.direction, spotLight.direction );\n\t\tif ( angleCos > spotLight.coneCos ) {\n\t\t\tfloat spotEffect = smoothstep( spotLight.coneCos, spotLight.penumbraCos, angleCos );\n\t\t\tdirectLight.color = spotLight.color;\n\t\t\tdirectLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor( lightDistance, spotLight.distance, spotLight.decay );\n\t\t\tdirectLight.visible = true;\n\t\t} else {\n\t\t\tdirectLight.color = vec3( 0.0 );\n\t\t\tdirectLight.visible = false;\n\t\t}\n\t}\n#endif\n#if NUM_RECT_AREA_LIGHTS > 0\n\tstruct RectAreaLight {\n\t\tvec3 color;\n\t\tvec3 position;\n\t\tvec3 halfWidth;\n\t\tvec3 halfHeight;\n\t};\n\tuniform sampler2D ltcMat;\tuniform sampler2D ltcMag;\n\tuniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];\n#endif\n#if NUM_HEMI_LIGHTS > 0\n\tstruct HemisphereLight {\n\t\tvec3 direction;\n\t\tvec3 skyColor;\n\t\tvec3 groundColor;\n\t};\n\tuniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];\n\tvec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in GeometricContext geometry ) {\n\t\tfloat dotNL = dot( geometry.normal, hemiLight.direction );\n\t\tfloat hemiDiffuseWeight = 0.5 * dotNL + 0.5;\n\t\tvec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );\n\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\t\tirradiance *= PI;\n\t\t#endif\n\t\treturn irradiance;\n\t}\n#endif\n#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\tvec3 getLightProbeIndirectIrradiance( const in GeometricContext geometry, const in int maxMIPLevel ) {\n\t\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\t\t#ifdef ENVMAP_TYPE_CUBE\n\t\t\tvec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = textureCubeLodEXT( envMap, queryVec, float( maxMIPLevel ) );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = textureCube( envMap, queryVec, float( maxMIPLevel ) );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_CUBE_UV )\n\t\t\tvec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );\n\t\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\t\t#else\n\t\t\tvec4 envMapColor = vec4( 0.0 );\n\t\t#endif\n\t\treturn PI * envMapColor.rgb * envMapIntensity;\n\t}\n\tfloat getSpecularMIPLevel( const in float blinnShininessExponent, const in int maxMIPLevel ) {\n\t\tfloat maxMIPLevelScalar = float( maxMIPLevel );\n\t\tfloat desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );\n\t\treturn clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );\n\t}\n\tvec3 getLightProbeIndirectRadiance( const in GeometricContext geometry, const in float blinnShininessExponent, const in int maxMIPLevel ) {\n\t\t#ifdef ENVMAP_MODE_REFLECTION\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\t\t#else\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\t\t#endif\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\t\tfloat specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );\n\t\t#ifdef ENVMAP_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = textureCubeLodEXT( envMap, queryReflectVec, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_CUBE_UV )\n\t\t\tvec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );\n\t\t\tvec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));\n\t\t#elif defined( ENVMAP_TYPE_EQUIREC )\n\t\t\tvec2 sampleUV;\n\t\t\tsampleUV.y = saturate( reflectVec.y * 0.5 + 0.5 );\n\t\t\tsampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = texture2DLodEXT( envMap, sampleUV, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_SPHERE )\n\t\t\tvec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#endif\n\t\treturn envMapColor.rgb * envMapIntensity;\n\t}\n#endif\n";
+var lights_pars = "uniform vec3 ambientLightColor;\nvec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {\n\tvec3 irradiance = ambientLightColor;\n\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\tirradiance *= PI;\n\t#endif\n\treturn irradiance;\n}\n#if NUM_DIR_LIGHTS > 0\n\tstruct DirectionalLight {\n\t\tvec3 direction;\n\t\tvec3 color;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t};\n\tuniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];\n\tvoid getDirectionalDirectLightIrradiance( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight ) {\n\t\tdirectLight.color = directionalLight.color;\n\t\tdirectLight.direction = directionalLight.direction;\n\t\tdirectLight.visible = true;\n\t}\n#endif\n#if NUM_POINT_LIGHTS > 0\n\tstruct PointLight {\n\t\tvec3 position;\n\t\tvec3 color;\n\t\tfloat distance;\n\t\tfloat decay;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t\tfloat shadowCameraNear;\n\t\tfloat shadowCameraFar;\n\t};\n\tuniform PointLight pointLights[ NUM_POINT_LIGHTS ];\n\tvoid getPointDirectLightIrradiance( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight ) {\n\t\tvec3 lVector = pointLight.position - geometry.position;\n\t\tdirectLight.direction = normalize( lVector );\n\t\tfloat lightDistance = length( lVector );\n\t\tdirectLight.color = pointLight.color;\n\t\tdirectLight.color *= punctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );\n\t\tdirectLight.visible = ( directLight.color != vec3( 0.0 ) );\n\t}\n#endif\n#if NUM_SPOT_LIGHTS > 0\n\tstruct SpotLight {\n\t\tvec3 position;\n\t\tvec3 direction;\n\t\tvec3 color;\n\t\tfloat distance;\n\t\tfloat decay;\n\t\tfloat coneCos;\n\t\tfloat penumbraCos;\n\t\tint shadow;\n\t\tfloat shadowBias;\n\t\tfloat shadowRadius;\n\t\tvec2 shadowMapSize;\n\t};\n\tuniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];\n\tvoid getSpotDirectLightIrradiance( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight  ) {\n\t\tvec3 lVector = spotLight.position - geometry.position;\n\t\tdirectLight.direction = normalize( lVector );\n\t\tfloat lightDistance = length( lVector );\n\t\tfloat angleCos = dot( directLight.direction, spotLight.direction );\n\t\tif ( angleCos > spotLight.coneCos ) {\n\t\t\tfloat spotEffect = smoothstep( spotLight.coneCos, spotLight.penumbraCos, angleCos );\n\t\t\tdirectLight.color = spotLight.color;\n\t\t\tdirectLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor( lightDistance, spotLight.distance, spotLight.decay );\n\t\t\tdirectLight.visible = true;\n\t\t} else {\n\t\t\tdirectLight.color = vec3( 0.0 );\n\t\t\tdirectLight.visible = false;\n\t\t}\n\t}\n#endif\n#if NUM_RECT_AREA_LIGHTS > 0\n\tstruct RectAreaLight {\n\t\tvec3 color;\n\t\tvec3 position;\n\t\tvec3 halfWidth;\n\t\tvec3 halfHeight;\n\t};\n\tuniform sampler2D ltcMat;\tuniform sampler2D ltcMag;\n\tuniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];\n#endif\n#if NUM_HEMI_LIGHTS > 0\n\tstruct HemisphereLight {\n\t\tvec3 direction;\n\t\tvec3 skyColor;\n\t\tvec3 groundColor;\n\t};\n\tuniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];\n\tvec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in GeometricContext geometry ) {\n\t\tfloat dotNL = dot( geometry.normal, hemiLight.direction );\n\t\tfloat hemiDiffuseWeight = 0.5 * dotNL + 0.5;\n\t\tvec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );\n\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\t\tirradiance *= PI;\n\t\t#endif\n\t\treturn irradiance;\n\t}\n#endif\n#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\tvec3 getLightProbeIndirectIrradiance( const in GeometricContext geometry, const in int maxMIPLevel ) {\n\t\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\t\t#ifdef ENVMAP_TYPE_CUBE\n\t\t\tvec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = textureCubeLodEXT( envMap, queryVec, float( maxMIPLevel ) );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = textureCube( envMap, queryVec, float( maxMIPLevel ) );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_CUBE_UV )\n\t\t\tvec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );\n\t\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\t\t#else\n\t\t\tvec4 envMapColor = vec4( 0.0 );\n\t\t#endif\n\t\treturn PI * envMapColor.rgb * envMapIntensity;\n\t}\n\tfloat getSpecularMIPLevel( const in float blinnShininessExponent, const in int maxMIPLevel ) {\n\t\tfloat maxMIPLevelScalar = float( maxMIPLevel );\n\t\tfloat desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );\n\t\treturn clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );\n\t}\n\tvec3 getLightProbeIndirectRadiance( const in GeometricContext geometry, const in float blinnShininessExponent, const in int maxMIPLevel ) {\n\t\t#ifdef ENVMAP_MODE_REFLECTION\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\t\t#else\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\t\t#endif\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\t\tfloat specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );\n\t\t#ifdef ENVMAP_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = textureCubeLodEXT( envMap, queryReflectVec, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_CUBE_UV )\n\t\t\tvec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );\n\t\t\tvec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));\n\t\t#elif defined( ENVMAP_TYPE_EQUIREC )\n\t\t\tvec2 sampleUV;\n\t\t\tsampleUV.y = asin( clamp( reflectVec.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;\n\t\t\tsampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = texture2DLodEXT( envMap, sampleUV, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#elif defined( ENVMAP_TYPE_SPHERE )\n\t\t\tvec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );\n\t\t\t#ifdef TEXTURE_LOD_EXT\n\t\t\t\tvec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );\n\t\t\t#else\n\t\t\t\tvec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );\n\t\t\t#endif\n\t\t\tenvMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;\n\t\t#endif\n\t\treturn envMapColor.rgb * envMapIntensity;\n\t}\n#endif\n";
 
 var lights_phong_fragment = "BlinnPhongMaterial material;\nmaterial.diffuseColor = diffuseColor.rgb;\nmaterial.specularColor = specular;\nmaterial.specularShininess = shininess;\nmaterial.specularStrength = specularStrength;\n";
 
@@ -14846,7 +15461,7 @@ var lights_physical_fragment = "PhysicalMaterial material;\nmaterial.diffuseColo
 
 var lights_physical_pars_fragment = "struct PhysicalMaterial {\n\tvec3\tdiffuseColor;\n\tfloat\tspecularRoughness;\n\tvec3\tspecularColor;\n\t#ifndef STANDARD\n\t\tfloat clearCoat;\n\t\tfloat clearCoatRoughness;\n\t#endif\n};\n#define MAXIMUM_SPECULAR_COEFFICIENT 0.16\n#define DEFAULT_SPECULAR_COEFFICIENT 0.04\nfloat clearCoatDHRApprox( const in float roughness, const in float dotNL ) {\n\treturn DEFAULT_SPECULAR_COEFFICIENT + ( 1.0 - DEFAULT_SPECULAR_COEFFICIENT ) * ( pow( 1.0 - dotNL, 5.0 ) * pow( 1.0 - roughness, 2.0 ) );\n}\n#if NUM_RECT_AREA_LIGHTS > 0\n\tvoid RE_Direct_RectArea_Physical( const in RectAreaLight rectAreaLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\t\tvec3 normal = geometry.normal;\n\t\tvec3 viewDir = geometry.viewDir;\n\t\tvec3 position = geometry.position;\n\t\tvec3 lightPos = rectAreaLight.position;\n\t\tvec3 halfWidth = rectAreaLight.halfWidth;\n\t\tvec3 halfHeight = rectAreaLight.halfHeight;\n\t\tvec3 lightColor = rectAreaLight.color;\n\t\tfloat roughness = material.specularRoughness;\n\t\tvec3 rectCoords[ 4 ];\n\t\trectCoords[ 0 ] = lightPos - halfWidth - halfHeight;\t\trectCoords[ 1 ] = lightPos + halfWidth - halfHeight;\n\t\trectCoords[ 2 ] = lightPos + halfWidth + halfHeight;\n\t\trectCoords[ 3 ] = lightPos - halfWidth + halfHeight;\n\t\tvec2 uv = LTC_Uv( normal, viewDir, roughness );\n\t\tfloat norm = texture2D( ltcMag, uv ).a;\n\t\tvec4 t = texture2D( ltcMat, uv );\n\t\tmat3 mInv = mat3(\n\t\t\tvec3(   1,   0, t.y ),\n\t\t\tvec3(   0, t.z,   0 ),\n\t\t\tvec3( t.w,   0, t.x )\n\t\t);\n\t\treflectedLight.directSpecular += lightColor * material.specularColor * norm * LTC_Evaluate( normal, viewDir, position, mInv, rectCoords );\n\t\treflectedLight.directDiffuse += lightColor * material.diffuseColor * LTC_Evaluate( normal, viewDir, position, mat3( 1 ), rectCoords );\n\t}\n#endif\nvoid RE_Direct_Physical( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\tfloat dotNL = saturate( dot( geometry.normal, directLight.direction ) );\n\tvec3 irradiance = dotNL * directLight.color;\n\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\tirradiance *= PI;\n\t#endif\n\t#ifndef STANDARD\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\treflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Specular_GGX( directLight, geometry, material.specularColor, material.specularRoughness );\n\treflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );\n\t#ifndef STANDARD\n\t\treflectedLight.directSpecular += irradiance * material.clearCoat * BRDF_Specular_GGX( directLight, geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );\n\t#endif\n}\nvoid RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\t#ifndef STANDARD\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#ifndef STANDARD\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * material.clearCoat * BRDF_Specular_GGX_Environment( geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );\n\t#endif\n}\n#define RE_Direct\t\t\t\tRE_Direct_Physical\n#define RE_Direct_RectArea\t\tRE_Direct_RectArea_Physical\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_Physical\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_Physical\n#define Material_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.specularRoughness )\n#define Material_ClearCoat_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.clearCoatRoughness )\nfloat computeSpecularOcclusion( const in float dotNV, const in float ambientOcclusion, const in float roughness ) {\n\treturn saturate( pow( dotNV + ambientOcclusion, exp2( - 16.0 * roughness - 1.0 ) ) - 1.0 + ambientOcclusion );\n}\n";
 
-var lights_template = "\nGeometricContext geometry;\ngeometry.position = - vViewPosition;\ngeometry.normal = normal;\ngeometry.viewDir = normalize( vViewPosition );\nIncidentLight directLight;\n#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\tPointLight pointLight;\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tpointLight = pointLights[ i ];\n\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\tSpotLight spotLight;\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tspotLight = spotLights[ i ];\n\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\tDirectionalLight directionalLight;\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tdirectionalLight = directionalLights[ i ];\n\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )\n\tRectAreaLight rectAreaLight;\n\tfor ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {\n\t\trectAreaLight = rectAreaLights[ i ];\n\t\tRE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if defined( RE_IndirectDiffuse )\n\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\t#ifdef USE_LIGHTMAP\n\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\t\tlightMapIrradiance *= PI;\n\t\t#endif\n\t\tirradiance += lightMapIrradiance;\n\t#endif\n\t#if ( NUM_HEMI_LIGHTS > 0 )\n\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\t\t}\n\t#endif\n\t#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )\n\t\tirradiance += getLightProbeIndirectIrradiance( geometry, 8 );\n\t#endif\n\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n#endif\n#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )\n\tvec3 radiance = getLightProbeIndirectRadiance( geometry, Material_BlinnShininessExponent( material ), 8 );\n\t#ifndef STANDARD\n\t\tvec3 clearCoatRadiance = getLightProbeIndirectRadiance( geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );\n\t#else\n\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t#endif\n\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );\n#endif\n";
+var lights_template = "\nGeometricContext geometry;\ngeometry.position = - vViewPosition;\ngeometry.normal = normal;\ngeometry.viewDir = normalize( vViewPosition );\nIncidentLight directLight;\n#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\tPointLight pointLight;\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tpointLight = pointLights[ i ];\n\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\tSpotLight spotLight;\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tspotLight = spotLights[ i ];\n\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\tDirectionalLight directionalLight;\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tdirectionalLight = directionalLights[ i ];\n\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\t\t#ifdef USE_SHADOWMAP\n\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t#endif\n\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )\n\tRectAreaLight rectAreaLight;\n\tfor ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {\n\t\trectAreaLight = rectAreaLights[ i ];\n\t\tRE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );\n\t}\n#endif\n#if defined( RE_IndirectDiffuse )\n\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\t#ifdef USE_LIGHTMAP\n\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\t\t\tlightMapIrradiance *= PI;\n\t\t#endif\n\t\tirradiance += lightMapIrradiance;\n\t#endif\n\t#if ( NUM_HEMI_LIGHTS > 0 )\n\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\t\t}\n\t#endif\n\t#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )\n\t\tirradiance += getLightProbeIndirectIrradiance( geometry, 8 );\n\t#endif\n\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n#endif\n#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )\n\tvec3 radiance = getLightProbeIndirectRadiance( geometry, Material_BlinnShininessExponent( material ), 8 );\n\t#ifndef STANDARD\n\t\tvec3 clearCoatRadiance = getLightProbeIndirectRadiance( geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );\n\t#else\n\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t#endif\n\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );\n#endif\n";
 
 var logdepthbuf_fragment = "#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\n\tgl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\n#endif";
 
@@ -14874,9 +15489,7 @@ var morphtarget_pars_vertex = "#ifdef USE_MORPHTARGETS\n\t#ifndef USE_MORPHNORMA
 
 var morphtarget_vertex = "#ifdef USE_MORPHTARGETS\n\ttransformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];\n\ttransformed += ( morphTarget1 - position ) * morphTargetInfluences[ 1 ];\n\ttransformed += ( morphTarget2 - position ) * morphTargetInfluences[ 2 ];\n\ttransformed += ( morphTarget3 - position ) * morphTargetInfluences[ 3 ];\n\t#ifndef USE_MORPHNORMALS\n\ttransformed += ( morphTarget4 - position ) * morphTargetInfluences[ 4 ];\n\ttransformed += ( morphTarget5 - position ) * morphTargetInfluences[ 5 ];\n\ttransformed += ( morphTarget6 - position ) * morphTargetInfluences[ 6 ];\n\ttransformed += ( morphTarget7 - position ) * morphTargetInfluences[ 7 ];\n\t#endif\n#endif\n";
 
-var normal_flip = "#ifdef DOUBLE_SIDED\n\tfloat flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n#else\n\tfloat flipNormal = 1.0;\n#endif\n";
-
-var normal_fragment = "#ifdef FLAT_SHADED\n\tvec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );\n\tvec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );\n\tvec3 normal = normalize( cross( fdx, fdy ) );\n#else\n\tvec3 normal = normalize( vNormal ) * flipNormal;\n#endif\n#ifdef USE_NORMALMAP\n\tnormal = perturbNormal2Arb( -vViewPosition, normal );\n#elif defined( USE_BUMPMAP )\n\tnormal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );\n#endif\n";
+var normal_fragment = "#ifdef FLAT_SHADED\n\tvec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );\n\tvec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );\n\tvec3 normal = normalize( cross( fdx, fdy ) );\n#else\n\tvec3 normal = normalize( vNormal );\n\t#ifdef DOUBLE_SIDED\n\t\tnormal = normal * ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n\t#endif\n#endif\n#ifdef USE_NORMALMAP\n\tnormal = perturbNormal2Arb( -vViewPosition, normal );\n#elif defined( USE_BUMPMAP )\n\tnormal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );\n#endif\n";
 
 var normalmap_pars_fragment = "#ifdef USE_NORMALMAP\n\tuniform sampler2D normalMap;\n\tuniform vec2 normalScale;\n\tvec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {\n\t\tvec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n\t\tvec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n\t\tvec2 st0 = dFdx( vUv.st );\n\t\tvec2 st1 = dFdy( vUv.st );\n\t\tvec3 S = normalize( q0 * st1.t - q1 * st0.t );\n\t\tvec3 T = normalize( -q0 * st1.s + q1 * st0.s );\n\t\tvec3 N = normalize( surf_norm );\n\t\tvec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n\t\tmapN.xy = normalScale * mapN.xy;\n\t\tmat3 tsn = mat3( S, T, N );\n\t\treturn normalize( tsn * mapN );\n\t}\n#endif\n";
 
@@ -14894,13 +15507,13 @@ var roughnessmap_fragment = "float roughnessFactor = roughness;\n#ifdef USE_ROUG
 
 var roughnessmap_pars_fragment = "#ifdef USE_ROUGHNESSMAP\n\tuniform sampler2D roughnessMap;\n#endif";
 
-var shadowmap_pars_fragment = "#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\t\tuniform sampler2D directionalShadowMap[ NUM_DIR_LIGHTS ];\n\t\tvarying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\t\tuniform sampler2D spotShadowMap[ NUM_SPOT_LIGHTS ];\n\t\tvarying vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\t\tuniform sampler2D pointShadowMap[ NUM_POINT_LIGHTS ];\n\t\tvarying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];\n\t#endif\n\tfloat texture2DCompare( sampler2D depths, vec2 uv, float compare ) {\n\t\treturn step( compare, unpackRGBAToDepth( texture2D( depths, uv ) ) );\n\t}\n\tfloat texture2DShadowLerp( sampler2D depths, vec2 size, vec2 uv, float compare ) {\n\t\tconst vec2 offset = vec2( 0.0, 1.0 );\n\t\tvec2 texelSize = vec2( 1.0 ) / size;\n\t\tvec2 centroidUV = floor( uv * size + 0.5 ) / size;\n\t\tfloat lb = texture2DCompare( depths, centroidUV + texelSize * offset.xx, compare );\n\t\tfloat lt = texture2DCompare( depths, centroidUV + texelSize * offset.xy, compare );\n\t\tfloat rb = texture2DCompare( depths, centroidUV + texelSize * offset.yx, compare );\n\t\tfloat rt = texture2DCompare( depths, centroidUV + texelSize * offset.yy, compare );\n\t\tvec2 f = fract( uv * size + 0.5 );\n\t\tfloat a = mix( lb, lt, f.y );\n\t\tfloat b = mix( rb, rt, f.y );\n\t\tfloat c = mix( a, b, f.x );\n\t\treturn c;\n\t}\n\tfloat getShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {\n\t\tfloat shadow = 1.0;\n\t\tshadowCoord.xyz /= shadowCoord.w;\n\t\tshadowCoord.z += shadowBias;\n\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\n\t\tbool inFrustum = all( inFrustumVec );\n\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\n\t\tbool frustumTest = all( frustumTestVec );\n\t\tif ( frustumTest ) {\n\t\t#if defined( SHADOWMAP_TYPE_PCF )\n\t\t\tvec2 texelSize = vec2( 1.0 ) / shadowMapSize;\n\t\t\tfloat dx0 = - texelSize.x * shadowRadius;\n\t\t\tfloat dy0 = - texelSize.y * shadowRadius;\n\t\t\tfloat dx1 = + texelSize.x * shadowRadius;\n\t\t\tfloat dy1 = + texelSize.y * shadowRadius;\n\t\t\tshadow = (\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#elif defined( SHADOWMAP_TYPE_PCF_SOFT )\n\t\t\tvec2 texelSize = vec2( 1.0 ) / shadowMapSize;\n\t\t\tfloat dx0 = - texelSize.x * shadowRadius;\n\t\t\tfloat dy0 = - texelSize.y * shadowRadius;\n\t\t\tfloat dx1 = + texelSize.x * shadowRadius;\n\t\t\tfloat dy1 = + texelSize.y * shadowRadius;\n\t\t\tshadow = (\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy, shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#else\n\t\t\tshadow = texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z );\n\t\t#endif\n\t\t}\n\t\treturn shadow;\n\t}\n\tvec2 cubeToUV( vec3 v, float texelSizeY ) {\n\t\tvec3 absV = abs( v );\n\t\tfloat scaleToCube = 1.0 / max( absV.x, max( absV.y, absV.z ) );\n\t\tabsV *= scaleToCube;\n\t\tv *= scaleToCube * ( 1.0 - 2.0 * texelSizeY );\n\t\tvec2 planar = v.xy;\n\t\tfloat almostATexel = 1.5 * texelSizeY;\n\t\tfloat almostOne = 1.0 - almostATexel;\n\t\tif ( absV.z >= almostOne ) {\n\t\t\tif ( v.z > 0.0 )\n\t\t\t\tplanar.x = 4.0 - v.x;\n\t\t} else if ( absV.x >= almostOne ) {\n\t\t\tfloat signX = sign( v.x );\n\t\t\tplanar.x = v.z * signX + 2.0 * signX;\n\t\t} else if ( absV.y >= almostOne ) {\n\t\t\tfloat signY = sign( v.y );\n\t\t\tplanar.x = v.x + 2.0 * signY + 2.0;\n\t\t\tplanar.y = v.z * signY - 2.0;\n\t\t}\n\t\treturn vec2( 0.125, 0.25 ) * planar + vec2( 0.375, 0.75 );\n\t}\n\tfloat getPointShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {\n\t\tvec2 texelSize = vec2( 1.0 ) / ( shadowMapSize * vec2( 4.0, 2.0 ) );\n\t\tvec3 lightToPosition = shadowCoord.xyz;\n\t\tvec3 bd3D = normalize( lightToPosition );\n\t\tfloat dp = ( length( lightToPosition ) - shadowBias ) / 1000.0;\n\t\t#if defined( SHADOWMAP_TYPE_PCF ) || defined( SHADOWMAP_TYPE_PCF_SOFT )\n\t\t\tvec2 offset = vec2( - 1, 1 ) * shadowRadius * texelSize.y;\n\t\t\treturn (\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxx, texelSize.y ), dp )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#else\n\t\t\treturn texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp );\n\t\t#endif\n\t}\n#endif\n";
+var shadowmap_pars_fragment = "#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\t\tuniform sampler2D directionalShadowMap[ NUM_DIR_LIGHTS ];\n\t\tvarying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\t\tuniform sampler2D spotShadowMap[ NUM_SPOT_LIGHTS ];\n\t\tvarying vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\t\tuniform sampler2D pointShadowMap[ NUM_POINT_LIGHTS ];\n\t\tvarying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];\n\t#endif\n\tfloat texture2DCompare( sampler2D depths, vec2 uv, float compare ) {\n\t\treturn step( compare, unpackRGBAToDepth( texture2D( depths, uv ) ) );\n\t}\n\tfloat texture2DShadowLerp( sampler2D depths, vec2 size, vec2 uv, float compare ) {\n\t\tconst vec2 offset = vec2( 0.0, 1.0 );\n\t\tvec2 texelSize = vec2( 1.0 ) / size;\n\t\tvec2 centroidUV = floor( uv * size + 0.5 ) / size;\n\t\tfloat lb = texture2DCompare( depths, centroidUV + texelSize * offset.xx, compare );\n\t\tfloat lt = texture2DCompare( depths, centroidUV + texelSize * offset.xy, compare );\n\t\tfloat rb = texture2DCompare( depths, centroidUV + texelSize * offset.yx, compare );\n\t\tfloat rt = texture2DCompare( depths, centroidUV + texelSize * offset.yy, compare );\n\t\tvec2 f = fract( uv * size + 0.5 );\n\t\tfloat a = mix( lb, lt, f.y );\n\t\tfloat b = mix( rb, rt, f.y );\n\t\tfloat c = mix( a, b, f.x );\n\t\treturn c;\n\t}\n\tfloat getShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {\n\t\tfloat shadow = 1.0;\n\t\tshadowCoord.xyz /= shadowCoord.w;\n\t\tshadowCoord.z += shadowBias;\n\t\tbvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\n\t\tbool inFrustum = all( inFrustumVec );\n\t\tbvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\n\t\tbool frustumTest = all( frustumTestVec );\n\t\tif ( frustumTest ) {\n\t\t#if defined( SHADOWMAP_TYPE_PCF )\n\t\t\tvec2 texelSize = vec2( 1.0 ) / shadowMapSize;\n\t\t\tfloat dx0 = - texelSize.x * shadowRadius;\n\t\t\tfloat dy0 = - texelSize.y * shadowRadius;\n\t\t\tfloat dx1 = + texelSize.x * shadowRadius;\n\t\t\tfloat dy1 = + texelSize.y * shadowRadius;\n\t\t\tshadow = (\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#elif defined( SHADOWMAP_TYPE_PCF_SOFT )\n\t\t\tvec2 texelSize = vec2( 1.0 ) / shadowMapSize;\n\t\t\tfloat dx0 = - texelSize.x * shadowRadius;\n\t\t\tfloat dy0 = - texelSize.y * shadowRadius;\n\t\t\tfloat dx1 = + texelSize.x * shadowRadius;\n\t\t\tfloat dy1 = + texelSize.y * shadowRadius;\n\t\t\tshadow = (\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy, shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +\n\t\t\t\ttexture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#else\n\t\t\tshadow = texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z );\n\t\t#endif\n\t\t}\n\t\treturn shadow;\n\t}\n\tvec2 cubeToUV( vec3 v, float texelSizeY ) {\n\t\tvec3 absV = abs( v );\n\t\tfloat scaleToCube = 1.0 / max( absV.x, max( absV.y, absV.z ) );\n\t\tabsV *= scaleToCube;\n\t\tv *= scaleToCube * ( 1.0 - 2.0 * texelSizeY );\n\t\tvec2 planar = v.xy;\n\t\tfloat almostATexel = 1.5 * texelSizeY;\n\t\tfloat almostOne = 1.0 - almostATexel;\n\t\tif ( absV.z >= almostOne ) {\n\t\t\tif ( v.z > 0.0 )\n\t\t\t\tplanar.x = 4.0 - v.x;\n\t\t} else if ( absV.x >= almostOne ) {\n\t\t\tfloat signX = sign( v.x );\n\t\t\tplanar.x = v.z * signX + 2.0 * signX;\n\t\t} else if ( absV.y >= almostOne ) {\n\t\t\tfloat signY = sign( v.y );\n\t\t\tplanar.x = v.x + 2.0 * signY + 2.0;\n\t\t\tplanar.y = v.z * signY - 2.0;\n\t\t}\n\t\treturn vec2( 0.125, 0.25 ) * planar + vec2( 0.375, 0.75 );\n\t}\n\tfloat getPointShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord, float shadowCameraNear, float shadowCameraFar ) {\n\t\tvec2 texelSize = vec2( 1.0 ) / ( shadowMapSize * vec2( 4.0, 2.0 ) );\n\t\tvec3 lightToPosition = shadowCoord.xyz;\n\t\tfloat dp = ( length( lightToPosition ) - shadowCameraNear ) / ( shadowCameraFar - shadowCameraNear );\t\tdp += shadowBias;\n\t\tvec3 bd3D = normalize( lightToPosition );\n\t\t#if defined( SHADOWMAP_TYPE_PCF ) || defined( SHADOWMAP_TYPE_PCF_SOFT )\n\t\t\tvec2 offset = vec2( - 1, 1 ) * shadowRadius * texelSize.y;\n\t\t\treturn (\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxy, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxx, texelSize.y ), dp ) +\n\t\t\t\ttexture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxx, texelSize.y ), dp )\n\t\t\t) * ( 1.0 / 9.0 );\n\t\t#else\n\t\t\treturn texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp );\n\t\t#endif\n\t}\n#endif\n";
 
 var shadowmap_pars_vertex = "#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\t\tuniform mat4 directionalShadowMatrix[ NUM_DIR_LIGHTS ];\n\t\tvarying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\t\tuniform mat4 spotShadowMatrix[ NUM_SPOT_LIGHTS ];\n\t\tvarying vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\t\tuniform mat4 pointShadowMatrix[ NUM_POINT_LIGHTS ];\n\t\tvarying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];\n\t#endif\n#endif\n";
 
 var shadowmap_vertex = "#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tvDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * worldPosition;\n\t}\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tvSpotShadowCoord[ i ] = spotShadowMatrix[ i ] * worldPosition;\n\t}\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tvPointShadowCoord[ i ] = pointShadowMatrix[ i ] * worldPosition;\n\t}\n\t#endif\n#endif\n";
 
-var shadowmask_pars_fragment = "float getShadowMask() {\n\tfloat shadow = 1.0;\n\t#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\tDirectionalLight directionalLight;\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tdirectionalLight = directionalLights[ i ];\n\t\tshadow *= bool( directionalLight.shadow ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t}\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\tSpotLight spotLight;\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tspotLight = spotLights[ i ];\n\t\tshadow *= bool( spotLight.shadow ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t}\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\tPointLight pointLight;\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tpointLight = pointLights[ i ];\n\t\tshadow *= bool( pointLight.shadow ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t}\n\t#endif\n\t#endif\n\treturn shadow;\n}\n";
+var shadowmask_pars_fragment = "float getShadowMask() {\n\tfloat shadow = 1.0;\n\t#ifdef USE_SHADOWMAP\n\t#if NUM_DIR_LIGHTS > 0\n\tDirectionalLight directionalLight;\n\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\t\tdirectionalLight = directionalLights[ i ];\n\t\tshadow *= bool( directionalLight.shadow ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t}\n\t#endif\n\t#if NUM_SPOT_LIGHTS > 0\n\tSpotLight spotLight;\n\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\t\tspotLight = spotLights[ i ];\n\t\tshadow *= bool( spotLight.shadow ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t}\n\t#endif\n\t#if NUM_POINT_LIGHTS > 0\n\tPointLight pointLight;\n\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\t\tpointLight = pointLights[ i ];\n\t\tshadow *= bool( pointLight.shadow ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;\n\t}\n\t#endif\n\t#endif\n\treturn shadow;\n}\n";
 
 var skinbase_vertex = "#ifdef USE_SKINNING\n\tmat4 boneMatX = getBoneMatrix( skinIndex.x );\n\tmat4 boneMatY = getBoneMatrix( skinIndex.y );\n\tmat4 boneMatZ = getBoneMatrix( skinIndex.z );\n\tmat4 boneMatW = getBoneMatrix( skinIndex.w );\n#endif";
 
@@ -14930,9 +15543,9 @@ var uv2_pars_vertex = "#if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )\n\tat
 
 var uv2_vertex = "#if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )\n\tvUv2 = uv2;\n#endif";
 
-var worldpos_vertex = "#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )\n\tvec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );\n#endif\n";
+var worldpos_vertex = "#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP )\n\tvec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );\n#endif\n";
 
-var cube_frag = "uniform samplerCube tCube;\nuniform float tFlip;\nuniform float opacity;\nvarying vec3 vWorldPosition;\n#include <common>\nvoid main() {\n\tgl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, vWorldPosition.yz ) );\n\tgl_FragColor.a *= opacity;\n}\n";
+var cube_frag = "uniform samplerCube tCube;\nuniform float tFlip;\nuniform float opacity;\nvarying vec3 vWorldPosition;\nvoid main() {\n\tgl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, vWorldPosition.yz ) );\n\tgl_FragColor.a *= opacity;\n}\n";
 
 var cube_vert = "varying vec3 vWorldPosition;\n#include <common>\nvoid main() {\n\tvWorldPosition = transformDirection( position, modelMatrix );\n\t#include <begin_vertex>\n\t#include <project_vertex>\n}\n";
 
@@ -14940,11 +15553,11 @@ var depth_frag = "#if DEPTH_PACKING == 3200\n\tuniform float opacity;\n#endif\n#
 
 var depth_vert = "#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <skinbase_vertex>\n\t#ifdef USE_DISPLACEMENTMAP\n\t\t#include <beginnormal_vertex>\n\t\t#include <morphnormal_vertex>\n\t\t#include <skinnormal_vertex>\n\t#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <displacementmap_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n}\n";
 
-var distanceRGBA_frag = "uniform vec3 lightPos;\nvarying vec4 vWorldPosition;\n#include <common>\n#include <packing>\n#include <clipping_planes_pars_fragment>\nvoid main () {\n\t#include <clipping_planes_fragment>\n\tgl_FragColor = packDepthToRGBA( length( vWorldPosition.xyz - lightPos.xyz ) / 1000.0 );\n}\n";
+var distanceRGBA_frag = "#define DISTANCE\nuniform vec3 referencePosition;\nuniform float nearDistance;\nuniform float farDistance;\nvarying vec3 vWorldPosition;\n#include <common>\n#include <packing>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main () {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( 1.0 );\n\t#include <map_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\tfloat dist = length( vWorldPosition - referencePosition );\n\tdist = ( dist - nearDistance ) / ( farDistance - nearDistance );\n\tdist = saturate( dist );\n\tgl_FragColor = packDepthToRGBA( dist );\n}\n";
 
-var distanceRGBA_vert = "varying vec4 vWorldPosition;\n#include <common>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <skinbase_vertex>\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <worldpos_vertex>\n\t#include <clipping_planes_vertex>\n\tvWorldPosition = worldPosition;\n}\n";
+var distanceRGBA_vert = "#define DISTANCE\nvarying vec3 vWorldPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <skinbase_vertex>\n\t#ifdef USE_DISPLACEMENTMAP\n\t\t#include <beginnormal_vertex>\n\t\t#include <morphnormal_vertex>\n\t\t#include <skinnormal_vertex>\n\t#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <displacementmap_vertex>\n\t#include <project_vertex>\n\t#include <worldpos_vertex>\n\t#include <clipping_planes_vertex>\n\tvWorldPosition = worldPosition.xyz;\n}\n";
 
-var equirect_frag = "uniform sampler2D tEquirect;\nuniform float tFlip;\nvarying vec3 vWorldPosition;\n#include <common>\nvoid main() {\n\tvec3 direction = normalize( vWorldPosition );\n\tvec2 sampleUV;\n\tsampleUV.y = saturate( tFlip * direction.y * -0.5 + 0.5 );\n\tsampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;\n\tgl_FragColor = texture2D( tEquirect, sampleUV );\n}\n";
+var equirect_frag = "uniform sampler2D tEquirect;\nvarying vec3 vWorldPosition;\n#include <common>\nvoid main() {\n\tvec3 direction = normalize( vWorldPosition );\n\tvec2 sampleUV;\n\tsampleUV.y = asin( clamp( direction.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;\n\tsampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;\n\tgl_FragColor = texture2D( tEquirect, sampleUV );\n}\n";
 
 var equirect_vert = "varying vec3 vWorldPosition;\n#include <common>\nvoid main() {\n\tvWorldPosition = transformDirection( position, modelMatrix );\n\t#include <begin_vertex>\n\t#include <project_vertex>\n}\n";
 
@@ -14952,23 +15565,23 @@ var linedashed_frag = "uniform vec3 diffuse;\nuniform float opacity;\nuniform fl
 
 var linedashed_vert = "uniform float scale;\nattribute float lineDistance;\nvarying float vLineDistance;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <color_vertex>\n\tvLineDistance = scale * lineDistance;\n\tvec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n\tgl_Position = projectionMatrix * mvPosition;\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var meshbasic_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\t#ifdef USE_LIGHTMAP\n\t\treflectedLight.indirectDiffuse += texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\t#else\n\t\treflectedLight.indirectDiffuse += vec3( 1.0 );\n\t#endif\n\t#include <aomap_fragment>\n\treflectedLight.indirectDiffuse *= diffuseColor.rgb;\n\tvec3 outgoingLight = reflectedLight.indirectDiffuse;\n\t#include <normal_flip>\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n}\n";
+var meshbasic_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\t#ifdef USE_LIGHTMAP\n\t\treflectedLight.indirectDiffuse += texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\t#else\n\t\treflectedLight.indirectDiffuse += vec3( 1.0 );\n\t#endif\n\t#include <aomap_fragment>\n\treflectedLight.indirectDiffuse *= diffuseColor.rgb;\n\tvec3 outgoingLight = reflectedLight.indirectDiffuse;\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n}\n";
 
 var meshbasic_vert = "#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\t#include <skinbase_vertex>\n\t#ifdef USE_ENVMAP\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\t#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <worldpos_vertex>\n\t#include <clipping_planes_vertex>\n\t#include <envmap_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var meshlambert_frag = "uniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\nvarying vec3 vLightFront;\n#ifdef DOUBLE_SIDED\n\tvarying vec3 vLightBack;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <bsdfs>\n#include <lights_pars>\n#include <fog_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <emissivemap_fragment>\n\treflectedLight.indirectDiffuse = getAmbientLightIrradiance( ambientLightColor );\n\t#include <lightmap_fragment>\n\treflectedLight.indirectDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb );\n\t#ifdef DOUBLE_SIDED\n\t\treflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;\n\t#else\n\t\treflectedLight.directDiffuse = vLightFront;\n\t#endif\n\treflectedLight.directDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb ) * getShadowMask();\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n\t#include <normal_flip>\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
+var meshlambert_frag = "uniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\nvarying vec3 vLightFront;\n#ifdef DOUBLE_SIDED\n\tvarying vec3 vLightBack;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <bsdfs>\n#include <lights_pars>\n#include <fog_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <emissivemap_fragment>\n\treflectedLight.indirectDiffuse = getAmbientLightIrradiance( ambientLightColor );\n\t#include <lightmap_fragment>\n\treflectedLight.indirectDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb );\n\t#ifdef DOUBLE_SIDED\n\t\treflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;\n\t#else\n\t\treflectedLight.directDiffuse = vLightFront;\n\t#endif\n\treflectedLight.directDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb ) * getShadowMask();\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
 
 var meshlambert_vert = "#define LAMBERT\nvarying vec3 vLightFront;\n#ifdef DOUBLE_SIDED\n\tvarying vec3 vLightBack;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <bsdfs>\n#include <lights_pars>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\t#include <worldpos_vertex>\n\t#include <envmap_vertex>\n\t#include <lights_lambert_vertex>\n\t#include <shadowmap_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var meshphong_frag = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <gradientmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <normal_flip>\n\t#include <normal_fragment>\n\t#include <emissivemap_fragment>\n\t#include <lights_phong_fragment>\n\t#include <lights_template>\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
+var meshphong_frag = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <gradientmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <normal_fragment>\n\t#include <emissivemap_fragment>\n\t#include <lights_phong_fragment>\n\t#include <lights_template>\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\t#include <envmap_fragment>\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
 
 var meshphong_vert = "#define PHONG\nvarying vec3 vViewPosition;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n#ifndef FLAT_SHADED\n\tvNormal = normalize( transformedNormal );\n#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <displacementmap_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\tvViewPosition = - mvPosition.xyz;\n\t#include <worldpos_vertex>\n\t#include <envmap_vertex>\n\t#include <shadowmap_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var meshphysical_frag = "#define PHYSICAL\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\nvarying vec3 vViewPosition;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#include <normal_flip>\n\t#include <normal_fragment>\n\t#include <emissivemap_fragment>\n\t#include <lights_physical_fragment>\n\t#include <lights_template>\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
+var meshphysical_frag = "#define PHYSICAL\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\nvarying vec3 vViewPosition;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#include <normal_fragment>\n\t#include <emissivemap_fragment>\n\t#include <lights_physical_fragment>\n\t#include <lights_template>\n\t#include <aomap_fragment>\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\t#include <premultiplied_alpha_fragment>\n\t#include <dithering_fragment>\n}\n";
 
 var meshphysical_vert = "#define PHYSICAL\nvarying vec3 vViewPosition;\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n#ifndef FLAT_SHADED\n\tvNormal = normalize( transformedNormal );\n#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <displacementmap_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\tvViewPosition = - mvPosition.xyz;\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var normal_frag = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP )\n\tvarying vec3 vViewPosition;\n#endif\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\nvoid main() {\n\t#include <logdepthbuf_fragment>\n\t#include <normal_flip>\n\t#include <normal_fragment>\n\tgl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n}\n";
+var normal_frag = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP )\n\tvarying vec3 vViewPosition;\n#endif\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\nvoid main() {\n\t#include <logdepthbuf_fragment>\n\t#include <normal_fragment>\n\tgl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n}\n";
 
 var normal_vert = "#define NORMAL\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP )\n\tvarying vec3 vViewPosition;\n#endif\n#ifndef FLAT_SHADED\n\tvarying vec3 vNormal;\n#endif\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n#ifndef FLAT_SHADED\n\tvNormal = normalize( transformedNormal );\n#endif\n\t#include <begin_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <displacementmap_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP )\n\tvViewPosition = - mvPosition.xyz;\n#endif\n}\n";
 
@@ -14976,7 +15589,7 @@ var points_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#include <comm
 
 var points_vert = "uniform float size;\nuniform float scale;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <color_vertex>\n\t#include <begin_vertex>\n\t#include <project_vertex>\n\t#ifdef USE_SIZEATTENUATION\n\t\tgl_PointSize = size * ( scale / - mvPosition.z );\n\t#else\n\t\tgl_PointSize = size;\n\t#endif\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\t#include <fog_vertex>\n}\n";
 
-var shadow_frag = "uniform float opacity;\n#include <common>\n#include <packing>\n#include <bsdfs>\n#include <lights_pars>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\nvoid main() {\n\tgl_FragColor = vec4( 0.0, 0.0, 0.0, opacity * ( 1.0 - getShadowMask() ) );\n}\n";
+var shadow_frag = "uniform vec3 color;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <bsdfs>\n#include <lights_pars>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\nvoid main() {\n\tgl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );\n}\n";
 
 var shadow_vert = "#include <shadowmap_pars_vertex>\nvoid main() {\n\t#include <begin_vertex>\n\t#include <project_vertex>\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n}\n";
 
@@ -15038,7 +15651,6 @@ var ShaderChunk = {
 	morphnormal_vertex: morphnormal_vertex,
 	morphtarget_pars_vertex: morphtarget_pars_vertex,
 	morphtarget_vertex: morphtarget_vertex,
-	normal_flip: normal_flip,
 	normal_fragment: normal_fragment,
 	normalmap_pars_fragment: normalmap_pars_fragment,
 	packing: packing,
@@ -15106,6 +15718,8 @@ var ShaderLib = {
 
 		uniforms: UniformsUtils.merge( [
 			UniformsLib.common,
+			UniformsLib.specularmap,
+			UniformsLib.envmap,
 			UniformsLib.aomap,
 			UniformsLib.lightmap,
 			UniformsLib.fog
@@ -15120,6 +15734,8 @@ var ShaderLib = {
 
 		uniforms: UniformsUtils.merge( [
 			UniformsLib.common,
+			UniformsLib.specularmap,
+			UniformsLib.envmap,
 			UniformsLib.aomap,
 			UniformsLib.lightmap,
 			UniformsLib.emissivemap,
@@ -15139,6 +15755,8 @@ var ShaderLib = {
 
 		uniforms: UniformsUtils.merge( [
 			UniformsLib.common,
+			UniformsLib.specularmap,
+			UniformsLib.envmap,
 			UniformsLib.aomap,
 			UniformsLib.lightmap,
 			UniformsLib.emissivemap,
@@ -15164,6 +15782,7 @@ var ShaderLib = {
 
 		uniforms: UniformsUtils.merge( [
 			UniformsLib.common,
+			UniformsLib.envmap,
 			UniformsLib.aomap,
 			UniformsLib.lightmap,
 			UniformsLib.emissivemap,
@@ -15262,15 +15881,10 @@ var ShaderLib = {
 
 	},
 
-	/* -------------------------------------------------------------------------
-	//	Cube map shader
-	 ------------------------------------------------------------------------- */
-
 	equirect: {
 
 		uniforms: {
 			tEquirect: { value: null },
-			tFlip: { value: - 1 }
 		},
 
 		vertexShader: ShaderChunk.equirect_vert,
@@ -15280,12 +15894,33 @@ var ShaderLib = {
 
 	distanceRGBA: {
 
-		uniforms: {
-			lightPos: { value: new Vector3() }
-		},
+		uniforms: UniformsUtils.merge( [
+			UniformsLib.common,
+			UniformsLib.displacementmap,
+			{
+				referencePosition: { value: new Vector3() },
+				nearDistance: { value: 1 },
+				farDistance: { value: 1000 }
+			}
+		] ),
 
 		vertexShader: ShaderChunk.distanceRGBA_vert,
 		fragmentShader: ShaderChunk.distanceRGBA_frag
+
+	},
+
+	shadow: {
+
+		uniforms: UniformsUtils.merge( [
+			UniformsLib.lights,
+			{
+				color: { value: new Color( 0x00000 ) },
+				opacity: { value: 1.0 }
+			},
+		] ),
+
+		vertexShader: ShaderChunk.shadow_vert,
+		fragmentShader: ShaderChunk.shadow_frag
 
 	}
 
@@ -15528,10 +16163,7 @@ Object.assign( Box2.prototype, {
  * @author alteredq / http://alteredqualia.com/
  */
 
-function LensFlarePlugin( renderer, flares ) {
-
-	var gl = renderer.context;
-	var state = renderer.state;
+function WebGLFlareRenderer( renderer, gl, state, textures, capabilities ) {
 
 	var vertexBuffer, elementBuffer;
 	var shader, program, attributes, uniforms;
@@ -15702,7 +16334,7 @@ function LensFlarePlugin( renderer, flares ) {
 	 *         reads these back and calculates occlusion.
 	 */
 
-	this.render = function ( scene, camera, viewport ) {
+	this.render = function ( flares, scene, camera, viewport ) {
 
 		if ( flares.length === 0 ) return;
 
@@ -15729,7 +16361,7 @@ function LensFlarePlugin( renderer, flares ) {
 
 		}
 
-		gl.useProgram( program );
+		state.useProgram( program );
 
 		state.initAttributes();
 		state.enableAttribute( attributes.vertex );
@@ -15858,7 +16490,8 @@ function LensFlarePlugin( renderer, flares ) {
 						gl.uniform3f( uniforms.color, sprite.color.r, sprite.color.g, sprite.color.b );
 
 						state.setBlending( sprite.blending, sprite.blendEquation, sprite.blendSrc, sprite.blendDst );
-						renderer.setTexture2D( sprite.texture, 1 );
+
+						textures.setTexture2D( sprite.texture, 1 );
 
 						gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 
@@ -15876,7 +16509,7 @@ function LensFlarePlugin( renderer, flares ) {
 		state.enable( gl.DEPTH_TEST );
 		state.buffers.depth.setMask( true );
 
-		renderer.resetGLState();
+		state.reset();
 
 	};
 
@@ -15887,7 +16520,7 @@ function LensFlarePlugin( renderer, flares ) {
 		var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
 		var vertexShader = gl.createShader( gl.VERTEX_SHADER );
 
-		var prefix = "precision " + renderer.getPrecision() + " float;\n";
+		var prefix = "precision " + capabilities.precision + " float;\n";
 
 		gl.shaderSource( fragmentShader, prefix + shader.fragmentShader );
 		gl.shaderSource( vertexShader, prefix + shader.vertexShader );
@@ -15907,14 +16540,26 @@ function LensFlarePlugin( renderer, flares ) {
 }
 
 /**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
+function CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy ) {
+
+	Texture.call( this, canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
+
+	this.needsUpdate = true;
+
+}
+
+CanvasTexture.prototype = Object.create( Texture.prototype );
+CanvasTexture.prototype.constructor = CanvasTexture;
+
+/**
  * @author mikael emtinger / http://gomo.se/
  * @author alteredq / http://alteredqualia.com/
  */
 
-function SpritePlugin( renderer, sprites ) {
-
-	var gl = renderer.context;
-	var state = renderer.state;
+function WebGLSpriteRenderer( renderer, gl, state, textures, capabilities ) {
 
 	var vertexBuffer, elementBuffer;
 	var program, attributes, uniforms;
@@ -15988,12 +16633,11 @@ function SpritePlugin( renderer, sprites ) {
 		context.fillStyle = 'white';
 		context.fillRect( 0, 0, 8, 8 );
 
-		texture = new Texture( canvas );
-		texture.needsUpdate = true;
+		texture = new CanvasTexture( canvas );
 
 	}
 
-	this.render = function ( scene, camera ) {
+	this.render = function ( sprites, scene, camera ) {
 
 		if ( sprites.length === 0 ) return;
 
@@ -16005,7 +16649,7 @@ function SpritePlugin( renderer, sprites ) {
 
 		}
 
-		gl.useProgram( program );
+		state.useProgram( program );
 
 		state.initAttributes();
 		state.enableAttribute( attributes.position );
@@ -16133,15 +16777,7 @@ function SpritePlugin( renderer, sprites ) {
 			state.buffers.depth.setTest( material.depthTest );
 			state.buffers.depth.setMask( material.depthWrite );
 
-			if ( material.map ) {
-
-				renderer.setTexture2D( material.map, 0 );
-
-			} else {
-
-				renderer.setTexture2D( texture, 0 );
-
-			}
+			textures.setTexture2D( material.map || texture, 0 );
 
 			gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 
@@ -16153,7 +16789,7 @@ function SpritePlugin( renderer, sprites ) {
 
 		state.enable( gl.CULL_FACE );
 
-		renderer.resetGLState();
+		state.reset();
 
 	};
 
@@ -16166,7 +16802,7 @@ function SpritePlugin( renderer, sprites ) {
 
 		gl.shaderSource( vertexShader, [
 
-			'precision ' + renderer.getPrecision() + ' float;',
+			'precision ' + capabilities.precision + ' float;',
 
 			'#define SHADER_NAME ' + 'SpriteMaterial',
 
@@ -16206,7 +16842,7 @@ function SpritePlugin( renderer, sprites ) {
 
 		gl.shaderSource( fragmentShader, [
 
-			'precision ' + renderer.getPrecision() + ' float;',
+			'precision ' + capabilities.precision + ' float;',
 
 			'#define SHADER_NAME ' + 'SpriteMaterial',
 
@@ -16309,7 +16945,7 @@ function Material() {
 
 	this.blending = NormalBlending;
 	this.side = FrontSide;
-	this.shading = SmoothShading; // THREE.FlatShading, THREE.SmoothShading
+	this.flatShading = false;
 	this.vertexColors = NoColors; // THREE.NoColors, THREE.VertexColors, THREE.FaceColors
 
 	this.opacity = 1;
@@ -16347,6 +16983,8 @@ function Material() {
 
 	this.visible = true;
 
+	this.userData = {};
+
 	this.needsUpdate = true;
 
 }
@@ -16368,6 +17006,15 @@ Object.assign( Material.prototype, EventDispatcher.prototype, {
 			if ( newValue === undefined ) {
 
 				console.warn( "THREE.Material: '" + key + "' parameter is undefined." );
+				continue;
+
+			}
+
+			// for backward compatability if shading is set in the constructor
+			if ( key === 'shading' ) {
+
+				console.warn( 'THREE.' + this.type + ': .shading has been removed. Use the boolean .flatShading instead.' );
+				this.flatShading = ( newValue === FlatShading ) ? true : false;
 				continue;
 
 			}
@@ -16487,7 +17134,7 @@ Object.assign( Material.prototype, EventDispatcher.prototype, {
 		if ( this.sizeAttenuation !== undefined ) data.sizeAttenuation = this.sizeAttenuation;
 
 		if ( this.blending !== NormalBlending ) data.blending = this.blending;
-		if ( this.shading !== SmoothShading ) data.shading = this.shading;
+		if ( this.flatShading === true ) data.flatShading = this.flatShading;
 		if ( this.side !== FrontSide ) data.side = this.side;
 		if ( this.vertexColors !== NoColors ) data.vertexColors = this.vertexColors;
 
@@ -16498,17 +17145,21 @@ Object.assign( Material.prototype, EventDispatcher.prototype, {
 		data.depthTest = this.depthTest;
 		data.depthWrite = this.depthWrite;
 
+		if ( this.dithering === true ) data.dithering = true;
+
 		if ( this.alphaTest > 0 ) data.alphaTest = this.alphaTest;
 		if ( this.premultipliedAlpha === true ) data.premultipliedAlpha = this.premultipliedAlpha;
+
 		if ( this.wireframe === true ) data.wireframe = this.wireframe;
 		if ( this.wireframeLinewidth > 1 ) data.wireframeLinewidth = this.wireframeLinewidth;
 		if ( this.wireframeLinecap !== 'round' ) data.wireframeLinecap = this.wireframeLinecap;
 		if ( this.wireframeLinejoin !== 'round' ) data.wireframeLinejoin = this.wireframeLinejoin;
 
-		data.skinning = this.skinning;
-		data.morphTargets = this.morphTargets;
+		if ( this.morphTargets === true ) data.morphTargets = true;
+		if ( this.skinning === true ) data.skinning = true;
 
-		data.dithering = this.dithering;
+		if ( this.visible === false ) data.visible = false;
+		if ( JSON.stringify( this.userData ) !== '{}' ) data.userData = this.userData;
 
 		// TODO: Copied from Object3D.toJSON
 
@@ -16557,7 +17208,7 @@ Object.assign( Material.prototype, EventDispatcher.prototype, {
 
 		this.blending = source.blending;
 		this.side = source.side;
-		this.shading = source.shading;
+		this.flatShading = source.flatShading;
 		this.vertexColors = source.vertexColors;
 
 		this.opacity = source.opacity;
@@ -16585,12 +17236,13 @@ Object.assign( Material.prototype, EventDispatcher.prototype, {
 		this.dithering = source.dithering;
 
 		this.alphaTest = source.alphaTest;
-
 		this.premultipliedAlpha = source.premultipliedAlpha;
 
 		this.overdraw = source.overdraw;
 
 		this.visible = source.visible;
+		this.userData = JSON.parse( JSON.stringify( source.userData ) );
+
 		this.clipShadows = source.clipShadows;
 		this.clipIntersection = source.clipIntersection;
 
@@ -16819,6 +17471,85 @@ MeshDepthMaterial.prototype.copy = function ( source ) {
 
 	this.wireframe = source.wireframe;
 	this.wireframeLinewidth = source.wireframeLinewidth;
+
+	return this;
+
+};
+
+/**
+ * @author WestLangley / http://github.com/WestLangley
+ *
+ * parameters = {
+ *
+ *  referencePosition: <float>,
+ *  nearDistance: <float>,
+ *  farDistance: <float>,
+ *
+ *  skinning: <bool>,
+ *  morphTargets: <bool>,
+ *
+ *  map: new THREE.Texture( <Image> ),
+ *
+ *  alphaMap: new THREE.Texture( <Image> ),
+ *
+ *  displacementMap: new THREE.Texture( <Image> ),
+ *  displacementScale: <float>,
+ *  displacementBias: <float>
+ *
+ * }
+ */
+
+function MeshDistanceMaterial( parameters ) {
+
+	Material.call( this );
+
+	this.type = 'MeshDistanceMaterial';
+
+	this.referencePosition = new Vector3();
+	this.nearDistance = 1;
+	this.farDistance = 1000;
+
+	this.skinning = false;
+	this.morphTargets = false;
+
+	this.map = null;
+
+	this.alphaMap = null;
+
+	this.displacementMap = null;
+	this.displacementScale = 1;
+	this.displacementBias = 0;
+
+	this.fog = false;
+	this.lights = false;
+
+	this.setValues( parameters );
+
+}
+
+MeshDistanceMaterial.prototype = Object.create( Material.prototype );
+MeshDistanceMaterial.prototype.constructor = MeshDistanceMaterial;
+
+MeshDistanceMaterial.prototype.isMeshDistanceMaterial = true;
+
+MeshDistanceMaterial.prototype.copy = function ( source ) {
+
+	Material.prototype.copy.call( this, source );
+
+	this.referencePosition.copy( source.referencePosition );
+	this.nearDistance = source.nearDistance;
+	this.farDistance = source.farDistance;
+
+	this.skinning = source.skinning;
+	this.morphTargets = source.morphTargets;
+
+	this.map = source.map;
+
+	this.alphaMap = source.alphaMap;
+
+	this.displacementMap = source.displacementMap;
+	this.displacementScale = source.displacementScale;
+	this.displacementBias = source.displacementBias;
 
 	return this;
 
@@ -17410,15 +18141,7 @@ Object.assign( Sphere.prototype, {
 
 	intersectsPlane: function ( plane ) {
 
-		// We use the following equation to compute the signed distance from
-		// the center of the sphere to the plane.
-		//
-		// distance = q * n - d
-		//
-		// If this distance is greater than the radius of the sphere,
-		// then there is no intersection.
-
-		return Math.abs( this.center.dot( plane.normal ) - plane.constant ) <= this.radius;
+		return Math.abs( plane.distanceToPoint( this.center ) ) <= this.radius;
 
 	},
 
@@ -17661,7 +18384,7 @@ Object.assign( Matrix3.prototype, {
 
 		if ( matrix && matrix.isMatrix4 ) {
 
-			console.error( "THREE.Matrix3.getInverse no longer takes a Matrix4 argument." );
+			console.error( "THREE.Matrix3: .getInverse() no longer takes a Matrix4 argument." );
 
 		}
 
@@ -17680,7 +18403,7 @@ Object.assign( Matrix3.prototype, {
 
 		if ( det === 0 ) {
 
-			var msg = "THREE.Matrix3.getInverse(): can't invert matrix, determinant is 0";
+			var msg = "THREE.Matrix3: .getInverse() can't invert matrix, determinant is 0";
 
 			if ( throwOnDegenerate === true ) {
 
@@ -17810,6 +18533,8 @@ Object.assign( Matrix3.prototype, {
 
 function Plane( normal, constant ) {
 
+	// normal is assumed to be normalized
+
 	this.normal = ( normal !== undefined ) ? normal : new Vector3( 1, 0, 0 );
 	this.constant = ( constant !== undefined ) ? constant : 0;
 
@@ -17838,7 +18563,7 @@ Object.assign( Plane.prototype, {
 	setFromNormalAndCoplanarPoint: function ( normal, point ) {
 
 		this.normal.copy( normal );
-		this.constant = - point.dot( this.normal );	// must be this.normal, not normal, as this.normal is normalized
+		this.constant = - point.dot( this.normal );
 
 		return this;
 
@@ -17913,16 +18638,9 @@ Object.assign( Plane.prototype, {
 
 	projectPoint: function ( point, optionalTarget ) {
 
-		return this.orthoPoint( point, optionalTarget ).sub( point ).negate();
-
-	},
-
-	orthoPoint: function ( point, optionalTarget ) {
-
-		var perpendicularMagnitude = this.distanceToPoint( point );
-
 		var result = optionalTarget || new Vector3();
-		return result.copy( this.normal ).multiplyScalar( perpendicularMagnitude );
+
+		return result.copy( this.normal ).multiplyScalar( - this.distanceToPoint( point ) ).add( point );
 
 	},
 
@@ -17992,6 +18710,7 @@ Object.assign( Plane.prototype, {
 	coplanarPoint: function ( optionalTarget ) {
 
 		var result = optionalTarget || new Vector3();
+
 		return result.copy( this.normal ).multiplyScalar( - this.constant );
 
 	},
@@ -18003,14 +18722,12 @@ Object.assign( Plane.prototype, {
 
 		return function applyMatrix4( matrix, optionalNormalMatrix ) {
 
+			var normalMatrix = optionalNormalMatrix || m1.getNormalMatrix( matrix );
+
 			var referencePoint = this.coplanarPoint( v1 ).applyMatrix4( matrix );
 
-			// transform normal based on theory here:
-			// http://www.songho.ca/opengl/gl_normaltransform.html
-			var normalMatrix = optionalNormalMatrix || m1.getNormalMatrix( matrix );
 			var normal = this.normal.applyMatrix3( normalMatrix ).normalize();
 
-			// recalculate constant (like in setFromNormalAndCoplanarPoint)
 			this.constant = - referencePoint.dot( normal );
 
 			return this;
@@ -18021,7 +18738,7 @@ Object.assign( Plane.prototype, {
 
 	translate: function ( offset ) {
 
-		this.constant = this.constant - offset.dot( this.normal );
+		this.constant -= offset.dot( this.normal );
 
 		return this;
 
@@ -18235,17 +18952,13 @@ Object.assign( Frustum.prototype, {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
+function WebGLShadowMap( _renderer, _objects, maxTextureSize ) {
 
-	var _gl = _renderer.context,
-		_state = _renderer.state,
-		_frustum = new Frustum(),
+	var _frustum = new Frustum(),
 		_projScreenMatrix = new Matrix4(),
 
-		_lightShadows = _lights.shadows,
-
 		_shadowMapSize = new Vector2(),
-		_maxShadowMapSize = new Vector2( capabilities.maxTextureSize, capabilities.maxTextureSize ),
+		_maxShadowMapSize = new Vector2( maxTextureSize, maxTextureSize ),
 
 		_lookTarget = new Vector3(),
 		_lightPositionWorld = new Vector3(),
@@ -18277,34 +18990,29 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 	// init
 
-	var depthMaterialTemplate = new MeshDepthMaterial();
-	depthMaterialTemplate.depthPacking = RGBADepthPacking;
-	depthMaterialTemplate.clipping = true;
-
-	var distanceShader = ShaderLib[ "distanceRGBA" ];
-	var distanceUniforms = UniformsUtils.clone( distanceShader.uniforms );
-
 	for ( var i = 0; i !== _NumberOfMaterialVariants; ++ i ) {
 
 		var useMorphing = ( i & _MorphingFlag ) !== 0;
 		var useSkinning = ( i & _SkinningFlag ) !== 0;
 
-		var depthMaterial = depthMaterialTemplate.clone();
-		depthMaterial.morphTargets = useMorphing;
-		depthMaterial.skinning = useSkinning;
+		var depthMaterial = new MeshDepthMaterial( {
+
+			depthPacking: RGBADepthPacking,
+
+			morphTargets: useMorphing,
+			skinning: useSkinning
+
+		} );
 
 		_depthMaterials[ i ] = depthMaterial;
 
-		var distanceMaterial = new ShaderMaterial( {
-			defines: {
-				'USE_SHADOWMAP': ''
-			},
-			uniforms: distanceUniforms,
-			vertexShader: distanceShader.vertexShader,
-			fragmentShader: distanceShader.fragmentShader,
+		//
+
+		var distanceMaterial = new MeshDistanceMaterial( {
+
 			morphTargets: useMorphing,
-			skinning: useSkinning,
-			clipping: true
+			skinning: useSkinning
+
 		} );
 
 		_distanceMaterials[ i ] = distanceMaterial;
@@ -18325,12 +19033,16 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 	this.renderReverseSided = true;
 	this.renderSingleSided = true;
 
-	this.render = function ( scene, camera ) {
+	this.render = function ( lights, scene, camera ) {
 
 		if ( scope.enabled === false ) return;
 		if ( scope.autoUpdate === false && scope.needsUpdate === false ) return;
 
-		if ( _lightShadows.length === 0 ) return;
+		if ( lights.length === 0 ) return;
+
+		// TODO Clean up (needed in case of contextlost)
+		var _gl = _renderer.context;
+		var _state = _renderer.state;
 
 		// Set GL state for depth map.
 		_state.disable( _gl.BLEND );
@@ -18342,9 +19054,9 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 		var faceCount;
 
-		for ( var i = 0, il = _lightShadows.length; i < il; i ++ ) {
+		for ( var i = 0, il = lights.length; i < il; i ++ ) {
 
-			var light = _lightShadows[ i ];
+			var light = lights[ i ];
 			var shadow = light.shadow;
 			var isPointLight = light && light.isPointLight;
 
@@ -18484,16 +19196,11 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 		}
 
-		// Restore GL state.
-		var clearColor = _renderer.getClearColor();
-		var clearAlpha = _renderer.getClearAlpha();
-		_renderer.setClearColor( clearColor, clearAlpha );
-
 		scope.needsUpdate = false;
 
 	};
 
-	function getDepthMaterial( object, material, isPointLight, lightPositionWorld ) {
+	function getDepthMaterial( object, material, isPointLight, lightPositionWorld, shadowCameraNear, shadowCameraFar ) {
 
 		var geometry = object.geometry;
 
@@ -18601,13 +19308,16 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 		result.clipShadows = material.clipShadows;
 		result.clippingPlanes = material.clippingPlanes;
+		result.clipIntersection = material.clipIntersection;
 
 		result.wireframeLinewidth = material.wireframeLinewidth;
 		result.linewidth = material.linewidth;
 
-		if ( isPointLight && result.uniforms.lightPos !== undefined ) {
+		if ( isPointLight && result.isMeshDistanceMaterial ) {
 
-			result.uniforms.lightPos.value.copy( lightPositionWorld );
+			result.referencePosition.copy( lightPositionWorld );
+			result.nearDistance = shadowCameraNear;
+			result.farDistance = shadowCameraFar;
 
 		}
 
@@ -18641,7 +19351,7 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 						if ( groupMaterial && groupMaterial.visible ) {
 
-							var depthMaterial = getDepthMaterial( object, groupMaterial, isPointLight, _lightPositionWorld );
+							var depthMaterial = getDepthMaterial( object, groupMaterial, isPointLight, _lightPositionWorld, shadowCamera.near, shadowCamera.far );
 							_renderer.renderBufferDirect( shadowCamera, null, geometry, depthMaterial, object, group );
 
 						}
@@ -18650,7 +19360,7 @@ function WebGLShadowMap( _renderer, _lights, _objects, capabilities ) {
 
 				} else if ( material.visible ) {
 
-					var depthMaterial = getDepthMaterial( object, material, isPointLight, _lightPositionWorld );
+					var depthMaterial = getDepthMaterial( object, material, isPointLight, _lightPositionWorld, shadowCamera.near, shadowCamera.far );
 					_renderer.renderBufferDirect( shadowCamera, null, geometry, depthMaterial, object, null );
 
 				}
@@ -19579,7 +20289,7 @@ Object.assign( Object3D.prototype, EventDispatcher.prototype, {
 		}
 
 		return this;
-		
+
 	},
 
 	getObjectById: function ( id ) {
@@ -19819,10 +20529,10 @@ Object.assign( Object3D.prototype, EventDispatcher.prototype, {
 		object.type = this.type;
 
 		if ( this.name !== '' ) object.name = this.name;
-		if ( JSON.stringify( this.userData ) !== '{}' ) object.userData = this.userData;
 		if ( this.castShadow === true ) object.castShadow = true;
 		if ( this.receiveShadow === true ) object.receiveShadow = true;
 		if ( this.visible === false ) object.visible = false;
+		if ( JSON.stringify( this.userData ) !== '{}' ) object.userData = this.userData;
 
 		object.matrix = this.matrix.toArray();
 
@@ -22196,8 +22906,6 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
-//
-
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -22227,6 +22935,10 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function DirectGeometry() {
 
@@ -22482,6 +23194,10 @@ Object.assign( DirectGeometry.prototype, {
 	}
 
 } );
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 function arrayMax( array ) {
 
@@ -23302,23 +24018,27 @@ Object.assign( BufferGeometry.prototype, EventDispatcher.prototype, {
 
 	normalizeNormals: function () {
 
-		var normals = this.attributes.normal;
+		var vector = new Vector3();
 
-		var x, y, z, n;
+		return function normalizeNormals() {
 
-		for ( var i = 0, il = normals.count; i < il; i ++ ) {
+			var normals = this.attributes.normal;
 
-			x = normals.getX( i );
-			y = normals.getY( i );
-			z = normals.getZ( i );
+			for ( var i = 0, il = normals.count; i < il; i ++ ) {
 
-			n = 1.0 / Math.sqrt( x * x + y * y + z * z );
+				vector.x = normals.getX( i );
+				vector.y = normals.getY( i );
+				vector.z = normals.getZ( i );
 
-			normals.setXYZ( i, x * n, y * n, z * n );
+				vector.normalize();
 
-		}
+				normals.setXYZ( i, vector.x, vector.y, vector.z );
 
-	},
+			}
+
+		};
+
+	}(),
 
 	toNonIndexed: function () {
 
@@ -23918,7 +24638,6 @@ PlaneBufferGeometry.prototype.constructor = PlaneBufferGeometry;
  *  reflectivity: <float>,
  *  refractionRatio: <float>,
  *
- *  shading: THREE.SmoothShading,
  *  depthTest: <bool>,
  *  depthWrite: <bool>,
  *
@@ -25053,10 +25772,9 @@ Mesh.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 		}
 
-		function checkIntersection( object, raycaster, ray, pA, pB, pC, point ) {
+		function checkIntersection( object, material, raycaster, ray, pA, pB, pC, point ) {
 
 			var intersect;
-			var material = object.material;
 
 			if ( material.side === BackSide ) {
 
@@ -25091,7 +25809,7 @@ Mesh.prototype = Object.assign( Object.create( Object3D.prototype ), {
 			vB.fromBufferAttribute( position, b );
 			vC.fromBufferAttribute( position, c );
 
-			var intersection = checkIntersection( object, raycaster, ray, vA, vB, vC, intersectionPoint );
+			var intersection = checkIntersection( object, object.material, raycaster, ray, vA, vB, vC, intersectionPoint );
 
 			if ( intersection ) {
 
@@ -25254,7 +25972,7 @@ Mesh.prototype = Object.assign( Object.create( Object3D.prototype ), {
 
 					}
 
-					intersection = checkIntersection( this, raycaster, ray, fvA, fvB, fvC, intersectionPoint );
+					intersection = checkIntersection( this, faceMaterial, raycaster, ray, fvA, fvB, fvC, intersectionPoint );
 
 					if ( intersection ) {
 
@@ -25295,15 +26013,15 @@ Mesh.prototype = Object.assign( Object.create( Object3D.prototype ), {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLBackground( renderer, state, objects, premultipliedAlpha ) {
+function WebGLBackground( renderer, state, geometries, premultipliedAlpha ) {
 
 	var clearColor = new Color( 0x000000 );
 	var clearAlpha = 0;
 
 	var planeCamera, planeMesh;
-	var boxCamera, boxMesh;
+	var boxMesh;
 
-	function render( scene, camera, forceClear ) {
+	function render( renderList, scene, camera, forceClear ) {
 
 		var background = scene.background;
 
@@ -25326,36 +26044,43 @@ function WebGLBackground( renderer, state, objects, premultipliedAlpha ) {
 
 		if ( background && background.isCubeTexture ) {
 
-			if ( boxCamera === undefined ) {
-
-				boxCamera = new PerspectiveCamera();
+			if ( boxMesh === undefined ) {
 
 				boxMesh = new Mesh(
-					new BoxBufferGeometry( 5, 5, 5 ),
+					new BoxBufferGeometry( 1, 1, 1 ),
 					new ShaderMaterial( {
 						uniforms: ShaderLib.cube.uniforms,
 						vertexShader: ShaderLib.cube.vertexShader,
 						fragmentShader: ShaderLib.cube.fragmentShader,
 						side: BackSide,
-						depthTest: false,
+						depthTest: true,
 						depthWrite: false,
+						polygonOffset: true,
 						fog: false
 					} )
 				);
 
+				boxMesh.geometry.removeAttribute( 'normal' );
+				boxMesh.geometry.removeAttribute( 'uv' );
+
+				boxMesh.onBeforeRender = function ( renderer, scene, camera ) {
+
+					var scale = camera.far;
+
+					this.matrixWorld.makeScale( scale, scale, scale );
+					this.matrixWorld.copyPosition( camera.matrixWorld );
+
+					this.material.polygonOffsetUnits = scale * 10;
+
+				};
+
+				geometries.update( boxMesh.geometry );
+
 			}
 
-			boxCamera.projectionMatrix.copy( camera.projectionMatrix );
+			boxMesh.material.uniforms.tCube.value = background;
 
-			boxCamera.matrixWorld.extractRotation( camera.matrixWorld );
-			boxCamera.matrixWorldInverse.getInverse( boxCamera.matrixWorld );
-
-			boxMesh.material.uniforms[ "tCube" ].value = background;
-			boxMesh.modelViewMatrix.multiplyMatrices( boxCamera.matrixWorldInverse, boxMesh.matrixWorld );
-
-			objects.update( boxMesh );
-
-			renderer.renderBufferDirect( boxCamera, null, boxMesh.geometry, boxMesh.material, boxMesh, null );
+			renderList.push( boxMesh, boxMesh.geometry, boxMesh.material, 0, null );
 
 		} else if ( background && background.isTexture ) {
 
@@ -25368,11 +26093,13 @@ function WebGLBackground( renderer, state, objects, premultipliedAlpha ) {
 					new MeshBasicMaterial( { depthTest: false, depthWrite: false, fog: false } )
 				);
 
+				geometries.update( planeMesh.geometry );
+
 			}
 
 			planeMesh.material.map = background;
 
-			objects.update( planeMesh );
+			// TODO Push this to renderList
 
 			renderer.renderBufferDirect( planeCamera, null, planeMesh.geometry, planeMesh.material, planeMesh, null );
 
@@ -25467,53 +26194,26 @@ function reversePainterSortStable( a, b ) {
 
 function WebGLRenderList() {
 
-	var opaque = [];
-	var opaqueLastIndex = - 1;
+	var renderItems = [];
+	var renderItemsIndex = 0;
 
+	var opaque = [];
 	var transparent = [];
-	var transparentLastIndex = - 1;
 
 	function init() {
 
-		opaqueLastIndex = - 1;
-		transparentLastIndex = - 1;
+		renderItemsIndex = 0;
+
+		opaque.length = 0;
+		transparent.length = 0;
 
 	}
 
 	function push( object, geometry, material, z, group ) {
 
-		var array, index;
+		var renderItem = renderItems[ renderItemsIndex ];
 
-		// allocate the next position in the appropriate array
-
-		if ( material.transparent ) {
-
-			array = transparent;
-			index = ++ transparentLastIndex;
-
-		} else {
-
-			array = opaque;
-			index = ++ opaqueLastIndex;
-
-		}
-
-		// recycle existing render item or grow the array
-
-		var renderItem = array[ index ];
-
-		if ( renderItem ) {
-
-			renderItem.id = object.id;
-			renderItem.object = object;
-			renderItem.geometry = geometry;
-			renderItem.material = material;
-			renderItem.program = material.program;
-			renderItem.renderOrder = object.renderOrder;
-			renderItem.z = z;
-			renderItem.group = group;
-
-		} else {
+		if ( renderItem === undefined ) {
 
 			renderItem = {
 				id: object.id,
@@ -25526,24 +26226,31 @@ function WebGLRenderList() {
 				group: group
 			};
 
-			// assert( index === array.length );
-			array.push( renderItem );
+			renderItems[ renderItemsIndex ] = renderItem;
+
+		} else {
+
+			renderItem.id = object.id;
+			renderItem.object = object;
+			renderItem.geometry = geometry;
+			renderItem.material = material;
+			renderItem.program = material.program;
+			renderItem.renderOrder = object.renderOrder;
+			renderItem.z = z;
+			renderItem.group = group;
 
 		}
 
-	}
+		( material.transparent === true ? transparent : opaque ).push( renderItem );
 
-	function finish() {
-
-		opaque.length = opaqueLastIndex + 1;
-		transparent.length = transparentLastIndex + 1;
+		renderItemsIndex ++;
 
 	}
 
 	function sort() {
 
-		opaque.sort( painterSortStable );
-		transparent.sort( reversePainterSortStable );
+		if ( opaque.length > 1 ) opaque.sort( painterSortStable );
+		if ( transparent.length > 1 ) transparent.sort( reversePainterSortStable );
 
 	}
 
@@ -25553,7 +26260,6 @@ function WebGLRenderList() {
 
 		init: init,
 		push: push,
-		finish: finish,
 
 		sort: sort
 	};
@@ -25599,6 +26305,115 @@ function WebGLRenderLists() {
  * @author mrdoob / http://mrdoob.com/
  */
 
+function absNumericalSort( a, b ) {
+
+	return Math.abs( b[ 1 ] ) - Math.abs( a[ 1 ] );
+
+}
+
+function WebGLMorphtargets( gl ) {
+
+	var influencesList = {};
+	var morphInfluences = new Float32Array( 8 );
+
+	function update( object, geometry, material, program ) {
+
+		var objectInfluences = object.morphTargetInfluences;
+
+		var length = objectInfluences.length;
+
+		var influences = influencesList[ geometry.id ];
+
+		if ( influences === undefined ) {
+
+			// initialise list
+
+			influences = [];
+
+			for ( var i = 0; i < length; i ++ ) {
+
+				influences[ i ] = [ i, 0 ];
+
+			}
+
+			influencesList[ geometry.id ] = influences;
+
+		}
+
+		var morphTargets = material.morphTargets && geometry.morphAttributes.position;
+		var morphNormals = material.morphNormals && geometry.morphAttributes.normal;
+
+		// Remove current morphAttributes
+
+		for ( var i = 0; i < length; i ++ ) {
+
+			var influence = influences[ i ];
+
+			if ( influence[ 1 ] !== 0 ) {
+
+				if ( morphTargets ) geometry.removeAttribute( 'morphTarget' + i );
+				if ( morphNormals ) geometry.removeAttribute( 'morphNormal' + i );
+
+			}
+
+		}
+
+		// Collect influences
+
+		for ( var i = 0; i < length; i ++ ) {
+
+			var influence = influences[ i ];
+
+			influence[ 0 ] = i;
+			influence[ 1 ] = objectInfluences[ i ];
+
+		}
+
+		influences.sort( absNumericalSort );
+
+		// Add morphAttributes
+
+		for ( var i = 0; i < 8; i ++ ) {
+
+			var influence = influences[ i ];
+
+			if ( influence ) {
+
+				var index = influence[ 0 ];
+				var value = influence[ 1 ];
+
+				if ( value ) {
+
+					if ( morphTargets ) geometry.addAttribute( 'morphTarget' + i, morphTargets[ index ] );
+					if ( morphNormals ) geometry.addAttribute( 'morphNormal' + i, morphNormals[ index ] );
+
+					morphInfluences[ i ] = value;
+					continue;
+
+				}
+
+			}
+
+			morphInfluences[ i ] = 0;
+
+		}
+
+		program.getUniforms().setValue( gl, 'morphTargetInfluences', morphInfluences );
+
+	}
+
+	return {
+
+		update: update
+
+	}
+
+}
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
 function WebGLIndexedBufferRenderer( gl, extensions, infoRender ) {
 
 	var mode;
@@ -25626,6 +26441,7 @@ function WebGLIndexedBufferRenderer( gl, extensions, infoRender ) {
 		infoRender.vertices += count;
 
 		if ( mode === gl.TRIANGLES ) infoRender.faces += count / 3;
+		else if ( mode === gl.POINTS ) infoRender.points += count;
 
 	}
 
@@ -25646,6 +26462,7 @@ function WebGLIndexedBufferRenderer( gl, extensions, infoRender ) {
 		infoRender.vertices += count * geometry.maxInstancedCount;
 
 		if ( mode === gl.TRIANGLES ) infoRender.faces += geometry.maxInstancedCount * count / 3;
+		else if ( mode === gl.POINTS ) infoRender.points += geometry.maxInstancedCount * count;
 
 	}
 
@@ -25680,6 +26497,7 @@ function WebGLBufferRenderer( gl, extensions, infoRender ) {
 		infoRender.vertices += count;
 
 		if ( mode === gl.TRIANGLES ) infoRender.faces += count / 3;
+		else if ( mode === gl.POINTS ) infoRender.points += count;
 
 	}
 
@@ -25712,6 +26530,7 @@ function WebGLBufferRenderer( gl, extensions, infoRender ) {
 		infoRender.vertices += count * geometry.maxInstancedCount;
 
 		if ( mode === gl.TRIANGLES ) infoRender.faces += geometry.maxInstancedCount * count / 3;
+		else if ( mode === gl.POINTS ) infoRender.points += geometry.maxInstancedCount * count;
 
 	}
 
@@ -25916,7 +26735,7 @@ function WebGLGeometries( gl, attributes, infoMemory ) {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLLights() {
+function UniformsCache() {
 
 	var lights = {};
 
@@ -25973,7 +26792,9 @@ function WebGLLights() {
 						shadow: false,
 						shadowBias: 0,
 						shadowRadius: 1,
-						shadowMapSize: new Vector2()
+						shadowMapSize: new Vector2(),
+						shadowCameraNear: 1,
+						shadowCameraFar: 1000
 					};
 					break;
 
@@ -26007,11 +26828,237 @@ function WebGLLights() {
 
 }
 
+function WebGLLights() {
+
+	var cache = new UniformsCache();
+
+	var state = {
+
+		hash: '',
+
+		ambient: [ 0, 0, 0 ],
+		directional: [],
+		directionalShadowMap: [],
+		directionalShadowMatrix: [],
+		spot: [],
+		spotShadowMap: [],
+		spotShadowMatrix: [],
+		rectArea: [],
+		point: [],
+		pointShadowMap: [],
+		pointShadowMatrix: [],
+		hemi: []
+
+	};
+
+	var vector3 = new Vector3();
+	var matrix4 = new Matrix4();
+	var matrix42 = new Matrix4();
+
+	function setup( lights, shadows, camera ) {
+
+		var r = 0, g = 0, b = 0;
+
+		var directionalLength = 0;
+		var pointLength = 0;
+		var spotLength = 0;
+		var rectAreaLength = 0;
+		var hemiLength = 0;
+
+		var viewMatrix = camera.matrixWorldInverse;
+
+		for ( var i = 0, l = lights.length; i < l; i ++ ) {
+
+			var light = lights[ i ];
+
+			var color = light.color;
+			var intensity = light.intensity;
+			var distance = light.distance;
+
+			var shadowMap = ( light.shadow && light.shadow.map ) ? light.shadow.map.texture : null;
+
+			if ( light.isAmbientLight ) {
+
+				r += color.r * intensity;
+				g += color.g * intensity;
+				b += color.b * intensity;
+
+			} else if ( light.isDirectionalLight ) {
+
+				var uniforms = cache.get( light );
+
+				uniforms.color.copy( light.color ).multiplyScalar( light.intensity );
+				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
+				vector3.setFromMatrixPosition( light.target.matrixWorld );
+				uniforms.direction.sub( vector3 );
+				uniforms.direction.transformDirection( viewMatrix );
+
+				uniforms.shadow = light.castShadow;
+
+				if ( light.castShadow ) {
+
+					var shadow = light.shadow;
+
+					uniforms.shadowBias = shadow.bias;
+					uniforms.shadowRadius = shadow.radius;
+					uniforms.shadowMapSize = shadow.mapSize;
+
+				}
+
+				state.directionalShadowMap[ directionalLength ] = shadowMap;
+				state.directionalShadowMatrix[ directionalLength ] = light.shadow.matrix;
+				state.directional[ directionalLength ] = uniforms;
+
+				directionalLength ++;
+
+			} else if ( light.isSpotLight ) {
+
+				var uniforms = cache.get( light );
+
+				uniforms.position.setFromMatrixPosition( light.matrixWorld );
+				uniforms.position.applyMatrix4( viewMatrix );
+
+				uniforms.color.copy( color ).multiplyScalar( intensity );
+				uniforms.distance = distance;
+
+				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
+				vector3.setFromMatrixPosition( light.target.matrixWorld );
+				uniforms.direction.sub( vector3 );
+				uniforms.direction.transformDirection( viewMatrix );
+
+				uniforms.coneCos = Math.cos( light.angle );
+				uniforms.penumbraCos = Math.cos( light.angle * ( 1 - light.penumbra ) );
+				uniforms.decay = ( light.distance === 0 ) ? 0.0 : light.decay;
+
+				uniforms.shadow = light.castShadow;
+
+				if ( light.castShadow ) {
+
+					var shadow = light.shadow;
+
+					uniforms.shadowBias = shadow.bias;
+					uniforms.shadowRadius = shadow.radius;
+					uniforms.shadowMapSize = shadow.mapSize;
+
+				}
+
+				state.spotShadowMap[ spotLength ] = shadowMap;
+				state.spotShadowMatrix[ spotLength ] = light.shadow.matrix;
+				state.spot[ spotLength ] = uniforms;
+
+				spotLength ++;
+
+			} else if ( light.isRectAreaLight ) {
+
+				var uniforms = cache.get( light );
+
+				// (a) intensity controls irradiance of entire light
+				uniforms.color
+					.copy( color )
+					.multiplyScalar( intensity / ( light.width * light.height ) );
+
+				// (b) intensity controls the radiance per light area
+				// uniforms.color.copy( color ).multiplyScalar( intensity );
+
+				uniforms.position.setFromMatrixPosition( light.matrixWorld );
+				uniforms.position.applyMatrix4( viewMatrix );
+
+				// extract local rotation of light to derive width/height half vectors
+				matrix42.identity();
+				matrix4.copy( light.matrixWorld );
+				matrix4.premultiply( viewMatrix );
+				matrix42.extractRotation( matrix4 );
+
+				uniforms.halfWidth.set( light.width * 0.5,                0.0, 0.0 );
+				uniforms.halfHeight.set(              0.0, light.height * 0.5, 0.0 );
+
+				uniforms.halfWidth.applyMatrix4( matrix42 );
+				uniforms.halfHeight.applyMatrix4( matrix42 );
+
+				// TODO (abelnation): RectAreaLight distance?
+				// uniforms.distance = distance;
+
+				state.rectArea[ rectAreaLength ] = uniforms;
+
+				rectAreaLength ++;
+
+			} else if ( light.isPointLight ) {
+
+				var uniforms = cache.get( light );
+
+				uniforms.position.setFromMatrixPosition( light.matrixWorld );
+				uniforms.position.applyMatrix4( viewMatrix );
+
+				uniforms.color.copy( light.color ).multiplyScalar( light.intensity );
+				uniforms.distance = light.distance;
+				uniforms.decay = ( light.distance === 0 ) ? 0.0 : light.decay;
+
+				uniforms.shadow = light.castShadow;
+
+				if ( light.castShadow ) {
+
+					var shadow = light.shadow;
+
+					uniforms.shadowBias = shadow.bias;
+					uniforms.shadowRadius = shadow.radius;
+					uniforms.shadowMapSize = shadow.mapSize;
+					uniforms.shadowCameraNear = shadow.camera.near;
+					uniforms.shadowCameraFar = shadow.camera.far;
+
+				}
+
+				state.pointShadowMap[ pointLength ] = shadowMap;
+				state.pointShadowMatrix[ pointLength ] = light.shadow.matrix;
+				state.point[ pointLength ] = uniforms;
+
+				pointLength ++;
+
+			} else if ( light.isHemisphereLight ) {
+
+				var uniforms = cache.get( light );
+
+				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
+				uniforms.direction.transformDirection( viewMatrix );
+				uniforms.direction.normalize();
+
+				uniforms.skyColor.copy( light.color ).multiplyScalar( intensity );
+				uniforms.groundColor.copy( light.groundColor ).multiplyScalar( intensity );
+
+				state.hemi[ hemiLength ] = uniforms;
+
+				hemiLength ++;
+
+			}
+
+		}
+
+		state.ambient[ 0 ] = r;
+		state.ambient[ 1 ] = g;
+		state.ambient[ 2 ] = b;
+
+		state.directional.length = directionalLength;
+		state.spot.length = spotLength;
+		state.rectArea.length = rectAreaLength;
+		state.point.length = pointLength;
+		state.hemi.length = hemiLength;
+
+		// TODO (sam-g-steel) why aren't we using join
+		state.hash = directionalLength + ',' + pointLength + ',' + spotLength + ',' + rectAreaLength + ',' + hemiLength + ',' + shadows.length;
+
+	}
+
+	return {
+		setup: setup,
+		state: state
+	}
+
+}
+
 /**
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLObjects( gl, geometries, infoRender ) {
+function WebGLObjects( geometries, infoRender ) {
 
 	var updateList = {};
 
@@ -26292,11 +27339,10 @@ function unrollLoops( string ) {
 
 }
 
-function WebGLProgram( renderer, code, material, shader, parameters ) {
+function WebGLProgram( renderer, extensions, code, material, shader, parameters ) {
 
 	var gl = renderer.context;
 
-	var extensions = material.extensions;
 	var defines = material.defines;
 
 	var vertexShader = shader.vertexShader;
@@ -26376,7 +27422,7 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
 
 	//
 
-	var customExtensions = generateExtensions( extensions, parameters, renderer.extensions );
+	var customExtensions = generateExtensions( material.extensions, parameters, extensions );
 
 	var customDefines = generateDefines( defines );
 
@@ -26457,7 +27503,7 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
 			parameters.sizeAttenuation ? '#define USE_SIZEATTENUATION' : '',
 
 			parameters.logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
-			parameters.logarithmicDepthBuffer && renderer.extensions.get( 'EXT_frag_depth' ) ? '#define USE_LOGDEPTHBUF_EXT' : '',
+			parameters.logarithmicDepthBuffer && extensions.get( 'EXT_frag_depth' ) ? '#define USE_LOGDEPTHBUF_EXT' : '',
 
 			'uniform mat4 modelMatrix;',
 			'uniform mat4 modelViewMatrix;',
@@ -26564,9 +27610,9 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
 			parameters.physicallyCorrectLights ? "#define PHYSICALLY_CORRECT_LIGHTS" : '',
 
 			parameters.logarithmicDepthBuffer ? '#define USE_LOGDEPTHBUF' : '',
-			parameters.logarithmicDepthBuffer && renderer.extensions.get( 'EXT_frag_depth' ) ? '#define USE_LOGDEPTHBUF_EXT' : '',
+			parameters.logarithmicDepthBuffer && extensions.get( 'EXT_frag_depth' ) ? '#define USE_LOGDEPTHBUF_EXT' : '',
 
-			parameters.envMap && renderer.extensions.get( 'EXT_shader_texture_lod' ) ? '#define TEXTURE_LOD_EXT' : '',
+			parameters.envMap && extensions.get( 'EXT_shader_texture_lod' ) ? '#define TEXTURE_LOD_EXT' : '',
 
 			'uniform mat4 viewMatrix;',
 			'uniform vec3 cameraPosition;',
@@ -26693,12 +27739,11 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
 
 	var cachedUniforms;
 
-	this.getUniforms = function() {
+	this.getUniforms = function () {
 
 		if ( cachedUniforms === undefined ) {
 
-			cachedUniforms =
-				new WebGLUniforms( gl, program, renderer );
+			cachedUniforms = new WebGLUniforms( gl, program, renderer );
 
 		}
 
@@ -26710,7 +27755,7 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
 
 	var cachedAttributes;
 
-	this.getAttributes = function() {
+	this.getAttributes = function () {
 
 		if ( cachedAttributes === undefined ) {
 
@@ -26773,12 +27818,13 @@ function WebGLProgram( renderer, code, material, shader, parameters ) {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLPrograms( renderer, capabilities ) {
+function WebGLPrograms( renderer, extensions, capabilities ) {
 
 	var programs = [];
 
 	var shaderIDs = {
 		MeshDepthMaterial: 'depth',
+		MeshDistanceMaterial: 'distanceRGBA',
 		MeshNormalMaterial: 'normal',
 		MeshBasicMaterial: 'basic',
 		MeshLambertMaterial: 'lambert',
@@ -26788,7 +27834,8 @@ function WebGLPrograms( renderer, capabilities ) {
 		MeshPhysicalMaterial: 'physical',
 		LineBasicMaterial: 'basic',
 		LineDashedMaterial: 'dashed',
-		PointsMaterial: 'points'
+		PointsMaterial: 'points',
+		ShadowMaterial: 'shadow'
 	};
 
 	var parameterNames = [
@@ -26871,7 +27918,7 @@ function WebGLPrograms( renderer, capabilities ) {
 
 	}
 
-	this.getParameters = function ( material, lights, fog, nClipPlanes, nClipIntersection, object ) {
+	this.getParameters = function ( material, lights, shadows, fog, nClipPlanes, nClipIntersection, object ) {
 
 		var shaderID = shaderIDs[ material.type ];
 
@@ -26879,7 +27926,7 @@ function WebGLPrograms( renderer, capabilities ) {
 		// (not to blow over maxLights budget)
 
 		var maxBones = object.isSkinnedMesh ? allocateBones( object ) : 0;
-		var precision = renderer.getPrecision();
+		var precision = capabilities.precision;
 
 		if ( material.precision !== null ) {
 
@@ -26930,7 +27977,7 @@ function WebGLPrograms( renderer, capabilities ) {
 			useFog: material.fog,
 			fogExp: ( fog && fog.isFogExp2 ),
 
-			flatShading: material.shading === FlatShading,
+			flatShading: material.flatShading,
 
 			sizeAttenuation: material.sizeAttenuation,
 			logarithmicDepthBuffer: capabilities.logarithmicDepthBuffer,
@@ -26955,7 +28002,7 @@ function WebGLPrograms( renderer, capabilities ) {
 
 			dithering: material.dithering,
 
-			shadowMapEnabled: renderer.shadowMap.enabled && object.receiveShadow && lights.shadows.length > 0,
+			shadowMapEnabled: renderer.shadowMap.enabled && object.receiveShadow && shadows.length > 0,
 			shadowMapType: renderer.shadowMap.type,
 
 			toneMapping: renderer.toneMapping,
@@ -27037,7 +28084,7 @@ function WebGLPrograms( renderer, capabilities ) {
 
 		if ( program === undefined ) {
 
-			program = new WebGLProgram( renderer, code, material, shader, parameters );
+			program = new WebGLProgram( renderer, extensions, code, material, shader, parameters );
 			programs.push( program );
 
 		}
@@ -27071,7 +28118,7 @@ function WebGLPrograms( renderer, capabilities ) {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLTextures( _gl, extensions, state, properties, capabilities, paramThreeToGL, infoMemory ) {
+function WebGLTextures( _gl, extensions, state, properties, capabilities, utils, infoMemory ) {
 
 	var _isWebGL2 = ( typeof WebGL2RenderingContext !== 'undefined' && _gl instanceof WebGL2RenderingContext );
 
@@ -27330,8 +28377,8 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 				var image = cubeImage[ 0 ],
 				isPowerOfTwoImage = isPowerOfTwo( image ),
-				glFormat = paramThreeToGL( texture.format ),
-				glType = paramThreeToGL( texture.type );
+				glFormat = utils.convert( texture.format ),
+				glType = utils.convert( texture.type );
 
 				setTextureParameters( _gl.TEXTURE_CUBE_MAP, texture, isPowerOfTwoImage );
 
@@ -27365,7 +28412,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 								} else {
 
-									console.warn( "THREE.WebGLRenderer: Attempt to load unsupported compressed texture format in .setTextureCube()" );
+									console.warn( 'THREE.WebGLRenderer: Attempt to load unsupported compressed texture format in .setTextureCube()' );
 
 								}
 
@@ -27415,11 +28462,11 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 		if ( isPowerOfTwoImage ) {
 
-			_gl.texParameteri( textureType, _gl.TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
-			_gl.texParameteri( textureType, _gl.TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
+			_gl.texParameteri( textureType, _gl.TEXTURE_WRAP_S, utils.convert( texture.wrapS ) );
+			_gl.texParameteri( textureType, _gl.TEXTURE_WRAP_T, utils.convert( texture.wrapT ) );
 
-			_gl.texParameteri( textureType, _gl.TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
-			_gl.texParameteri( textureType, _gl.TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
+			_gl.texParameteri( textureType, _gl.TEXTURE_MAG_FILTER, utils.convert( texture.magFilter ) );
+			_gl.texParameteri( textureType, _gl.TEXTURE_MIN_FILTER, utils.convert( texture.minFilter ) );
 
 		} else {
 
@@ -27491,8 +28538,8 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 		}
 
 		var isPowerOfTwoImage = isPowerOfTwo( image ),
-		glFormat = paramThreeToGL( texture.format ),
-		glType = paramThreeToGL( texture.type );
+		glFormat = utils.convert( texture.format ),
+		glType = utils.convert( texture.type );
 
 		setTextureParameters( _gl.TEXTURE_2D, texture, isPowerOfTwoImage );
 
@@ -27526,7 +28573,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 				        console.warn( 'THREE.WebGLRenderer: Use UnsignedShortType or UnsignedIntType for DepthFormat DepthTexture.' );
 
 					texture.type = UnsignedShortType;
-					glType = paramThreeToGL( texture.type );
+					glType = utils.convert( texture.type );
 
 				}
 
@@ -27546,7 +28593,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 					console.warn( 'THREE.WebGLRenderer: Use UnsignedInt248Type for DepthStencilFormat DepthTexture.' );
 
 					texture.type = UnsignedInt248Type;
-					glType = paramThreeToGL( texture.type );
+					glType = utils.convert( texture.type );
 
 				}
 
@@ -27591,7 +28638,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 					} else {
 
-						console.warn( "THREE.WebGLRenderer: Attempt to load unsupported compressed texture format in .uploadTexture()" );
+						console.warn( 'THREE.WebGLRenderer: Attempt to load unsupported compressed texture format in .uploadTexture()' );
 
 					}
 
@@ -27643,8 +28690,8 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 	// Setup storage for target texture and bind it to correct framebuffer
 	function setupFrameBufferTexture( framebuffer, renderTarget, attachment, textureTarget ) {
 
-		var glFormat = paramThreeToGL( renderTarget.texture.format );
-		var glType = paramThreeToGL( renderTarget.texture.type );
+		var glFormat = utils.convert( renderTarget.texture.format );
+		var glType = utils.convert( renderTarget.texture.type );
 		state.texImage2D( textureTarget, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 		_gl.bindFramebuffer( _gl.FRAMEBUFFER, framebuffer );
 		_gl.framebufferTexture2D( _gl.FRAMEBUFFER, attachment, textureTarget, properties.get( renderTarget.texture ).__webglTexture, 0 );
@@ -27682,13 +28729,13 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 	function setupDepthTexture( framebuffer, renderTarget ) {
 
 		var isCube = ( renderTarget && renderTarget.isWebGLRenderTargetCube );
-		if ( isCube ) throw new Error('Depth Texture with cube render targets is not supported!');
+		if ( isCube ) throw new Error( 'Depth Texture with cube render targets is not supported' );
 
 		_gl.bindFramebuffer( _gl.FRAMEBUFFER, framebuffer );
 
 		if ( !( renderTarget.depthTexture && renderTarget.depthTexture.isDepthTexture ) ) {
 
-			throw new Error('renderTarget.depthTexture must be an instance of THREE.DepthTexture');
+			throw new Error( 'renderTarget.depthTexture must be an instance of THREE.DepthTexture' );
 
 		}
 
@@ -27715,7 +28762,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 		} else {
 
-			throw new Error('Unknown depthTexture format')
+			throw new Error( 'Unknown depthTexture format' );
 
 		}
 
@@ -27730,7 +28777,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, paramT
 
 		if ( renderTarget.depthTexture ) {
 
-			if ( isCube ) throw new Error('target.depthTexture not supported in Cube render targets');
+			if ( isCube ) throw new Error( 'target.depthTexture not supported in Cube render targets' );
 
 			setupDepthTexture( renderTargetProperties.__webglFramebuffer, renderTarget );
 
@@ -27906,7 +28953,7 @@ function WebGLProperties() {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function WebGLState( gl, extensions, paramThreeToGL ) {
+function WebGLState( gl, extensions, utils ) {
 
 	function ColorBuffer() {
 
@@ -27914,7 +28961,7 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 		var color = new Vector4();
 		var currentColorMask = null;
-		var currentColorClear = new Vector4();
+		var currentColorClear = new Vector4( 0, 0, 0, 0 );
 
 		return {
 
@@ -27959,7 +29006,7 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 				locked = false;
 
 				currentColorMask = null;
-				currentColorClear.set( 0, 0, 0, 1 );
+				currentColorClear.set( - 1, 0, 0, 0 ); // set to invalid state
 
 			}
 
@@ -28222,6 +29269,8 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 	var compressedTextureFormats = null;
 
+	var currentProgram = null;
+
 	var currentBlending = null;
 	var currentBlendEquation = null;
 	var currentBlendSrc = null;
@@ -28238,8 +29287,6 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 	var currentPolygonOffsetFactor = null;
 	var currentPolygonOffsetUnits = null;
-
-	var currentScissorTest = null;
 
 	var maxTextures = gl.getParameter( gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS );
 
@@ -28275,25 +29322,23 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 	emptyTextures[ gl.TEXTURE_2D ] = createTexture( gl.TEXTURE_2D, gl.TEXTURE_2D, 1 );
 	emptyTextures[ gl.TEXTURE_CUBE_MAP ] = createTexture( gl.TEXTURE_CUBE_MAP, gl.TEXTURE_CUBE_MAP_POSITIVE_X, 6 );
 
+	// init
+
+	colorBuffer.setClear( 0, 0, 0, 1 );
+	depthBuffer.setClear( 1 );
+	stencilBuffer.setClear( 0 );
+
+	enable( gl.DEPTH_TEST );
+	depthBuffer.setFunc( LessEqualDepth );
+
+	setFlipSided( false );
+	setCullFace( CullFaceBack );
+	enable( gl.CULL_FACE );
+
+	enable( gl.BLEND );
+	setBlending( NormalBlending );
+
 	//
-
-	function init() {
-
-		colorBuffer.setClear( 0, 0, 0, 1 );
-		depthBuffer.setClear( 1 );
-		stencilBuffer.setClear( 0 );
-
-		enable( gl.DEPTH_TEST );
-		depthBuffer.setFunc( LessEqualDepth );
-
-		setFlipSided( false );
-		setCullFace( CullFaceBack );
-		enable( gl.CULL_FACE );
-
-		enable( gl.BLEND );
-		setBlending( NormalBlending );
-
-	}
 
 	function initAttributes() {
 
@@ -28412,6 +29457,22 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 	}
 
+	function useProgram( program ) {
+
+		if ( currentProgram !== program ) {
+
+			gl.useProgram( program );
+
+			currentProgram = program;
+
+			return true;
+
+		}
+
+		return false;
+
+	}
+
 	function setBlending( blending, blendEquation, blendSrc, blendDst, blendEquationAlpha, blendSrcAlpha, blendDstAlpha, premultipliedAlpha ) {
 
 		if ( blending !== NoBlending ) {
@@ -28424,98 +29485,74 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 		}
 
-		if ( ( blending !== CustomBlending ) && ( blending !== currentBlending || premultipliedAlpha !== currentPremultipledAlpha ) ) {
+		if ( blending !== CustomBlending ) {
 
-			if ( blending === AdditiveBlending ) {
+			if ( blending !== currentBlending || premultipliedAlpha !== currentPremultipledAlpha ) {
 
-				if ( premultipliedAlpha ) {
+				switch ( blending ) {
 
-					gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
-					gl.blendFuncSeparate( gl.ONE, gl.ONE, gl.ONE, gl.ONE );
+					case AdditiveBlending:
 
-				} else {
+						if ( premultipliedAlpha ) {
 
-					gl.blendEquation( gl.FUNC_ADD );
-					gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
+							gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
+							gl.blendFuncSeparate( gl.ONE, gl.ONE, gl.ONE, gl.ONE );
 
-				}
+						} else {
 
-			} else if ( blending === SubtractiveBlending ) {
+							gl.blendEquation( gl.FUNC_ADD );
+							gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
 
-				if ( premultipliedAlpha ) {
+						}
+						break;
 
-					gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
-					gl.blendFuncSeparate( gl.ZERO, gl.ZERO, gl.ONE_MINUS_SRC_COLOR, gl.ONE_MINUS_SRC_ALPHA );
+					case SubtractiveBlending:
 
-				} else {
+						if ( premultipliedAlpha ) {
 
-					gl.blendEquation( gl.FUNC_ADD );
-					gl.blendFunc( gl.ZERO, gl.ONE_MINUS_SRC_COLOR );
+							gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
+							gl.blendFuncSeparate( gl.ZERO, gl.ZERO, gl.ONE_MINUS_SRC_COLOR, gl.ONE_MINUS_SRC_ALPHA );
 
-				}
+						} else {
 
-			} else if ( blending === MultiplyBlending ) {
+							gl.blendEquation( gl.FUNC_ADD );
+							gl.blendFunc( gl.ZERO, gl.ONE_MINUS_SRC_COLOR );
 
-				if ( premultipliedAlpha ) {
+						}
+						break;
 
-					gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
-					gl.blendFuncSeparate( gl.ZERO, gl.SRC_COLOR, gl.ZERO, gl.SRC_ALPHA );
+					case MultiplyBlending:
 
-				} else {
+						if ( premultipliedAlpha ) {
 
-					gl.blendEquation( gl.FUNC_ADD );
-					gl.blendFunc( gl.ZERO, gl.SRC_COLOR );
+							gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
+							gl.blendFuncSeparate( gl.ZERO, gl.SRC_COLOR, gl.ZERO, gl.SRC_ALPHA );
 
-				}
+						} else {
 
-			} else {
+							gl.blendEquation( gl.FUNC_ADD );
+							gl.blendFunc( gl.ZERO, gl.SRC_COLOR );
 
-				if ( premultipliedAlpha ) {
+						}
+						break;
 
-					gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
-					gl.blendFuncSeparate( gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA );
+					default:
 
-				} else {
+						if ( premultipliedAlpha ) {
 
-					gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
-					gl.blendFuncSeparate( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA );
+							gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
+							gl.blendFuncSeparate( gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA );
+
+						} else {
+
+							gl.blendEquationSeparate( gl.FUNC_ADD, gl.FUNC_ADD );
+							gl.blendFuncSeparate( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA );
+
+						}
 
 				}
 
 			}
-
-			currentBlending = blending;
-			currentPremultipledAlpha = premultipliedAlpha;
-
-		}
-
-		if ( blending === CustomBlending ) {
-
-			blendEquationAlpha = blendEquationAlpha || blendEquation;
-			blendSrcAlpha = blendSrcAlpha || blendSrc;
-			blendDstAlpha = blendDstAlpha || blendDst;
-
-			if ( blendEquation !== currentBlendEquation || blendEquationAlpha !== currentBlendEquationAlpha ) {
-
-				gl.blendEquationSeparate( paramThreeToGL( blendEquation ), paramThreeToGL( blendEquationAlpha ) );
-
-				currentBlendEquation = blendEquation;
-				currentBlendEquationAlpha = blendEquationAlpha;
-
-			}
-
-			if ( blendSrc !== currentBlendSrc || blendDst !== currentBlendDst || blendSrcAlpha !== currentBlendSrcAlpha || blendDstAlpha !== currentBlendDstAlpha ) {
-
-				gl.blendFuncSeparate( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ), paramThreeToGL( blendSrcAlpha ), paramThreeToGL( blendDstAlpha ) );
-
-				currentBlendSrc = blendSrc;
-				currentBlendDst = blendDst;
-				currentBlendSrcAlpha = blendSrcAlpha;
-				currentBlendDstAlpha = blendDstAlpha;
-
-			}
-
-		} else {
 
 			currentBlendEquation = null;
 			currentBlendSrc = null;
@@ -28524,7 +29561,36 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 			currentBlendSrcAlpha = null;
 			currentBlendDstAlpha = null;
 
+		} else {
+
+			blendEquationAlpha = blendEquationAlpha || blendEquation;
+			blendSrcAlpha = blendSrcAlpha || blendSrc;
+			blendDstAlpha = blendDstAlpha || blendDst;
+
+			if ( blendEquation !== currentBlendEquation || blendEquationAlpha !== currentBlendEquationAlpha ) {
+
+				gl.blendEquationSeparate( utils.convert( blendEquation ), utils.convert( blendEquationAlpha ) );
+
+				currentBlendEquation = blendEquation;
+				currentBlendEquationAlpha = blendEquationAlpha;
+
+			}
+
+			if ( blendSrc !== currentBlendSrc || blendDst !== currentBlendDst || blendSrcAlpha !== currentBlendSrcAlpha || blendDstAlpha !== currentBlendDstAlpha ) {
+
+				gl.blendFuncSeparate( utils.convert( blendSrc ), utils.convert( blendDst ), utils.convert( blendSrcAlpha ), utils.convert( blendDstAlpha ) );
+
+				currentBlendSrc = blendSrc;
+				currentBlendDst = blendDst;
+				currentBlendSrcAlpha = blendSrcAlpha;
+				currentBlendDstAlpha = blendDstAlpha;
+
+			}
+
 		}
+
+		currentBlending = blending;
+		currentPremultipledAlpha = premultipliedAlpha;
 
 	}
 
@@ -28640,15 +29706,7 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 
 	}
 
-	function getScissorTest() {
-
-		return currentScissorTest;
-
-	}
-
 	function setScissorTest( scissorTest ) {
-
-		currentScissorTest = scissorTest;
 
 		if ( scissorTest ) {
 
@@ -28779,6 +29837,8 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 		currentTextureSlot = null;
 		currentBoundTextures = {};
 
+		currentProgram = null;
+
 		currentBlending = null;
 
 		currentFlipSided = null;
@@ -28798,7 +29858,6 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 			stencil: stencilBuffer
 		},
 
-		init: init,
 		initAttributes: initAttributes,
 		enableAttribute: enableAttribute,
 		enableAttributeAndDivisor: enableAttributeAndDivisor,
@@ -28806,6 +29865,8 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 		enable: enable,
 		disable: disable,
 		getCompressedTextureFormats: getCompressedTextureFormats,
+
+		useProgram: useProgram,
 
 		setBlending: setBlending,
 		setMaterial: setMaterial,
@@ -28816,7 +29877,6 @@ function WebGLState( gl, extensions, paramThreeToGL ) {
 		setLineWidth: setLineWidth,
 		setPolygonOffset: setPolygonOffset,
 
-		getScissorTest: getScissorTest,
 		setScissorTest: setScissorTest,
 
 		activeTexture: activeTexture,
@@ -29003,7 +30063,7 @@ function WebVRManager( renderer ) {
 
 	function onVRDisplayPresentChange() {
 
-		if ( device.isPresenting ) {
+		if ( device !== null && device.isPresenting ) {
 
 			var eyeParameters = device.getEyeParameters( 'left' );
 			var renderWidth = eyeParameters.renderWidth;
@@ -29088,6 +30148,12 @@ function WebVRManager( renderer ) {
 
 		//
 
+		cameraL.near = camera.near;
+		cameraR.near = camera.near;
+
+		cameraL.far = camera.far;
+		cameraR.far = camera.far;
+
 		cameraVR.matrixWorld.copy( camera.matrixWorld );
 		cameraVR.matrixWorldInverse.copy( camera.matrixWorldInverse );
 
@@ -29160,6 +30226,12 @@ function WebVRManager( renderer ) {
 	this.submitFrame = function () {
 
 		if ( device && device.isPresenting ) device.submitFrame();
+
+	};
+
+	this.dispose = function() {
+
+		window.removeEventListener( 'vrdisplaypresentchange', onVRDisplayPresentChange );
 
 	};
 
@@ -29388,6 +30460,142 @@ function WebGLClipping() {
 
 }
 
+/**
+ * @author thespite / http://www.twitter.com/thespite
+ */
+
+function WebGLUtils ( gl, extensions ) {
+
+	function convert ( p ) {
+
+		var extension;
+
+		if ( p === RepeatWrapping ) return gl.REPEAT;
+		if ( p === ClampToEdgeWrapping ) return gl.CLAMP_TO_EDGE;
+		if ( p === MirroredRepeatWrapping ) return gl.MIRRORED_REPEAT;
+
+		if ( p === NearestFilter ) return gl.NEAREST;
+		if ( p === NearestMipMapNearestFilter ) return gl.NEAREST_MIPMAP_NEAREST;
+		if ( p === NearestMipMapLinearFilter ) return gl.NEAREST_MIPMAP_LINEAR;
+
+		if ( p === LinearFilter ) return gl.LINEAR;
+		if ( p === LinearMipMapNearestFilter ) return gl.LINEAR_MIPMAP_NEAREST;
+		if ( p === LinearMipMapLinearFilter ) return gl.LINEAR_MIPMAP_LINEAR;
+
+		if ( p === UnsignedByteType ) return gl.UNSIGNED_BYTE;
+		if ( p === UnsignedShort4444Type ) return gl.UNSIGNED_SHORT_4_4_4_4;
+		if ( p === UnsignedShort5551Type ) return gl.UNSIGNED_SHORT_5_5_5_1;
+		if ( p === UnsignedShort565Type ) return gl.UNSIGNED_SHORT_5_6_5;
+
+		if ( p === ByteType ) return gl.BYTE;
+		if ( p === ShortType ) return gl.SHORT;
+		if ( p === UnsignedShortType ) return gl.UNSIGNED_SHORT;
+		if ( p === IntType ) return gl.INT;
+		if ( p === UnsignedIntType ) return gl.UNSIGNED_INT;
+		if ( p === FloatType ) return gl.FLOAT;
+
+		if ( p === HalfFloatType ) {
+
+			extension = extensions.get( 'OES_texture_half_float' );
+
+			if ( extension !== null ) return extension.HALF_FLOAT_OES;
+
+		}
+
+		if ( p === AlphaFormat ) return gl.ALPHA;
+		if ( p === RGBFormat ) return gl.RGB;
+		if ( p === RGBAFormat ) return gl.RGBA;
+		if ( p === LuminanceFormat ) return gl.LUMINANCE;
+		if ( p === LuminanceAlphaFormat ) return gl.LUMINANCE_ALPHA;
+		if ( p === DepthFormat ) return gl.DEPTH_COMPONENT;
+		if ( p === DepthStencilFormat ) return gl.DEPTH_STENCIL;
+
+		if ( p === AddEquation ) return gl.FUNC_ADD;
+		if ( p === SubtractEquation ) return gl.FUNC_SUBTRACT;
+		if ( p === ReverseSubtractEquation ) return gl.FUNC_REVERSE_SUBTRACT;
+
+		if ( p === ZeroFactor ) return gl.ZERO;
+		if ( p === OneFactor ) return gl.ONE;
+		if ( p === SrcColorFactor ) return gl.SRC_COLOR;
+		if ( p === OneMinusSrcColorFactor ) return gl.ONE_MINUS_SRC_COLOR;
+		if ( p === SrcAlphaFactor ) return gl.SRC_ALPHA;
+		if ( p === OneMinusSrcAlphaFactor ) return gl.ONE_MINUS_SRC_ALPHA;
+		if ( p === DstAlphaFactor ) return gl.DST_ALPHA;
+		if ( p === OneMinusDstAlphaFactor ) return gl.ONE_MINUS_DST_ALPHA;
+
+		if ( p === DstColorFactor ) return gl.DST_COLOR;
+		if ( p === OneMinusDstColorFactor ) return gl.ONE_MINUS_DST_COLOR;
+		if ( p === SrcAlphaSaturateFactor ) return gl.SRC_ALPHA_SATURATE;
+
+		if ( p === RGB_S3TC_DXT1_Format || p === RGBA_S3TC_DXT1_Format ||
+			p === RGBA_S3TC_DXT3_Format || p === RGBA_S3TC_DXT5_Format ) {
+
+			extension = extensions.get( 'WEBGL_compressed_texture_s3tc' );
+
+			if ( extension !== null ) {
+
+				if ( p === RGB_S3TC_DXT1_Format ) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
+				if ( p === RGBA_S3TC_DXT1_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				if ( p === RGBA_S3TC_DXT3_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+				if ( p === RGBA_S3TC_DXT5_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+
+			}
+
+		}
+
+		if ( p === RGB_PVRTC_4BPPV1_Format || p === RGB_PVRTC_2BPPV1_Format ||
+			p === RGBA_PVRTC_4BPPV1_Format || p === RGBA_PVRTC_2BPPV1_Format ) {
+
+			extension = extensions.get( 'WEBGL_compressed_texture_pvrtc' );
+
+			if ( extension !== null ) {
+
+				if ( p === RGB_PVRTC_4BPPV1_Format ) return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+				if ( p === RGB_PVRTC_2BPPV1_Format ) return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+				if ( p === RGBA_PVRTC_4BPPV1_Format ) return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+				if ( p === RGBA_PVRTC_2BPPV1_Format ) return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+
+			}
+
+		}
+
+		if ( p === RGB_ETC1_Format ) {
+
+			extension = extensions.get( 'WEBGL_compressed_texture_etc1' );
+
+			if ( extension !== null ) return extension.COMPRESSED_RGB_ETC1_WEBGL;
+
+		}
+
+		if ( p === MinEquation || p === MaxEquation ) {
+
+			extension = extensions.get( 'EXT_blend_minmax' );
+
+			if ( extension !== null ) {
+
+				if ( p === MinEquation ) return extension.MIN_EXT;
+				if ( p === MaxEquation ) return extension.MAX_EXT;
+
+			}
+
+		}
+
+		if ( p === UnsignedInt248Type ) {
+
+			extension = extensions.get( 'WEBGL_depth_texture' );
+
+			if ( extension !== null ) return extension.UNSIGNED_INT_24_8_WEBGL;
+
+		}
+
+		return 0;
+
+	}
+
+	return { convert: convert }
+
+}
+
 // import { Sphere } from '../math/Sphere';
 /**
  * @author supereggbert / http://www.paulbrunt.co.uk/
@@ -29413,14 +30621,13 @@ function WebGLRenderer( parameters ) {
 		_premultipliedAlpha = parameters.premultipliedAlpha !== undefined ? parameters.premultipliedAlpha : true,
 		_preserveDrawingBuffer = parameters.preserveDrawingBuffer !== undefined ? parameters.preserveDrawingBuffer : false;
 
-	var lights = [];
+	var lightsArray = [];
+	var shadowsArray = [];
 
 	var currentRenderList = null;
 
-	var morphInfluences = new Float32Array( 8 );
-
-	var sprites = [];
-	var lensFlares = [];
+	var spritesArray = [];
+	var flaresArray = [];
 
 	// public properties
 
@@ -29468,9 +30675,10 @@ function WebGLRenderer( parameters ) {
 
 	var _this = this,
 
+		_isContextLost = false,
+
 		// internal state cache
 
-		_currentProgram = null,
 		_currentRenderTarget = null,
 		_currentFramebuffer = null,
 		_currentMaterialId = - 1,
@@ -29479,10 +30687,9 @@ function WebGLRenderer( parameters ) {
 		_currentCamera = null,
 		_currentArrayCamera = null,
 
+		_currentViewport = new Vector4(),
 		_currentScissor = new Vector4(),
 		_currentScissorTest = null,
-
-		_currentViewport = new Vector4(),
 
 		//
 
@@ -29495,10 +30702,9 @@ function WebGLRenderer( parameters ) {
 
 		_pixelRatio = 1,
 
+		_viewport = new Vector4( 0, 0, _width, _height ),
 		_scissor = new Vector4( 0, 0, _width, _height ),
 		_scissorTest = false,
-
-		_viewport = new Vector4( 0, 0, _width, _height ),
 
 		// frustum
 
@@ -29515,31 +30721,6 @@ function WebGLRenderer( parameters ) {
 		_projScreenMatrix = new Matrix4(),
 
 		_vector3 = new Vector3(),
-		_matrix4 = new Matrix4(),
-		_matrix42 = new Matrix4(),
-
-		// light arrays cache
-
-		_lights = {
-
-			hash: '',
-
-			ambient: [ 0, 0, 0 ],
-			directional: [],
-			directionalShadowMap: [],
-			directionalShadowMatrix: [],
-			spot: [],
-			spotShadowMap: [],
-			spotShadowMatrix: [],
-			rectArea: [],
-			point: [],
-			pointShadowMap: [],
-			pointShadowMatrix: [],
-			hemi: [],
-
-			shadows: []
-
-		},
 
 		// info
 
@@ -29566,6 +30747,11 @@ function WebGLRenderer( parameters ) {
 
 	};
 
+	function getTargetPixelRatio() {
+
+		return _currentRenderTarget === null ? _pixelRatio : 1;
+
+	}
 
 	// initialize
 
@@ -29611,6 +30797,7 @@ function WebGLRenderer( parameters ) {
 		}
 
 		_canvas.addEventListener( 'webglcontextlost', onContextLost, false );
+		_canvas.addEventListener( 'webglcontextrestored', onContextRestore, false );
 
 	} catch ( error ) {
 
@@ -29618,93 +30805,82 @@ function WebGLRenderer( parameters ) {
 
 	}
 
-	var extensions = new WebGLExtensions( _gl );
+	var extensions, capabilities, state;
+	var properties, textures, attributes, geometries, objects, lights;
+	var programCache, renderLists;
 
-	extensions.get( 'WEBGL_depth_texture' );
-	extensions.get( 'OES_texture_float' );
-	extensions.get( 'OES_texture_float_linear' );
-	extensions.get( 'OES_texture_half_float' );
-	extensions.get( 'OES_texture_half_float_linear' );
-	extensions.get( 'OES_standard_derivatives' );
-	extensions.get( 'ANGLE_instanced_arrays' );
+	var background, morphtargets, bufferRenderer, indexedBufferRenderer;
+	var flareRenderer, spriteRenderer;
 
-	if ( extensions.get( 'OES_element_index_uint' ) ) {
+	var utils;
 
-		BufferGeometry.MaxIndex = 4294967296;
+	function initGLContext() {
 
-	}
+		extensions = new WebGLExtensions( _gl );
+		extensions.get( 'WEBGL_depth_texture' );
+		extensions.get( 'OES_texture_float' );
+		extensions.get( 'OES_texture_float_linear' );
+		extensions.get( 'OES_texture_half_float' );
+		extensions.get( 'OES_texture_half_float_linear' );
+		extensions.get( 'OES_standard_derivatives' );
+		extensions.get( 'ANGLE_instanced_arrays' );
 
-	var capabilities = new WebGLCapabilities( _gl, extensions, parameters );
+		if ( extensions.get( 'OES_element_index_uint' ) ) {
 
-	var state = new WebGLState( _gl, extensions, paramThreeToGL );
+			BufferGeometry.MaxIndex = 4294967296;
 
-	var properties = new WebGLProperties();
-	var textures = new WebGLTextures( _gl, extensions, state, properties, capabilities, paramThreeToGL, _infoMemory );
-	var attributes = new WebGLAttributes( _gl );
-	var geometries = new WebGLGeometries( _gl, attributes, _infoMemory );
-	var objects = new WebGLObjects( _gl, geometries, _infoRender );
-	var programCache = new WebGLPrograms( this, capabilities );
-	var lightCache = new WebGLLights();
-	var renderLists = new WebGLRenderLists();
+		}
 
-	var background = new WebGLBackground( this, state, objects, _premultipliedAlpha );
-	var vr = new WebVRManager( this );
+		utils = new WebGLUtils( _gl, extensions );
 
-	this.info.programs = programCache.programs;
+		capabilities = new WebGLCapabilities( _gl, extensions, parameters );
 
-	var bufferRenderer = new WebGLBufferRenderer( _gl, extensions, _infoRender );
-	var indexedBufferRenderer = new WebGLIndexedBufferRenderer( _gl, extensions, _infoRender );
-
-	//
-
-	function getTargetPixelRatio() {
-
-		return _currentRenderTarget === null ? _pixelRatio : 1;
-
-	}
-
-	function setDefaultGLState() {
-
-		state.init();
-
+		state = new WebGLState( _gl, extensions, utils );
 		state.scissor( _currentScissor.copy( _scissor ).multiplyScalar( _pixelRatio ) );
 		state.viewport( _currentViewport.copy( _viewport ).multiplyScalar( _pixelRatio ) );
 
+		properties = new WebGLProperties();
+		textures = new WebGLTextures( _gl, extensions, state, properties, capabilities, utils, _infoMemory );
+		attributes = new WebGLAttributes( _gl );
+		geometries = new WebGLGeometries( _gl, attributes, _infoMemory );
+		objects = new WebGLObjects( geometries, _infoRender );
+		morphtargets = new WebGLMorphtargets( _gl );
+		programCache = new WebGLPrograms( _this, extensions, capabilities );
+		lights = new WebGLLights();
+		renderLists = new WebGLRenderLists();
+
+		background = new WebGLBackground( _this, state, geometries, _premultipliedAlpha );
+
+		bufferRenderer = new WebGLBufferRenderer( _gl, extensions, _infoRender );
+		indexedBufferRenderer = new WebGLIndexedBufferRenderer( _gl, extensions, _infoRender );
+
+		flareRenderer = new WebGLFlareRenderer( _this, _gl, state, textures, capabilities );
+		spriteRenderer = new WebGLSpriteRenderer( _this, _gl, state, textures, capabilities );
+
+		_this.info.programs = programCache.programs;
+
+		_this.context = _gl;
+		_this.capabilities = capabilities;
+		_this.extensions = extensions;
+		_this.properties = properties;
+		_this.renderLists = renderLists;
+		_this.state = state;
+
 	}
 
-	function resetGLState() {
+	initGLContext();
 
-		_currentProgram = null;
-		_currentCamera = null;
+	// vr
 
-		_currentGeometryProgram = '';
-		_currentMaterialId = - 1;
+	var vr = new WebVRManager( _this );
 
-		state.reset();
-
-	}
-
-	setDefaultGLState();
-
-	this.context = _gl;
-	this.capabilities = capabilities;
-	this.extensions = extensions;
-	this.properties = properties;
-	this.renderLists = renderLists;
-	this.state = state;
 	this.vr = vr;
 
 	// shadow map
 
-	var shadowMap = new WebGLShadowMap( this, _lights, objects, capabilities );
+	var shadowMap = new WebGLShadowMap( _this, objects, capabilities.maxTextureSize );
 
 	this.shadowMap = shadowMap;
-
-
-	// Plugins
-
-	var spritePlugin = new SpritePlugin( this, sprites );
-	var lensFlarePlugin = new LensFlarePlugin( this, lensFlares );
 
 	// API
 
@@ -29727,15 +30903,10 @@ function WebGLRenderer( parameters ) {
 
 	};
 
-	this.getMaxAnisotropy = function () {
+	this.forceContextRestore = function () {
 
-		return capabilities.getMaxAnisotropy();
-
-	};
-
-	this.getPrecision = function () {
-
-		return capabilities.precision;
+		var extension = extensions.get( 'WEBGL_lose_context' );
+		if ( extension ) extension.restoreContext();
 
 	};
 
@@ -29879,15 +31050,16 @@ function WebGLRenderer( parameters ) {
 
 	};
 
-	// Reset
-
-	this.resetGLState = resetGLState;
+	//
 
 	this.dispose = function () {
 
 		_canvas.removeEventListener( 'webglcontextlost', onContextLost, false );
+		_canvas.removeEventListener( 'webglcontextrestored', onContextRestore, false );
 
 		renderLists.dispose();
+
+		vr.dispose();
 
 	};
 
@@ -29897,11 +31069,19 @@ function WebGLRenderer( parameters ) {
 
 		event.preventDefault();
 
-		resetGLState();
-		setDefaultGLState();
+		console.log( 'THREE.WebGLRenderer: Context Lost.' );
 
-		properties.clear();
-		objects.clear();
+		_isContextLost = true;
+
+	}
+
+	function onContextRestore( event ) {
+
+		console.log( 'THREE.WebGLRenderer: Context Restored.' );
+
+		_isContextLost = false;
+
+		initGLContext();
 
 	}
 
@@ -29982,7 +31162,7 @@ function WebGLRenderer( parameters ) {
 			if ( ! material.isMeshPhongMaterial &&
 				! material.isMeshStandardMaterial &&
 				! material.isMeshNormalMaterial &&
-				material.shading === FlatShading ) {
+				material.flatShading === true ) {
 
 				for ( var i = 0, l = object.count * 3; i < l; i += 9 ) {
 
@@ -30023,7 +31203,7 @@ function WebGLRenderer( parameters ) {
 
 			state.enableAttribute( programAttributes.uv );
 
-			_gl.vertexAttribPointer( attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
+			_gl.vertexAttribPointer( programAttributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
 		}
 
@@ -30046,12 +31226,6 @@ function WebGLRenderer( parameters ) {
 
 	};
 
-	function absNumericalSort( a, b ) {
-
-		return Math.abs( b[ 0 ] ) - Math.abs( a[ 0 ] );
-
-	}
-
 	this.renderBufferDirect = function ( camera, fog, geometry, material, object, group ) {
 
 		state.setMaterial( material );
@@ -30068,61 +31242,9 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		// morph targets
+		if ( object.morphTargetInfluences ) {
 
-		var morphTargetInfluences = object.morphTargetInfluences;
-
-		if ( morphTargetInfluences !== undefined ) {
-
-			// TODO Remove allocations
-
-			var activeInfluences = [];
-
-			for ( var i = 0, l = morphTargetInfluences.length; i < l; i ++ ) {
-
-				var influence = morphTargetInfluences[ i ];
-				activeInfluences.push( [ influence, i ] );
-
-			}
-
-			activeInfluences.sort( absNumericalSort );
-
-			if ( activeInfluences.length > 8 ) {
-
-				activeInfluences.length = 8;
-
-			}
-
-			var morphAttributes = geometry.morphAttributes;
-
-			for ( var i = 0, l = activeInfluences.length; i < l; i ++ ) {
-
-				var influence = activeInfluences[ i ];
-				morphInfluences[ i ] = influence[ 0 ];
-
-				if ( influence[ 0 ] !== 0 ) {
-
-					var index = influence[ 1 ];
-
-					if ( material.morphTargets === true && morphAttributes.position ) geometry.addAttribute( 'morphTarget' + i, morphAttributes.position[ index ] );
-					if ( material.morphNormals === true && morphAttributes.normal ) geometry.addAttribute( 'morphNormal' + i, morphAttributes.normal[ index ] );
-
-				} else {
-
-					if ( material.morphTargets === true ) geometry.removeAttribute( 'morphTarget' + i );
-					if ( material.morphNormals === true ) geometry.removeAttribute( 'morphNormal' + i );
-
-				}
-
-			}
-
-			for ( var i = activeInfluences.length, il = morphInfluences.length; i < il; i ++ ) {
-
-				morphInfluences[ i ] = 0.0;
-
-			}
-
-			program.getUniforms().setValue( _gl, 'morphTargetInfluences', morphInfluences );
+			morphtargets.update( object, geometry, material, program );
 
 			updateBuffers = true;
 
@@ -30304,6 +31426,10 @@ function WebGLRenderer( parameters ) {
 
 					var attribute = attributes.get( geometryAttribute );
 
+					// TODO Attribute may not be available on context restore
+
+					if ( attribute === undefined ) continue;
+
 					var buffer = attribute.buffer;
 					var type = attribute.type;
 					var bytesPerElement = attribute.bytesPerElement;
@@ -30397,19 +31523,26 @@ function WebGLRenderer( parameters ) {
 
 	this.compile = function ( scene, camera ) {
 
-		lights = [];
+		lightsArray.length = 0;
+		shadowsArray.length = 0;
 
 		scene.traverse( function ( object ) {
 
 			if ( object.isLight ) {
 
-				lights.push( object );
+				lightsArray.push( object );
+
+				if ( object.castShadow ) {
+
+					shadowsArray.push( object );
+
+				}
 
 			}
 
 		} );
 
-		setupLights( lights, camera );
+		lights.setup( lightsArray, shadowsArray, camera );
 
 		scene.traverse( function ( object ) {
 
@@ -30435,21 +31568,34 @@ function WebGLRenderer( parameters ) {
 
 	};
 
-	// Rendering
+	// Animation Loop
+
+	var isAnimating = false;
+	var onAnimationFrame = null;
+
+	function start() {
+
+		if ( isAnimating ) return;
+		( vr.getDevice() || window ).requestAnimationFrame( loop );
+		isAnimating = true;
+
+	}
+
+	function loop( time ) {
+
+		if ( onAnimationFrame !== null ) onAnimationFrame( time );
+		( vr.getDevice() || window ).requestAnimationFrame( loop );
+
+	}
 
 	this.animate = function ( callback ) {
 
-		function onFrame() {
-
-			callback();
-
-			( vr.getDevice() || window ).requestAnimationFrame( onFrame );
-
-		}
-
-		( vr.getDevice() || window ).requestAnimationFrame( onFrame );
+		onAnimationFrame = callback;
+		start();
 
 	};
+
+	// Rendering
 
 	this.render = function ( scene, camera, renderTarget, forceClear ) {
 
@@ -30459,6 +31605,8 @@ function WebGLRenderer( parameters ) {
 			return;
 
 		}
+
+		if ( _isContextLost ) return;
 
 		// reset caching for this frame
 
@@ -30483,9 +31631,11 @@ function WebGLRenderer( parameters ) {
 		_projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
 		_frustum.setFromMatrix( _projScreenMatrix );
 
-		lights.length = 0;
-		sprites.length = 0;
-		lensFlares.length = 0;
+		lightsArray.length = 0;
+		shadowsArray.length = 0;
+
+		spritesArray.length = 0;
+		flaresArray.length = 0;
 
 		_localClippingEnabled = this.localClippingEnabled;
 		_clippingEnabled = _clipping.init( this.clippingPlanes, _localClippingEnabled, camera );
@@ -30494,8 +31644,6 @@ function WebGLRenderer( parameters ) {
 		currentRenderList.init();
 
 		projectObject( scene, camera, _this.sortObjects );
-
-		currentRenderList.finish();
 
 		if ( _this.sortObjects === true ) {
 
@@ -30507,11 +31655,9 @@ function WebGLRenderer( parameters ) {
 
 		if ( _clippingEnabled ) _clipping.beginShadows();
 
-		setupShadows( lights );
+		shadowMap.render( shadowsArray, scene, camera );
 
-		shadowMap.render( scene, camera );
-
-		setupLights( lights, camera );
+		lights.setup( lightsArray, shadowsArray, camera );
 
 		if ( _clippingEnabled ) _clipping.endShadows();
 
@@ -30533,7 +31679,7 @@ function WebGLRenderer( parameters ) {
 
 		//
 
-		background.render( scene, camera, forceClear );
+		background.render( currentRenderList, scene, camera, forceClear );
 
 		// render scene
 
@@ -30559,10 +31705,10 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		// custom render plugins (post pass)
+		// custom renderers
 
-		spritePlugin.render( scene, camera );
-		lensFlarePlugin.render( scene, camera, _currentViewport );
+		spriteRenderer.render( spritesArray, scene, camera );
+		flareRenderer.render( flaresArray, scene, camera, _currentViewport );
 
 		// Generate mipmap if we're using any kind of mipmap filtering
 
@@ -30578,11 +31724,7 @@ function WebGLRenderer( parameters ) {
 		state.buffers.depth.setMask( true );
 		state.buffers.color.setMask( true );
 
-		if ( camera.isArrayCamera ) {
-
-			_this.setScissorTest( false );
-
-		}
+		state.setPolygonOffset( false );
 
 		if ( vr.enabled ) {
 
@@ -30659,19 +31801,25 @@ function WebGLRenderer( parameters ) {
 
 			if ( object.isLight ) {
 
-				lights.push( object );
+				lightsArray.push( object );
+
+				if ( object.castShadow ) {
+
+					shadowsArray.push( object );
+
+				}
 
 			} else if ( object.isSprite ) {
 
 				if ( ! object.frustumCulled || _frustum.intersectsSprite( object ) ) {
 
-					sprites.push( object );
+					spritesArray.push( object );
 
 				}
 
 			} else if ( object.isLensFlare ) {
 
-				lensFlares.push( object );
+				flaresArray.push( object );
 
 			} else if ( object.isImmediateRenderObject ) {
 
@@ -30773,9 +31921,7 @@ function WebGLRenderer( parameters ) {
 						var width = bounds.z * _width;
 						var height = bounds.w * _height;
 
-						_this.setViewport( x, y, width, height );
-						_this.setScissor( x, y, width, height );
-						_this.setScissorTest( true );
+						state.viewport( _currentViewport.set( x, y, width, height ).multiplyScalar( _pixelRatio ) );
 
 						renderObject( object, scene, camera2, geometry, material, group );
 
@@ -30797,10 +31943,10 @@ function WebGLRenderer( parameters ) {
 
 	function renderObject( object, scene, camera, geometry, material, group ) {
 
+		object.onBeforeRender( _this, scene, camera, geometry, material, group );
+
 		object.modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
 		object.normalMatrix.getNormalMatrix( object.modelViewMatrix );
-
-		object.onBeforeRender( _this, scene, camera, geometry, material, group );
 
 		if ( object.isImmediateRenderObject ) {
 
@@ -30827,7 +31973,7 @@ function WebGLRenderer( parameters ) {
 		var materialProperties = properties.get( material );
 
 		var parameters = programCache.getParameters(
-			material, _lights, fog, _clipping.numPlanes, _clipping.numIntersection, object );
+			material, lights.state, shadowsArray, fog, _clipping.numPlanes, _clipping.numIntersection, object );
 
 		var code = programCache.getProgramCode( material, parameters );
 
@@ -30939,25 +32085,25 @@ function WebGLRenderer( parameters ) {
 
 		// store the light setup it was created for
 
-		materialProperties.lightsHash = _lights.hash;
+		materialProperties.lightsHash = lights.state.hash;
 
 		if ( material.lights ) {
 
 			// wire up the material to this renderer's lighting state
 
-			uniforms.ambientLightColor.value = _lights.ambient;
-			uniforms.directionalLights.value = _lights.directional;
-			uniforms.spotLights.value = _lights.spot;
-			uniforms.rectAreaLights.value = _lights.rectArea;
-			uniforms.pointLights.value = _lights.point;
-			uniforms.hemisphereLights.value = _lights.hemi;
+			uniforms.ambientLightColor.value = lights.state.ambient;
+			uniforms.directionalLights.value = lights.state.directional;
+			uniforms.spotLights.value = lights.state.spot;
+			uniforms.rectAreaLights.value = lights.state.rectArea;
+			uniforms.pointLights.value = lights.state.point;
+			uniforms.hemisphereLights.value = lights.state.hemi;
 
-			uniforms.directionalShadowMap.value = _lights.directionalShadowMap;
-			uniforms.directionalShadowMatrix.value = _lights.directionalShadowMatrix;
-			uniforms.spotShadowMap.value = _lights.spotShadowMap;
-			uniforms.spotShadowMatrix.value = _lights.spotShadowMatrix;
-			uniforms.pointShadowMap.value = _lights.pointShadowMap;
-			uniforms.pointShadowMatrix.value = _lights.pointShadowMatrix;
+			uniforms.directionalShadowMap.value = lights.state.directionalShadowMap;
+			uniforms.directionalShadowMatrix.value = lights.state.directionalShadowMatrix;
+			uniforms.spotShadowMap.value = lights.state.spotShadowMap;
+			uniforms.spotShadowMatrix.value = lights.state.spotShadowMatrix;
+			uniforms.pointShadowMap.value = lights.state.pointShadowMap;
+			uniforms.pointShadowMatrix.value = lights.state.pointShadowMatrix;
 			// TODO (abelnation): add area lights shadow info to uniforms
 
 		}
@@ -31005,7 +32151,7 @@ function WebGLRenderer( parameters ) {
 
 				material.needsUpdate = true;
 
-			} else if ( material.lights && materialProperties.lightsHash !== _lights.hash ) {
+			} else if ( material.lights && materialProperties.lightsHash !== lights.state.hash ) {
 
 				material.needsUpdate = true;
 
@@ -31034,10 +32180,7 @@ function WebGLRenderer( parameters ) {
 			p_uniforms = program.getUniforms(),
 			m_uniforms = materialProperties.shader.uniforms;
 
-		if ( program.id !== _currentProgram ) {
-
-			_gl.useProgram( program.program );
-			_currentProgram = program.id;
+		if ( state.useProgram( program.program ) ) {
 
 			refreshProgram = true;
 			refreshMaterial = true;
@@ -31194,65 +32337,76 @@ function WebGLRenderer( parameters ) {
 
 			}
 
-			if ( material.isMeshBasicMaterial ||
-				material.isMeshLambertMaterial ||
-				material.isMeshPhongMaterial ||
-				material.isMeshStandardMaterial ||
-				material.isMeshNormalMaterial ||
-				material.isMeshDepthMaterial ) {
+			if ( material.isMeshBasicMaterial ) {
 
 				refreshUniformsCommon( m_uniforms, material );
 
-			}
+			} else if ( material.isMeshLambertMaterial ) {
 
-			// refresh single material specific uniforms
+				refreshUniformsCommon( m_uniforms, material );
+				refreshUniformsLambert( m_uniforms, material );
 
-			if ( material.isLineBasicMaterial ) {
+			} else if ( material.isMeshPhongMaterial ) {
+
+				refreshUniformsCommon( m_uniforms, material );
+
+				if ( material.isMeshToonMaterial ) {
+
+					refreshUniformsToon( m_uniforms, material );
+
+				} else {
+
+					refreshUniformsPhong( m_uniforms, material );
+
+				}
+
+			} else if ( material.isMeshStandardMaterial ) {
+
+				refreshUniformsCommon( m_uniforms, material );
+
+				if ( material.isMeshPhysicalMaterial ) {
+
+					refreshUniformsPhysical( m_uniforms, material );
+
+				} else {
+
+					refreshUniformsStandard( m_uniforms, material );
+
+				}
+
+			} else if ( material.isMeshDepthMaterial ) {
+
+				refreshUniformsCommon( m_uniforms, material );
+				refreshUniformsDepth( m_uniforms, material );
+
+			} else if ( material.isMeshDistanceMaterial ) {
+
+				refreshUniformsCommon( m_uniforms, material );
+				refreshUniformsDistance( m_uniforms, material );
+
+			} else if ( material.isMeshNormalMaterial ) {
+
+				refreshUniformsCommon( m_uniforms, material );
+				refreshUniformsNormal( m_uniforms, material );
+
+			} else if ( material.isLineBasicMaterial ) {
 
 				refreshUniformsLine( m_uniforms, material );
 
-			} else if ( material.isLineDashedMaterial ) {
+				if ( material.isLineDashedMaterial ) {
 
-				refreshUniformsLine( m_uniforms, material );
-				refreshUniformsDash( m_uniforms, material );
+					refreshUniformsDash( m_uniforms, material );
+
+				}
 
 			} else if ( material.isPointsMaterial ) {
 
 				refreshUniformsPoints( m_uniforms, material );
 
-			} else if ( material.isMeshLambertMaterial ) {
+			} else if ( material.isShadowMaterial ) {
 
-				refreshUniformsLambert( m_uniforms, material );
-
-			} else if ( material.isMeshToonMaterial ) {
-
-				refreshUniformsToon( m_uniforms, material );
-
-			} else if ( material.isMeshPhongMaterial ) {
-
-				refreshUniformsPhong( m_uniforms, material );
-
-			} else if ( material.isMeshPhysicalMaterial ) {
-
-				refreshUniformsPhysical( m_uniforms, material );
-
-			} else if ( material.isMeshStandardMaterial ) {
-
-				refreshUniformsStandard( m_uniforms, material );
-
-			} else if ( material.isMeshDepthMaterial ) {
-
-				if ( material.displacementMap ) {
-
-					m_uniforms.displacementMap.value = material.displacementMap;
-					m_uniforms.displacementScale.value = material.displacementScale;
-					m_uniforms.displacementBias.value = material.displacementBias;
-
-				}
-
-			} else if ( material.isMeshNormalMaterial ) {
-
-				refreshUniformsNormal( m_uniforms, material );
+				m_uniforms.color.value = material.color;
+				m_uniforms.opacity.value = material.opacity;
 
 			}
 
@@ -31284,7 +32438,11 @@ function WebGLRenderer( parameters ) {
 
 		uniforms.opacity.value = material.opacity;
 
-		uniforms.diffuse.value = material.color;
+		if ( material.color ) {
+
+			uniforms.diffuse.value = material.color;
+
+		}
 
 		if ( material.emissive ) {
 
@@ -31292,9 +32450,38 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		uniforms.map.value = material.map;
-		uniforms.specularMap.value = material.specularMap;
-		uniforms.alphaMap.value = material.alphaMap;
+		if ( material.map ) {
+
+			uniforms.map.value = material.map;
+
+		}
+
+		if ( material.alphaMap ) {
+
+			uniforms.alphaMap.value = material.alphaMap;
+
+		}
+
+		if ( material.specularMap ) {
+
+			uniforms.specularMap.value = material.specularMap;
+
+		}
+
+		if ( material.envMap ) {
+
+			uniforms.envMap.value = material.envMap;
+
+			// don't flip CubeTexture envMaps, flip everything else:
+			//  WebGLRenderTargetCube will be flipped for backwards compatibility
+			//  WebGLRenderTargetCube.texture will be flipped because it's a Texture and NOT a CubeTexture
+			// this check must be handled differently, or removed entirely, if WebGLRenderTargetCube uses a CubeTexture in the future
+			uniforms.flipEnvMap.value = ( ! ( material.envMap && material.envMap.isCubeTexture ) ) ? 1 : - 1;
+
+			uniforms.reflectivity.value = material.reflectivity;
+			uniforms.refractionRatio.value = material.refractionRatio;
+
+		}
 
 		if ( material.lightMap ) {
 
@@ -31373,17 +32560,6 @@ function WebGLRenderer( parameters ) {
 			uniforms.offsetRepeat.value.set( offset.x, offset.y, repeat.x, repeat.y );
 
 		}
-
-		uniforms.envMap.value = material.envMap;
-
-		// don't flip CubeTexture envMaps, flip everything else:
-		//  WebGLRenderTargetCube will be flipped for backwards compatibility
-		//  WebGLRenderTargetCube.texture will be flipped because it's a Texture and NOT a CubeTexture
-		// this check must be handled differently, or removed entirely, if WebGLRenderTargetCube uses a CubeTexture in the future
-		uniforms.flipEnvMap.value = ( ! ( material.envMap && material.envMap.isCubeTexture ) ) ? 1 : - 1;
-
-		uniforms.reflectivity.value = material.reflectivity;
-		uniforms.refractionRatio.value = material.refractionRatio;
 
 	}
 
@@ -31559,6 +32735,34 @@ function WebGLRenderer( parameters ) {
 
 	}
 
+	function refreshUniformsDepth( uniforms, material ) {
+
+		if ( material.displacementMap ) {
+
+			uniforms.displacementMap.value = material.displacementMap;
+			uniforms.displacementScale.value = material.displacementScale;
+			uniforms.displacementBias.value = material.displacementBias;
+
+		}
+
+	}
+
+	function refreshUniformsDistance( uniforms, material ) {
+
+		if ( material.displacementMap ) {
+
+			uniforms.displacementMap.value = material.displacementMap;
+			uniforms.displacementScale.value = material.displacementScale;
+			uniforms.displacementBias.value = material.displacementBias;
+
+		}
+
+		uniforms.referencePosition.value.copy( material.referencePosition );
+		uniforms.nearDistance.value = material.nearDistance;
+		uniforms.farDistance.value = material.farDistance;
+
+	}
+
 	function refreshUniformsNormal( uniforms, material ) {
 
 		if ( material.bumpMap ) {
@@ -31596,224 +32800,6 @@ function WebGLRenderer( parameters ) {
 		uniforms.spotLights.needsUpdate = value;
 		uniforms.rectAreaLights.needsUpdate = value;
 		uniforms.hemisphereLights.needsUpdate = value;
-
-	}
-
-	// Lighting
-
-	function setupShadows( lights ) {
-
-		var lightShadowsLength = 0;
-
-		for ( var i = 0, l = lights.length; i < l; i ++ ) {
-
-			var light = lights[ i ];
-
-			if ( light.castShadow ) {
-
-				_lights.shadows[ lightShadowsLength ] = light;
-				lightShadowsLength ++;
-
-			}
-
-		}
-
-		_lights.shadows.length = lightShadowsLength;
-
-	}
-
-	function setupLights( lights, camera ) {
-
-		var l, ll, light, shadow,
-			r = 0, g = 0, b = 0,
-			color,
-			intensity,
-			distance,
-			shadowMap,
-
-			viewMatrix = camera.matrixWorldInverse,
-
-			directionalLength = 0,
-			pointLength = 0,
-			spotLength = 0,
-			rectAreaLength = 0,
-			hemiLength = 0;
-
-		for ( l = 0, ll = lights.length; l < ll; l ++ ) {
-
-			light = lights[ l ];
-
-			color = light.color;
-			intensity = light.intensity;
-			distance = light.distance;
-
-			shadowMap = ( light.shadow && light.shadow.map ) ? light.shadow.map.texture : null;
-
-			if ( light.isAmbientLight ) {
-
-				r += color.r * intensity;
-				g += color.g * intensity;
-				b += color.b * intensity;
-
-			} else if ( light.isDirectionalLight ) {
-
-				var uniforms = lightCache.get( light );
-
-				uniforms.color.copy( light.color ).multiplyScalar( light.intensity );
-				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
-				_vector3.setFromMatrixPosition( light.target.matrixWorld );
-				uniforms.direction.sub( _vector3 );
-				uniforms.direction.transformDirection( viewMatrix );
-
-				uniforms.shadow = light.castShadow;
-
-				if ( light.castShadow ) {
-
-					shadow = light.shadow;
-
-					uniforms.shadowBias = shadow.bias;
-					uniforms.shadowRadius = shadow.radius;
-					uniforms.shadowMapSize = shadow.mapSize;
-
-				}
-
-				_lights.directionalShadowMap[ directionalLength ] = shadowMap;
-				_lights.directionalShadowMatrix[ directionalLength ] = light.shadow.matrix;
-				_lights.directional[ directionalLength ] = uniforms;
-
-				directionalLength ++;
-
-			} else if ( light.isSpotLight ) {
-
-				var uniforms = lightCache.get( light );
-
-				uniforms.position.setFromMatrixPosition( light.matrixWorld );
-				uniforms.position.applyMatrix4( viewMatrix );
-
-				uniforms.color.copy( color ).multiplyScalar( intensity );
-				uniforms.distance = distance;
-
-				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
-				_vector3.setFromMatrixPosition( light.target.matrixWorld );
-				uniforms.direction.sub( _vector3 );
-				uniforms.direction.transformDirection( viewMatrix );
-
-				uniforms.coneCos = Math.cos( light.angle );
-				uniforms.penumbraCos = Math.cos( light.angle * ( 1 - light.penumbra ) );
-				uniforms.decay = ( light.distance === 0 ) ? 0.0 : light.decay;
-
-				uniforms.shadow = light.castShadow;
-
-				if ( light.castShadow ) {
-
-					shadow = light.shadow;
-
-					uniforms.shadowBias = shadow.bias;
-					uniforms.shadowRadius = shadow.radius;
-					uniforms.shadowMapSize = shadow.mapSize;
-
-				}
-
-				_lights.spotShadowMap[ spotLength ] = shadowMap;
-				_lights.spotShadowMatrix[ spotLength ] = light.shadow.matrix;
-				_lights.spot[ spotLength ] = uniforms;
-
-				spotLength ++;
-
-			} else if ( light.isRectAreaLight ) {
-
-				var uniforms = lightCache.get( light );
-
-				// (a) intensity controls irradiance of entire light
-				uniforms.color
-					.copy( color )
-					.multiplyScalar( intensity / ( light.width * light.height ) );
-
-				// (b) intensity controls the radiance per light area
-				// uniforms.color.copy( color ).multiplyScalar( intensity );
-
-				uniforms.position.setFromMatrixPosition( light.matrixWorld );
-				uniforms.position.applyMatrix4( viewMatrix );
-
-				// extract local rotation of light to derive width/height half vectors
-				_matrix42.identity();
-				_matrix4.copy( light.matrixWorld );
-				_matrix4.premultiply( viewMatrix );
-				_matrix42.extractRotation( _matrix4 );
-
-				uniforms.halfWidth.set( light.width * 0.5,                0.0, 0.0 );
-				uniforms.halfHeight.set(              0.0, light.height * 0.5, 0.0 );
-
-				uniforms.halfWidth.applyMatrix4( _matrix42 );
-				uniforms.halfHeight.applyMatrix4( _matrix42 );
-
-				// TODO (abelnation): RectAreaLight distance?
-				// uniforms.distance = distance;
-
-				_lights.rectArea[ rectAreaLength ] = uniforms;
-
-				rectAreaLength ++;
-
-			} else if ( light.isPointLight ) {
-
-				var uniforms = lightCache.get( light );
-
-				uniforms.position.setFromMatrixPosition( light.matrixWorld );
-				uniforms.position.applyMatrix4( viewMatrix );
-
-				uniforms.color.copy( light.color ).multiplyScalar( light.intensity );
-				uniforms.distance = light.distance;
-				uniforms.decay = ( light.distance === 0 ) ? 0.0 : light.decay;
-
-				uniforms.shadow = light.castShadow;
-
-				if ( light.castShadow ) {
-
-					shadow = light.shadow;
-
-					uniforms.shadowBias = shadow.bias;
-					uniforms.shadowRadius = shadow.radius;
-					uniforms.shadowMapSize = shadow.mapSize;
-
-				}
-
-				_lights.pointShadowMap[ pointLength ] = shadowMap;
-				_lights.pointShadowMatrix[ pointLength ] = light.shadow.matrix;
-				_lights.point[ pointLength ] = uniforms;
-
-				pointLength ++;
-
-			} else if ( light.isHemisphereLight ) {
-
-				var uniforms = lightCache.get( light );
-
-				uniforms.direction.setFromMatrixPosition( light.matrixWorld );
-				uniforms.direction.transformDirection( viewMatrix );
-				uniforms.direction.normalize();
-
-				uniforms.skyColor.copy( light.color ).multiplyScalar( intensity );
-				uniforms.groundColor.copy( light.groundColor ).multiplyScalar( intensity );
-
-				_lights.hemi[ hemiLength ] = uniforms;
-
-				hemiLength ++;
-
-			}
-
-		}
-
-		_lights.ambient[ 0 ] = r;
-		_lights.ambient[ 1 ] = g;
-		_lights.ambient[ 2 ] = b;
-
-		_lights.directional.length = directionalLength;
-		_lights.spot.length = spotLength;
-		_lights.rectArea.length = rectAreaLength;
-		_lights.point.length = pointLength;
-		_lights.hemi.length = hemiLength;
-
-		// TODO (sam-g-steel) why aren't we using join
-		_lights.hash = directionalLength + ',' + pointLength + ',' + spotLength + ',' + rectAreaLength + ',' + hemiLength + ',' + _lights.shadows.length;
 
 	}
 
@@ -31950,36 +32936,33 @@ function WebGLRenderer( parameters ) {
 
 		}
 
-		var isCube = ( renderTarget && renderTarget.isWebGLRenderTargetCube );
-		var framebuffer;
+		var framebuffer = null;
+		var isCube = false;
 
 		if ( renderTarget ) {
 
-			var renderTargetProperties = properties.get( renderTarget );
+			var __webglFramebuffer = properties.get( renderTarget ).__webglFramebuffer;
 
-			if ( isCube ) {
+			if ( renderTarget.isWebGLRenderTargetCube ) {
 
-				framebuffer = renderTargetProperties.__webglFramebuffer[ renderTarget.activeCubeFace ];
+				framebuffer = __webglFramebuffer[ renderTarget.activeCubeFace ];
+				isCube = true;
 
 			} else {
 
-				framebuffer = renderTargetProperties.__webglFramebuffer;
+				framebuffer = __webglFramebuffer;
 
 			}
 
+			_currentViewport.copy( renderTarget.viewport );
 			_currentScissor.copy( renderTarget.scissor );
 			_currentScissorTest = renderTarget.scissorTest;
 
-			_currentViewport.copy( renderTarget.viewport );
-
 		} else {
 
-			framebuffer = null;
-
+			_currentViewport.copy( _viewport ).multiplyScalar( _pixelRatio );
 			_currentScissor.copy( _scissor ).multiplyScalar( _pixelRatio );
 			_currentScissorTest = _scissorTest;
-
-			_currentViewport.copy( _viewport ).multiplyScalar( _pixelRatio );
 
 		}
 
@@ -31990,10 +32973,9 @@ function WebGLRenderer( parameters ) {
 
 		}
 
+		state.viewport( _currentViewport );
 		state.scissor( _currentScissor );
 		state.setScissorTest( _currentScissorTest );
-
-		state.viewport( _currentViewport );
 
 		if ( isCube ) {
 
@@ -32033,14 +33015,14 @@ function WebGLRenderer( parameters ) {
 				var textureFormat = texture.format;
 				var textureType = texture.type;
 
-				if ( textureFormat !== RGBAFormat && paramThreeToGL( textureFormat ) !== _gl.getParameter( _gl.IMPLEMENTATION_COLOR_READ_FORMAT ) ) {
+				if ( textureFormat !== RGBAFormat && utils.convert( textureFormat ) !== _gl.getParameter( _gl.IMPLEMENTATION_COLOR_READ_FORMAT ) ) {
 
 					console.error( 'THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not in RGBA or implementation defined format.' );
 					return;
 
 				}
 
-				if ( textureType !== UnsignedByteType && paramThreeToGL( textureType ) !== _gl.getParameter( _gl.IMPLEMENTATION_COLOR_READ_TYPE ) && // IE11, Edge and Chrome Mac < 52 (#9513)
+				if ( textureType !== UnsignedByteType && utils.convert( textureType ) !== _gl.getParameter( _gl.IMPLEMENTATION_COLOR_READ_TYPE ) && // IE11, Edge and Chrome Mac < 52 (#9513)
 					! ( textureType === FloatType && ( extensions.get( 'OES_texture_float' ) || extensions.get( 'WEBGL_color_buffer_float' ) ) ) && // Chrome Mac >= 52 and Firefox
 					! ( textureType === HalfFloatType && extensions.get( 'EXT_color_buffer_half_float' ) ) ) {
 
@@ -32055,7 +33037,7 @@ function WebGLRenderer( parameters ) {
 
 					if ( ( x >= 0 && x <= ( renderTarget.width - width ) ) && ( y >= 0 && y <= ( renderTarget.height - height ) ) ) {
 
-						_gl.readPixels( x, y, width, height, paramThreeToGL( textureFormat ), paramThreeToGL( textureType ), buffer );
+						_gl.readPixels( x, y, width, height, utils.convert( textureFormat ), utils.convert( textureType ), buffer );
 
 					}
 
@@ -32078,134 +33060,6 @@ function WebGLRenderer( parameters ) {
 		}
 
 	};
-
-	// Map three.js constants to WebGL constants
-
-	function paramThreeToGL( p ) {
-
-		var extension;
-
-		if ( p === RepeatWrapping ) return _gl.REPEAT;
-		if ( p === ClampToEdgeWrapping ) return _gl.CLAMP_TO_EDGE;
-		if ( p === MirroredRepeatWrapping ) return _gl.MIRRORED_REPEAT;
-
-		if ( p === NearestFilter ) return _gl.NEAREST;
-		if ( p === NearestMipMapNearestFilter ) return _gl.NEAREST_MIPMAP_NEAREST;
-		if ( p === NearestMipMapLinearFilter ) return _gl.NEAREST_MIPMAP_LINEAR;
-
-		if ( p === LinearFilter ) return _gl.LINEAR;
-		if ( p === LinearMipMapNearestFilter ) return _gl.LINEAR_MIPMAP_NEAREST;
-		if ( p === LinearMipMapLinearFilter ) return _gl.LINEAR_MIPMAP_LINEAR;
-
-		if ( p === UnsignedByteType ) return _gl.UNSIGNED_BYTE;
-		if ( p === UnsignedShort4444Type ) return _gl.UNSIGNED_SHORT_4_4_4_4;
-		if ( p === UnsignedShort5551Type ) return _gl.UNSIGNED_SHORT_5_5_5_1;
-		if ( p === UnsignedShort565Type ) return _gl.UNSIGNED_SHORT_5_6_5;
-
-		if ( p === ByteType ) return _gl.BYTE;
-		if ( p === ShortType ) return _gl.SHORT;
-		if ( p === UnsignedShortType ) return _gl.UNSIGNED_SHORT;
-		if ( p === IntType ) return _gl.INT;
-		if ( p === UnsignedIntType ) return _gl.UNSIGNED_INT;
-		if ( p === FloatType ) return _gl.FLOAT;
-
-		if ( p === HalfFloatType ) {
-
-			extension = extensions.get( 'OES_texture_half_float' );
-
-			if ( extension !== null ) return extension.HALF_FLOAT_OES;
-
-		}
-
-		if ( p === AlphaFormat ) return _gl.ALPHA;
-		if ( p === RGBFormat ) return _gl.RGB;
-		if ( p === RGBAFormat ) return _gl.RGBA;
-		if ( p === LuminanceFormat ) return _gl.LUMINANCE;
-		if ( p === LuminanceAlphaFormat ) return _gl.LUMINANCE_ALPHA;
-		if ( p === DepthFormat ) return _gl.DEPTH_COMPONENT;
-		if ( p === DepthStencilFormat ) return _gl.DEPTH_STENCIL;
-
-		if ( p === AddEquation ) return _gl.FUNC_ADD;
-		if ( p === SubtractEquation ) return _gl.FUNC_SUBTRACT;
-		if ( p === ReverseSubtractEquation ) return _gl.FUNC_REVERSE_SUBTRACT;
-
-		if ( p === ZeroFactor ) return _gl.ZERO;
-		if ( p === OneFactor ) return _gl.ONE;
-		if ( p === SrcColorFactor ) return _gl.SRC_COLOR;
-		if ( p === OneMinusSrcColorFactor ) return _gl.ONE_MINUS_SRC_COLOR;
-		if ( p === SrcAlphaFactor ) return _gl.SRC_ALPHA;
-		if ( p === OneMinusSrcAlphaFactor ) return _gl.ONE_MINUS_SRC_ALPHA;
-		if ( p === DstAlphaFactor ) return _gl.DST_ALPHA;
-		if ( p === OneMinusDstAlphaFactor ) return _gl.ONE_MINUS_DST_ALPHA;
-
-		if ( p === DstColorFactor ) return _gl.DST_COLOR;
-		if ( p === OneMinusDstColorFactor ) return _gl.ONE_MINUS_DST_COLOR;
-		if ( p === SrcAlphaSaturateFactor ) return _gl.SRC_ALPHA_SATURATE;
-
-		if ( p === RGB_S3TC_DXT1_Format || p === RGBA_S3TC_DXT1_Format ||
-			p === RGBA_S3TC_DXT3_Format || p === RGBA_S3TC_DXT5_Format ) {
-
-			extension = extensions.get( 'WEBGL_compressed_texture_s3tc' );
-
-			if ( extension !== null ) {
-
-				if ( p === RGB_S3TC_DXT1_Format ) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
-				if ( p === RGBA_S3TC_DXT1_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-				if ( p === RGBA_S3TC_DXT3_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-				if ( p === RGBA_S3TC_DXT5_Format ) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-
-			}
-
-		}
-
-		if ( p === RGB_PVRTC_4BPPV1_Format || p === RGB_PVRTC_2BPPV1_Format ||
-			p === RGBA_PVRTC_4BPPV1_Format || p === RGBA_PVRTC_2BPPV1_Format ) {
-
-			extension = extensions.get( 'WEBGL_compressed_texture_pvrtc' );
-
-			if ( extension !== null ) {
-
-				if ( p === RGB_PVRTC_4BPPV1_Format ) return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-				if ( p === RGB_PVRTC_2BPPV1_Format ) return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-				if ( p === RGBA_PVRTC_4BPPV1_Format ) return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-				if ( p === RGBA_PVRTC_2BPPV1_Format ) return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
-
-			}
-
-		}
-
-		if ( p === RGB_ETC1_Format ) {
-
-			extension = extensions.get( 'WEBGL_compressed_texture_etc1' );
-
-			if ( extension !== null ) return extension.COMPRESSED_RGB_ETC1_WEBGL;
-
-		}
-
-		if ( p === MinEquation || p === MaxEquation ) {
-
-			extension = extensions.get( 'EXT_blend_minmax' );
-
-			if ( extension !== null ) {
-
-				if ( p === MinEquation ) return extension.MIN_EXT;
-				if ( p === MaxEquation ) return extension.MAX_EXT;
-
-			}
-
-		}
-
-		if ( p === UnsignedInt248Type ) {
-
-			extension = extensions.get( 'WEBGL_depth_texture' );
-
-			if ( extension !== null ) return extension.UNSIGNED_INT_24_8_WEBGL;
-
-		}
-
-		return 0;
-
-	}
 
 }
 
@@ -33568,7 +34422,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -33597,6 +34451,7 @@ CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
 function WireframeGeometry( geometry ) {
@@ -35219,7 +36074,7 @@ var ShapeUtils = {
 			if ( indices ) return vertIndices;
 			return result;
 
-		}
+		};
 
 	} )(),
 
@@ -35557,7 +36412,7 @@ var ShapeUtils = {
 					hIdx, nextIdx, intersection;
 				for ( ihIdx = 0; ihIdx < indepHoles.length; ihIdx ++ ) {
 
-					chkHole = holes[ indepHoles[ ihIdx ]];
+					chkHole = holes[ indepHoles[ ihIdx ] ];
 					for ( hIdx = 0; hIdx < chkHole.length; hIdx ++ ) {
 
 						nextIdx = hIdx + 1; nextIdx %= chkHole.length;
@@ -35590,7 +36445,7 @@ var ShapeUtils = {
 				counter --;
 				if ( counter < 0 ) {
 
-					console.log( "Infinite Loop! Holes left:" + indepHoles.length + ", Probably Hole outside Shape!" );
+					console.log( 'THREE.ShapeUtils: Infinite Loop! Holes left:" + indepHoles.length + ", Probably Hole outside Shape!' );
 					break;
 
 				}
@@ -35608,7 +36463,7 @@ var ShapeUtils = {
 						holeIdx = indepHoles[ h ];
 
 						// prevent multiple checks
-						cutKey = shapePt.x + ":" + shapePt.y + ":" + holeIdx;
+						cutKey = shapePt.x + ':' + shapePt.y + ':' + holeIdx;
 						if ( failedCuts[ cutKey ] !== undefined )			continue;
 
 						hole = holes[ holeIdx ];
@@ -35673,11 +36528,11 @@ var ShapeUtils = {
 
 		for ( i = 0, il = allpoints.length; i < il; i ++ ) {
 
-			key = allpoints[ i ].x + ":" + allpoints[ i ].y;
+			key = allpoints[ i ].x + ':' + allpoints[ i ].y;
 
 			if ( allPointsMap[ key ] !== undefined ) {
 
-				console.warn( "THREE.ShapeUtils: Duplicate point", key, i );
+				console.warn( 'THREE.ShapeUtils: Duplicate point', key, i );
 
 			}
 
@@ -35699,7 +36554,7 @@ var ShapeUtils = {
 
 			for ( f = 0; f < 3; f ++ ) {
 
-				key = face[ f ].x + ":" + face[ f ].y;
+				key = face[ f ].x + ':' + face[ f ].y;
 
 				index = allPointsMap[ key ];
 
@@ -37870,43 +38725,28 @@ var Geometries = Object.freeze({
  * @author mrdoob / http://mrdoob.com/
  *
  * parameters = {
+ *  color: <THREE.Color>,
  *  opacity: <float>
  * }
  */
 
 function ShadowMaterial( parameters ) {
 
-	ShaderMaterial.call( this, {
-		uniforms: UniformsUtils.merge( [
-			UniformsLib.lights,
-			{
-				opacity: { value: 1.0 }
-			}
-		] ),
-		vertexShader: ShaderChunk[ 'shadow_vert' ],
-		fragmentShader: ShaderChunk[ 'shadow_frag' ]
-	} );
+	Material.call( this );
+
+	this.type = 'ShadowMaterial';
+
+	this.color = new Color( 0x000000 );
+	this.opacity = 1.0;
 
 	this.lights = true;
 	this.transparent = true;
-
-	Object.defineProperties( this, {
-		opacity: {
-			enumerable: true,
-			get: function () {
-				return this.uniforms.opacity.value;
-			},
-			set: function ( value ) {
-				this.uniforms.opacity.value = value;
-			}
-		}
-	} );
 
 	this.setValues( parameters );
 
 }
 
-ShadowMaterial.prototype = Object.create( ShaderMaterial.prototype );
+ShadowMaterial.prototype = Object.create( Material.prototype );
 ShadowMaterial.prototype.constructor = ShadowMaterial;
 
 ShadowMaterial.prototype.isShadowMaterial = true;
@@ -38569,36 +39409,26 @@ MeshLambertMaterial.prototype.copy = function ( source ) {
 
 function LineDashedMaterial( parameters ) {
 
-	Material.call( this );
+	LineBasicMaterial.call( this );
 
 	this.type = 'LineDashedMaterial';
-
-	this.color = new Color( 0xffffff );
-
-	this.linewidth = 1;
 
 	this.scale = 1;
 	this.dashSize = 3;
 	this.gapSize = 1;
 
-	this.lights = false;
-
 	this.setValues( parameters );
 
 }
 
-LineDashedMaterial.prototype = Object.create( Material.prototype );
+LineDashedMaterial.prototype = Object.create( LineBasicMaterial.prototype );
 LineDashedMaterial.prototype.constructor = LineDashedMaterial;
 
 LineDashedMaterial.prototype.isLineDashedMaterial = true;
 
 LineDashedMaterial.prototype.copy = function ( source ) {
 
-	Material.prototype.copy.call( this, source );
-
-	this.color.copy( source.color );
-
-	this.linewidth = source.linewidth;
+	LineBasicMaterial.prototype.copy.call( this, source );
 
 	this.scale = source.scale;
 	this.dashSize = source.dashSize;
@@ -38623,6 +39453,7 @@ var Materials = Object.freeze({
 	MeshNormalMaterial: MeshNormalMaterial,
 	MeshLambertMaterial: MeshLambertMaterial,
 	MeshDepthMaterial: MeshDepthMaterial,
+	MeshDistanceMaterial: MeshDistanceMaterial,
 	MeshBasicMaterial: MeshBasicMaterial,
 	LineDashedMaterial: LineDashedMaterial,
 	LineBasicMaterial: LineBasicMaterial,
@@ -39219,6 +40050,8 @@ function ImageLoader( manager ) {
 
 Object.assign( ImageLoader.prototype, {
 
+	crossOrigin: 'Anonymous',
+
 	load: function ( url, onLoad, onProgress, onError ) {
 
 		if ( url === undefined ) url = '';
@@ -39316,6 +40149,8 @@ function CubeTextureLoader( manager ) {
 
 Object.assign( CubeTextureLoader.prototype, {
 
+	crossOrigin: 'Anonymous',
+
 	load: function ( urls, onLoad, onProgress, onError ) {
 
 		var texture = new CubeTexture();
@@ -39383,6 +40218,8 @@ function TextureLoader( manager ) {
 }
 
 Object.assign( TextureLoader.prototype, {
+
+	crossOrigin: 'Anonymous',
 
 	load: function ( url, onLoad, onProgress, onError ) {
 
@@ -41164,7 +42001,7 @@ Object.assign( KeyframeTrack, {
 
 		} else {
 
-			// by default, we asssume a constructor compatible with the base
+			// by default, we assume a constructor compatible with the base
 			return new trackType(
 					json.name, json.times, json.values, json.interpolation );
 
@@ -41668,7 +42505,7 @@ Object.assign( MaterialLoader.prototype, {
 		if ( json.fragmentShader !== undefined ) material.fragmentShader = json.fragmentShader;
 		if ( json.vertexColors !== undefined ) material.vertexColors = json.vertexColors;
 		if ( json.fog !== undefined ) material.fog = json.fog;
-		if ( json.shading !== undefined ) material.shading = json.shading;
+		if ( json.flatShading !== undefined ) material.flatShading = json.flatShading;
 		if ( json.blending !== undefined ) material.blending = json.blending;
 		if ( json.side !== undefined ) material.side = json.side;
 		if ( json.opacity !== undefined ) material.opacity = json.opacity;
@@ -41681,8 +42518,17 @@ Object.assign( MaterialLoader.prototype, {
 		if ( json.wireframeLinewidth !== undefined ) material.wireframeLinewidth = json.wireframeLinewidth;
 		if ( json.wireframeLinecap !== undefined ) material.wireframeLinecap = json.wireframeLinecap;
 		if ( json.wireframeLinejoin !== undefined ) material.wireframeLinejoin = json.wireframeLinejoin;
+
 		if ( json.skinning !== undefined ) material.skinning = json.skinning;
 		if ( json.morphTargets !== undefined ) material.morphTargets = json.morphTargets;
+		if ( json.dithering !== undefined ) material.dithering = json.dithering;
+
+		if ( json.visible !== undefined ) material.visible = json.visible;
+		if ( json.userData !== undefined ) material.userData = json.userData;
+
+		// Deprecated
+
+		if ( json.shading !== undefined ) material.flatShading = json.shading === 1; // THREE.FlatShading
 
 		// for PointsMaterial
 
@@ -43454,9 +44300,11 @@ Object.assign( ObjectLoader.prototype, {
 
 			if ( data.children !== undefined ) {
 
-				for ( var child in data.children ) {
+				var children = data.children;
 
-					object.add( this.parseObject( data.children[ child ], geometries, materials ) );
+				for ( var  i = 0; i < children.length; i ++ ) {
+
+					object.add( this.parseObject( children[ i ], geometries, materials ) );
 
 				}
 
@@ -45270,10 +46118,7 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * Camera for rendering cube maps
- *	- renders scene into axis-aligned cube
- *
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function AudioListener() {
@@ -45681,7 +46526,7 @@ Audio.prototype = Object.assign( Object.create( Object3D.prototype ), {
 		return this.gain.gain.value;
 
 	},
-	
+
 	setVolume: function ( value ) {
 
 		this.gain.gain.value = value;
@@ -49243,7 +50088,8 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
  */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
@@ -49389,9 +50235,9 @@ VertexNormalsHelper.prototype.update = ( function () {
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
  * @author WestLangley / http://github.com/WestLangley
-*/
+ */
 
-function SpotLightHelper( light ) {
+function SpotLightHelper( light, color ) {
 
 	Object3D.call( this );
 
@@ -49400,6 +50246,8 @@ function SpotLightHelper( light ) {
 
 	this.matrix = light.matrixWorld;
 	this.matrixAutoUpdate = false;
+
+	this.color = color;
 
 	var geometry = new BufferGeometry();
 
@@ -49463,7 +50311,15 @@ SpotLightHelper.prototype.update = function () {
 
 		this.cone.lookAt( vector2.sub( vector ) );
 
-		this.cone.material.color.copy( this.light.color );
+		if ( this.color !== undefined ) {
+
+			this.cone.material.color.set( this.color );
+
+		} else {
+
+			this.cone.material.color.copy( this.light.color );
+
+		}
 
 	};
 
@@ -49589,9 +50445,10 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / https://github.com/Mugen87
  */
 
-function HemisphereLightHelper( light, size ) {
+function HemisphereLightHelper( light, size, color ) {
 
 	Object3D.call( this );
 
@@ -49601,17 +50458,20 @@ function HemisphereLightHelper( light, size ) {
 	this.matrix = light.matrixWorld;
 	this.matrixAutoUpdate = false;
 
+	this.color = color;
+
 	var geometry = new OctahedronBufferGeometry( size );
 	geometry.rotateY( Math.PI * 0.5 );
 
-	var material = new MeshBasicMaterial( { vertexColors: VertexColors, wireframe: true } );
+	this.material = new MeshBasicMaterial( { wireframe: true, fog: false } );
+	if ( this.color === undefined ) this.material.vertexColors = VertexColors;
 
 	var position = geometry.getAttribute( 'position' );
 	var colors = new Float32Array( position.count * 3 );
 
 	geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) );
 
-	this.add( new Mesh( geometry, material ) );
+	this.add( new Mesh( geometry, this.material ) );
 
 	this.update();
 
@@ -49638,22 +50498,30 @@ HemisphereLightHelper.prototype.update = function () {
 
 		var mesh = this.children[ 0 ];
 
-		var colors = mesh.geometry.getAttribute( 'color' );
+		if ( this.color !== undefined ) {
 
-		color1.copy( this.light.color );
-		color2.copy( this.light.groundColor );
+			this.material.color.set( this.color );
 
-		for ( var i = 0, l = colors.count; i < l; i ++ ) {
+		} else {
 
-			var color = ( i < ( l / 2 ) ) ? color1 : color2;
+			var colors = mesh.geometry.getAttribute( 'color' );
 
-			colors.setXYZ( i, color.r, color.g, color.b );
+			color1.copy( this.light.color );
+			color2.copy( this.light.groundColor );
+
+			for ( var i = 0, l = colors.count; i < l; i ++ ) {
+
+				var color = ( i < ( l / 2 ) ) ? color1 : color2;
+
+				colors.setXYZ( i, color.r, color.g, color.b );
+
+			}
+
+			colors.needsUpdate = true;
 
 		}
 
 		mesh.lookAt( vector.setFromMatrixPosition( this.light.matrixWorld ).negate() );
-
-		colors.needsUpdate = true;
 
 	};
 
@@ -49661,6 +50529,7 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
+ * @author WestLangley / http://github.com/WestLangley
  */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
@@ -49773,7 +50642,7 @@ FaceNormalsHelper.prototype.update = ( function () {
  * @author WestLangley / http://github.com/WestLangley
  */
 
-function DirectionalLightHelper( light, size ) {
+function DirectionalLightHelper( light, size, color ) {
 
 	Object3D.call( this );
 
@@ -49782,6 +50651,8 @@ function DirectionalLightHelper( light, size ) {
 
 	this.matrix = light.matrixWorld;
 	this.matrixAutoUpdate = false;
+
+	this.color = color;
 
 	if ( size === undefined ) size = 1;
 
@@ -49796,12 +50667,14 @@ function DirectionalLightHelper( light, size ) {
 
 	var material = new LineBasicMaterial( { fog: false } );
 
-	this.add( new Line( geometry, material ) );
+	this.lightPlane = new Line( geometry, material );
+	this.add( this.lightPlane );
 
 	geometry = new BufferGeometry();
 	geometry.addAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0, 0, 0, 1 ], 3 ) );
 
-	this.add( new Line( geometry, material ));
+	this.targetLine = new Line( geometry, material );
+	this.add( this.targetLine );
 
 	this.update();
 
@@ -49812,13 +50685,10 @@ DirectionalLightHelper.prototype.constructor = DirectionalLightHelper;
 
 DirectionalLightHelper.prototype.dispose = function () {
 
-	var lightPlane = this.children[ 0 ];
-	var targetLine = this.children[ 1 ];
-
-	lightPlane.geometry.dispose();
-	lightPlane.material.dispose();
-	targetLine.geometry.dispose();
-	targetLine.material.dispose();
+	this.lightPlane.geometry.dispose();
+	this.lightPlane.material.dispose();
+	this.targetLine.geometry.dispose();
+	this.targetLine.material.dispose();
 
 };
 
@@ -49834,14 +50704,22 @@ DirectionalLightHelper.prototype.update = function () {
 		v2.setFromMatrixPosition( this.light.target.matrixWorld );
 		v3.subVectors( v2, v1 );
 
-		var lightPlane = this.children[ 0 ];
-		var targetLine = this.children[ 1 ];
+		this.lightPlane.lookAt( v3 );
 
-		lightPlane.lookAt( v3 );
-		lightPlane.material.color.copy( this.light.color );
+		if ( this.color !== undefined ) {
 
-		targetLine.lookAt( v3 );
-		targetLine.scale.z = v3.length();
+			this.lightPlane.material.color.set( this.color );
+			this.targetLine.material.color.set( this.color );
+
+		} else {
+
+			this.lightPlane.material.color.copy( this.light.color );
+			this.targetLine.material.color.copy( this.light.color );
+
+		}
+
+		this.targetLine.lookAt( v3 );
+		this.targetLine.scale.z = v3.length();
 
 	};
 
@@ -50254,9 +51132,26 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author sroucheray / http://sroucheray.org/
- * @author mrdoob / http://mrdoob.com/
+ * @author zz85 https://github.com/zz85
+ *
+ * Centripetal CatmullRom Curve - which is useful for avoiding
+ * cusps and self-intersections in non-uniform catmull rom curves.
+ * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+ *
+ * curve.type accepts centripetal(default), chordal and catmullrom
+ * curve.tension is used for catmullrom which defaults to 0.5
  */
+
+
+/*
+Based on an optimized c++ solution in
+ - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
+ - http://ideone.com/NoEbVM
+
+This CubicPoly class could be used for reusing some variables and calculations,
+but for three.js curve use, it could be possible inlined and flatten into a single function call
+which can be placed in CurveUtils.
+*/
 
 function CubicPoly() {
 
@@ -50413,6 +51308,10 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -50448,9 +51347,7 @@ var SceneUtils = {
 
 };
 
-/**
- * @author mrdoob / http://mrdoob.com/
- */
+//
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -50497,12 +51394,13 @@ Object.assign( Spline.prototype, {
 
 } );
 
-//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
-	
+
 };
+
+//
 
 Object.assign( Box2.prototype, {
 
@@ -51189,6 +52087,20 @@ Object.defineProperties( Material.prototype, {
 			return new Color();
 
 		}
+	},
+
+	shading: {
+		get: function () {
+
+			console.error( 'THREE.' + this.type + ': .shading has been removed. Use the boolean .flatShading instead.' );
+
+		},
+		set: function ( value ) {
+
+			console.warn( 'THREE.' + this.type + ': .shading has been removed. Use the boolean .flatShading instead.' );
+			this.flatShading = ( value === FlatShading );
+
+		}
 	}
 
 } );
@@ -51238,6 +52150,20 @@ Object.assign( WebGLRenderer.prototype, {
 
 		console.warn( 'THREE.WebGLRenderer: .getCurrentRenderTarget() is now .getRenderTarget().' );
 		return this.getRenderTarget();
+
+	},
+
+	getMaxAnisotropy: function () {
+
+		console.warn( 'THREE.WebGLRenderer: .getMaxAnisotropy() is now .capabilities.getMaxAnisotropy().' );
+		return this.capabilities.getMaxAnisotropy();
+
+	},
+
+	getPrecision: function () {
+
+		console.warn( 'THREE.WebGLRenderer: .getPrecision() is now .capabilities.precision.' );
+		return this.capabilities.precision;
 
 	},
 
@@ -51550,8 +52476,6 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
-//
-
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -51599,8 +52523,6 @@ var ImageUtils = {
 	}
 
 };
-
-//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -51723,6 +52645,21 @@ function Time() {
     this.paused = true;
   };
 }
+
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / http://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ */
+
+// This set of controls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one finger move
+//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
+//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -52542,6 +53479,11 @@ function OrbitControls(object, domElement) {
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
 
+/**
+ * @author Lewy Blue / https://github.com/looeee
+ *
+ */
+
 function App(canvas) {
 
   var self = this;
@@ -52819,6 +53761,8 @@ function App(canvas) {
   };
 }
 
+// import HTMLControl from './HTMLControl.js';
+
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -53055,6 +53999,10 @@ var Canvas = function () {
 
 var canvas$1 = new Canvas(HTMLControl.canvas);
 
+/*
+ * @author mrdoob / http://mrdoob.com/
+ */
+
 function DDSLoader() {
 
   this._parser = DDSLoader.parse;
@@ -53129,19 +54077,19 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
         var g = srcBuffer[src];src++;
         var r = srcBuffer[src];src++;
         var a = srcBuffer[src];src++;
-        byteArray[dst] = r;dst++; // r
-        byteArray[dst] = g;dst++; // g
-        byteArray[dst] = b;dst++; // b
-        byteArray[dst] = a;dst++; // a
+        byteArray[dst] = r;dst++; //r
+        byteArray[dst] = g;dst++; //g
+        byteArray[dst] = b;dst++; //b
+        byteArray[dst] = a;dst++; //a
       }
     }
     return byteArray;
   }
 
-  var FOURCC_DXT1 = fourCCToInt32('DXT1');
-  var FOURCC_DXT3 = fourCCToInt32('DXT3');
-  var FOURCC_DXT5 = fourCCToInt32('DXT5');
-  var FOURCC_ETC1 = fourCCToInt32('ETC1');
+  var FOURCC_DXT1 = fourCCToInt32("DXT1");
+  var FOURCC_DXT3 = fourCCToInt32("DXT3");
+  var FOURCC_DXT5 = fourCCToInt32("DXT5");
+  var FOURCC_ETC1 = fourCCToInt32("ETC1");
 
   var headerLengthInt = 31; // The header length in 32 bit ints
 
@@ -53175,17 +54123,17 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
   if (header[off_magic] !== DDS_MAGIC) {
 
-    console.error('DDSLoader.parse: Invalid magic number in DDS header.');
+    console.error('THREE.DDSLoader.parse: Invalid magic number in DDS header.');
     return dds;
   }
 
   if (!header[off_pfFlags] & DDPF_FOURCC) {
 
-    console.error('DDSLoader.parse: Unsupported format, must contain a FourCC code.');
+    console.error('THREE.DDSLoader.parse: Unsupported format, must contain a FourCC code.');
     return dds;
   }
 
-  var blockBytes = void 0;
+  var blockBytes;
 
   var fourCC = header[off_pfFourCC];
 
@@ -53226,7 +54174,7 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
         dds.format = RGBAFormat;
       } else {
 
-        console.error('DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
+        console.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
         return dds;
       }
   }
@@ -53239,10 +54187,10 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
   }
 
   var caps2 = header[off_caps2];
-  dds.isCubemap = !!(caps2 & DDSCAPS2_CUBEMAP);
+  dds.isCubemap = caps2 & DDSCAPS2_CUBEMAP ? true : false;
   if (dds.isCubemap && (!(caps2 & DDSCAPS2_CUBEMAP_POSITIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEX) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEY) || !(caps2 & DDSCAPS2_CUBEMAP_POSITIVEZ) || !(caps2 & DDSCAPS2_CUBEMAP_NEGATIVEZ))) {
 
-    console.error('DDSLoader.parse: Incomplete cubemap faces');
+    console.error('THREE.DDSLoader.parse: Incomplete cubemap faces');
     return dds;
   }
 
@@ -53272,7 +54220,7 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
         var byteArray = new Uint8Array(buffer, dataOffset, dataLength);
       }
 
-      var mipmap = { data: byteArray, width: width, height: height };
+      var mipmap = { "data": byteArray, "width": width, "height": height };
       dds.mipmaps.push(mipmap);
 
       dataOffset += dataLength;
@@ -53287,6 +54235,18 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
+
+/**
+ * @author renej
+ * NURBS utils
+ *
+ * See NURBSCurve and NURBSSurface.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS Utils
+ **************************************************************/
 
 var NURBSUtils = {
 
@@ -53681,6 +54641,20 @@ var NURBSUtils = {
 
 };
 
+/**
+ * @author renej
+ * NURBS curve object
+ *
+ * Derives from Curve, overriding getPoint and getTangent.
+ *
+ * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
+ *
+ **/
+
+/**************************************************************
+ *	NURBS curve
+ **************************************************************/
+
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -53728,6 +54702,33 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
+/**
+ * @author Kyle-Larson https://github.com/Kyle-Larson
+ * @author Takahiro https://github.com/takahirox
+ *
+ * Loader loads FBX file and generates Group representing FBX scene.
+ * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
+ *
+ * Supports:
+ * 	Mesh Generation (Positional Data)
+ * 	Normal Data (Per Vertex Drawing Instance)
+ *  UV Data (Per Vertex Drawing Instance)
+ *  Skinning
+ *  Animation
+ * 	- Separated Animations based on stacks.
+ * 	- Skeletal & Non-Skeletal Animations
+ *  NURBS (Open, Closed and Periodic forms)
+ *
+ * Needs Support:
+ * 	Indexed Buffers
+ * 	PreRotation support.
+ */
+
+/**
+ * Generates a loader for loading FBX files from URL and parsing into
+ * a THREE.Group.
+ * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
+ */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -58416,6 +59417,9 @@ var Loaders = function Loaders() {
   };
 };
 
+// Fix for bug in FBXLoader
+// https://github.com/mrdoob/three.js/issues/11911
+// This will hopefully be added to the FBXLoader eventually, in the meantime...
 function invertMirroredFBX(object) {
 
           object.traverse(function (child) {
