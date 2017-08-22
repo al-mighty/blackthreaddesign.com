@@ -22,10 +22,10 @@ const timing = {
 
   // point at which nao's kick makes connection
   // ballMoveStart: 0, // for testing
-  ballMoveStart: 10,
+  ballMoveStart: 12.75,
 
   // ball rolls this long
-  ballMoveDuration: 3,
+  // ballMoveDuration: 2,
 
   // all animations end
   // get ballMoveEnd() { return this.ballMoveStart + this.ballMoveDuration; },
@@ -151,9 +151,7 @@ export default class Simulation {
       THREE.Math.randInt( -15, 30 ),
     ];
 
-    this.naoPivotPosition = [ this.ballInitialPos[0] - 5, 0, this.ballInitialPos[2] - 5 ];
-
-    this.naoInitialPos = [ this.naoPivotPosition[0] - 35, 0, this.naoPivotPosition[2] - 25 ];
+    this.naoInitialPos = [ this.ballInitialPos[0] - 44, 0, this.ballInitialPos[2] - 37 ];
 
     this.ballFinalPos = [
       85,
@@ -211,7 +209,6 @@ export default class Simulation {
 
     this.ball.position.set( this.ballInitialPos[0], this.ballInitialPos[1], this.ballInitialPos[2] );
 
-    this.naoPivot.position.set( ...this.naoPivotPosition );
     this.nao.position.set( this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2] );
 
     this.nao.rotation.set( 0, 0, 0 );
