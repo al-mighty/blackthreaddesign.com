@@ -59330,6 +59330,38 @@ function slice(a, b, from, to) {
   return a;
 }
 
+/**
+ * @author bhouston / http://clara.io/
+ */
+
+function AnimationLoader(manager) {
+
+    this.manager = manager !== undefined ? manager : DefaultLoadingManager;
+}
+
+Object.assign(AnimationLoader.prototype, {
+    load: function (url, onLoad, onProgress, onError) {
+
+        var scope = this;
+
+        var loader = new FileLoader(scope.manager);
+        loader.load(url, function (text) {
+
+            scope.parse(JSON.parse(text), onLoad);
+        }, onProgress, onError);
+    },
+    parse: function (json, onLoad) {
+
+        var tracks = json.tracks.map(function (t) {
+            return KeyframeTrack.parse(t);
+        });
+
+        var clip = new AnimationClip(json.name, json.duration, tracks);
+
+        onLoad(clip);
+    }
+});
+
 var loadingManager = new LoadingManager();
 
 var percentComplete = 0;
@@ -59363,6 +59395,7 @@ loadingManager.onError = function (msg) {
 var objectLoader = null;
 var bufferGeometryLoader = null;
 var jsonLoader = null;
+var animationLoader = null;
 var fbxLoader = null;
 
 var defaultReject = function (err) {
@@ -59405,6 +59438,13 @@ var Loaders = function Loaders() {
         jsonLoader = promisifyLoader(new JSONLoader(loadingManager));
       }
       return jsonLoader;
+    },
+
+    get animationLoader() {
+      if (animationLoader === null) {
+        animationLoader = promisifyLoader(new AnimationLoader(loadingManager));
+      }
+      return animationLoader;
     },
 
     get fbxLoader() {
@@ -59479,8 +59519,8 @@ var timing = {
     },
 
     // point at which nao's kick makes connection
-    ballMoveStart: 0, // for testing
-    // ballMoveStart: 13.5,
+    // ballMoveStart: 0, // for testing
+    ballMoveStart: 10,
 
     // ball rolls this long
     ballMoveDuration: 3
@@ -59499,6 +59539,8 @@ var Simulation = function () {
 
         this.loadModels();
 
+        this.loadAnimations();
+
         this.postLoad();
     }
 
@@ -59508,6 +59550,8 @@ var Simulation = function () {
     Simulation.prototype.preLoad = function preLoad() {
 
         this.loadingPromises = [];
+
+        this.animations = {};
 
         this.initPositions();
 
@@ -59524,10 +59568,7 @@ var Simulation = function () {
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
-            // console.log( object )
             object.getObjectByName('Field').receiveShadow = true;
-
-            // console.log( object )
 
             // field width width ~140cm, length ~200cm
             canvas$1.app.scene.add(object);
@@ -59542,47 +59583,58 @@ var Simulation = function () {
 
             _this.naoPivot = new Group();
             _this.naoPivot.add(object);
-
-            // this.nao.animations = object.animations;
-            // console.log( this.nao )
-            // this.nao = object;
-            // this.nao.castShadow = true;
         });
 
         var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (object) {
 
-            // rotate to make the roll animation play correctly
-            object.rotation.set(0, -Math.PI / 2, 0);
+            // this.ball = object;
 
-            _this.ball = object;
-            // this.ball.children[0].castShadow = true;
-            // this.ball.castShadow = true;
 
+            _this.ball = new Group();
+
+            // this.ball.rotation.set( 0, -Math.PI / 2, 0 );
+
+            _this.ballMesh = object;
+
+            // this.ballMesh.rotation.set( 0, 0, -Math.PI / 2 );
+
+            _this.ball.add(_this.ballMesh);
         });
 
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
+    };
+
+    Simulation.prototype.loadAnimations = function loadAnimations() {
+        var _this2 = this;
+
+        var rollPromise = loaders.animationLoader('/assets/models/robot/anims/roll.json').then(function (object) {
+
+            _this2.animations.roll = object;
+
+            // console.log( object )
+        });
+
+        this.loadingPromises.push(rollPromise);
     };
 
     // everything done after loading is called here
 
 
     Simulation.prototype.postLoad = function postLoad() {
-        var _this2 = this;
+        var _this3 = this;
 
         Promise.all(this.loadingPromises).then(function () {
 
             HTMLControl.controls.simulate.disabled = false;
 
-            _this2.setInitialTransforms();
-            _this2.addObjects();
+            _this3.setInitialTransforms();
+            _this3.addObjects();
 
-            _this2.initMixers();
+            _this3.initMixers();
 
-            _this2.initSimulation();
+            _this3.initSimulation();
 
             canvas$1.app.play();
-
-            _this2.testingFunctions();
         });
     };
 
@@ -59590,7 +59642,7 @@ var Simulation = function () {
 
 
     Simulation.prototype.initPositions = function initPositions() {
-        this.ballInitialPos = [_Math.randInt(-15, 30), 0, _Math.randInt(-15, 30)];
+        this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
 
         this.naoPivotPosition = [this.ballInitialPos[0] - 5, 0, this.ballInitialPos[2] - 5];
 
@@ -59611,9 +59663,11 @@ var Simulation = function () {
     };
 
     Simulation.prototype.initReset = function initReset() {
-        var _this3 = this;
+        var _this4 = this;
 
         HTMLControl.controls.reset.addEventListener('click', function () {
+
+            cancelAnimationFrame(_this4.ballAnimationFrameId);
 
             animationControls.reset();
             canvas$1.app.controls.reset();
@@ -59622,9 +59676,9 @@ var Simulation = function () {
 
             animationControls.reset();
 
-            _this3.initPositions();
-            _this3.setInitialTransforms();
-            _this3.initMixers();
+            _this4.initPositions();
+            _this4.setInitialTransforms();
+            _this4.initMixers();
         });
     };
 
@@ -59643,6 +59697,8 @@ var Simulation = function () {
         this.nao.position.set(this.naoInitialPos[0], this.naoInitialPos[1], this.naoInitialPos[2]);
 
         this.nao.rotation.set(0, 0, 0);
+        this.ball.rotation.set(0, 0, 0);
+        this.ballMesh.rotation.set(0, 0, 0);
     };
 
     Simulation.prototype.initMixers = function initMixers() {
@@ -59701,27 +59757,118 @@ var Simulation = function () {
 
     Simulation.prototype.initBallAnimation = function initBallAnimation(slope) {
 
-        // the ball will always stop at the same final x position, however the z position will be calculated
-        // from the slope
-        // y2 - y1 = m(x2 - x1)
-        // -> y2 = m(m2 - x1) + y1
-        var finalZPos = slope * (this.ballFinalPos[0] - this.ballInitialPos[0]) + this.ballInitialPos[2];
+        // ball initial velocity ( not physically calculated, just start at 1 )
+        var initialVelocity = 1;
 
-        this.ballFinalPos[2] = finalZPos;
+        // split this into x and z components based on slope
+        var angle = Math.tan(slope);
+        var xVel = Math.cos(angle) * initialVelocity;
+        var zVel = Math.sin(angle) * initialVelocity;
 
-        var rollTrack = this.ball.animations[0].tracks[1];
+        this.moveBall(xVel, zVel);
+    };
 
-        // move (translate)
-        var moveKF = new VectorKeyframeTrack('.position', [0.05, 1.95], [].concat(this.ballInitialPos, this.ballFinalPos), InterpolateSmooth);
+    // very simple physics model for ball
 
-        // combine roll and move into a 2 second clip - the length could be adjusted based on balls
-        // initial position
-        var moveClip = new AnimationClip('ball_move', 2, [moveKF, rollTrack]);
-        animationControls.initAnimation(this.ball, moveClip, this.ballMixer, timing.ballMoveStart);
+
+    Simulation.prototype.moveBall = function moveBall(xVel, zVel) {
+
+        var self = this;
+
+        // Rotate an object around an arbitrary axis in object space
+        var rotObjectMatrix = new Matrix4();
+        function rotateAroundObjectAxis(object, axis, radians) {
+
+            rotObjectMatrix.makeRotationAxis(axis.normalize(), radians);
+
+            object.matrix.multiply(rotObjectMatrix);
+
+            object.rotation.setFromRotationMatrix(object.matrix);
+        }
+
+        var rotWorldMatrix = new Matrix4();
+        // Rotate an object around an arbitrary axis in world space
+        function rotateAroundWorldAxis(object, axis, radians) {
+
+            rotWorldMatrix.makeRotationAxis(axis.normalize(), radians);
+
+            rotWorldMatrix.multiply(object.matrix);
+
+            object.matrix = rotWorldMatrix;
+
+            object.rotation.setFromRotationMatrix(object.matrix);
+        }
+
+        // rotation around z-x axis
+        var axis = new Vector3();
+
+        function ballMover() {
+
+            // checks to reverse x direction
+            var postXPositionCheck = self.ball.position.x >= 73;
+            var nearPostZPositionCheck = postXPositionCheck && self.ball.position.z >= 20 && self.ball.position.z <= 30;
+            var farPostZPositionCheck = postXPositionCheck && self.ball.position.z <= -20 && self.ball.position.z >= -30;
+            var postCheck = nearPostZPositionCheck || farPostZPositionCheck;
+
+            var nearFrontAdBoardCheck = self.ball.position.x >= 87 && self.ball.position.z <= -20;
+            var farFrontAdBoardCheck = self.ball.position.x >= 87 && self.ball.position.z >= 20;
+            var frontAdBoardCheck = farFrontAdBoardCheck || nearFrontAdBoardCheck;
+
+            var backOfGoalCheck = self.ball.position.x >= 92;
+
+            // checks to reverse z direction
+            var topAndBottomWallCheck = self.ball.position.z >= 55 || self.ball.position.z <= -55;
+
+            if (postCheck || frontAdBoardCheck) xVel *= -1;
+
+            if (backOfGoalCheck) {
+
+                xVel *= -0.5;
+                zVel *= 0.5;
+            }
+
+            if (topAndBottomWallCheck) zVel *= -1;
+
+            self.ball.translateX(xVel);
+            self.ball.translateZ(zVel);
+
+            xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
+            zVel *= 0.99166;
+
+            var totalVelocity = Math.sqrt(xVel * xVel + zVel * zVel);
+
+            // const xAngle = xVel / ( Math.PI * 10 ) * Math.PI;
+            // const zAngle = zVel / ( Math.PI * 10 ) * Math.PI;
+
+            var angle = totalVelocity / (Math.PI * 10) * Math.PI;
+
+            // for movement in x rotate around z axis and vice versa
+            axis.set(zVel, 0, -xVel).normalize();
+
+            // self.ballMesh.rotation.z -= xAngle;
+
+            // and for movement in z rotate around x axis
+            // self.ballMesh.rotation.x += zAngle;
+
+            self.ballMesh.rotateOnAxis(axis, angle);
+
+            if (totalVelocity < 0.05) return;
+
+            self.ballAnimationFrameId = requestAnimationFrame(function () {
+                ballMover();
+            });
+        }
+
+        setInterval(function () {
+
+            ballMover();
+        }, timing.ballMoveStart * 1000);
+
+        // timer.start();
     };
 
     Simulation.prototype.initSimulation = function initSimulation() {
-        var _this4 = this;
+        var _this5 = this;
 
         HTMLControl.setInitialState();
 
@@ -59731,88 +59878,14 @@ var Simulation = function () {
 
             var slope = -HTMLControl.controls.slope.value;
 
-            // this.initNaoAnimation( slope );
-            _this4.initBallAnimation(slope);
+            _this5.initNaoAnimation(slope);
+            _this5.initBallAnimation(slope);
 
             animationControls.play();
 
             HTMLControl.controls.simulate.disabled = true;
             HTMLControl.controls.reset.disabled = false;
         }, false);
-    };
-
-    Simulation.prototype.testingFunctions = function testingFunctions() {
-
-        this.addBallConstraintGuides();
-        // this.pivotPointMarker();
-    };
-
-    Simulation.prototype.addBallConstraintGuides = function addBallConstraintGuides() {
-
-        var groundGeo = new PlaneBufferGeometry(182, 120, 1, 1);
-
-        var groundMesh = new Mesh(groundGeo);
-
-        groundMesh.position.set(0, 2, 0);
-        groundMesh.rotation.x = -Math.PI / 2;
-
-        var postGeo = new CylinderBufferGeometry(2, 2, 40, 12, 12);
-
-        var farPostMesh = new Mesh(postGeo);
-        farPostMesh.position.set(78, 0, 24.5);
-
-        var nearPostMesh = new Mesh(postGeo);
-        nearPostMesh.position.set(78, 0, -25);
-
-        canvas$1.app.scene.add(groundMesh, farPostMesh, nearPostMesh);
-    };
-
-    Simulation.prototype.pivotPointMarker = function pivotPointMarker() {
-        var _mesh$position;
-
-        var geo = new BoxBufferGeometry(8, 40, 2);
-        var mesh = new Mesh(geo);
-        (_mesh$position = mesh.position).set.apply(_mesh$position, this.naoPivotPosition);
-
-        this.naoPivotMarker = mesh;
-        canvas$1.app.scene.add(mesh);
-
-        // this.pivotMixer = new THREE.AnimationMixer( this.naoPivotMarker );
-        // this.pivotMixer.name = 'nao mixer';
-
-        // // this.initNaoPrebuiltAnimation();
-
-        // // calculate rotation based on slope
-        // const rotationAmount = 0;
-
-        // // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
-
-        // // set up rotation about y axis
-        // const yAxis = new THREE.Vector3( 0, 1, 0 );
-
-        // // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
-        // // apply this correction
-        // const correction = THREE.Math.degToRad( 30 );
-
-        // const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-        // const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount + correction );
-
-        // // turn from initial angle to final angle over 0.5 seconds
-        // const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
-        //   [
-        //     0,
-        //     timing.naoTurnDuration,
-        //   ],
-        //   [
-        //     qInitial.x, qInitial.y, qInitial.z, qInitial.w,
-        //     qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
-        //     );
-
-        // const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
-
-        // animationControls.initAnimation( this.naoPivotMarker, turnClip, this.pivotMixer, 0 );
-
-        // console.log( timing.naoTurnDuration, timing.naoTurnStart );
     };
 
     return Simulation;

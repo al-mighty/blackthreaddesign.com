@@ -57,7 +57,6 @@ export default class Loaders {
         return animationLoader;
       },
 
-
       get fbxLoader() {
         if ( fbxLoader === null ) {
           fbxLoader = promisifyLoader( new FBXLoader( loadingManager ) );
