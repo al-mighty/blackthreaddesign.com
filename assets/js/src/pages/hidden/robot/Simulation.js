@@ -214,20 +214,24 @@ export default class Simulation {
     const xVel = Math.cos( angle ) * initialVelocity;
     const zVel = Math.sin( angle ) * initialVelocity;
 
-    this.moveBall( xVel, zVel );
+    this.moveBall( xVel, zVel, angle );
 
   }
 
   // very simple physics model for ball
-  moveBall( xVel, zVel ) {
+  moveBall( xVel, zVel, angle ) {
 
     const self = this;
 
     // set up rotation axis
-    const axis = new THREE.Vector3();
+    const axis = new THREE.Vector3( 0, 0, 1 );
 
-    axis.set( xVel, 0, zVel ).normalize();
-    axis.cross( THREE.Object3D.DefaultUp );
+    // axis.set( xVel, 0, zVel ).normalize();
+    // axis.cross( THREE.Object3D.DefaultUp );
+
+    this.ball.rotateY( -angle );
+
+    let totalVelocity = 1;
 
     function ballMover() {
 
@@ -250,42 +254,47 @@ export default class Simulation {
 
         // don't reverse the direction more than once as this can cause 'juddering'
         // as the direction is rapidly changed
-        xVel *= -1 * Math.sign( xVel );
+        // xVel *= -1 * Math.sign( xVel );
 
-        axis.set( xVel, 0, zVel ).normalize();
-        axis.cross( THREE.Object3D.DefaultUp );
+        // axis.set( xVel, 0, zVel ).normalize();
+        // axis.cross( THREE.Object3D.DefaultUp );
 
       }
 
       if ( backOfGoalCheck ) {
 
-        xVel *= -0.5 * Math.sign( xVel );
-        zVel *= 0.5;
+        // xVel *= -0.5 * Math.sign( xVel );
+        // zVel *= 0.5;
 
-        axis.set( xVel, 0, zVel ).normalize();
-        axis.cross( THREE.Object3D.DefaultUp );
+        // axis.set( xVel, 0, zVel ).normalize();
+        // axis.cross( THREE.Object3D.DefaultUp );
 
       }
 
       if ( topAndBottomWallCheck ) {
 
-        zVel *= -1;
+        // zVel *= -1;
 
-        axis.set( xVel, 0, zVel ).normalize();
-        axis.cross( THREE.Object3D.DefaultUp );
+        // axis.set( xVel, 0, zVel ).normalize();
+        // axis.cross( THREE.Object3D.DefaultUp );
+
+        self.ball.rotateY( Math.PI - ( 2 * angle ) );
 
       }
 
-      self.ball.translateX( xVel );
-      self.ball.translateZ( zVel );
+      // self.ball.translateX( xVel );
+      // self.ball.translateZ( zVel );
+      self.ball.translateX( totalVelocity );
 
-      xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
-      zVel *= 0.99166;
+      totalVelocity *= 0.99166;
 
-      const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
+      // xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
+      // zVel *= 0.99166;
 
-      const angle = -totalVelocity / ( Math.PI * 10 ) * Math.PI;
-      self.ballMesh.rotateOnAxis( axis, angle );
+      // const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
+
+      const amount = -totalVelocity / ( Math.PI * 10 ) * Math.PI;
+      self.ballMesh.rotateOnAxis( axis, amount );
 
 
 
@@ -297,11 +306,11 @@ export default class Simulation {
 
     setInterval( () => {
 
-      ballMover();
+      // ballMover();
 
     }, timing.ballMoveStart * 1000 );
 
-    // ballMover(); // roll ball immediately for testing
+    ballMover(); // roll ball immediately for testing
 
   }
 
@@ -315,7 +324,7 @@ export default class Simulation {
 
       const slope = -HTMLControl.controls.slope.value;
 
-      this.initNaoAnimation( slope );
+      // this.initNaoAnimation();
       this.initBallAnimation( slope );
 
       animationControls.play();
