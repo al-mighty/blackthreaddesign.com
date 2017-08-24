@@ -11,24 +11,7 @@ const loaders = new Loaders();
 
 const timing = {
 
-  naoAnimStart: 0,
-
-  // turn to correct direction to kick ball
-  naoTurnStart: 10.5,
-
-  naoTurnDuration: 2,
-
-  get naoTurnEnd() { return this.naoTurnStart + this.naoTurnDuration; },
-
-  // point at which nao's kick makes connection
-  // ballMoveStart: 0, // for testing
-  ballMoveStart: 12.75,
-
-  // ball rolls this long
-  // ballMoveDuration: 2,
-
-  // all animations end
-  // get ballMoveEnd() { return this.ballMoveStart + this.ballMoveDuration; },
+  ballMoveStart: 13,
 
 };
 
@@ -80,26 +63,14 @@ export default class Simulation {
 
       this.nao = object;
 
-      this.naoPivot = new THREE.Group();
-      this.naoPivot.add( object );
-
     } );
 
     const ballPromise = loaders.fbxLoader( '/assets/models/robot/ball.fbx' ).then( ( object ) => {
 
-      // this.ball = object;
-
-
       this.ball = new THREE.Group();
 
-      // this.ball.rotation.set( 0, -Math.PI / 2, 0 );
-
       this.ballMesh = object;
-
-      // this.ballMesh.rotation.set( 0, 0, -Math.PI / 2 );
-
       this.ball.add( this.ballMesh );
-
 
     } );
 
@@ -147,7 +118,7 @@ export default class Simulation {
   initPositions() {
     this.ballInitialPos = [
       THREE.Math.randInt( -15, 30 ),
-      5,
+      4.75,
       THREE.Math.randInt( -15, 30 ),
     ];
 
@@ -200,7 +171,6 @@ export default class Simulation {
 
   addObjects() {
 
-    // canvas.app.scene.add( this.naoPivot, this.ball );
     canvas.app.scene.add( this.nao, this.ball );
 
   }
@@ -223,58 +193,13 @@ export default class Simulation {
     this.ballMixer.name = 'ball mixer';
     this.naoMixer = new THREE.AnimationMixer( this.nao );
     this.naoMixer.name = 'nao mixer';
-    this.naoPivotMixer = new THREE.AnimationMixer( this.naoPivot );
-    this.naoPivotMixer.name = 'nao mixer';
-
-    // this.naoMixer.addEventListener( 'finished', ( e ) => {
-
-    //   console.log( e.action );
-
-    // } );
-
-  }
-
-  initNaoPrebuiltAnimation() {
-
-    animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
 
   }
 
     // this is set up after the user has entered the slope
   initNaoAnimation( slope ) {
 
-    this.initNaoPrebuiltAnimation();
-
-    // calculate rotation based on slope
-    const rotationAmount = Math.tan( slope );
-
-    // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
-
-    // set up rotation about y axis
-    const yAxis = new THREE.Vector3( 0, 1, 0 );
-
-    // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
-    // apply this correction
-    const correction = THREE.Math.degToRad( 30 );
-
-    const qInitial = new THREE.Quaternion().setFromAxisAngle( yAxis, 0 );
-    const qFinal = new THREE.Quaternion().setFromAxisAngle( yAxis, rotationAmount + correction );
-
-    // turn from initial angle to final angle over 0.5 seconds
-    const turnKF = new THREE.QuaternionKeyframeTrack( '.quaternion',
-      [
-        0,
-        timing.naoTurnDuration,
-      ],
-      [
-        qInitial.x, qInitial.y, qInitial.z, qInitial.w,
-        qFinal.x, qFinal.y, qFinal.z, qFinal.w ],
-            );
-
-    const turnClip = new THREE.AnimationClip( 'nao_turn', timing.naoTurnDuration, [ turnKF ] );
-
-    animationControls.initAnimation( this.naoPivot, turnClip, this.naoPivotMixer, 0 );
-
+    animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
 
   }
 
@@ -298,32 +223,11 @@ export default class Simulation {
 
     const self = this;
 
-    // Rotate an object around an arbitrary axis in object space
-    const rotObjectMatrix = new THREE.Matrix4();
-    function rotateAroundObjectAxis( object, axis, radians ) {
-
-      rotObjectMatrix.makeRotationAxis( axis.normalize(), radians );
-
-      object.matrix.multiply( rotObjectMatrix );
-
-      object.rotation.setFromRotationMatrix( object.matrix );
-    }
-
-    const rotWorldMatrix = new THREE.Matrix4();
-    // Rotate an object around an arbitrary axis in world space
-    function rotateAroundWorldAxis( object, axis, radians ) {
-
-      rotWorldMatrix.makeRotationAxis( axis.normalize(), radians );
-
-      rotWorldMatrix.multiply( object.matrix );
-
-      object.matrix = rotWorldMatrix;
-
-      object.rotation.setFromRotationMatrix( object.matrix );
-    }
-
-    // rotation around z-x axis
+    // set up rotation axis
     const axis = new THREE.Vector3();
+
+    axis.set( xVel, 0, zVel ).normalize();
+    axis.cross( THREE.Object3D.DefaultUp );
 
     function ballMover() {
 
@@ -342,16 +246,35 @@ export default class Simulation {
       // checks to reverse z direction
       const topAndBottomWallCheck = self.ball.position.z >= 55 || self.ball.position.z <= -55;
 
-      if ( postCheck || frontAdBoardCheck ) xVel *= -1;
+      if ( postCheck || frontAdBoardCheck ) {
 
-      if ( backOfGoalCheck ) {
+        // don't reverse the direction more than once as this can cause 'juddering'
+        // as the direction is rapidly changed
+        xVel *= -1 * Math.sign( xVel );
 
-        xVel *= -0.5;
-        zVel *= 0.5;
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
 
       }
 
-      if ( topAndBottomWallCheck ) zVel *= -1;
+      if ( backOfGoalCheck ) {
+
+        xVel *= -0.5 * Math.sign( xVel );
+        zVel *= 0.5;
+
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
+
+      }
+
+      if ( topAndBottomWallCheck ) {
+
+        zVel *= -1;
+
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
+
+      }
 
       self.ball.translateX( xVel );
       self.ball.translateZ( zVel );
@@ -361,21 +284,10 @@ export default class Simulation {
 
       const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
 
-      // const xAngle = xVel / ( Math.PI * 10 ) * Math.PI;
-      // const zAngle = zVel / ( Math.PI * 10 ) * Math.PI;
-
-      const angle = totalVelocity / ( Math.PI * 10 ) * Math.PI;
-
-      // for movement in x rotate around z axis and vice versa
-      axis.set( zVel, 0, -xVel ).normalize();
-
-
-      // self.ballMesh.rotation.z -= xAngle;
-
-      // and for movement in z rotate around x axis
-      // self.ballMesh.rotation.x += zAngle;
-
+      const angle = -totalVelocity / ( Math.PI * 10 ) * Math.PI;
       self.ballMesh.rotateOnAxis( axis, angle );
+
+
 
       if ( totalVelocity < 0.05 ) return;
 
@@ -389,7 +301,7 @@ export default class Simulation {
 
     }, timing.ballMoveStart * 1000 );
 
-    // timer.start();
+    // ballMover(); // roll ball immediately for testing
 
   }
 

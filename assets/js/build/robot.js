@@ -59387,26 +59387,7 @@ var loaders = new Loaders();
 
 var timing = {
 
-    naoAnimStart: 0,
-
-    // turn to correct direction to kick ball
-    naoTurnStart: 10.5,
-
-    naoTurnDuration: 2,
-
-    get naoTurnEnd() {
-        return this.naoTurnStart + this.naoTurnDuration;
-    },
-
-    // point at which nao's kick makes connection
-    // ballMoveStart: 0, // for testing
-    ballMoveStart: 12.75
-
-    // ball rolls this long
-    // ballMoveDuration: 2,
-
-    // all animations end
-    // get ballMoveEnd() { return this.ballMoveStart + this.ballMoveDuration; },
+    ballMoveStart: 13
 
 };
 
@@ -59460,24 +59441,13 @@ var Simulation = function () {
             invertMirroredFBX(object);
 
             _this.nao = object;
-
-            _this.naoPivot = new Group();
-            _this.naoPivot.add(object);
         });
 
         var ballPromise = loaders.fbxLoader('/assets/models/robot/ball.fbx').then(function (object) {
 
-            // this.ball = object;
-
-
             _this.ball = new Group();
 
-            // this.ball.rotation.set( 0, -Math.PI / 2, 0 );
-
             _this.ballMesh = object;
-
-            // this.ballMesh.rotation.set( 0, 0, -Math.PI / 2 );
-
             _this.ball.add(_this.ballMesh);
         });
 
@@ -59522,7 +59492,7 @@ var Simulation = function () {
 
 
     Simulation.prototype.initPositions = function initPositions() {
-        this.ballInitialPos = [_Math.randInt(-15, 30), 5, _Math.randInt(-15, 30)];
+        this.ballInitialPos = [_Math.randInt(-15, 30), 4.75, _Math.randInt(-15, 30)];
 
         this.naoInitialPos = [this.ballInitialPos[0] - 44, 0, this.ballInitialPos[2] - 37];
 
@@ -59562,7 +59532,6 @@ var Simulation = function () {
 
     Simulation.prototype.addObjects = function addObjects() {
 
-        // canvas.app.scene.add( this.naoPivot, this.ball );
         canvas$1.app.scene.add(this.nao, this.ball);
     };
 
@@ -59583,19 +59552,6 @@ var Simulation = function () {
         this.ballMixer.name = 'ball mixer';
         this.naoMixer = new AnimationMixer(this.nao);
         this.naoMixer.name = 'nao mixer';
-        this.naoPivotMixer = new AnimationMixer(this.naoPivot);
-        this.naoPivotMixer.name = 'nao mixer';
-
-        // this.naoMixer.addEventListener( 'finished', ( e ) => {
-
-        //   console.log( e.action );
-
-        // } );
-    };
-
-    Simulation.prototype.initNaoPrebuiltAnimation = function initNaoPrebuiltAnimation() {
-
-        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
     };
 
     // this is set up after the user has entered the slope
@@ -59603,29 +59559,7 @@ var Simulation = function () {
 
     Simulation.prototype.initNaoAnimation = function initNaoAnimation(slope) {
 
-        this.initNaoPrebuiltAnimation();
-
-        // calculate rotation based on slope
-        var rotationAmount = Math.tan(slope);
-
-        // Rotation is performed using quaternions, via a QuaternionKeyframeTrack
-
-        // set up rotation about y axis
-        var yAxis = new Vector3(0, 1, 0);
-
-        // nao is turned at this point in the prebuilt animations at 30 degrees to the ball
-        // apply this correction
-        var correction = _Math.degToRad(30);
-
-        var qInitial = new Quaternion().setFromAxisAngle(yAxis, 0);
-        var qFinal = new Quaternion().setFromAxisAngle(yAxis, rotationAmount + correction);
-
-        // turn from initial angle to final angle over 0.5 seconds
-        var turnKF = new QuaternionKeyframeTrack('.quaternion', [0, timing.naoTurnDuration], [qInitial.x, qInitial.y, qInitial.z, qInitial.w, qFinal.x, qFinal.y, qFinal.z, qFinal.w]);
-
-        var turnClip = new AnimationClip('nao_turn', timing.naoTurnDuration, [turnKF]);
-
-        animationControls.initAnimation(this.naoPivot, turnClip, this.naoPivotMixer, 0);
+        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
     };
 
     // this is set up after the user has entered the slope
@@ -59651,32 +59585,11 @@ var Simulation = function () {
 
         var self = this;
 
-        // Rotate an object around an arbitrary axis in object space
-        var rotObjectMatrix = new Matrix4();
-        function rotateAroundObjectAxis(object, axis, radians) {
-
-            rotObjectMatrix.makeRotationAxis(axis.normalize(), radians);
-
-            object.matrix.multiply(rotObjectMatrix);
-
-            object.rotation.setFromRotationMatrix(object.matrix);
-        }
-
-        var rotWorldMatrix = new Matrix4();
-        // Rotate an object around an arbitrary axis in world space
-        function rotateAroundWorldAxis(object, axis, radians) {
-
-            rotWorldMatrix.makeRotationAxis(axis.normalize(), radians);
-
-            rotWorldMatrix.multiply(object.matrix);
-
-            object.matrix = rotWorldMatrix;
-
-            object.rotation.setFromRotationMatrix(object.matrix);
-        }
-
-        // rotation around z-x axis
+        // set up rotation axis
         var axis = new Vector3();
+
+        axis.set(xVel, 0, zVel).normalize();
+        axis.cross(Object3D.DefaultUp);
 
         function ballMover() {
 
@@ -59695,15 +59608,32 @@ var Simulation = function () {
             // checks to reverse z direction
             var topAndBottomWallCheck = self.ball.position.z >= 55 || self.ball.position.z <= -55;
 
-            if (postCheck || frontAdBoardCheck) xVel *= -1;
+            if (postCheck || frontAdBoardCheck) {
+
+                // don't reverse the direction more than once as this can cause 'juddering'
+                // as the direction is rapidly changed
+                xVel *= -1 * Math.sign(xVel);
+
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
+            }
 
             if (backOfGoalCheck) {
 
-                xVel *= -0.5;
+                xVel *= -0.5 * Math.sign(xVel);
                 zVel *= 0.5;
+
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
             }
 
-            if (topAndBottomWallCheck) zVel *= -1;
+            if (topAndBottomWallCheck) {
+
+                zVel *= -1;
+
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
+            }
 
             self.ball.translateX(xVel);
             self.ball.translateZ(zVel);
@@ -59713,19 +59643,7 @@ var Simulation = function () {
 
             var totalVelocity = Math.sqrt(xVel * xVel + zVel * zVel);
 
-            // const xAngle = xVel / ( Math.PI * 10 ) * Math.PI;
-            // const zAngle = zVel / ( Math.PI * 10 ) * Math.PI;
-
-            var angle = totalVelocity / (Math.PI * 10) * Math.PI;
-
-            // for movement in x rotate around z axis and vice versa
-            axis.set(zVel, 0, -xVel).normalize();
-
-            // self.ballMesh.rotation.z -= xAngle;
-
-            // and for movement in z rotate around x axis
-            // self.ballMesh.rotation.x += zAngle;
-
+            var angle = -totalVelocity / (Math.PI * 10) * Math.PI;
             self.ballMesh.rotateOnAxis(axis, angle);
 
             if (totalVelocity < 0.05) return;
@@ -59740,7 +59658,7 @@ var Simulation = function () {
             ballMover();
         }, timing.ballMoveStart * 1000);
 
-        // timer.start();
+        // ballMover(); // roll ball immediately for testing
     };
 
     Simulation.prototype.initSimulation = function initSimulation() {
