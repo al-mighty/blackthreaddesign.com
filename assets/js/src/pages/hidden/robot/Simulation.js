@@ -279,6 +279,7 @@ export default class Simulation {
         // axis.cross( THREE.Object3D.DefaultUp );
 
         self.ball.rotateY( Math.PI - ( 2 * angle ) );
+        self.ballMesh.rotateY( -( Math.PI - ( 2 * angle ) ) );
 
       }
 

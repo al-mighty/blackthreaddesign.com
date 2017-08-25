@@ -32,7 +32,7 @@ export default class Simulation {
 
   loadModels() {
 
-    const playerPromise = loaders.fbxLoader( '/assets/models/nfl/test.fbx' ).then( ( object ) => {
+    const playerPromise = loaders.fbxLoader( '/assets/models/nfl/white_player_static.fbx' ).then( ( object ) => {
 
       this.player = object;
 
