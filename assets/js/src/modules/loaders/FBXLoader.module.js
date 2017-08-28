@@ -313,8 +313,6 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
   const name = textureNode.name;
 
-  // console.log( name )
-
   let fileName;
 
   const filePath = textureNode.properties.FileName;
@@ -358,10 +356,11 @@ function parseTexture( textureNode, loader, imageMap, connections ) {
 
   }
 
-		/**
-		 * @type {THREE.Texture}
-		 */
+  /**
+   * @type {THREE.Texture}
+   */
   const texture = loader.load( fileName );
+
   texture.name = name;
   texture.FBX_ID = FBX_ID;
 
@@ -401,7 +400,8 @@ function parseMaterials( FBXTree, textureMap, connections ) {
     for ( const nodeID in materialNodes ) {
 
       const material = parseMaterial( materialNodes[ nodeID ], textureMap, connections );
-      materialMap.set( parseInt( nodeID ), material );
+      // materialMap.set( parseInt( nodeID ), material );
+      if ( material !== null ) materialMap.set( parseInt( nodeID ), material );
 
     }
 
@@ -431,6 +431,10 @@ function parseMaterial( materialNode, textureMap, connections ) {
 
   }
 
+  // Seems like FBX can include unused materials which don't have any connections.
+  // Ignores them so far.
+	if ( ! connections.has( FBX_ID ) ) return null;
+
   const children = connections.get( FBX_ID ).children;
 
   const parameters = parseParameters( materialNode.properties, textureMap, children );
@@ -446,8 +450,8 @@ function parseMaterial( materialNode, textureMap, connections ) {
       material = new THREE.MeshLambertMaterial();
       break;
     default:
-      console.warn( 'No implementation given for material type ' + type + ' in FBXLoader.js.  Defaulting to basic material' );
-      material = new THREE.MeshBasicMaterial( { color: 0x3300ff } );
+      console.warn( 'THREE.FBXLoader: No implementation given for material type %s in FBXLoader.js. Defaulting to standard material.', type );
+      material = new THREE.MeshStandardMaterial( { color: 0x3300ff } );
       break;
 
   }
@@ -1417,7 +1421,7 @@ function parseScene( FBXTree, connections, deformers, geometryMap, materialMap )
 
           } else {
 
-            material = new THREE.MeshBasicMaterial( { color: 0x3300ff } );
+            material = new THREE.MeshStandardMaterial( { color: 0x3300ff } );
             materials.push( material );
 
           }

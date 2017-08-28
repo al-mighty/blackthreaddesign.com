@@ -6,9 +6,6 @@ import LightingSetup from './utilities/LightingSetup.js';
 
 import HTMLControl from './utilities/HTMLControl.js';
 
-import animationControls from './utilities/AnimationControls.js';
-
-
 /* ******************************************************** */
 
 // Set up THREE caching
@@ -18,7 +15,6 @@ class Canvas {
 
   constructor( canvas ) {
 
-    const self = this;
 
     this.canvas = canvas;
 
@@ -26,22 +22,9 @@ class Canvas {
 
     this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
 
-    // Put any per frame calculation here
-    this.app.onUpdate = function () {
-      // NB: use self inside this function
+    this.app.renderer.autoClear = false;
 
-      animationControls.update( self.app.delta );
-
-    };
-
-    // put any per resize calculations here (throttled to once per 250ms)
-    this.app.onWindowResize = function () {
-
-      // NB: use self inside this function
-
-    };
-
-    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
+    // this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
 
     this.lighting = new LightingSetup( this.app );
 
@@ -52,9 +35,9 @@ class Canvas {
     this.app.initControls();
     this.initControls();
 
-    this.initShadows();
+    // this.initShadows();
 
-    this.addGround();
+    // this.addGround();
 
   }
 

@@ -4,6 +4,7 @@ import canvas from './Canvas.js';
 
 import Loaders from './utilities/Loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
+import AttributeControls from './utilities/AttributeControls.js';
 import animationControls from './utilities/AnimationControls.js';
 
 const loaders = new Loaders();
@@ -28,6 +29,8 @@ export default class Simulation {
 
     this.loadingPromises = [];
 
+    this.controls = new AttributeControls();
+
   }
 
   loadModels() {
@@ -46,15 +49,33 @@ export default class Simulation {
 
   loadAnimations() {
 
-    const idlePromise = loaders.animationLoader( '/assets/models/nfl/anims/offensive_idle.json' ).then( ( object ) => {
+    animationControls.initMixer( this.player );
 
-      console.log( object );
+    const animationsNames = [
+      'catch_1',
+      'catch_2',
+      'catch_3',
+      'hike',
+      'idle',
+      'on_back_to_stand',
+      'on_front_to_stand',
+      'pass',
+      'pass_1',
+      'run',
+      'stance',
+      'stand',
+    ]
 
-      this.animations.idle = object;
+    animationsNames.forEach( ( name ) => {
+
+      this.loadingPromises.push( loaders.animationLoader( '/assets/models/nfl/anims/' + name + '.json' ).then( ( anim ) => {
+
+        anim.name = name;
+        animationControls.initAnimation( anim, name );
+
+      } ) );
 
     } );
-
-    this.loadingPromises.push( idlePromise );
 
   }
 
@@ -63,31 +84,14 @@ export default class Simulation {
     Promise.all( this.loadingPromises ).then(
       () => {
 
-        this.addObjectsToScene();
+        canvas.addObjectToScene( this.player );
 
-        this.initAnimations();
+        this.controls.init();
 
         canvas.app.play();
 
-        animationControls.play();
-
       },
     );
-
-  }
-
-  addObjectsToScene() {
-
-    canvas.addObjectToScene( this.player );
-
-  }
-
-  initAnimations() {
-
-    const mixer = new THREE.AnimationMixer( this.player );
-    mixer.name = 'mixer';
-
-    animationControls.initAnimation( this.player, this.animations.idle, mixer, 0 );
 
   }
 

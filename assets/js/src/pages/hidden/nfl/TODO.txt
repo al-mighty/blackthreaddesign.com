@@ -1,4 +1,10 @@
-Set width of goals in 3ds max
-Set up equation based on ball pos
-Move equation and reset / run buttons into canvas to allow fullscreen to work
-Fix reset button
+Set up all animations
+Set up zip loading
+Set up slider event listeners
+Switch between animations
+Set speed of animations from slider
+Smooth animation transitions
+Better lighting
+Foggy background
+Redesign
+Camera follow

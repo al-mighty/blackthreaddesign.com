@@ -44853,6 +44853,8 @@ var AnimationControls = function () {
   AnimationControls.prototype.initAnimation = function initAnimation(object) {
     var _this = this;
 
+    // console.log( object.animations )
+
     // don't do anything if the object has no animations
     if (!object.animations || object.animations.length === 0) return;
 
@@ -45270,7 +45272,6 @@ var exportAsJSON = function (object) {
   saveString(output, 'blackThreadJSONConversion.json');
 };
 
-// saving function taken from three.js editor
 var link$1 = document.createElement('a');
 link$1.style.display = 'none';
 document.body.appendChild(link$1); // Firefox workaround, see #6594
@@ -45332,6 +45333,7 @@ loadingManager.onProgress = function (url, currentFile, totalFiles) {
 loadingManager.onError = function (msg) {
 
   if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
+  // else console.error( 'THREE.LoadingManager error: ' + msg );
 };
 
 function DDSLoader() {
@@ -46267,8 +46269,6 @@ function parseTexture(textureNode, loader, imageMap, connections) {
 
   var name = textureNode.name;
 
-  // console.log( name )
-
   var fileName = void 0;
 
   var filePath = textureNode.properties.FileName;
@@ -46309,6 +46309,7 @@ function parseTexture(textureNode, loader, imageMap, connections) {
    * @type {THREE.Texture}
    */
   var texture = loader.load(fileName);
+
   texture.name = name;
   texture.FBX_ID = FBX_ID;
 
@@ -46346,7 +46347,8 @@ function parseMaterials(FBXTree, textureMap, connections) {
     for (var nodeID in materialNodes) {
 
       var material = parseMaterial(materialNodes[nodeID], textureMap, connections);
-      materialMap.set(parseInt(nodeID), material);
+      // materialMap.set( parseInt( nodeID ), material );
+      if (material !== null) materialMap.set(parseInt(nodeID), material);
     }
   }
 
@@ -46372,6 +46374,10 @@ function parseMaterial(materialNode, textureMap, connections) {
     type = type.value;
   }
 
+  // Seems like FBX can include unused materials which don't have any connections.
+  // Ignores them so far.
+  if (!connections.has(FBX_ID)) return null;
+
   var children = connections.get(FBX_ID).children;
 
   var parameters = parseParameters(materialNode.properties, textureMap, children);
@@ -46387,8 +46393,8 @@ function parseMaterial(materialNode, textureMap, connections) {
       material = new MeshLambertMaterial();
       break;
     default:
-      console.warn('No implementation given for material type ' + type + ' in FBXLoader.js.  Defaulting to basic material');
-      material = new MeshBasicMaterial({ color: 0x3300ff });
+      console.warn('THREE.FBXLoader: No implementation given for material type %s in FBXLoader.js. Defaulting to standard material.', type);
+      material = new MeshStandardMaterial({ color: 0x3300ff });
       break;
 
   }
@@ -47267,7 +47273,7 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
             material = materials[0];
           } else {
 
-            material = new MeshBasicMaterial({ color: 0x3300ff });
+            material = new MeshStandardMaterial({ color: 0x3300ff });
             materials.push(material);
           }
           if ('color' in geometry.attributes) {
@@ -57280,22 +57286,14 @@ var oLoader = new OBJLoader2(loadingManager);
 // required for access to .setPath
 var mtlLdr = new MTLLoader();
 
-var defaultReject = function (err) {
-  console.log(err);
-};
-
 var promisifyLoader = function (loader) {
   return function (url) {
-    return new Promise(function (resolve) {
-      var reject = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultReject;
+    return new Promise(function (resolve, reject) {
 
-
-      loader.load(url, resolve, loadingManager.onProgress, loadingManager.onError);
+      loader.load(url, resolve, loadingManager.onProgress, reject);
     });
   };
 };
-
-// THREE.Loader.Handlers.add( /\.tga$/i, new TGALoader() );
 
 var Loaders = function Loaders() {
   classCallCheck(this, Loaders);
@@ -57391,6 +57389,9 @@ var OnLoadCallbacks$1 = function () {
 
       var object = new Mesh(geometry, defaultMat$1);
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57407,6 +57408,9 @@ var OnLoadCallbacks$1 = function () {
 
       var object = new Mesh(geometry, defaultMat$1);
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57422,6 +57426,9 @@ var OnLoadCallbacks$1 = function () {
       console.log(object);
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57481,6 +57488,9 @@ var OnLoadCallbacks$1 = function () {
       console.timeEnd('inverting meshes');
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57513,6 +57523,9 @@ var OnLoadCallbacks$1 = function () {
 
         console.error('No scene found in GLTF file.');
       }
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57532,6 +57545,9 @@ var OnLoadCallbacks$1 = function () {
       console.log(object);
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57555,6 +57571,9 @@ var OnLoadCallbacks$1 = function () {
       if (object.animations && object.animations.length > 0) scene.animations = object.animations;
 
       loaderCanvas.addObjectToScene(scene);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57778,7 +57797,13 @@ var processMultipleFiles = function (files) {
             method: 'post',
             body: filesList
           });
+        }).catch(function (err) {
+
+          console.log(err);
         });
+      }).catch(function (err) {
+
+        console.log(err);
       });
     } else {
 
@@ -57960,6 +57985,9 @@ var OnLoadCallbacks = function () {
 
       var object = new Mesh(geometry, defaultMat);
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57976,6 +58004,9 @@ var OnLoadCallbacks = function () {
 
       var object = new Mesh(geometry, defaultMat);
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -57991,6 +58022,9 @@ var OnLoadCallbacks = function () {
       console.log(object);
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -58050,6 +58084,9 @@ var OnLoadCallbacks = function () {
       console.timeEnd('inverting meshes');
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -58082,6 +58119,9 @@ var OnLoadCallbacks = function () {
 
         console.error('No scene found in GLTF file.');
       }
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -58101,6 +58141,9 @@ var OnLoadCallbacks = function () {
       console.log(object);
 
       loaderCanvas.addObjectToScene(object);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;
@@ -58124,6 +58167,9 @@ var OnLoadCallbacks = function () {
       if (object.animations && object.animations.length > 0) scene.animations = object.animations;
 
       loaderCanvas.addObjectToScene(scene);
+    }).catch(function (err) {
+
+      console.log(err);
     });
 
     return promise;

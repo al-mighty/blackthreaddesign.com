@@ -35,6 +35,7 @@ loadingManager.onError = ( msg ) => {
 
   if ( msg instanceof String && msg !== '' ) console.error( 'THREE.LoadingManager error: ' + msg );
   else console.log( msg );
+  // else console.error( 'THREE.LoadingManager error: ' + msg );
 
 };
 

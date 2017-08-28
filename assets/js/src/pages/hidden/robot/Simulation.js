@@ -6,6 +6,7 @@ import Loaders from './utilities/Loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
 import invertMirroredFBX from './utilities/invertMirroredFBX.js';
 import animationControls from './utilities/AnimationControls.js';
+import Grid from './utilities/Grid.js';
 
 const loaders = new Loaders();
 
@@ -21,9 +22,7 @@ export default class Simulation {
 
     this.preLoad();
 
-    this.loadModels();
-
-    this.loadAnimations();
+    // this.loadModels();
 
     this.postLoad();
 
@@ -32,13 +31,28 @@ export default class Simulation {
   // everything done before loading is called here
   preLoad() {
 
+    const self = this;
+
     this.loadingPromises = [];
 
-    this.animations = {};
+    this.initGrid();
 
-    this.initPositions();
+    // Put any per frame calculation here
+    canvas.app.onUpdate = function () {
+      // NB: use self inside this function, 'this' will refer to App
 
-    this.updateEquation();
+      animationControls.update( this.delta );
+      self.grid.render( canvas.app.renderer );
+
+    };
+
+    // put any per resize calculations here (throttled to once per 250ms)
+    canvas.app.onWindowResize = function () {
+
+      // NB: use self inside this function
+      self.grid.resize();
+
+    };
 
     this.initReset();
 
@@ -49,7 +63,7 @@ export default class Simulation {
 
     const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
 
-      object.getObjectByName( 'Field' ).receiveShadow = true;
+      // object.getObjectByName( 'Field' ).receiveShadow = true;
 
       // field width width ~140cm, length ~200cm
       canvas.app.scene.add( object );
@@ -78,39 +92,55 @@ export default class Simulation {
 
   }
 
-  loadAnimations() {
-
-    const rollPromise = loaders.animationLoader( '/assets/models/robot/anims/roll.json' ).then( ( object ) => {
-
-      this.animations.roll = object;
-
-      // console.log( object )
-
-    } );
-
-    this.loadingPromises.push( rollPromise );
-
-  }
-
   // everything done after loading is called here
   postLoad() {
 
     Promise.all( this.loadingPromises ).then(
       () => {
 
-        HTMLControl.controls.simulate.disabled = false;
+        this.init();
 
-        this.setInitialTransforms();
-        this.addObjects();
-
-        this.initMixers();
-
-        this.initSimulation();
+        // this.addObjects();
+        // this.initSimulation();
+        HTMLControl.setOnLoadEndState();
 
         canvas.app.play();
 
       },
     );
+
+  }
+
+  init() {
+
+    HTMLControl.controls.simulate.disabled = false;
+
+    animationControls.reset();
+    canvas.app.controls.reset();
+
+    this.initPositions();
+    this.updateEquation();
+    HTMLControl.setInitialState();
+    // this.setInitialTransforms();
+
+  }
+
+  initGrid() {
+
+    this.grid = new Grid();
+
+    // canvas.app.scene.add( this.grid.scene.children[0] );
+    // canvas.app.scene.add( this.grid.scene.children[1] );
+    // canvas.app.scene.add( this.grid.scene.children[2] );
+    // canvas.app.scene.add( this.grid.scene.children[3] );
+    // canvas.app.scene.add( this.grid.scene.children[4] );
+    // canvas.app.scene.add( this.grid.scene.children[5] );
+
+    HTMLControl.controls.slope.addEventListener( 'change', ( e ) => {
+
+      e.preventDefault();
+
+    }, false );
 
   }
 
@@ -123,12 +153,6 @@ export default class Simulation {
     ];
 
     this.naoInitialPos = [ this.ballInitialPos[0] - 44, 0, this.ballInitialPos[2] - 37 ];
-
-    this.ballFinalPos = [
-      85,
-      this.ballInitialPos[ 1 ], // height will not change
-      0, // ball final y position - this will be set from the entered sloped
-    ];
 
   }
 
@@ -153,17 +177,12 @@ export default class Simulation {
     HTMLControl.controls.reset.addEventListener( 'click', () => {
 
       cancelAnimationFrame( this.ballAnimationFrameId );
+      this.ballAnimationFrameId = undefined;
 
-      animationControls.reset();
-      canvas.app.controls.reset();
+      clearTimeout( this.ballTimer );
+      this.ballTimer = undefined;
 
-      HTMLControl.setInitialState();
-
-      animationControls.reset();
-
-      this.initPositions();
-      this.setInitialTransforms();
-      this.initMixers();
+      this.init();
 
     } );
 
@@ -187,17 +206,11 @@ export default class Simulation {
 
   }
 
-  initMixers() {
+    // this is set up after the user has entered the slope
+  initNaoAnimation() {
 
-    this.ballMixer = new THREE.AnimationMixer( this.ball );
-    this.ballMixer.name = 'ball mixer';
     this.naoMixer = new THREE.AnimationMixer( this.nao );
     this.naoMixer.name = 'nao mixer';
-
-  }
-
-    // this is set up after the user has entered the slope
-  initNaoAnimation( slope ) {
 
     animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
 
@@ -206,34 +219,25 @@ export default class Simulation {
   // this is set up after the user has entered the slope
   initBallAnimation( slope ) {
 
+    const self = this;
+
     // ball initial velocity ( not physically calculated, just start at 1 )
     const initialVelocity = 1;
 
     // split this into x and z components based on slope
-    const angle = Math.tan( slope );
-    const xVel = Math.cos( angle ) * initialVelocity;
-    const zVel = Math.sin( angle ) * initialVelocity;
+    const angle = Math.atan( slope );
+    let xVel = Math.cos( angle ) * initialVelocity;
+    let zVel = Math.sin( angle ) * initialVelocity;
 
-    this.moveBall( xVel, zVel, angle );
-
-  }
-
-  // very simple physics model for ball
-  moveBall( xVel, zVel, angle ) {
-
-    const self = this;
+    // this.ball.rotateY( -angle );
 
     // set up rotation axis
     const axis = new THREE.Vector3( 0, 0, 1 );
 
-    // axis.set( xVel, 0, zVel ).normalize();
-    // axis.cross( THREE.Object3D.DefaultUp );
+    axis.set( xVel, 0, zVel ).normalize();
+    axis.cross( THREE.Object3D.DefaultUp );
 
-    this.ball.rotateY( -angle );
-
-    let totalVelocity = 1;
-
-    function ballMover() {
+    function moveBall() {
 
       // checks to reverse x direction
       const postXPositionCheck = ( self.ball.position.x >= 73 );
@@ -254,64 +258,62 @@ export default class Simulation {
 
         // don't reverse the direction more than once as this can cause 'juddering'
         // as the direction is rapidly changed
-        // xVel *= -1 * Math.sign( xVel );
+        xVel *= -1 * Math.sign( xVel );
 
-        // axis.set( xVel, 0, zVel ).normalize();
-        // axis.cross( THREE.Object3D.DefaultUp );
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
 
       }
 
       if ( backOfGoalCheck ) {
 
-        // xVel *= -0.5 * Math.sign( xVel );
-        // zVel *= 0.5;
+        xVel *= -0.5 * Math.sign( xVel );
+        zVel *= 0.5;
 
-        // axis.set( xVel, 0, zVel ).normalize();
-        // axis.cross( THREE.Object3D.DefaultUp );
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
 
       }
 
       if ( topAndBottomWallCheck ) {
 
-        // zVel *= -1;
+        zVel *= -1;
 
-        // axis.set( xVel, 0, zVel ).normalize();
-        // axis.cross( THREE.Object3D.DefaultUp );
+        axis.set( xVel, 0, zVel ).normalize();
+        axis.cross( THREE.Object3D.DefaultUp );
 
-        self.ball.rotateY( Math.PI - ( 2 * angle ) );
-        self.ballMesh.rotateY( -( Math.PI - ( 2 * angle ) ) );
+        // self.ball.rotateY( Math.PI - ( 2 * angle ) );
+        // self.ballMesh.rotateY( -( Math.PI - ( 2 * angle ) ) );
 
       }
 
-      // self.ball.translateX( xVel );
-      // self.ball.translateZ( zVel );
-      self.ball.translateX( totalVelocity );
+      self.ball.translateX( xVel );
+      self.ball.translateZ( zVel );
 
-      totalVelocity *= 0.99166;
+      // self.ball.translateX( totalVelocity );
+      // totalVelocity *= 0.99166;
 
-      // xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
-      // zVel *= 0.99166;
+      xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
+      zVel *= 0.99166;
 
-      // const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
+      const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
 
       const amount = -totalVelocity / ( Math.PI * 10 ) * Math.PI;
       self.ballMesh.rotateOnAxis( axis, amount );
 
-
-
       if ( totalVelocity < 0.05 ) return;
 
-      self.ballAnimationFrameId = requestAnimationFrame( () => { ballMover(); } );
+      self.ballAnimationFrameId = requestAnimationFrame( () => { moveBall(); } );
 
     }
 
-    setInterval( () => {
+    this.ballTimer = setTimeout( () => {
 
-      // ballMover();
+      moveBall();
 
     }, timing.ballMoveStart * 1000 );
 
-    ballMover(); // roll ball immediately for testing
+    // moveBall(); // roll ball immediately for testing
 
   }
 
@@ -325,7 +327,7 @@ export default class Simulation {
 
       const slope = -HTMLControl.controls.slope.value;
 
-      // this.initNaoAnimation();
+      this.initNaoAnimation();
       this.initBallAnimation( slope );
 
       animationControls.play();

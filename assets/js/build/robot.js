@@ -9526,7 +9526,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -11738,10 +11737,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -22906,6 +22902,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -22935,10 +22933,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -34422,7 +34416,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -34450,8 +34444,8 @@ CompressedTexture.prototype.constructor = CompressedTexture;
 CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
+ * @author Matt DesLauriers / @mattdesl
+ * @author atix / arthursilber.de
  */
 
 function WireframeGeometry( geometry ) {
@@ -46118,7 +46112,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -50088,8 +50085,7 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
@@ -50445,7 +50441,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size, color ) {
@@ -50529,7 +50524,52 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
+ */
+
+function GridHelper( size, divisions, color1, color2 ) {
+
+	size = size || 10;
+	divisions = divisions || 10;
+	color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
+	color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
+
+	var center = divisions / 2;
+	var step = size / divisions;
+	var halfSize = size / 2;
+
+	var vertices = [], colors = [];
+
+	for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
+
+		vertices.push( - halfSize, 0, k, halfSize, 0, k );
+		vertices.push( k, 0, - halfSize, k, 0, halfSize );
+
+		var color = i === center ? color1 : color2;
+
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+		color.toArray( colors, j ); j += 3;
+
+	}
+
+	var geometry = new BufferGeometry();
+	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
+
+	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
+
+	LineSegments.call( this, geometry, material );
+
+}
+
+GridHelper.prototype = Object.create( LineSegments.prototype );
+GridHelper.prototype.constructor = GridHelper;
+
+/**
+ * @author mrdoob / http://mrdoob.com/
+ * @author Mugen87 / http://github.com/Mugen87
+ * @author Hectate / http://www.github.com/Hectate
  */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
@@ -51023,18 +51063,6 @@ BoxHelper.prototype.setFromObject = function ( object ) {
 
 /**
  * @author WestLangley / http://github.com/WestLangley
- * @author zz85 / http://github.com/zz85
- * @author bhouston / http://clara.io
- *
- * Creates an arrow for visualizing directions
- *
- * Parameters:
- *  dir - Vector3
- *  origin - Vector3
- *  length - Number
- *  color - color in hex value
- *  headLength - Number
- *  headWidth - Number
  */
 
 var lineGeometry;
@@ -51132,26 +51160,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -51308,10 +51319,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -51347,7 +51354,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -51394,13 +51403,18 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
+GridHelper.prototype.setColors = function () {
+
+	console.error( 'THREE.GridHelper: setColors() has been deprecated, pass them in the constructor instead.' );
+
+};
+
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -52476,6 +52490,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -52523,6 +52539,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -52645,21 +52663,6 @@ function Time() {
     this.paused = true;
   };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -53479,11 +53482,6 @@ function OrbitControls(object, domElement) {
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -53761,8 +53759,6 @@ function App(canvas) {
   };
 }
 
-// import HTMLControl from './HTMLControl.js';
-
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -53825,87 +53821,10 @@ var LightingSetup = function () {
     return LightingSetup;
 }();
 
-var AnimationControls = function () {
-  function AnimationControls() {
-    classCallCheck(this, AnimationControls);
-
-
-    this.isPaused = true;
-
-    this.mixers = {};
-
-    this.actions = [];
-  }
-
-  AnimationControls.prototype.reset = function reset() {
-
-    this.actions.forEach(function (action) {
-
-      action.stop();
-    });
-
-    Object.values(this.mixers).forEach(function (mixer) {
-
-      mixer.time = 0;
-      mixer.stopAllAction();
-    });
-
-    this.mixers = {};
-    this.actions = [];
-    this.isPaused = true;
-
-    // this.setTimeScales( -3 );
-  };
-
-  AnimationControls.prototype.update = function update(delta) {
-
-    if (this.isPaused) return;
-
-    Object.values(this.mixers).forEach(function (mixer) {
-
-      mixer.update(delta / 1000);
-    });
-  };
-
-  AnimationControls.prototype.setTimeScales = function setTimeScales(timeScale) {
-
-    this.actions.forEach(function (action) {
-
-      action.timeScale = timeScale;
-    });
-  };
-
-  AnimationControls.prototype.initAnimation = function initAnimation(object, animationClip, mixer, startAt) {
-
-    var action = mixer.clipAction(animationClip);
-    action.clampWhenFinished = true;
-    action.loop = LoopOnce;
-
-    if (startAt !== undefined) action.startAt(startAt);
-
-    action.play();
-
-    if (!this.mixers[mixer.name]) this.mixers[mixer.name] = mixer;
-
-    this.actions.push(action);
-  };
-
-  AnimationControls.prototype.play = function play() {
-
-    this.isPaused = false;
-  };
-
-  return AnimationControls;
-}();
-
-var animationControls = new AnimationControls();
-
 var Canvas = function () {
   function Canvas(canvas) {
     classCallCheck(this, Canvas);
 
-
-    var self = this;
 
     this.canvas = canvas;
 
@@ -53913,21 +53832,9 @@ var Canvas = function () {
 
     this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
-    // Put any per frame calculation here
-    this.app.onUpdate = function () {
-      // NB: use self inside this function
+    this.app.renderer.autoClear = false;
 
-      animationControls.update(self.app.delta);
-    };
-
-    // put any per resize calculations here (throttled to once per 250ms)
-    this.app.onWindowResize = function () {
-
-      // NB: use self inside this function
-
-    };
-
-    this.app.scene.fog = new Fog(0xf7f7f7, 400, 1500);
+    // this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
 
     this.lighting = new LightingSetup(this.app);
 
@@ -53938,9 +53845,9 @@ var Canvas = function () {
     this.app.initControls();
     this.initControls();
 
-    this.initShadows();
+    // this.initShadows();
 
-    this.addGround();
+    // this.addGround();
   }
 
   Canvas.prototype.initShadows = function initShadows() {
@@ -53998,10 +53905,6 @@ var Canvas = function () {
 }();
 
 var canvas$1 = new Canvas(HTMLControl.canvas);
-
-/*
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DDSLoader() {
 
@@ -54235,18 +54138,6 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -54641,20 +54532,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -54702,33 +54579,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -59330,10 +59180,6 @@ function slice(a, b, from, to) {
   return a;
 }
 
-/**
- * @author bhouston / http://clara.io/
- */
-
 function AnimationLoader(manager) {
 
     this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -59457,9 +59303,6 @@ var Loaders = function Loaders() {
   };
 };
 
-// Fix for bug in FBXLoader
-// https://github.com/mrdoob/three.js/issues/11911
-// This will hopefully be added to the FBXLoader eventually, in the meantime...
 function invertMirroredFBX(object) {
 
           object.traverse(function (child) {
@@ -59503,6 +59346,205 @@ function invertMirroredFBX(object) {
           });
 }
 
+var AnimationControls = function () {
+  function AnimationControls() {
+    classCallCheck(this, AnimationControls);
+
+
+    this.isPaused = true;
+
+    this.mixers = {};
+
+    this.actions = [];
+  }
+
+  AnimationControls.prototype.reset = function reset() {
+
+    this.actions.forEach(function (action) {
+
+      action.stop();
+    });
+
+    Object.values(this.mixers).forEach(function (mixer) {
+
+      mixer.time = 0;
+      mixer.stopAllAction();
+    });
+
+    this.mixers = {};
+    this.actions = [];
+    this.isPaused = true;
+
+    // this.setTimeScales( -3 );
+  };
+
+  AnimationControls.prototype.update = function update(delta) {
+
+    if (this.isPaused) return;
+
+    Object.values(this.mixers).forEach(function (mixer) {
+
+      mixer.update(delta / 1000);
+    });
+  };
+
+  AnimationControls.prototype.setTimeScales = function setTimeScales(timeScale) {
+
+    this.actions.forEach(function (action) {
+
+      action.timeScale = timeScale;
+    });
+  };
+
+  AnimationControls.prototype.initAnimation = function initAnimation(object, animationClip, mixer, startAt) {
+
+    var action = mixer.clipAction(animationClip);
+    action.clampWhenFinished = true;
+    action.loop = LoopOnce;
+
+    if (startAt !== undefined) action.startAt(startAt);
+
+    action.play();
+
+    if (!this.mixers[mixer.name]) this.mixers[mixer.name] = mixer;
+
+    this.actions.push(action);
+  };
+
+  AnimationControls.prototype.play = function play() {
+
+    this.isPaused = false;
+  };
+
+  return AnimationControls;
+}();
+
+var animationControls = new AnimationControls();
+
+var Grid = function () {
+  function Grid() {
+    classCallCheck(this, Grid);
+
+
+    this.enabled = true;
+
+    this.scene = new Scene();
+
+    this.initCamera();
+    this.initObjects();
+  }
+
+  Grid.prototype.initCamera = function initCamera() {
+
+    this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
+
+    this.camera.position.set(0, 0, 2);
+  };
+
+  Grid.prototype.initObjects = function initObjects() {
+
+    this.initGrid();
+    this.initField();
+    this.initNaoHelper();
+    this.initBallHelper();
+    this.initGoalsHelper();
+    this.initArrowHelper();
+
+    this.addObjects();
+  };
+
+  Grid.prototype.initGrid = function initGrid() {
+
+    this.grid = new GridHelper(200, 20);
+    this.scene.add(this.grid);
+  };
+
+  Grid.prototype.initField = function initField() {
+
+    var plane = new PlaneBufferGeometry(256, 256);
+    var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0xff0000 }));
+
+    mesh.position.set(0, 0, 0);
+    mesh.scale.set(1, 1, 1);
+
+    this.scene.add(mesh);
+  };
+
+  Grid.prototype.initNaoHelper = function initNaoHelper() {
+
+    var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
+    var mat = new MeshBasicMaterial({ color: 0xff00ff });
+    this.naoHelper = new Mesh(geo, mat);
+  };
+
+  Grid.prototype.initBallHelper = function initBallHelper() {
+
+    var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
+    var mat = new MeshBasicMaterial({ color: 0xff00ff });
+    this.ballHelper = new Mesh(geo, mat);
+  };
+
+  Grid.prototype.initGoalsHelper = function initGoalsHelper() {
+
+    var geo = new BoxBufferGeometry(50, 5, 5, 1, 1, 1);
+    var mat = new MeshBasicMaterial({ color: 0x00ff00 });
+    this.goalsHelper = new Mesh(geo, mat);
+  };
+
+  Grid.prototype.initArrowHelper = function initArrowHelper() {
+
+    var dir = new Vector3(1, 2, 0);
+    var origin = new Vector3(0, 0, 0);
+    var length = 1;
+    this.arrowHelper = new ArrowHelper(dir, origin, length, 0xffff00);
+  };
+
+  Grid.prototype.addObjects = function addObjects() {
+
+    this.scene.add(this.grid, this.naoHelper, this.ballHelper, this.arrowHelper, this.goalsHelper);
+  };
+
+  Grid.prototype.render = function render(renderer) {
+
+    // if ( !this.enabled ) return;
+
+    // const origAutoClearSetting = renderer.autoClear;
+
+    // renderer.autoClear = false; // To allow render overlay
+    // renderer.clearDepth();
+    renderer.render(this.scene, this.camera, null, false);
+
+    // renderer.autoClear = origAutoClearSetting; // Restore original setting
+  };
+
+  Grid.prototype.resize = function resize() {
+
+    this.initFrame();
+
+    this.camera.left = -this.frame.width / 2;
+    this.camera.right = this.frame.width / 2;
+    this.camera.top = this.frame.height / 2;
+    this.camera.bottom = -this.frame.height / 2;
+    this.camera.updateProjectionMatrix();
+
+    this.update();
+  };
+
+  Grid.prototype.reset = function reset() {
+
+    //
+
+  };
+
+  Grid.prototype.update = function update(renderer, positions, slope) {
+
+    //
+
+  };
+
+  return Grid;
+}();
+
 var loaders = new Loaders();
 
 var timing = {
@@ -59518,9 +59560,7 @@ var Simulation = function () {
 
         this.preLoad();
 
-        this.loadModels();
-
-        this.loadAnimations();
+        // this.loadModels();
 
         this.postLoad();
     }
@@ -59530,13 +59570,26 @@ var Simulation = function () {
 
     Simulation.prototype.preLoad = function preLoad() {
 
+        var self = this;
+
         this.loadingPromises = [];
 
-        this.animations = {};
+        this.initGrid();
 
-        this.initPositions();
+        // Put any per frame calculation here
+        canvas$1.app.onUpdate = function () {
+            // NB: use self inside this function, 'this' will refer to App
 
-        this.updateEquation();
+            animationControls.update(this.delta);
+            self.grid.render(canvas$1.app.renderer);
+        };
+
+        // put any per resize calculations here (throttled to once per 250ms)
+        canvas$1.app.onWindowResize = function () {
+
+            // NB: use self inside this function
+            self.grid.resize();
+        };
 
         this.initReset();
     };
@@ -59549,7 +59602,7 @@ var Simulation = function () {
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
-            object.getObjectByName('Field').receiveShadow = true;
+            // object.getObjectByName( 'Field' ).receiveShadow = true;
 
             // field width width ~140cm, length ~200cm
             canvas$1.app.scene.add(object);
@@ -59574,38 +59627,52 @@ var Simulation = function () {
         this.loadingPromises = [fieldPromise, naoPromise, ballPromise];
     };
 
-    Simulation.prototype.loadAnimations = function loadAnimations() {
-        var _this2 = this;
-
-        var rollPromise = loaders.animationLoader('/assets/models/robot/anims/roll.json').then(function (object) {
-
-            _this2.animations.roll = object;
-
-            // console.log( object )
-        });
-
-        this.loadingPromises.push(rollPromise);
-    };
-
     // everything done after loading is called here
 
 
     Simulation.prototype.postLoad = function postLoad() {
-        var _this3 = this;
+        var _this2 = this;
 
         Promise.all(this.loadingPromises).then(function () {
 
-            HTMLControl.controls.simulate.disabled = false;
+            _this2.init();
 
-            _this3.setInitialTransforms();
-            _this3.addObjects();
-
-            _this3.initMixers();
-
-            _this3.initSimulation();
+            // this.addObjects();
+            // this.initSimulation();
+            HTMLControl.setOnLoadEndState();
 
             canvas$1.app.play();
         });
+    };
+
+    Simulation.prototype.init = function init() {
+
+        HTMLControl.controls.simulate.disabled = false;
+
+        animationControls.reset();
+        canvas$1.app.controls.reset();
+
+        this.initPositions();
+        this.updateEquation();
+        HTMLControl.setInitialState();
+        // this.setInitialTransforms();
+    };
+
+    Simulation.prototype.initGrid = function initGrid() {
+
+        this.grid = new Grid();
+
+        // canvas.app.scene.add( this.grid.scene.children[0] );
+        // canvas.app.scene.add( this.grid.scene.children[1] );
+        // canvas.app.scene.add( this.grid.scene.children[2] );
+        // canvas.app.scene.add( this.grid.scene.children[3] );
+        // canvas.app.scene.add( this.grid.scene.children[4] );
+        // canvas.app.scene.add( this.grid.scene.children[5] );
+
+        HTMLControl.controls.slope.addEventListener('change', function (e) {
+
+            e.preventDefault();
+        }, false);
     };
 
     // set up positions for the animations
@@ -59615,9 +59682,6 @@ var Simulation = function () {
         this.ballInitialPos = [_Math.randInt(-15, 30), 4.75, _Math.randInt(-15, 30)];
 
         this.naoInitialPos = [this.ballInitialPos[0] - 44, 0, this.ballInitialPos[2] - 37];
-
-        this.ballFinalPos = [85, this.ballInitialPos[1], // height will not change
-        0];
     };
 
     Simulation.prototype.updateEquation = function updateEquation() {
@@ -59631,22 +59695,17 @@ var Simulation = function () {
     };
 
     Simulation.prototype.initReset = function initReset() {
-        var _this4 = this;
+        var _this3 = this;
 
         HTMLControl.controls.reset.addEventListener('click', function () {
 
-            cancelAnimationFrame(_this4.ballAnimationFrameId);
+            cancelAnimationFrame(_this3.ballAnimationFrameId);
+            _this3.ballAnimationFrameId = undefined;
 
-            animationControls.reset();
-            canvas$1.app.controls.reset();
+            clearTimeout(_this3.ballTimer);
+            _this3.ballTimer = undefined;
 
-            HTMLControl.setInitialState();
-
-            animationControls.reset();
-
-            _this4.initPositions();
-            _this4.setInitialTransforms();
-            _this4.initMixers();
+            _this3.init();
         });
     };
 
@@ -59666,18 +59725,13 @@ var Simulation = function () {
         this.ballMesh.rotation.set(0, 0, 0);
     };
 
-    Simulation.prototype.initMixers = function initMixers() {
-
-        this.ballMixer = new AnimationMixer(this.ball);
-        this.ballMixer.name = 'ball mixer';
-        this.naoMixer = new AnimationMixer(this.nao);
-        this.naoMixer.name = 'nao mixer';
-    };
-
     // this is set up after the user has entered the slope
 
 
-    Simulation.prototype.initNaoAnimation = function initNaoAnimation(slope) {
+    Simulation.prototype.initNaoAnimation = function initNaoAnimation() {
+
+        this.naoMixer = new AnimationMixer(this.nao);
+        this.naoMixer.name = 'nao mixer';
 
         animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
     };
@@ -59687,35 +59741,25 @@ var Simulation = function () {
 
     Simulation.prototype.initBallAnimation = function initBallAnimation(slope) {
 
+        var self = this;
+
         // ball initial velocity ( not physically calculated, just start at 1 )
         var initialVelocity = 1;
 
         // split this into x and z components based on slope
-        var angle = Math.tan(slope);
+        var angle = Math.atan(slope);
         var xVel = Math.cos(angle) * initialVelocity;
         var zVel = Math.sin(angle) * initialVelocity;
 
-        this.moveBall(xVel, zVel, angle);
-    };
-
-    // very simple physics model for ball
-
-
-    Simulation.prototype.moveBall = function moveBall(xVel, zVel, angle) {
-
-        var self = this;
+        // this.ball.rotateY( -angle );
 
         // set up rotation axis
         var axis = new Vector3(0, 0, 1);
 
-        // axis.set( xVel, 0, zVel ).normalize();
-        // axis.cross( THREE.Object3D.DefaultUp );
+        axis.set(xVel, 0, zVel).normalize();
+        axis.cross(Object3D.DefaultUp);
 
-        this.ball.rotateY(-angle);
-
-        var totalVelocity = 1;
-
-        function ballMover() {
+        function moveBall() {
 
             // checks to reverse x direction
             var postXPositionCheck = self.ball.position.x >= 73;
@@ -59736,44 +59780,42 @@ var Simulation = function () {
 
                 // don't reverse the direction more than once as this can cause 'juddering'
                 // as the direction is rapidly changed
-                // xVel *= -1 * Math.sign( xVel );
+                xVel *= -1 * Math.sign(xVel);
 
-                // axis.set( xVel, 0, zVel ).normalize();
-                // axis.cross( THREE.Object3D.DefaultUp );
-
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
             }
 
             if (backOfGoalCheck) {
 
-                // xVel *= -0.5 * Math.sign( xVel );
-                // zVel *= 0.5;
+                xVel *= -0.5 * Math.sign(xVel);
+                zVel *= 0.5;
 
-                // axis.set( xVel, 0, zVel ).normalize();
-                // axis.cross( THREE.Object3D.DefaultUp );
-
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
             }
 
             if (topAndBottomWallCheck) {
 
-                // zVel *= -1;
+                zVel *= -1;
 
-                // axis.set( xVel, 0, zVel ).normalize();
-                // axis.cross( THREE.Object3D.DefaultUp );
+                axis.set(xVel, 0, zVel).normalize();
+                axis.cross(Object3D.DefaultUp);
 
-                self.ball.rotateY(Math.PI - 2 * angle);
-                self.ballMesh.rotateY(-(Math.PI - 2 * angle));
+                // self.ball.rotateY( Math.PI - ( 2 * angle ) );
+                // self.ballMesh.rotateY( -( Math.PI - ( 2 * angle ) ) );
             }
 
-            // self.ball.translateX( xVel );
-            // self.ball.translateZ( zVel );
-            self.ball.translateX(totalVelocity);
+            self.ball.translateX(xVel);
+            self.ball.translateZ(zVel);
 
-            totalVelocity *= 0.99166;
+            // self.ball.translateX( totalVelocity );
+            // totalVelocity *= 0.99166;
 
-            // xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
-            // zVel *= 0.99166;
+            xVel *= 0.99166; // value calculated to allow ball to roll approx 2 seconds
+            zVel *= 0.99166;
 
-            // const totalVelocity = Math.sqrt( xVel * xVel + zVel * zVel );
+            var totalVelocity = Math.sqrt(xVel * xVel + zVel * zVel);
 
             var amount = -totalVelocity / (Math.PI * 10) * Math.PI;
             self.ballMesh.rotateOnAxis(axis, amount);
@@ -59781,21 +59823,20 @@ var Simulation = function () {
             if (totalVelocity < 0.05) return;
 
             self.ballAnimationFrameId = requestAnimationFrame(function () {
-                ballMover();
+                moveBall();
             });
         }
 
-        setInterval(function () {
+        this.ballTimer = setTimeout(function () {
 
-            // ballMover();
-
+            moveBall();
         }, timing.ballMoveStart * 1000);
 
-        ballMover(); // roll ball immediately for testing
+        // moveBall(); // roll ball immediately for testing
     };
 
     Simulation.prototype.initSimulation = function initSimulation() {
-        var _this5 = this;
+        var _this4 = this;
 
         HTMLControl.setInitialState();
 
@@ -59805,8 +59846,8 @@ var Simulation = function () {
 
             var slope = -HTMLControl.controls.slope.value;
 
-            // this.initNaoAnimation();
-            _this5.initBallAnimation(slope);
+            _this4.initNaoAnimation();
+            _this4.initBallAnimation(slope);
 
             animationControls.play();
 

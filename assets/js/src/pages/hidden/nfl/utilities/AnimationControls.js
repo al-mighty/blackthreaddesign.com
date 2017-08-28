@@ -4,79 +4,38 @@ class AnimationControls {
 
   constructor( ) {
 
-    this.isPaused = true;
-
-    this.mixers = {};
-
-    this.actions = [];
+    this.actions = {};
 
   }
 
-  reset() {
+  initMixer( object ) {
 
-    this.actions.forEach( ( action ) => {
-
-      action.stop();
-
-    } );
-
-    Object.values( this.mixers ).forEach( ( mixer ) => {
-
-      mixer.time = 0;
-      mixer.stopAllAction();
-
-    } );
-
-
-    this.mixers = {};
-    this.actions = [];
-    this.isPaused = true;
-
-    // this.setTimeScales( -3 );
+    this.mixer = new THREE.AnimationMixer( object );
 
   }
 
   update( delta ) {
 
-    if ( this.isPaused ) return;
-
-    Object.values( this.mixers ).forEach( ( mixer ) => {
-
-      mixer.update( delta / 1000 );
-
-    } );
+    this.mixer.update( delta / 1000 );
 
   }
 
-  setTimeScales( timeScale ) {
+  setTimeScales( name ) {
 
-    this.actions.forEach( ( action ) => {
-
-      action.timeScale = timeScale;
-
-    } );
+    // set time scale of a particular action
 
   }
 
-  initAnimation( object, animationClip, mixer, startAt ) {
+  initAnimation( animationClip, name ) {
 
-    const action = mixer.clipAction( animationClip );
-    // action.clampWhenFinished = true;
-    // action.loop = THREE.LoopOnce;
+    console.log(  animationClip )
 
-    if ( startAt !== undefined ) action.startAt( startAt );
+    const action = this.mixer.clipAction( animationClip );
+
+    this.actions[ name ] = action;
 
     action.play();
 
-    if ( !this.mixers[mixer.name] ) this.mixers[ mixer.name ] = mixer;
-
-    this.actions.push( action );
-
-  }
-
-  play() {
-
-    this.isPaused = false;
 
   }
 
@@ -85,3 +44,4 @@ class AnimationControls {
 const animationControls = new AnimationControls();
 
 export default animationControls;
+

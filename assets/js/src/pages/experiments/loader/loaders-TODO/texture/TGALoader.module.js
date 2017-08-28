@@ -510,3 +510,5 @@ TGALoader.prototype.parse = function ( buffer ) {
   return canvas;
 
 };
+
+THREE.Loader.Handlers.add( /\.tga$/i, new TGALoader() );

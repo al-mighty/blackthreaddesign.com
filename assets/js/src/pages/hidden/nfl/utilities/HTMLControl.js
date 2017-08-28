@@ -18,6 +18,8 @@ const controls = {
 
 };
 
+const statsAreas = [ ...document.querySelectorAll( '.stats-area' ) ];
+
 export default class HTMLControl {
 
   static setInitialState() {
@@ -54,4 +56,5 @@ HTMLControl.masthead = masthead;
 HTMLControl.footer = footer;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
+HTMLControl.statsAreas = statsAreas;
 

@@ -21,6 +21,10 @@ export default class OnLoadCallbacks {
       const object = new THREE.Mesh( geometry, defaultMat );
       loaderCanvas.addObjectToScene( object );
 
+    } ).catch( ( err ) => {
+
+      console.log( err );
+
     } );
 
     return promise;
@@ -39,6 +43,10 @@ export default class OnLoadCallbacks {
       const object = new THREE.Mesh( geometry, defaultMat );
       loaderCanvas.addObjectToScene( object );
 
+    } ).catch( ( err ) => {
+
+      console.log( err );
+
     } );
 
     return promise;
@@ -55,6 +63,10 @@ export default class OnLoadCallbacks {
       console.log( object );
 
       loaderCanvas.addObjectToScene( object );
+
+    } ).catch( ( err ) => {
+
+      console.log( err );
 
     } );
 
@@ -124,6 +136,10 @@ export default class OnLoadCallbacks {
 
       loaderCanvas.addObjectToScene( object );
 
+    } ).catch( ( err ) => {
+
+      console.log( err );
+
     } );
 
     return promise;
@@ -162,6 +178,10 @@ export default class OnLoadCallbacks {
 
       }
 
+    } ).catch( ( err ) => {
+
+      console.log( err );
+
     } );
 
     return promise;
@@ -182,6 +202,10 @@ export default class OnLoadCallbacks {
       console.log( object );
 
       loaderCanvas.addObjectToScene( object );
+
+    } ).catch( ( err ) => {
+
+      console.log( err );
 
     } );
 
@@ -210,6 +234,11 @@ export default class OnLoadCallbacks {
 
       loaderCanvas.addObjectToScene( scene );
 
+
+    } )
+    .catch( ( err ) => {
+
+      console.log( err );
 
     } );
 

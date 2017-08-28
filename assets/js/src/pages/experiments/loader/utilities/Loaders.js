@@ -27,16 +27,12 @@ const oLoader = new OBJLoader( loadingManager );
 // required for access to .setPath
 const mtlLdr = new MTLLoader();
 
-const defaultReject = ( err ) => { console.log( err ); };
-
 const promisifyLoader = loader =>
-  url => new Promise( ( resolve, reject = defaultReject ) => {
+  url => new Promise( ( resolve, reject ) => {
 
-    loader.load( url, resolve, loadingManager.onProgress, loadingManager.onError );
+    loader.load( url, resolve, loadingManager.onProgress, reject );
 
   } );
-
-// THREE.Loader.Handlers.add( /\.tga$/i, new TGALoader() );
 
 export default class Loaders {
 
