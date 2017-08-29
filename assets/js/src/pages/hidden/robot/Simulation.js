@@ -22,7 +22,7 @@ export default class Simulation {
 
     this.preLoad();
 
-    // this.loadModels();
+    this.loadModels();
 
     this.postLoad();
 
@@ -100,8 +100,8 @@ export default class Simulation {
 
         this.init();
 
-        // this.addObjects();
-        // this.initSimulation();
+        this.addObjects();
+        this.initSimulation();
         HTMLControl.setOnLoadEndState();
 
         canvas.app.play();
@@ -121,20 +121,13 @@ export default class Simulation {
     this.initPositions();
     this.updateEquation();
     HTMLControl.setInitialState();
-    // this.setInitialTransforms();
+    this.setInitialTransforms();
 
   }
 
   initGrid() {
 
     this.grid = new Grid();
-
-    // canvas.app.scene.add( this.grid.scene.children[0] );
-    // canvas.app.scene.add( this.grid.scene.children[1] );
-    // canvas.app.scene.add( this.grid.scene.children[2] );
-    // canvas.app.scene.add( this.grid.scene.children[3] );
-    // canvas.app.scene.add( this.grid.scene.children[4] );
-    // canvas.app.scene.add( this.grid.scene.children[5] );
 
     HTMLControl.controls.slope.addEventListener( 'change', ( e ) => {
 

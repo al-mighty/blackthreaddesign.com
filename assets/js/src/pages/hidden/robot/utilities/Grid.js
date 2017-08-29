@@ -8,12 +8,48 @@ export default class Grid {
     this.enabled = true;
 
     this.scene = new THREE.Scene();
+    // this.scene.background = 0xff00ff;
 
     this.initCamera();
+
+    this.initFrame();
     this.initObjects();
 
   }
 
+  initFrame() {
+
+    const width = 250;
+    const height = 190;
+    const x = 10;
+    const y = HTMLControl.canvas.height - height - 10;
+
+    this.frame = {
+      x,
+      y,
+      height,
+      width,
+      center: new THREE.Vector3(
+
+        // to place at left
+        // -HTMLControl.canvas.width / 2 + this.frame.width / 2 + this.frame.x,
+
+        // to place at right
+        HTMLControl.canvas.width / 2 - width / 2 - x,
+
+        // top place at top
+        -HTMLControl.canvas.height / 2 + height / 2 + y,
+
+        // to place at bottom
+        // HTMLControl.canvas.height / 2 - this.frame.height / 2 - this.frame.y,
+
+        0
+      ),
+    }
+  }
+
+
+  // create a camera the full size of the canvas
   initCamera() {
 
     this.camera = new THREE.OrthographicCamera(
@@ -31,31 +67,63 @@ export default class Grid {
 
   initObjects() {
 
-    this.initGrid();
+    this.initBackGround();
+    this.initBorder();
     this.initField();
-    this.initNaoHelper();
-    this.initBallHelper();
     this.initGoalsHelper();
-    this.initArrowHelper();
+    // this.initNaoHelper();
+    // this.initBallHelper();
 
-    this.addObjects();
+    // this.initArrowHelper();
 
   }
 
-  initGrid() {
+  initBackGround() {
 
-    this.grid = new THREE.GridHelper( 200, 20 );
-    this.scene.add( this.grid );
+    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height );
+    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x909090, transparent: true, opacity: 0.1 } ) );
+
+    mesh.position.copy( this.frame.center );
+
+    this.scene.add( mesh );
+
+  }
+
+  initBorder() {
+
+    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height, 1, 1 );
+
+    const edges = new THREE.EdgesGeometry( plane );
+    const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x202020, transparent: true, opacity: 0.75 } ) );
+
+    line.position.copy( this.frame.center );
+
+    this.scene.add( line );
 
   }
 
   initField() {
 
-    const plane = new THREE.PlaneBufferGeometry( 256, 256 );
-    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+    const plane = new THREE.PlaneBufferGeometry( this.frame.width - 50, this.frame.height - 50, 1, 1 );
+    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x75B82B } ) );
 
-    mesh.position.set( 0, 0, 0 );
-    mesh.scale.set( 1, 1, 1 );
+    mesh.position.copy( this.frame.center );
+
+    this.scene.add( mesh );
+
+  }
+
+  initGoalsHelper() {
+
+    const geo = new THREE.BoxBufferGeometry( 50, 5, 5 );
+    const mat = new THREE.MeshBasicMaterial( { color: 0x00ffff } );
+    const mesh = new THREE.Mesh( geo, mat );
+
+    mesh.position.set(
+      this.frame.center.x + 50,
+      this.frame.center.y,
+      0
+    )
 
     this.scene.add( mesh );
 
@@ -77,13 +145,7 @@ export default class Grid {
 
   }
 
-  initGoalsHelper() {
 
-    const geo = new THREE.BoxBufferGeometry( 50, 5, 5, 1, 1, 1 );
-    const mat = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    this.goalsHelper = new THREE.Mesh( geo, mat );
-
-  }
 
   initArrowHelper() {
 
@@ -91,12 +153,6 @@ export default class Grid {
     const origin = new THREE.Vector3( 0, 0, 0 );
     const length = 1;
     this.arrowHelper = new THREE.ArrowHelper( dir, origin, length, 0xffff00 );
-
-  }
-
-  addObjects() {
-
-    this.scene.add( this.grid, this.naoHelper, this.ballHelper, this.arrowHelper, this.goalsHelper );
 
   }
 
@@ -108,8 +164,8 @@ export default class Grid {
 
     // renderer.autoClear = false; // To allow render overlay
     // renderer.clearDepth();
-    renderer.render( this.scene, this.camera, null, false );
-
+    renderer.render( this.scene, this.camera, null, true );
+    // renderer.render( this.scene, this.camera, null, false );
     // renderer.autoClear = origAutoClearSetting; // Restore original setting
 
   }

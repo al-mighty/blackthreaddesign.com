@@ -50526,52 +50526,6 @@ HemisphereLightHelper.prototype.update = function () {
  * @author mrdoob / http://mrdoob.com/
  */
 
-function GridHelper( size, divisions, color1, color2 ) {
-
-	size = size || 10;
-	divisions = divisions || 10;
-	color1 = new Color( color1 !== undefined ? color1 : 0x444444 );
-	color2 = new Color( color2 !== undefined ? color2 : 0x888888 );
-
-	var center = divisions / 2;
-	var step = size / divisions;
-	var halfSize = size / 2;
-
-	var vertices = [], colors = [];
-
-	for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
-
-		vertices.push( - halfSize, 0, k, halfSize, 0, k );
-		vertices.push( k, 0, - halfSize, k, 0, halfSize );
-
-		var color = i === center ? color1 : color2;
-
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-		color.toArray( colors, j ); j += 3;
-
-	}
-
-	var geometry = new BufferGeometry();
-	geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
-
-	var material = new LineBasicMaterial( { vertexColors: VertexColors } );
-
-	LineSegments.call( this, geometry, material );
-
-}
-
-GridHelper.prototype = Object.create( LineSegments.prototype );
-GridHelper.prototype.constructor = GridHelper;
-
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / http://github.com/Mugen87
- * @author Hectate / http://www.github.com/Hectate
- */
-
 function FaceNormalsHelper( object, size, hex, linewidth ) {
 
 	// FaceNormalsHelper only supports THREE.Geometry
@@ -51404,12 +51358,6 @@ Object.assign( Spline.prototype, {
 } );
 
 //
-GridHelper.prototype.setColors = function () {
-
-	console.error( 'THREE.GridHelper: setColors() has been deprecated, pass them in the constructor instead.' );
-
-};
-
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
@@ -53834,7 +53782,8 @@ var Canvas = function () {
 
     this.app.renderer.autoClear = false;
 
-    // this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
+    this.app.scene.background = 0xf7f7f7;
+    this.app.scene.fog = new Fog(0xf7f7f7, 400, 1500);
 
     this.lighting = new LightingSetup(this.app);
 
@@ -53847,7 +53796,7 @@ var Canvas = function () {
 
     // this.initShadows();
 
-    // this.addGround();
+    this.addGround();
   }
 
   Canvas.prototype.initShadows = function initShadows() {
@@ -54839,8 +54788,6 @@ function parseTexture(textureNode, loader, imageMap, connections) {
 
   var name = textureNode.name;
 
-  // console.log( name )
-
   var fileName = void 0;
 
   var filePath = textureNode.properties.FileName;
@@ -54881,6 +54828,7 @@ function parseTexture(textureNode, loader, imageMap, connections) {
    * @type {THREE.Texture}
    */
   var texture = loader.load(fileName);
+
   texture.name = name;
   texture.FBX_ID = FBX_ID;
 
@@ -54918,7 +54866,8 @@ function parseMaterials(FBXTree, textureMap, connections) {
     for (var nodeID in materialNodes) {
 
       var material = parseMaterial(materialNodes[nodeID], textureMap, connections);
-      materialMap.set(parseInt(nodeID), material);
+      // materialMap.set( parseInt( nodeID ), material );
+      if (material !== null) materialMap.set(parseInt(nodeID), material);
     }
   }
 
@@ -54944,6 +54893,10 @@ function parseMaterial(materialNode, textureMap, connections) {
     type = type.value;
   }
 
+  // Seems like FBX can include unused materials which don't have any connections.
+  // Ignores them so far.
+  if (!connections.has(FBX_ID)) return null;
+
   var children = connections.get(FBX_ID).children;
 
   var parameters = parseParameters(materialNode.properties, textureMap, children);
@@ -54959,8 +54912,8 @@ function parseMaterial(materialNode, textureMap, connections) {
       material = new MeshLambertMaterial();
       break;
     default:
-      console.warn('No implementation given for material type ' + type + ' in FBXLoader.js.  Defaulting to basic material');
-      material = new MeshBasicMaterial({ color: 0x3300ff });
+      console.warn('THREE.FBXLoader: No implementation given for material type %s in FBXLoader.js. Defaulting to standard material.', type);
+      material = new MeshStandardMaterial({ color: 0x3300ff });
       break;
 
   }
@@ -55839,7 +55792,7 @@ function parseScene(FBXTree, connections, deformers, geometryMap, materialMap) {
             material = materials[0];
           } else {
 
-            material = new MeshBasicMaterial({ color: 0x3300ff });
+            material = new MeshStandardMaterial({ color: 0x3300ff });
             materials.push(material);
           }
           if ('color' in geometry.attributes) {
@@ -59422,127 +59375,177 @@ var AnimationControls = function () {
 var animationControls = new AnimationControls();
 
 var Grid = function () {
-  function Grid() {
-    classCallCheck(this, Grid);
+    function Grid() {
+        classCallCheck(this, Grid);
 
 
-    this.enabled = true;
+        this.enabled = true;
 
-    this.scene = new Scene();
+        this.scene = new Scene();
+        // this.scene.background = 0xff00ff;
 
-    this.initCamera();
-    this.initObjects();
-  }
+        this.initCamera();
 
-  Grid.prototype.initCamera = function initCamera() {
+        this.initFrame();
+        this.initObjects();
+    }
 
-    this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
+    Grid.prototype.initFrame = function initFrame() {
 
-    this.camera.position.set(0, 0, 2);
-  };
+        var width = 250;
+        var height = 190;
+        var x = 10;
+        var y = HTMLControl.canvas.height - height - 10;
 
-  Grid.prototype.initObjects = function initObjects() {
+        this.frame = {
+            x: x,
+            y: y,
+            height: height,
+            width: width,
+            center: new Vector3(
 
-    this.initGrid();
-    this.initField();
-    this.initNaoHelper();
-    this.initBallHelper();
-    this.initGoalsHelper();
-    this.initArrowHelper();
+            // to place at left
+            // -HTMLControl.canvas.width / 2 + this.frame.width / 2 + this.frame.x,
 
-    this.addObjects();
-  };
+            // to place at right
+            HTMLControl.canvas.width / 2 - width / 2 - x,
 
-  Grid.prototype.initGrid = function initGrid() {
+            // top place at top
+            -HTMLControl.canvas.height / 2 + height / 2 + y,
 
-    this.grid = new GridHelper(200, 20);
-    this.scene.add(this.grid);
-  };
+            // to place at bottom
+            // HTMLControl.canvas.height / 2 - this.frame.height / 2 - this.frame.y,
 
-  Grid.prototype.initField = function initField() {
+            0)
+        };
+    };
 
-    var plane = new PlaneBufferGeometry(256, 256);
-    var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0xff0000 }));
+    // create a camera the full size of the canvas
 
-    mesh.position.set(0, 0, 0);
-    mesh.scale.set(1, 1, 1);
 
-    this.scene.add(mesh);
-  };
+    Grid.prototype.initCamera = function initCamera() {
 
-  Grid.prototype.initNaoHelper = function initNaoHelper() {
+        this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
 
-    var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
-    var mat = new MeshBasicMaterial({ color: 0xff00ff });
-    this.naoHelper = new Mesh(geo, mat);
-  };
+        this.camera.position.set(0, 0, 2);
+    };
 
-  Grid.prototype.initBallHelper = function initBallHelper() {
+    Grid.prototype.initObjects = function initObjects() {
 
-    var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
-    var mat = new MeshBasicMaterial({ color: 0xff00ff });
-    this.ballHelper = new Mesh(geo, mat);
-  };
+        this.initBackGround();
+        this.initBorder();
+        this.initField();
+        this.initGoalsHelper();
+        // this.initNaoHelper();
+        // this.initBallHelper();
 
-  Grid.prototype.initGoalsHelper = function initGoalsHelper() {
+        // this.initArrowHelper();
+    };
 
-    var geo = new BoxBufferGeometry(50, 5, 5, 1, 1, 1);
-    var mat = new MeshBasicMaterial({ color: 0x00ff00 });
-    this.goalsHelper = new Mesh(geo, mat);
-  };
+    Grid.prototype.initBackGround = function initBackGround() {
 
-  Grid.prototype.initArrowHelper = function initArrowHelper() {
+        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x909090, transparent: true, opacity: 0.1 }));
 
-    var dir = new Vector3(1, 2, 0);
-    var origin = new Vector3(0, 0, 0);
-    var length = 1;
-    this.arrowHelper = new ArrowHelper(dir, origin, length, 0xffff00);
-  };
+        mesh.position.copy(this.frame.center);
 
-  Grid.prototype.addObjects = function addObjects() {
+        this.scene.add(mesh);
+    };
 
-    this.scene.add(this.grid, this.naoHelper, this.ballHelper, this.arrowHelper, this.goalsHelper);
-  };
+    Grid.prototype.initBorder = function initBorder() {
 
-  Grid.prototype.render = function render(renderer) {
+        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height, 1, 1);
 
-    // if ( !this.enabled ) return;
+        var edges = new EdgesGeometry(plane);
+        var line = new LineSegments(edges, new LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.75 }));
 
-    // const origAutoClearSetting = renderer.autoClear;
+        line.position.copy(this.frame.center);
 
-    // renderer.autoClear = false; // To allow render overlay
-    // renderer.clearDepth();
-    renderer.render(this.scene, this.camera, null, false);
+        this.scene.add(line);
+    };
 
-    // renderer.autoClear = origAutoClearSetting; // Restore original setting
-  };
+    Grid.prototype.initField = function initField() {
 
-  Grid.prototype.resize = function resize() {
+        var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50, 1, 1);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x75B82B }));
 
-    this.initFrame();
+        mesh.position.copy(this.frame.center);
 
-    this.camera.left = -this.frame.width / 2;
-    this.camera.right = this.frame.width / 2;
-    this.camera.top = this.frame.height / 2;
-    this.camera.bottom = -this.frame.height / 2;
-    this.camera.updateProjectionMatrix();
+        this.scene.add(mesh);
+    };
 
-    this.update();
-  };
+    Grid.prototype.initGoalsHelper = function initGoalsHelper() {
 
-  Grid.prototype.reset = function reset() {
+        var geo = new BoxBufferGeometry(50, 5, 5);
+        var mat = new MeshBasicMaterial({ color: 0x00ffff });
+        var mesh = new Mesh(geo, mat);
 
-    //
+        mesh.position.set(this.frame.center.x + 50, this.frame.center.y, 0);
 
-  };
+        this.scene.add(mesh);
+    };
 
-  Grid.prototype.update = function update(renderer, positions, slope) {
+    Grid.prototype.initNaoHelper = function initNaoHelper() {
 
-    //
+        var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
+        var mat = new MeshBasicMaterial({ color: 0xff00ff });
+        this.naoHelper = new Mesh(geo, mat);
+    };
 
-  };
+    Grid.prototype.initBallHelper = function initBallHelper() {
 
-  return Grid;
+        var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
+        var mat = new MeshBasicMaterial({ color: 0xff00ff });
+        this.ballHelper = new Mesh(geo, mat);
+    };
+
+    Grid.prototype.initArrowHelper = function initArrowHelper() {
+
+        var dir = new Vector3(1, 2, 0);
+        var origin = new Vector3(0, 0, 0);
+        var length = 1;
+        this.arrowHelper = new ArrowHelper(dir, origin, length, 0xffff00);
+    };
+
+    Grid.prototype.render = function render(renderer) {
+
+        // if ( !this.enabled ) return;
+
+        // const origAutoClearSetting = renderer.autoClear;
+
+        // renderer.autoClear = false; // To allow render overlay
+        // renderer.clearDepth();
+        renderer.render(this.scene, this.camera, null, true);
+        // renderer.render( this.scene, this.camera, null, false );
+        // renderer.autoClear = origAutoClearSetting; // Restore original setting
+    };
+
+    Grid.prototype.resize = function resize() {
+
+        this.initFrame();
+
+        this.camera.left = -this.frame.width / 2;
+        this.camera.right = this.frame.width / 2;
+        this.camera.top = this.frame.height / 2;
+        this.camera.bottom = -this.frame.height / 2;
+        this.camera.updateProjectionMatrix();
+
+        this.update();
+    };
+
+    Grid.prototype.reset = function reset() {
+
+        //
+
+    };
+
+    Grid.prototype.update = function update(renderer, positions, slope) {
+
+        //
+
+    };
+
+    return Grid;
 }();
 
 var loaders = new Loaders();
@@ -59560,7 +59563,7 @@ var Simulation = function () {
 
         this.preLoad();
 
-        // this.loadModels();
+        this.loadModels();
 
         this.postLoad();
     }
@@ -59637,8 +59640,8 @@ var Simulation = function () {
 
             _this2.init();
 
-            // this.addObjects();
-            // this.initSimulation();
+            _this2.addObjects();
+            _this2.initSimulation();
             HTMLControl.setOnLoadEndState();
 
             canvas$1.app.play();
@@ -59655,19 +59658,12 @@ var Simulation = function () {
         this.initPositions();
         this.updateEquation();
         HTMLControl.setInitialState();
-        // this.setInitialTransforms();
+        this.setInitialTransforms();
     };
 
     Simulation.prototype.initGrid = function initGrid() {
 
         this.grid = new Grid();
-
-        // canvas.app.scene.add( this.grid.scene.children[0] );
-        // canvas.app.scene.add( this.grid.scene.children[1] );
-        // canvas.app.scene.add( this.grid.scene.children[2] );
-        // canvas.app.scene.add( this.grid.scene.children[3] );
-        // canvas.app.scene.add( this.grid.scene.children[4] );
-        // canvas.app.scene.add( this.grid.scene.children[5] );
 
         HTMLControl.controls.slope.addEventListener('change', function (e) {
 

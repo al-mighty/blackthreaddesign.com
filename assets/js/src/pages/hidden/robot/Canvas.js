@@ -24,7 +24,8 @@ class Canvas {
 
     this.app.renderer.autoClear = false;
 
-    // this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
+    this.app.scene.background = 0xf7f7f7;
+    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 400, 1500 );
 
     this.lighting = new LightingSetup( this.app );
 
@@ -37,7 +38,7 @@ class Canvas {
 
     // this.initShadows();
 
-    // this.addGround();
+    this.addGround();
 
   }
 
