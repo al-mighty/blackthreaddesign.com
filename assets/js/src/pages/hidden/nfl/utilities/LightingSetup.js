@@ -22,33 +22,29 @@ export default class LightingSetup {
     // two extra lights
 
     const backLight = new THREE.DirectionalLight( 0xffffff, 0.425 );
-    backLight.position.set( 130, 100, 150 );
+    backLight.position.set( 130, 200, 150 );
     // backLight.castShadow = true;
+    // backLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 40, 1, 1, 10000 ) );
+    // backLight.shadow.bias = -0.000222;
     // backLight.shadow.mapSize.width = 2048;
     // backLight.shadow.mapSize.height = 2048;
-    // backLight.shadow.camera.near = 0.5;
-    // backLight.shadow.camera.far = 1500;
-    // backLight.shadow.camera.updateProjectionMatrix();
+
 
     const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
     keyLight.position.set( 100, 50, 0 );
     // keyLight.castShadow = true;
+    // keyLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
+    // keyLight.shadow.bias = 0.000222;
     // keyLight.shadow.mapSize.width = 2048;
     // keyLight.shadow.mapSize.height = 2048;
-    // keyLight.shadow.camera.near = 0.5;
-    // keyLight.shadow.camera.far = 1500;
-    // keyLight.shadow.camera.updateProjectionMatrix();
 
     const fillLight = new THREE.DirectionalLight( 0xffffff, 0.4 );
     fillLight.position.set( 75, 75, 50 );
-
     // fillLight.castShadow = true;
+    // fillLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
     // fillLight.shadow.bias = 0.0001;
     // fillLight.shadow.mapSize.width = 2048;
     // fillLight.shadow.mapSize.height = 2048;
-    // fillLight.shadow.camera.near = 0.5;
-    // fillLight.shadow.camera.far = 1500;
-    // fillLight.shadow.camera.updateProjectionMatrix();
 
     this.app.scene.add( backLight, keyLight, fillLight );
 

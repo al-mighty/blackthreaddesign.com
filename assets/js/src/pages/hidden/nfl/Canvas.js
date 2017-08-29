@@ -41,8 +41,6 @@ class Canvas {
 
     };
 
-
-
     this.lighting = new LightingSetup( this.app );
 
     this.loadedObjects = new THREE.Group();
@@ -51,7 +49,7 @@ class Canvas {
     this.app.initControls();
     this.initControls();
 
-    // this.initShadows();
+    this.initShadows();
     this.initFog();
     this.addGround();
 
@@ -61,7 +59,7 @@ class Canvas {
 
     this.app.renderer.shadowMap.enabled = true;
     this.app.renderer.shadowMap.type = THREE.PCFShadowMap;
-    // PCFSoftShadowMap, PCFShadowMap
+    // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
 
   }
 
@@ -74,17 +72,29 @@ class Canvas {
 
   initFog() {
 
-    this.app.scene.fog = new THREE.Fog( 0xe1e1e1, 1, 20000 );
+    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 2000, 3000 );
 
   }
 
   addGround() {
 
     const geometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
-    const material = new THREE.MeshPhongMaterial( { color: 0xe1e1e1, shininess: 0.1 } );
+    const material = new THREE.MeshPhongMaterial( { color: 0xb0b0b0, shininess: 0.1 } );
     const ground = new THREE.Mesh( geometry, material );
-    ground.position.set( 0, 0, 0 );
+    ground.position.set( 0, -25, 0 );
     ground.rotation.x = -Math.PI / 2;
+
+    // const shadowGeometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
+    // const shadowMat = new THREE.ShadowMaterial();
+    // shadowMat.opacity = 0.2;
+    // const shadowReceiver = new THREE.Mesh( shadowGeometry, shadowMat );
+    // shadowReceiver.position.set( 0, 0, 0 );
+    // shadowReceiver.rotation.x = -Math.PI / 2;
+    // shadowReceiver.receiveShadow = true;
+
+    // this.app.scene.add( ground, shadowReceiver );
+
+    ground.receiveShadow = true;
     this.app.scene.add( ground );
 
   }
@@ -98,10 +108,13 @@ class Canvas {
       return;
 
     }
-    this.loadedObjects.add( object );
+    this.app.scene.add( object );
 
     // fit camera to all loaded objects
-    this.app.fitCameraToObject( this.loadedObjects );
+    this.app.fitCameraToObject( object );
+
+    this.app.camera.far = 3000;
+    this.app.camera.updateProjectionMatrix();
 
   }
 

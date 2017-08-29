@@ -18,7 +18,22 @@ const controls = {
 
 };
 
-const statsAreas = [ ...document.querySelectorAll( '.stats-area' ) ];
+const attributes = {
+  'dominant-hand': {
+    left: document.querySelector( '#hand-left' ),
+    right: document.querySelector( '#hand-right' ),
+    both: document.querySelector( '#hand-both' ),
+  },
+};
+
+[].slice.call( document.querySelectorAll( '.attribute' ) )
+  .forEach( ( node ) => {
+
+    const slider = node.querySelector( '.slider' );
+
+    if ( slider !== null ) attributes[ slider.id ] = slider;
+
+  } );
 
 export default class HTMLControl {
 
@@ -56,5 +71,5 @@ HTMLControl.masthead = masthead;
 HTMLControl.footer = footer;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
-HTMLControl.statsAreas = statsAreas;
+HTMLControl.attributes = attributes;
 

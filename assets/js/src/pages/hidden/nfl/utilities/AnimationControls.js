@@ -4,7 +4,11 @@ class AnimationControls {
 
   constructor( ) {
 
+    this.isPaused = true;
+
     this.actions = {};
+
+    this.currentAction = null;
 
   }
 
@@ -16,26 +20,70 @@ class AnimationControls {
 
   update( delta ) {
 
-    this.mixer.update( delta / 1000 );
+    if ( this.isPaused ) return;
+
+    if ( this.mixer !== undefined ) this.mixer.update( delta / 1000 );
 
   }
 
-  setTimeScales( name ) {
+  play() {
 
-    // set time scale of a particular action
+    this.isPaused = false;
 
   }
 
-  initAnimation( animationClip, name ) {
+  pause() {
 
-    console.log(  animationClip )
+    this.isPaused = true;
 
-    const action = this.mixer.clipAction( animationClip );
+  }
 
-    this.actions[ name ] = action;
+  playAction( name ) {
 
-    action.play();
+    if ( this.currentAction && this.currentAction.name === name ) return;
 
+    let actionFound = false;
+
+    Object.values( this.actions ).forEach( ( action ) => {
+
+      if ( action.name === name ) {
+
+        this.currentAction = action;
+
+        action.play();
+
+        this.isPaused = false;
+
+        actionFound = true;
+
+      } else action.stop();
+
+    } );
+
+    if ( !actionFound ) {
+
+      console.warn( 'Action ' + name + ' was not found.' );
+      this.isPaused = true;
+
+    }
+
+  }
+
+  setTimeScale( timeScale, name ) {
+
+    if ( this.actions[ name ] !== undefined ) this.actions[ name ].timeScale = timeScale;
+
+    else console.warn( 'Setting TimeScale: Action ' + name + ' was not found' );
+
+  }
+
+  initAnimation( animationClip, optionalRoot ) {
+
+    const action = this.mixer.clipAction( animationClip, optionalRoot );
+
+    action.name = animationClip.name;
+
+    this.actions[ animationClip.name ] = action;
 
   }
 

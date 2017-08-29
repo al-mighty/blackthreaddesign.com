@@ -1,9 +1,8 @@
-import * as THREE from 'three';
+// import * as THREE from 'three';
 
 import canvas from './Canvas.js';
-
 import Loaders from './utilities/Loaders.js';
-import HTMLControl from './utilities/HTMLControl.js';
+// import HTMLControl from './utilities/HTMLControl.js';
 import AttributeControls from './utilities/AttributeControls.js';
 import animationControls from './utilities/AnimationControls.js';
 
@@ -29,13 +28,21 @@ export default class Simulation {
 
     this.loadingPromises = [];
 
-    this.controls = new AttributeControls();
+    this.attributeControls = new AttributeControls();
 
   }
 
   loadModels() {
 
     const playerPromise = loaders.fbxLoader( '/assets/models/nfl/white_player_static.fbx' ).then( ( object ) => {
+
+      object.traverse( ( child ) => {
+        console.log( child )
+
+        child.frustumCulled = false;
+        child.castShadow = true;
+
+      } );
 
       this.player = object;
 
@@ -49,8 +56,6 @@ export default class Simulation {
 
   loadAnimations() {
 
-    animationControls.initMixer( this.player );
-
     const animationsNames = [
       'catch_1',
       'catch_2',
@@ -60,18 +65,18 @@ export default class Simulation {
       'on_back_to_stand',
       'on_front_to_stand',
       'pass',
-      'pass_1',
       'run',
       'stance',
-      'stand',
-    ]
+    ];
+
+    this.animations = [];
 
     animationsNames.forEach( ( name ) => {
 
       this.loadingPromises.push( loaders.animationLoader( '/assets/models/nfl/anims/' + name + '.json' ).then( ( anim ) => {
 
         anim.name = name;
-        animationControls.initAnimation( anim, name );
+        this.animations.push( anim );
 
       } ) );
 
@@ -86,9 +91,21 @@ export default class Simulation {
 
         canvas.addObjectToScene( this.player );
 
-        this.controls.init();
-
         canvas.app.play();
+
+        animationControls.initMixer( this.player );
+
+        this.animations.forEach( ( anim ) => {
+
+          animationControls.initAnimation( anim );
+
+        } );
+
+        animationControls.playAction( 'idle' );
+
+        this.attributeControls.initAnimationControls( animationControls );
+
+        this.attributeControls.enableControls();
 
       },
     );

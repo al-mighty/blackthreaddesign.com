@@ -1,10 +1,7 @@
 Set up all animations
 Set up zip loading
-Set up slider event listeners
-Switch between animations
-Set speed of animations from slider
 Smooth animation transitions
 Better lighting
-Foggy background
+Shadows
 Redesign
 Camera follow

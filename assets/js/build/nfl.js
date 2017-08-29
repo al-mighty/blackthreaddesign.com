@@ -9689,7 +9689,20 @@ var controls = {
 
 };
 
-var statsAreas = [].concat(document.querySelectorAll('.stats-area'));
+var attributes = {
+  'dominant-hand': {
+    left: document.querySelector('#hand-left'),
+    right: document.querySelector('#hand-right'),
+    both: document.querySelector('#hand-both')
+  }
+};
+
+[].slice.call(document.querySelectorAll('.attribute')).forEach(function (node) {
+
+  var slider = node.querySelector('.slider');
+
+  if (slider !== null) attributes[slider.id] = slider;
+});
 
 var HTMLControl = function () {
   function HTMLControl() {
@@ -9726,7 +9739,7 @@ HTMLControl.masthead = masthead;
 HTMLControl.footer = footer$1;
 HTMLControl.loading = loading;
 HTMLControl.controls = controls;
-HTMLControl.statsAreas = statsAreas;
+HTMLControl.attributes = attributes;
 
 var onFullscreen = function () {
 
@@ -53735,33 +53748,29 @@ var LightingSetup = function () {
         // two extra lights
 
         var backLight = new DirectionalLight(0xffffff, 0.425);
-        backLight.position.set(130, 100, 150);
+        backLight.position.set(130, 200, 150);
         // backLight.castShadow = true;
+        // backLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 40, 1, 1, 10000 ) );
+        // backLight.shadow.bias = -0.000222;
         // backLight.shadow.mapSize.width = 2048;
         // backLight.shadow.mapSize.height = 2048;
-        // backLight.shadow.camera.near = 0.5;
-        // backLight.shadow.camera.far = 1500;
-        // backLight.shadow.camera.updateProjectionMatrix();
+
 
         var keyLight = new DirectionalLight(0xffffff, 0.475);
         keyLight.position.set(100, 50, 0);
         // keyLight.castShadow = true;
+        // keyLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
+        // keyLight.shadow.bias = 0.000222;
         // keyLight.shadow.mapSize.width = 2048;
         // keyLight.shadow.mapSize.height = 2048;
-        // keyLight.shadow.camera.near = 0.5;
-        // keyLight.shadow.camera.far = 1500;
-        // keyLight.shadow.camera.updateProjectionMatrix();
 
         var fillLight = new DirectionalLight(0xffffff, 0.4);
         fillLight.position.set(75, 75, 50);
-
         // fillLight.castShadow = true;
+        // fillLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
         // fillLight.shadow.bias = 0.0001;
         // fillLight.shadow.mapSize.width = 2048;
         // fillLight.shadow.mapSize.height = 2048;
-        // fillLight.shadow.camera.near = 0.5;
-        // fillLight.shadow.camera.far = 1500;
-        // fillLight.shadow.camera.updateProjectionMatrix();
 
         this.app.scene.add(backLight, keyLight, fillLight);
 
@@ -53782,7 +53791,11 @@ var AnimationControls = function () {
     classCallCheck(this, AnimationControls);
 
 
+    this.isPaused = true;
+
     this.actions = {};
+
+    this.currentAction = null;
   }
 
   AnimationControls.prototype.initMixer = function initMixer(object) {
@@ -53792,24 +53805,61 @@ var AnimationControls = function () {
 
   AnimationControls.prototype.update = function update(delta) {
 
-    this.mixer.update(delta / 1000);
+    if (this.isPaused) return;
+
+    if (this.mixer !== undefined) this.mixer.update(delta / 1000);
   };
 
-  AnimationControls.prototype.setTimeScales = function setTimeScales(name) {
+  AnimationControls.prototype.play = function play() {
 
-    // set time scale of a particular action
-
+    this.isPaused = false;
   };
 
-  AnimationControls.prototype.initAnimation = function initAnimation(animationClip, name) {
+  AnimationControls.prototype.pause = function pause() {
 
-    console.log(animationClip);
+    this.isPaused = true;
+  };
 
-    var action = this.mixer.clipAction(animationClip);
+  AnimationControls.prototype.playAction = function playAction(name) {
+    var _this = this;
 
-    this.actions[name] = action;
+    if (this.currentAction && this.currentAction.name === name) return;
 
-    action.play();
+    var actionFound = false;
+
+    Object.values(this.actions).forEach(function (action) {
+
+      if (action.name === name) {
+
+        _this.currentAction = action;
+
+        action.play();
+
+        _this.isPaused = false;
+
+        actionFound = true;
+      } else action.stop();
+    });
+
+    if (!actionFound) {
+
+      console.warn('Action ' + name + ' was not found.');
+      this.isPaused = true;
+    }
+  };
+
+  AnimationControls.prototype.setTimeScale = function setTimeScale(timeScale, name) {
+
+    if (this.actions[name] !== undefined) this.actions[name].timeScale = timeScale;else console.warn('Setting TimeScale: Action ' + name + ' was not found');
+  };
+
+  AnimationControls.prototype.initAnimation = function initAnimation(animationClip, optionalRoot) {
+
+    var action = this.mixer.clipAction(animationClip, optionalRoot);
+
+    action.name = animationClip.name;
+
+    this.actions[animationClip.name] = action;
   };
 
   return AnimationControls;
@@ -53852,7 +53902,7 @@ var Canvas = function () {
     this.app.initControls();
     this.initControls();
 
-    // this.initShadows();
+    this.initShadows();
     this.initFog();
     this.addGround();
   }
@@ -53861,7 +53911,7 @@ var Canvas = function () {
 
     this.app.renderer.shadowMap.enabled = true;
     this.app.renderer.shadowMap.type = PCFShadowMap;
-    // PCFSoftShadowMap, PCFShadowMap
+    // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
   };
 
   Canvas.prototype.initControls = function initControls() {
@@ -53872,16 +53922,28 @@ var Canvas = function () {
 
   Canvas.prototype.initFog = function initFog() {
 
-    this.app.scene.fog = new Fog(0xe1e1e1, 1, 20000);
+    this.app.scene.fog = new Fog(0xf7f7f7, 2000, 3000);
   };
 
   Canvas.prototype.addGround = function addGround() {
 
     var geometry = new PlaneBufferGeometry(20000, 20000);
-    var material = new MeshPhongMaterial({ color: 0xe1e1e1, shininess: 0.1 });
+    var material = new MeshPhongMaterial({ color: 0xb0b0b0, shininess: 0.1 });
     var ground = new Mesh(geometry, material);
-    ground.position.set(0, 0, 0);
+    ground.position.set(0, -25, 0);
     ground.rotation.x = -Math.PI / 2;
+
+    // const shadowGeometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
+    // const shadowMat = new THREE.ShadowMaterial();
+    // shadowMat.opacity = 0.2;
+    // const shadowReceiver = new THREE.Mesh( shadowGeometry, shadowMat );
+    // shadowReceiver.position.set( 0, 0, 0 );
+    // shadowReceiver.rotation.x = -Math.PI / 2;
+    // shadowReceiver.receiveShadow = true;
+
+    // this.app.scene.add( ground, shadowReceiver );
+
+    ground.receiveShadow = true;
     this.app.scene.add(ground);
   };
 
@@ -53892,10 +53954,13 @@ var Canvas = function () {
       console.error('Oops! An unspecified error occurred :(');
       return;
     }
-    this.loadedObjects.add(object);
+    this.app.scene.add(object);
 
     // fit camera to all loaded objects
-    this.app.fitCameraToObject(this.loadedObjects);
+    this.app.fitCameraToObject(object);
+
+    this.app.camera.far = 3000;
+    this.app.camera.updateProjectionMatrix();
   };
 
   return Canvas;
@@ -59305,6 +59370,483 @@ var Loaders = function Loaders() {
   };
 };
 
+var AttributeControls = function () {
+      function AttributeControls() {
+            classCallCheck(this, AttributeControls);
+
+
+            this.attributes = HTMLControl.attributes;
+
+            this.init();
+      }
+
+      AttributeControls.prototype.init = function init() {
+
+            this.initSize();
+            this.initAthleticAbility();
+            this.initFootQuickness();
+            this.initDominantHand();
+            this.initReleaseQuickness();
+            this.initDelivery();
+            this.initMechanics();
+            this.initArmStrength();
+            this.initAnticipation();
+            this.initAccuracyShort();
+            this.initTouchShort();
+            this.initAccuracyLong();
+            this.initTouchLong();
+            this.initDecisionMaking();
+            this.initReadCoverage();
+            this.initPocketPresence();
+            this.initPoise();
+            this.initMobility();
+            this.initThrowOnMove();
+            this.initRunningAbility();
+            this.initClutchProduction();
+            this.initAbilityToWin();
+      };
+
+      AttributeControls.prototype.initAnimationControls = function initAnimationControls(controls) {
+
+            this.animationControls = controls;
+      };
+
+      AttributeControls.prototype.enableControls = function enableControls() {
+
+            Object.values(this.attributes).forEach(function (attribute) {
+                  attribute.disabled = false;
+            });
+
+            this.attributes['dominant-hand'].left.disabled = false;
+            this.attributes['dominant-hand'].right.disabled = false;
+            this.attributes['dominant-hand'].both.disabled = false;
+      };
+
+      AttributeControls.prototype.initSize = function initSize() {
+            var _this = this;
+
+            this.attributes.size.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'catch_1';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this.animationControls.setTimeScale(timeScale, animName);
+
+                  _this.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initAthleticAbility = function initAthleticAbility() {
+            var _this2 = this;
+
+            this.attributes['athletic-ability'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'catch_2';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this2.animationControls.setTimeScale(timeScale, animName);
+
+                  _this2.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initFootQuickness = function initFootQuickness() {
+            var _this3 = this;
+
+            this.attributes['foot-quickness'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'catch_3';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this3.animationControls.setTimeScale(timeScale, animName);
+
+                  _this3.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initDominantHand = function initDominantHand() {
+
+            this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  console.log(e);
+            }, 100), false);
+
+            this.attributes['dominant-hand'].right.addEventListener('click', throttle(function (e) {
+
+                  e.preventDefault();
+                  console.log(e);
+            }, 100), false);
+
+            this.attributes['dominant-hand'].both.addEventListener('click', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  console.log(e);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initReleaseQuickness = function initReleaseQuickness() {
+            var _this4 = this;
+
+            this.attributes['release-quickness'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'hike';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this4.animationControls.setTimeScale(timeScale, animName);
+
+                  _this4.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initDelivery = function initDelivery() {
+            var _this5 = this;
+
+            this.attributes.delivery.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'pass';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this5.animationControls.setTimeScale(timeScale, animName);
+
+                  _this5.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initMechanics = function initMechanics() {
+            var _this6 = this;
+
+            this.attributes.mechanics.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'stance';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this6.animationControls.setTimeScale(timeScale, animName);
+
+                  _this6.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initArmStrength = function initArmStrength() {
+            var _this7 = this;
+
+            this.attributes['arm-strength'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'on_back_to_stand';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this7.animationControls.setTimeScale(timeScale, animName);
+
+                  _this7.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initAnticipation = function initAnticipation() {
+            var _this8 = this;
+
+            this.attributes.anticipation.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'on_front_to_stand';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this8.animationControls.setTimeScale(timeScale, animName);
+
+                  _this8.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initAccuracyShort = function initAccuracyShort() {
+            var _this9 = this;
+
+            this.attributes['accuracy-short'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this9.animationControls.setTimeScale(timeScale, animName);
+
+                  _this9.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initTouchShort = function initTouchShort() {
+            var _this10 = this;
+
+            this.attributes['touch-short'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this10.animationControls.setTimeScale(timeScale, animName);
+
+                  _this10.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initAccuracyLong = function initAccuracyLong() {
+            var _this11 = this;
+
+            this.attributes['accuracy-long'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this11.animationControls.setTimeScale(timeScale, animName);
+
+                  _this11.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initTouchLong = function initTouchLong() {
+            var _this12 = this;
+
+            this.attributes['touch-long'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this12.animationControls.setTimeScale(timeScale, animName);
+
+                  _this12.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initDecisionMaking = function initDecisionMaking() {
+            var _this13 = this;
+
+            this.attributes['decision-making'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this13.animationControls.setTimeScale(timeScale, animName);
+
+                  _this13.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initReadCoverage = function initReadCoverage() {
+            var _this14 = this;
+
+            this.attributes['read-coverage'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this14.animationControls.setTimeScale(timeScale, animName);
+
+                  _this14.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initPocketPresence = function initPocketPresence() {
+            var _this15 = this;
+
+            this.attributes['pocket-presence'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this15.animationControls.setTimeScale(timeScale, animName);
+
+                  _this15.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initPoise = function initPoise() {
+            var _this16 = this;
+
+            this.attributes.poise.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this16.animationControls.setTimeScale(timeScale, animName);
+
+                  _this16.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initMobility = function initMobility() {
+            var _this17 = this;
+
+            this.attributes.mobility.addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this17.animationControls.setTimeScale(timeScale, animName);
+
+                  _this17.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initThrowOnMove = function initThrowOnMove() {
+            var _this18 = this;
+
+            this.attributes['throw-on-move'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this18.animationControls.setTimeScale(timeScale, animName);
+
+                  _this18.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initRunningAbility = function initRunningAbility() {
+            var _this19 = this;
+
+            this.attributes['running-ability'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this19.animationControls.setTimeScale(timeScale, 'run');
+
+                  _this19.animationControls.playAction('run');
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initClutchProduction = function initClutchProduction() {
+            var _this20 = this;
+
+            this.attributes['clutch-production'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this20.animationControls.setTimeScale(timeScale, animName);
+
+                  _this20.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      AttributeControls.prototype.initAbilityToWin = function initAbilityToWin() {
+            var _this21 = this;
+
+            this.attributes['ability-to-win'].addEventListener('input', throttle(function (e) {
+
+                  e.preventDefault();
+
+                  var animName = 'idle';
+
+                  var value = e.target.value === 1 ? 2 : e.target.value;
+
+                  var timeScale = Math.log10(value * 2);
+
+                  _this21.animationControls.setTimeScale(timeScale, animName);
+
+                  _this21.animationControls.playAction(animName);
+            }, 100), false);
+      };
+
+      return AttributeControls;
+}();
+
+// import * as THREE from 'three';
+
 var loaders = new Loaders();
 
 var Simulation = function () {
@@ -59326,12 +59868,21 @@ var Simulation = function () {
         this.animations = {};
 
         this.loadingPromises = [];
+
+        this.attributeControls = new AttributeControls();
     };
 
     Simulation.prototype.loadModels = function loadModels() {
         var _this = this;
 
         var playerPromise = loaders.fbxLoader('/assets/models/nfl/white_player_static.fbx').then(function (object) {
+
+            object.traverse(function (child) {
+                console.log(child);
+
+                child.frustumCulled = false;
+                child.castShadow = true;
+            });
 
             _this.player = object;
         });
@@ -59344,15 +59895,16 @@ var Simulation = function () {
     Simulation.prototype.loadAnimations = function loadAnimations() {
         var _this2 = this;
 
-        animationControls.initMixer(this.player);
+        var animationsNames = ['catch_1', 'catch_2', 'catch_3', 'hike', 'idle', 'on_back_to_stand', 'on_front_to_stand', 'pass', 'run', 'stance'];
 
-        var animationsNames = ['catch_1', 'catch_2', 'catch_3', 'hike', 'idle', 'on_back_to_stand', 'on_front_to_stand', 'pass', 'pass_1', 'run', 'stance', 'stand'];
+        this.animations = [];
 
         animationsNames.forEach(function (name) {
 
             _this2.loadingPromises.push(loaders.animationLoader('/assets/models/nfl/anims/' + name + '.json').then(function (anim) {
 
-                animationControls.initAnimation(anim, name);
+                anim.name = name;
+                _this2.animations.push(anim);
             }));
         });
     };
@@ -59365,6 +59917,19 @@ var Simulation = function () {
             canvas$1.addObjectToScene(_this3.player);
 
             canvas$1.app.play();
+
+            animationControls.initMixer(_this3.player);
+
+            _this3.animations.forEach(function (anim) {
+
+                animationControls.initAnimation(anim);
+            });
+
+            animationControls.playAction('idle');
+
+            _this3.attributeControls.initAnimationControls(animationControls);
+
+            _this3.attributeControls.enableControls();
         });
     };
 
