@@ -1,19 +1,28 @@
 import * as THREE from 'three';
+import throttle from 'lodash.throttle';
+
 import HTMLControl from './HTMLControl.js';
 
 export default class Grid {
 
   constructor() {
 
-    this.enabled = true;
+    this.enabled = false;
 
     this.scene = new THREE.Scene();
-    // this.scene.background = 0xff00ff;
 
     this.initCamera();
-
     this.initFrame();
-    this.initObjects();
+
+    this.initControls();
+
+  }
+
+  init( position ) {
+
+    this.position = position;
+
+    this.initObjects( position );
 
   }
 
@@ -48,7 +57,6 @@ export default class Grid {
     }
   }
 
-
   // create a camera the full size of the canvas
   initCamera() {
 
@@ -65,16 +73,16 @@ export default class Grid {
 
   }
 
-  initObjects() {
+  initObjects( position ) {
+
+    if ( position === undefined ) position = this.position;
 
     this.initBackGround();
     this.initBorder();
     this.initField();
-    this.initGoalsHelper();
-    // this.initNaoHelper();
-    // this.initBallHelper();
-
-    // this.initArrowHelper();
+    this.initGoals();
+    this.initBallHelper( position );
+    this.initArrowHelper();
 
   }
 
@@ -91,7 +99,7 @@ export default class Grid {
 
   initBorder() {
 
-    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height, 1, 1 );
+    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height );
 
     const edges = new THREE.EdgesGeometry( plane );
     const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x202020, transparent: true, opacity: 0.75 } ) );
@@ -104,7 +112,7 @@ export default class Grid {
 
   initField() {
 
-    const plane = new THREE.PlaneBufferGeometry( this.frame.width - 50, this.frame.height - 50, 1, 1 );
+    const plane = new THREE.PlaneBufferGeometry( this.frame.width - 50, this.frame.height - 50 );
     const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x75B82B } ) );
 
     mesh.position.copy( this.frame.center );
@@ -113,86 +121,101 @@ export default class Grid {
 
   }
 
-  initGoalsHelper() {
+  initGoals() {
 
-    const geo = new THREE.BoxBufferGeometry( 50, 5, 5 );
-    const mat = new THREE.MeshBasicMaterial( { color: 0x00ffff } );
-    const mesh = new THREE.Mesh( geo, mat );
+    const plane = new THREE.PlaneBufferGeometry( 5, 50 );
+    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x303030 } ) );
 
     mesh.position.set(
-      this.frame.center.x + 50,
+      this.frame.center.x + 73,
       this.frame.center.y,
-      0
-    )
+      this.frame.center.z + 1,
+    );
 
     this.scene.add( mesh );
 
   }
 
-  initNaoHelper() {
+  initBallHelper( position ) {
 
-    const geo = new THREE.CylinderBufferGeometry( 2, 2, 12, 4, false );
-    const mat = new THREE.MeshBasicMaterial( { color: 0xff00ff } );
-    this.naoHelper = new THREE.Mesh( geo, mat );
+    const geo = new THREE.CircleBufferGeometry( 5, 12 );
+    this.ball = new THREE.Mesh( geo, new THREE.MeshBasicMaterial( { color: 0xffffff } ) );
+    this.ball.position.set(
+      this.frame.center.x + position.x,
+      this.frame.center.y - position.z,
+      this.frame.center.z,
+     );
 
-  }
-
-  initBallHelper() {
-
-    const geo = new THREE.CylinderBufferGeometry( 2, 2, 12, 4, false );
-    const mat = new THREE.MeshBasicMaterial( { color: 0xff00ff } );
-    this.ballHelper = new THREE.Mesh( geo, mat );
+    this.scene.add( this.ball );
 
   }
-
-
 
   initArrowHelper() {
 
-    const dir = new THREE.Vector3( 1, 2, 0 );
-    const origin = new THREE.Vector3( 0, 0, 0 );
-    const length = 1;
-    this.arrowHelper = new THREE.ArrowHelper( dir, origin, length, 0xffff00 );
+    const dir = new THREE.Vector3( 1, 0, 0 );
+    const origin = this.ball.position.clone();
+    this.arrowHelper = new THREE.ArrowHelper( dir, origin, 40, 0x000000, 20, 10 );
+
+    this.scene.add( this.arrowHelper );
 
   }
 
   render( renderer ) {
 
-    // if ( !this.enabled ) return;
+    if ( !this.enabled ) return;
 
-    // const origAutoClearSetting = renderer.autoClear;
-
-    // renderer.autoClear = false; // To allow render overlay
-    // renderer.clearDepth();
     renderer.render( this.scene, this.camera, null, true );
-    // renderer.render( this.scene, this.camera, null, false );
-    // renderer.autoClear = origAutoClearSetting; // Restore original setting
 
   }
 
   resize() {
 
-    this.initFrame();
+    throttle( () => {
 
-    this.camera.left = -this.frame.width / 2;
-    this.camera.right = this.frame.width / 2;
-    this.camera.top = this.frame.height / 2;
-    this.camera.bottom = -this.frame.height / 2;
-    this.camera.updateProjectionMatrix();
+      this.initFrame();
+      this.initCamera();
+      this.scene = new THREE.Scene();
+      this.initObjects();
 
-    this.update();
+    }, 250 );
 
   }
 
   reset() {
 
-    //
+    this.scene.remove( this.arrowHelper );
 
   }
 
-  update( renderer, positions, slope ) {
+  updateSlope( slope ) {
 
-    //
+    const angle = Math.atan( slope );
+
+    const direction = new THREE.Vector3(
+      Math.cos( angle ),
+      Math.sin( angle ),
+      0
+    ).normalize();
+
+    this.arrowHelper.setDirection( direction );
+
+  }
+
+  initControls() {
+
+    HTMLControl.controls.slope.addEventListener( 'input', ( e ) => {
+
+      e.preventDefault();
+
+      this.updateSlope( e.target.value );
+
+    }, false );
+
+    HTMLControl.controls.showGrid.addEventListener( 'click', ( e ) => {
+
+      this.enabled = e.target.checked;
+
+    }, false );
 
   }
 

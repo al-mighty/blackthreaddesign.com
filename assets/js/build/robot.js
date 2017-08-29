@@ -9702,7 +9702,8 @@ var controls = {
   reset: document.querySelector('#reset'),
   slope: document.querySelector('#slope'),
   simulate: document.querySelector('#simulate'),
-  fullscreen: document.querySelector('#fullscreen-button')
+  fullscreen: document.querySelector('#fullscreen-button'),
+  showGrid: document.querySelector('#show-grid')
 };
 
 var HTMLControl = function () {
@@ -9735,6 +9736,8 @@ var HTMLControl = function () {
 
       loading.revealOnLoad[_i].classList.remove('hide');
     }
+
+    controls.showGrid.disabled = false;
   };
 
   return HTMLControl;
@@ -59379,16 +59382,22 @@ var Grid = function () {
         classCallCheck(this, Grid);
 
 
-        this.enabled = true;
+        this.enabled = false;
 
         this.scene = new Scene();
-        // this.scene.background = 0xff00ff;
 
         this.initCamera();
-
         this.initFrame();
-        this.initObjects();
+
+        this.initControls();
     }
+
+    Grid.prototype.init = function init(position) {
+
+        this.position = position;
+
+        this.initObjects(position);
+    };
 
     Grid.prototype.initFrame = function initFrame() {
 
@@ -59430,16 +59439,16 @@ var Grid = function () {
         this.camera.position.set(0, 0, 2);
     };
 
-    Grid.prototype.initObjects = function initObjects() {
+    Grid.prototype.initObjects = function initObjects(position) {
+
+        if (position === undefined) position = this.position;
 
         this.initBackGround();
         this.initBorder();
         this.initField();
-        this.initGoalsHelper();
-        // this.initNaoHelper();
-        // this.initBallHelper();
-
-        // this.initArrowHelper();
+        this.initGoals();
+        this.initBallHelper(position);
+        this.initArrowHelper();
     };
 
     Grid.prototype.initBackGround = function initBackGround() {
@@ -59454,7 +59463,7 @@ var Grid = function () {
 
     Grid.prototype.initBorder = function initBorder() {
 
-        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height, 1, 1);
+        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
 
         var edges = new EdgesGeometry(plane);
         var line = new LineSegments(edges, new LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.75 }));
@@ -59466,7 +59475,7 @@ var Grid = function () {
 
     Grid.prototype.initField = function initField() {
 
-        var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50, 1, 1);
+        var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50);
         var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x75B82B }));
 
         mesh.position.copy(this.frame.center);
@@ -59474,75 +59483,81 @@ var Grid = function () {
         this.scene.add(mesh);
     };
 
-    Grid.prototype.initGoalsHelper = function initGoalsHelper() {
+    Grid.prototype.initGoals = function initGoals() {
 
-        var geo = new BoxBufferGeometry(50, 5, 5);
-        var mat = new MeshBasicMaterial({ color: 0x00ffff });
-        var mesh = new Mesh(geo, mat);
+        var plane = new PlaneBufferGeometry(5, 50);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x303030 }));
 
-        mesh.position.set(this.frame.center.x + 50, this.frame.center.y, 0);
+        mesh.position.set(this.frame.center.x + 73, this.frame.center.y, this.frame.center.z + 1);
 
         this.scene.add(mesh);
     };
 
-    Grid.prototype.initNaoHelper = function initNaoHelper() {
+    Grid.prototype.initBallHelper = function initBallHelper(position) {
 
-        var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
-        var mat = new MeshBasicMaterial({ color: 0xff00ff });
-        this.naoHelper = new Mesh(geo, mat);
-    };
+        var geo = new CircleBufferGeometry(5, 12);
+        this.ball = new Mesh(geo, new MeshBasicMaterial({ color: 0xffffff }));
+        this.ball.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
 
-    Grid.prototype.initBallHelper = function initBallHelper() {
-
-        var geo = new CylinderBufferGeometry(2, 2, 12, 4, false);
-        var mat = new MeshBasicMaterial({ color: 0xff00ff });
-        this.ballHelper = new Mesh(geo, mat);
+        this.scene.add(this.ball);
     };
 
     Grid.prototype.initArrowHelper = function initArrowHelper() {
 
-        var dir = new Vector3(1, 2, 0);
-        var origin = new Vector3(0, 0, 0);
-        var length = 1;
-        this.arrowHelper = new ArrowHelper(dir, origin, length, 0xffff00);
+        var dir = new Vector3(1, 0, 0);
+        var origin = this.ball.position.clone();
+        this.arrowHelper = new ArrowHelper(dir, origin, 40, 0x000000, 20, 10);
+
+        this.scene.add(this.arrowHelper);
     };
 
     Grid.prototype.render = function render(renderer) {
 
-        // if ( !this.enabled ) return;
+        if (!this.enabled) return;
 
-        // const origAutoClearSetting = renderer.autoClear;
-
-        // renderer.autoClear = false; // To allow render overlay
-        // renderer.clearDepth();
         renderer.render(this.scene, this.camera, null, true);
-        // renderer.render( this.scene, this.camera, null, false );
-        // renderer.autoClear = origAutoClearSetting; // Restore original setting
     };
 
     Grid.prototype.resize = function resize() {
+        var _this = this;
 
-        this.initFrame();
+        throttle(function () {
 
-        this.camera.left = -this.frame.width / 2;
-        this.camera.right = this.frame.width / 2;
-        this.camera.top = this.frame.height / 2;
-        this.camera.bottom = -this.frame.height / 2;
-        this.camera.updateProjectionMatrix();
-
-        this.update();
+            _this.initFrame();
+            _this.initCamera();
+            _this.scene = new Scene();
+            _this.initObjects();
+        }, 250);
     };
 
     Grid.prototype.reset = function reset() {
 
-        //
-
+        this.scene.remove(this.arrowHelper);
     };
 
-    Grid.prototype.update = function update(renderer, positions, slope) {
+    Grid.prototype.updateSlope = function updateSlope(slope) {
 
-        //
+        var angle = Math.atan(slope);
 
+        var direction = new Vector3(Math.cos(angle), Math.sin(angle), 0).normalize();
+
+        this.arrowHelper.setDirection(direction);
+    };
+
+    Grid.prototype.initControls = function initControls() {
+        var _this2 = this;
+
+        HTMLControl.controls.slope.addEventListener('input', function (e) {
+
+            e.preventDefault();
+
+            _this2.updateSlope(e.target.value);
+        }, false);
+
+        HTMLControl.controls.showGrid.addEventListener('click', function (e) {
+
+            _this2.enabled = e.target.checked;
+        }, false);
     };
 
     return Grid;
@@ -59577,7 +59592,7 @@ var Simulation = function () {
 
         this.loadingPromises = [];
 
-        this.initGrid();
+        this.grid = new Grid();
 
         // Put any per frame calculation here
         canvas$1.app.onUpdate = function () {
@@ -59650,8 +59665,6 @@ var Simulation = function () {
 
     Simulation.prototype.init = function init() {
 
-        HTMLControl.controls.simulate.disabled = false;
-
         animationControls.reset();
         canvas$1.app.controls.reset();
 
@@ -59659,16 +59672,8 @@ var Simulation = function () {
         this.updateEquation();
         HTMLControl.setInitialState();
         this.setInitialTransforms();
-    };
 
-    Simulation.prototype.initGrid = function initGrid() {
-
-        this.grid = new Grid();
-
-        HTMLControl.controls.slope.addEventListener('change', function (e) {
-
-            e.preventDefault();
-        }, false);
+        this.grid.init(this.ball.position);
     };
 
     // set up positions for the animations
@@ -59701,6 +59706,7 @@ var Simulation = function () {
             clearTimeout(_this3.ballTimer);
             _this3.ballTimer = undefined;
 
+            _this3.grid.reset();
             _this3.init();
         });
     };
@@ -59833,8 +59839,6 @@ var Simulation = function () {
 
     Simulation.prototype.initSimulation = function initSimulation() {
         var _this4 = this;
-
-        HTMLControl.setInitialState();
 
         HTMLControl.controls.simulate.addEventListener('click', function (e) {
 

@@ -33,6 +33,7 @@ const controls = {
   slope: document.querySelector( '#slope' ),
   simulate: document.querySelector( '#simulate' ),
   fullscreen: document.querySelector( '#fullscreen-button' ),
+  showGrid: document.querySelector( '#show-grid' ),
 };
 
 export default class HTMLControl {
@@ -65,6 +66,8 @@ export default class HTMLControl {
       loading.revealOnLoad[ i ].classList.remove( 'hide' );
 
     }
+
+    controls.showGrid.disabled = false;
   }
 
 }

@@ -35,7 +35,7 @@ export default class Simulation {
 
     this.loadingPromises = [];
 
-    this.initGrid();
+    this.grid = new Grid();
 
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
@@ -113,8 +113,6 @@ export default class Simulation {
 
   init() {
 
-    HTMLControl.controls.simulate.disabled = false;
-
     animationControls.reset();
     canvas.app.controls.reset();
 
@@ -123,19 +121,10 @@ export default class Simulation {
     HTMLControl.setInitialState();
     this.setInitialTransforms();
 
-  }
-
-  initGrid() {
-
-    this.grid = new Grid();
-
-    HTMLControl.controls.slope.addEventListener( 'change', ( e ) => {
-
-      e.preventDefault();
-
-    }, false );
+    this.grid.init( this.ball.position );
 
   }
+
 
   // set up positions for the animations
   initPositions() {
@@ -175,6 +164,7 @@ export default class Simulation {
       clearTimeout( this.ballTimer );
       this.ballTimer = undefined;
 
+      this.grid.reset();
       this.init();
 
     } );
@@ -311,8 +301,6 @@ export default class Simulation {
   }
 
   initSimulation() {
-
-    HTMLControl.setInitialState();
 
     HTMLControl.controls.simulate.addEventListener( 'click', ( e ) => {
 
