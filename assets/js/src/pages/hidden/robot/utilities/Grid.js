@@ -153,33 +153,20 @@ export default class Grid {
 
   initText( position ) {
 
-    const createText = () => {
-
-      const centerText = createTextMesh( this.font, '(0,0)', this.colorCenterLine );
-      centerText.position.set( 3, 0, -2 );
-
-      const upperLeftText = createTextMesh( this.font, '(-40,40)', this.colorCenterLine );
-      upperLeftText.position.set( -38, 0, -42 );
-
-      const upperRightText = createTextMesh( this.font, '(40,40)', this.colorCenterLine );
-      upperRightText.position.set( 43, 0, -42 );
-
-      const lowerLeftText = createTextMesh( this.font, '(-40,-40)', this.colorCenterLine );
-      lowerLeftText.position.set( -38, 0, 38 );
-
-      const lowerRightText = createTextMesh( this.font, '(40,-40)', this.colorCenterLine );
-      lowerRightText.position.set( 43, 0, 38 );
+    const createBallText = () => {
 
       this.ballText = createTextMesh( this.font, '(' + position.x + ',' + position.z + ')', 0x000000 );
       this.ballText.position.set( position.x - 29.5, 2, position.z + 7 );
 
-      this.group.add( centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText, this.ballText );
+      this.group.add( this.ballText );
 
     };
 
+    // if the font is already loaded then this is not the first time
+    // the function has been called and only ball text needs updating
     if ( this.font ) {
 
-      createText();
+      createBallText();
 
     } else {
 
@@ -187,7 +174,24 @@ export default class Grid {
 
         this.font = font;
 
-        createText();
+        const centerText = createTextMesh( this.font, '(0,0)', this.colorCenterLine );
+        centerText.position.set( 3, 0, -2 );
+
+        const upperLeftText = createTextMesh( this.font, '(-40,40)', this.colorCenterLine );
+        upperLeftText.position.set( -38, 0, -42 );
+
+        const upperRightText = createTextMesh( this.font, '(40,40)', this.colorCenterLine );
+        upperRightText.position.set( 43, 0, -42 );
+
+        const lowerLeftText = createTextMesh( this.font, '(-40,-40)', this.colorCenterLine );
+        lowerLeftText.position.set( -38, 0, 38 );
+
+        const lowerRightText = createTextMesh( this.font, '(40,-40)', this.colorCenterLine );
+        lowerRightText.position.set( 43, 0, 38 );
+
+        this.group.add( centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText );
+
+        createBallText();
 
       } );
 

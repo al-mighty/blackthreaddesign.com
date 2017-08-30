@@ -59717,39 +59717,43 @@ var Grid = function () {
     Grid.prototype.initText = function initText(position) {
         var _this = this;
 
-        var createText = function () {
-
-            var centerText = createTextMesh(_this.font, '(0,0)', _this.colorCenterLine);
-            centerText.position.set(3, 0, -2);
-
-            var upperLeftText = createTextMesh(_this.font, '(-40,40)', _this.colorCenterLine);
-            upperLeftText.position.set(-38, 0, -42);
-
-            var upperRightText = createTextMesh(_this.font, '(40,40)', _this.colorCenterLine);
-            upperRightText.position.set(43, 0, -42);
-
-            var lowerLeftText = createTextMesh(_this.font, '(-40,-40)', _this.colorCenterLine);
-            lowerLeftText.position.set(-38, 0, 38);
-
-            var lowerRightText = createTextMesh(_this.font, '(40,-40)', _this.colorCenterLine);
-            lowerRightText.position.set(43, 0, 38);
+        var createBallText = function () {
 
             _this.ballText = createTextMesh(_this.font, '(' + position.x + ',' + position.z + ')', 0x000000);
             _this.ballText.position.set(position.x - 29.5, 2, position.z + 7);
 
-            _this.group.add(centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText, _this.ballText);
+            _this.group.add(_this.ballText);
         };
 
+        // if the font is already loaded then this is not the first time
+        // the function has been called and only ball text needs updating
         if (this.font) {
 
-            createText();
+            createBallText();
         } else {
 
             loaders.fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
 
                 _this.font = font;
 
-                createText();
+                var centerText = createTextMesh(_this.font, '(0,0)', _this.colorCenterLine);
+                centerText.position.set(3, 0, -2);
+
+                var upperLeftText = createTextMesh(_this.font, '(-40,40)', _this.colorCenterLine);
+                upperLeftText.position.set(-38, 0, -42);
+
+                var upperRightText = createTextMesh(_this.font, '(40,40)', _this.colorCenterLine);
+                upperRightText.position.set(43, 0, -42);
+
+                var lowerLeftText = createTextMesh(_this.font, '(-40,-40)', _this.colorCenterLine);
+                lowerLeftText.position.set(-38, 0, 38);
+
+                var lowerRightText = createTextMesh(_this.font, '(40,-40)', _this.colorCenterLine);
+                lowerRightText.position.set(43, 0, 38);
+
+                _this.group.add(centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText);
+
+                createBallText();
             });
         }
     };
