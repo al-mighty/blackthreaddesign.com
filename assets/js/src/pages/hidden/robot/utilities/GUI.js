@@ -155,8 +155,6 @@ export default class GUI {
     const origin = this.ballHelper.position.clone();
     this.arrowHelper = new THREE.ArrowHelper( dir, origin, 40, 0x000000, 20, 10 );
 
-    this.arrowHelper.renderOrder = 3;
-
     this.scene.add( this.arrowHelper );
 
   }

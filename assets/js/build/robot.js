@@ -59535,8 +59535,6 @@ var GUI = function () {
         var origin = this.ballHelper.position.clone();
         this.arrowHelper = new ArrowHelper(dir, origin, 40, 0x000000, 20, 10);
 
-        this.arrowHelper.renderOrder = 3;
-
         this.scene.add(this.arrowHelper);
     };
 
@@ -59585,7 +59583,7 @@ var GUI = function () {
 
 var createTextMesh = function (font, text, color) {
 
-    color = color || 0xeeeeee;
+    color = color === undefined ? 0xeeeeee : color;
 
     var textMat = new LineBasicMaterial({ color: color });
 
@@ -59616,13 +59614,18 @@ var Grid = function () {
 
         this.group = new Group();
 
-        this.group.visible = true;
+        this.group.visible = false;
 
         this.initGrid();
         this.initCenterCircle();
         this.initCoords();
-        this.initText();
     }
+
+    Grid.prototype.init = function init(position) {
+
+        this.initArrow(position);
+        this.initText(position);
+    };
 
     Grid.prototype.initGrid = function initGrid() {
 
@@ -59685,10 +59688,11 @@ var Grid = function () {
     Grid.prototype.initCoords = function initCoords() {
 
         var position = 40;
+        var height = this.height + 0.1;
 
         var geometry = new CircleBufferGeometry(2, 32);
         geometry.rotateX(-Math.PI / 2);
-        geometry.translate(0, this.height, 0);
+        geometry.translate(0, height, 0);
 
         var material = new MeshBasicMaterial({ color: this.colorCenterLine });
 
@@ -59710,28 +59714,85 @@ var Grid = function () {
         this.group.add(center, upperLeft, upperRight, lowerLeft, lowerRight);
     };
 
-    Grid.prototype.initText = function initText() {
+    Grid.prototype.initText = function initText(position) {
         var _this = this;
 
-        loaders.fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+        var createText = function () {
 
-            var centerText = createTextMesh(font, '(0,0)');
+            var centerText = createTextMesh(_this.font, '(0,0)', _this.colorCenterLine);
             centerText.position.set(3, 0, -2);
 
-            var upperLeftText = createTextMesh(font, '(-40,40)');
+            var upperLeftText = createTextMesh(_this.font, '(-40,40)', _this.colorCenterLine);
             upperLeftText.position.set(-38, 0, -42);
 
-            var upperRightText = createTextMesh(font, '(40,40)');
+            var upperRightText = createTextMesh(_this.font, '(40,40)', _this.colorCenterLine);
             upperRightText.position.set(43, 0, -42);
 
-            var lowerLeftText = createTextMesh(font, '(-40,-40)');
+            var lowerLeftText = createTextMesh(_this.font, '(-40,-40)', _this.colorCenterLine);
             lowerLeftText.position.set(-38, 0, 38);
 
-            var lowerRightText = createTextMesh(font, '(40,-40)');
+            var lowerRightText = createTextMesh(_this.font, '(40,-40)', _this.colorCenterLine);
             lowerRightText.position.set(43, 0, 38);
 
-            _this.group.add(centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText);
-        });
+            _this.ballText = createTextMesh(_this.font, '(' + position.x + ',' + position.z + ')', 0x000000);
+            _this.ballText.position.set(position.x - 29.5, 2, position.z + 7);
+
+            _this.group.add(centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText, _this.ballText);
+        };
+
+        if (this.font) {
+
+            createText();
+        } else {
+
+            loaders.fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+
+                _this.font = font;
+
+                createText();
+            });
+        }
+    };
+
+    Grid.prototype.initArrow = function initArrow(position) {
+
+        var height = this.height + 3;
+
+        // arrow
+        var dir = new Vector3(1, 0, 0);
+        var origin = new Vector3(position.x, height, position.z);
+        this.arrowHelper = new ArrowHelper(dir, origin, 30, 0x000000);
+
+        this.group.add(this.arrowHelper);
+
+        this.arrowHelper.cone.scale.set(3, 15, 3);
+        this.arrowHelper.cone.updateMatrix();
+
+        // circle around ball
+        var geometry = new CircleBufferGeometry(8, 64);
+        geometry.rotateX(-Math.PI / 2);
+        geometry.translate(0, height, 0);
+        var material = new LineBasicMaterial({ color: 0x000000 });
+        var edges = new EdgesGeometry(geometry);
+
+        this.ballCircle = new LineSegments(edges, material);
+        this.ballCircle.position.set(position.x, 0, position.z);
+
+        this.group.add(this.ballCircle);
+    };
+
+    Grid.prototype.updateSlope = function updateSlope(slope) {
+
+        var angle = Math.atan(slope);
+
+        var direction = new Vector3(Math.cos(angle), 0, -Math.sin(angle)).normalize();
+
+        this.arrowHelper.setDirection(direction);
+    };
+
+    Grid.prototype.reset = function reset() {
+
+        this.group.remove(this.arrowHelper, this.ballCircle, this.ballText);
     };
 
     createClass(Grid, [{
@@ -59855,11 +59916,12 @@ var Simulation = function () {
         this.setInitialTransforms();
 
         this.gui.init(this.ball.position);
+        this.grid.init(this.ball.position);
     };
 
     Simulation.prototype.initGrid = function initGrid() {
 
-        this.grid = new Grid(176, 110, 10, 0xeeeeee, 0x888888);
+        this.grid = new Grid(160, 100, 10, 0xeeeeee, 0x888888);
         canvas$1.app.scene.add(this.grid.group);
     };
 
@@ -59876,10 +59938,10 @@ var Simulation = function () {
 
         HTMLControl.ballPosition.innerHTML = this.ballInitialPos[0] + ', ' + this.ballInitialPos[2];
 
-        var signA = this.ballInitialPos[0] > 0 ? ' - ' : '';
+        var signA = this.ballInitialPos[0] > 0 ? ' - ' : ' + ';
         var signB = this.ballInitialPos[2] > 0 ? ' ) + ' : ' ) ';
 
-        HTMLControl.equation.innerHTML = '( ' + 'x ' + signA + this.ballInitialPos[0] + signB + this.ballInitialPos[2];
+        HTMLControl.equation.innerHTML = '( ' + 'x ' + signA + Math.abs(this.ballInitialPos[0]) + signB + this.ballInitialPos[2];
     };
 
     Simulation.prototype.initReset = function initReset() {
@@ -59899,6 +59961,7 @@ var Simulation = function () {
             HTMLControl.setInitialState();
             _this3.setInitialTransforms();
             _this3.gui.updateSlope(0);
+            _this3.grid.updateSlope(0);
         });
     };
 
@@ -59914,6 +59977,7 @@ var Simulation = function () {
             _this4.ballTimer = undefined;
 
             _this4.gui.reset();
+            _this4.grid.reset();
             _this4.init();
         });
     };
@@ -60066,6 +60130,7 @@ var Simulation = function () {
             e.preventDefault();
 
             _this5.gui.updateSlope(e.target.value);
+            _this5.grid.updateSlope(e.target.value);
         }, false);
 
         HTMLControl.controls.showGrid.addEventListener('click', function (e) {

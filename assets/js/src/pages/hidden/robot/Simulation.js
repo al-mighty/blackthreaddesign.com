@@ -123,12 +123,13 @@ export default class Simulation {
     this.setInitialTransforms();
 
     this.gui.init( this.ball.position );
+    this.grid.init( this.ball.position );
 
   }
 
   initGrid() {
 
-    this.grid = new Grid( 176, 110, 10, 0xeeeeee, 0x888888 );
+    this.grid = new Grid( 160, 100, 10, 0xeeeeee, 0x888888 );
     canvas.app.scene.add( this.grid.group );
 
   }
@@ -149,14 +150,14 @@ export default class Simulation {
 
     HTMLControl.ballPosition.innerHTML = this.ballInitialPos[0] + ', ' + this.ballInitialPos[2];
 
-    const signA = this.ballInitialPos[0] > 0 ? ' - ' : '';
+    const signA = this.ballInitialPos[0] > 0 ? ' - ' : ' + ';
     const signB = this.ballInitialPos[2] > 0 ? ' ) + ' : ' ) ';
 
     HTMLControl.equation.innerHTML =
       '( '
       + 'x '
       + signA
-      + this.ballInitialPos[0]
+      + Math.abs( this.ballInitialPos[0] )
       + signB
       + this.ballInitialPos[2];
   }
@@ -177,6 +178,7 @@ export default class Simulation {
       HTMLControl.setInitialState();
       this.setInitialTransforms();
       this.gui.updateSlope( 0 );
+      this.grid.updateSlope( 0 );
 
     } );
 
@@ -193,6 +195,7 @@ export default class Simulation {
       this.ballTimer = undefined;
 
       this.gui.reset();
+      this.grid.reset();
       this.init();
 
     } );
@@ -350,6 +353,7 @@ export default class Simulation {
       e.preventDefault();
 
       this.gui.updateSlope( e.target.value );
+      this.grid.updateSlope( e.target.value );
 
     }, false );
 

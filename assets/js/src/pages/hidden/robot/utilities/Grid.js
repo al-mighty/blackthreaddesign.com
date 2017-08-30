@@ -7,7 +7,7 @@ import loaders from './loaders.js';
 
 const createTextMesh = ( font, text, color ) => {
 
-  color = color || 0xeeeeee;
+  color = ( color === undefined ) ? 0xeeeeee : color;
 
   const textMat = new THREE.LineBasicMaterial( { color } );
 
@@ -38,18 +38,24 @@ export default class Grid {
 
     this.group = new THREE.Group();
 
-    this.group.visible = true;
+    this.group.visible = false;
 
     this.initGrid();
     this.initCenterCircle();
     this.initCoords();
-    this.initText();
 
   }
 
   set enabled( bool ) {
 
     this.group.visible = bool;
+
+  }
+
+  init( position ) {
+
+    this.initArrow( position );
+    this.initText( position );
 
   }
 
@@ -118,10 +124,11 @@ export default class Grid {
   initCoords() {
 
     const position = 40;
+    const height = this.height + 0.1;
 
     const geometry = new THREE.CircleBufferGeometry( 2, 32 );
     geometry.rotateX( -Math.PI / 2 );
-    geometry.translate( 0, this.height, 0 );
+    geometry.translate( 0, height, 0 );
 
     const material = new THREE.MeshBasicMaterial( { color: this.colorCenterLine } );
 
@@ -144,28 +151,95 @@ export default class Grid {
 
   }
 
-  initText() {
+  initText( position ) {
 
-    loaders.fontLoader( '/assets/fonts/json/droid_sans_mono_regular.typeface.json' ).then( ( font ) => {
+    const createText = () => {
 
-      const centerText = createTextMesh( font, '(0,0)' );
+      const centerText = createTextMesh( this.font, '(0,0)', this.colorCenterLine );
       centerText.position.set( 3, 0, -2 );
 
-      const upperLeftText = createTextMesh( font, '(-40,40)' );
+      const upperLeftText = createTextMesh( this.font, '(-40,40)', this.colorCenterLine );
       upperLeftText.position.set( -38, 0, -42 );
 
-      const upperRightText = createTextMesh( font, '(40,40)' );
+      const upperRightText = createTextMesh( this.font, '(40,40)', this.colorCenterLine );
       upperRightText.position.set( 43, 0, -42 );
 
-      const lowerLeftText = createTextMesh( font, '(-40,-40)' );
+      const lowerLeftText = createTextMesh( this.font, '(-40,-40)', this.colorCenterLine );
       lowerLeftText.position.set( -38, 0, 38 );
 
-      const lowerRightText = createTextMesh( font, '(40,-40)' );
+      const lowerRightText = createTextMesh( this.font, '(40,-40)', this.colorCenterLine );
       lowerRightText.position.set( 43, 0, 38 );
 
-      this.group.add( centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText );
+      this.ballText = createTextMesh( this.font, '(' + position.x + ',' + position.z + ')', 0x000000 );
+      this.ballText.position.set( position.x - 29.5, 2, position.z + 7 );
 
-    } );
+      this.group.add( centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText, this.ballText );
+
+    };
+
+    if ( this.font ) {
+
+      createText();
+
+    } else {
+
+      loaders.fontLoader( '/assets/fonts/json/droid_sans_mono_regular.typeface.json' ).then( ( font ) => {
+
+        this.font = font;
+
+        createText();
+
+      } );
+
+    }
+
+  }
+
+  initArrow( position ) {
+
+    const height = this.height + 3;
+
+    // arrow
+    const dir = new THREE.Vector3( 1, 0, 0 );
+    const origin = new THREE.Vector3( position.x, height, position.z );
+    this.arrowHelper = new THREE.ArrowHelper( dir, origin, 30, 0x000000 );
+
+    this.group.add( this.arrowHelper );
+
+    this.arrowHelper.cone.scale.set( 3, 15, 3 );
+    this.arrowHelper.cone.updateMatrix();
+
+    // circle around ball
+    const geometry = new THREE.CircleBufferGeometry( 8, 64 );
+    geometry.rotateX( -Math.PI / 2 );
+    geometry.translate( 0, height, 0 );
+    const material = new THREE.LineBasicMaterial( { color: 0x000000 } );
+    const edges = new THREE.EdgesGeometry( geometry );
+
+    this.ballCircle = new THREE.LineSegments( edges, material );
+    this.ballCircle.position.set( position.x, 0, position.z );
+
+    this.group.add( this.ballCircle );
+
+  }
+
+  updateSlope( slope ) {
+
+    const angle = Math.atan( slope );
+
+    const direction = new THREE.Vector3(
+      Math.cos( angle ),
+      0,
+      -Math.sin( angle ),
+    ).normalize();
+
+    this.arrowHelper.setDirection( direction );
+
+  }
+
+  reset() {
+
+    this.group.remove( this.arrowHelper, this.ballCircle, this.ballText );
 
   }
 
