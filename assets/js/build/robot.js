@@ -59388,13 +59388,16 @@ var GUI = function () {
 
         this.initCamera();
         this.initFrame();
+
+        this.initObjects();
     }
 
     GUI.prototype.init = function init(position) {
 
         this.position = position;
 
-        this.initObjects(position);
+        this.initBallHelper(position);
+        this.initArrowHelper();
     };
 
     GUI.prototype.initFrame = function initFrame() {
@@ -59437,16 +59440,12 @@ var GUI = function () {
         this.camera.position.set(0, 0, 2);
     };
 
-    GUI.prototype.initObjects = function initObjects(position) {
-
-        if (position === undefined) position = this.position;
+    GUI.prototype.initObjects = function initObjects() {
 
         this.initBackGround();
         this.initBorder();
         this.initField();
         this.initGoals();
-        this.initBallHelper(position);
-        this.initArrowHelper();
     };
 
     GUI.prototype.initBackGround = function initBackGround() {
@@ -59493,6 +59492,8 @@ var GUI = function () {
 
     GUI.prototype.initBallHelper = function initBallHelper(position) {
 
+        if (position === undefined) position = this.position;
+
         var geo = new CircleBufferGeometry(5, 12);
         this.ballHelper = new Mesh(geo, new MeshBasicMaterial({ color: 0xC60000 }));
         this.ballHelper.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
@@ -59535,6 +59536,7 @@ var GUI = function () {
     GUI.prototype.reset = function reset() {
 
         this.scene.remove(this.arrowHelper);
+        this.scene.remove(this.ballHelper);
     };
 
     GUI.prototype.updateSlope = function updateSlope(slope) {

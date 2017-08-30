@@ -14,13 +14,16 @@ export default class GUI {
     this.initCamera();
     this.initFrame();
 
+    this.initObjects();
+
   }
 
   init( position ) {
 
     this.position = position;
 
-    this.initObjects( position );
+    this.initBallHelper( position );
+    this.initArrowHelper();
 
   }
 
@@ -71,16 +74,12 @@ export default class GUI {
 
   }
 
-  initObjects( position ) {
-
-    if ( position === undefined ) position = this.position;
+  initObjects() {
 
     this.initBackGround();
     this.initBorder();
     this.initField();
     this.initGoals();
-    this.initBallHelper( position );
-    this.initArrowHelper();
 
   }
 
@@ -136,6 +135,8 @@ export default class GUI {
 
   initBallHelper( position ) {
 
+    if ( position === undefined ) position = this.position;
+
     const geo = new THREE.CircleBufferGeometry( 5, 12 );
     this.ballHelper = new THREE.Mesh( geo, new THREE.MeshBasicMaterial( { color: 0xC60000 } ) );
     this.ballHelper.position.set(
@@ -186,6 +187,7 @@ export default class GUI {
   reset() {
 
     this.scene.remove( this.arrowHelper );
+    this.scene.remove( this.ballHelper );
 
   }
 
