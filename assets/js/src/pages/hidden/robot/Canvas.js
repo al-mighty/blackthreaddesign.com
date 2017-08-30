@@ -15,12 +15,13 @@ class Canvas {
 
   constructor( canvas ) {
 
-
     this.canvas = canvas;
 
     this.app = new App( this.canvas );
 
     this.app.renderer.setClearColor( 0xf7f7f7, 1.0 );
+
+    // this.app.renderer.alpha = true;
 
     this.app.renderer.autoClear = false;
 

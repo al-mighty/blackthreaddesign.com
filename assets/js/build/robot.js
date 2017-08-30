@@ -9692,14 +9692,13 @@ var animation = {
 var loading = {
   bar: document.querySelector('#loading-bar'),
   overlay: document.querySelector('#loading-overlay'),
-  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
-  hideOnLoad: document.querySelectorAll('.hide-on-load'),
   progress: document.querySelector('#progress')
 };
 
 var controls = {
   links: document.querySelector('#controls').querySelectorAll('span'),
   reset: document.querySelector('#reset'),
+  randomize: document.querySelector('#randomize'),
   slope: document.querySelector('#slope'),
   simulate: document.querySelector('#simulate'),
   fullscreen: document.querySelector('#fullscreen-button'),
@@ -9717,27 +9716,26 @@ var HTMLControl = function () {
 
     controls.simulate.disabled = false;
     controls.slope.disabled = false;
+    controls.randomize.disabled = false;
     controls.reset.disabled = true;
+    controls.showGrid.disabled = false;
   };
 
   HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+
     loading.bar.classList.remove('hide');
   };
 
   HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+
     loading.overlay.classList.add('hide');
+  };
 
-    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+  HTMLControl.setOnSimulateState = function setOnSimulateState() {
 
-      loading.hideOnLoad[i].classList.add('hide');
-    }
-
-    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
-
-      loading.revealOnLoad[_i].classList.remove('hide');
-    }
-
-    controls.showGrid.disabled = false;
+    controls.simulate.disabled = true;
+    controls.slope.disabled = true;
+    controls.reset.disabled = false;
   };
 
   return HTMLControl;
@@ -53783,6 +53781,8 @@ var Canvas = function () {
 
     this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
+    // this.app.renderer.alpha = true;
+
     this.app.renderer.autoClear = false;
 
     this.app.scene.background = 0xf7f7f7;
@@ -59377,9 +59377,9 @@ var AnimationControls = function () {
 
 var animationControls = new AnimationControls();
 
-var Grid = function () {
-    function Grid() {
-        classCallCheck(this, Grid);
+var GUI = function () {
+    function GUI() {
+        classCallCheck(this, GUI);
 
 
         this.enabled = false;
@@ -59388,18 +59388,16 @@ var Grid = function () {
 
         this.initCamera();
         this.initFrame();
-
-        this.initControls();
     }
 
-    Grid.prototype.init = function init(position) {
+    GUI.prototype.init = function init(position) {
 
         this.position = position;
 
         this.initObjects(position);
     };
 
-    Grid.prototype.initFrame = function initFrame() {
+    GUI.prototype.initFrame = function initFrame() {
 
         var width = 250;
         var height = 190;
@@ -59432,14 +59430,14 @@ var Grid = function () {
     // create a camera the full size of the canvas
 
 
-    Grid.prototype.initCamera = function initCamera() {
+    GUI.prototype.initCamera = function initCamera() {
 
         this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
 
         this.camera.position.set(0, 0, 2);
     };
 
-    Grid.prototype.initObjects = function initObjects(position) {
+    GUI.prototype.initObjects = function initObjects(position) {
 
         if (position === undefined) position = this.position;
 
@@ -59451,7 +59449,7 @@ var Grid = function () {
         this.initArrowHelper();
     };
 
-    Grid.prototype.initBackGround = function initBackGround() {
+    GUI.prototype.initBackGround = function initBackGround() {
 
         var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
         var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x909090, transparent: true, opacity: 0.1 }));
@@ -59461,7 +59459,7 @@ var Grid = function () {
         this.scene.add(mesh);
     };
 
-    Grid.prototype.initBorder = function initBorder() {
+    GUI.prototype.initBorder = function initBorder() {
 
         var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
 
@@ -59473,7 +59471,7 @@ var Grid = function () {
         this.scene.add(line);
     };
 
-    Grid.prototype.initField = function initField() {
+    GUI.prototype.initField = function initField() {
 
         var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50);
         var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x75B82B }));
@@ -59483,42 +59481,46 @@ var Grid = function () {
         this.scene.add(mesh);
     };
 
-    Grid.prototype.initGoals = function initGoals() {
+    GUI.prototype.initGoals = function initGoals() {
 
         var plane = new PlaneBufferGeometry(5, 50);
-        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x303030 }));
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x000080 }));
 
         mesh.position.set(this.frame.center.x + 73, this.frame.center.y, this.frame.center.z + 1);
 
         this.scene.add(mesh);
     };
 
-    Grid.prototype.initBallHelper = function initBallHelper(position) {
+    GUI.prototype.initBallHelper = function initBallHelper(position) {
 
         var geo = new CircleBufferGeometry(5, 12);
-        this.ball = new Mesh(geo, new MeshBasicMaterial({ color: 0xffffff }));
-        this.ball.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
+        this.ballHelper = new Mesh(geo, new MeshBasicMaterial({ color: 0xC60000 }));
+        this.ballHelper.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
 
-        this.scene.add(this.ball);
+        this.scene.add(this.ballHelper);
     };
 
-    Grid.prototype.initArrowHelper = function initArrowHelper() {
+    GUI.prototype.initArrowHelper = function initArrowHelper() {
 
         var dir = new Vector3(1, 0, 0);
-        var origin = this.ball.position.clone();
+        var origin = this.ballHelper.position.clone();
         this.arrowHelper = new ArrowHelper(dir, origin, 40, 0x000000, 20, 10);
+
+        this.arrowHelper.renderOrder = 3;
 
         this.scene.add(this.arrowHelper);
     };
 
-    Grid.prototype.render = function render(renderer) {
+    GUI.prototype.render = function render(renderer) {
+
+        renderer.clear();
 
         if (!this.enabled) return;
 
         renderer.render(this.scene, this.camera, null, true);
     };
 
-    Grid.prototype.resize = function resize() {
+    GUI.prototype.resize = function resize() {
         var _this = this;
 
         throttle(function () {
@@ -59530,12 +59532,12 @@ var Grid = function () {
         }, 250);
     };
 
-    Grid.prototype.reset = function reset() {
+    GUI.prototype.reset = function reset() {
 
         this.scene.remove(this.arrowHelper);
     };
 
-    Grid.prototype.updateSlope = function updateSlope(slope) {
+    GUI.prototype.updateSlope = function updateSlope(slope) {
 
         var angle = Math.atan(slope);
 
@@ -59544,24 +59546,53 @@ var Grid = function () {
         this.arrowHelper.setDirection(direction);
     };
 
-    Grid.prototype.initControls = function initControls() {
-        var _this2 = this;
-
-        HTMLControl.controls.slope.addEventListener('input', function (e) {
-
-            e.preventDefault();
-
-            _this2.updateSlope(e.target.value);
-        }, false);
-
-        HTMLControl.controls.showGrid.addEventListener('click', function (e) {
-
-            _this2.enabled = e.target.checked;
-        }, false);
-    };
-
-    return Grid;
+    return GUI;
 }();
+
+function Grid(width, length, divisions, color) {
+
+  width = width || 10;
+  length = length || 10;
+  divisions = divisions || 10;
+  color = color !== undefined ? color : 0x888888;
+
+  // if ( ( ( length % divisions ) !== 0 ) || ( ( width % divisions ) !== 0 )  ) {
+
+  //   console.error( 'Grid: Length and Width should both be multiples of number of divisions.' );
+  //   return;
+
+  // }
+
+  var step = length / divisions;
+  var halfWidth = width / 2;
+
+  var lengthDivisions = width / step;
+  var halfLength = length / 2;
+
+  var vertices = [];
+
+  // vertical lines
+  for (var i = 0, k = -halfLength; i <= divisions; i++, k += step) {
+
+    vertices.push(-halfWidth, 0, k, halfWidth, 0, k);
+  }
+
+  // horizontal lines
+  for (var _i = 0, j = -halfWidth; _i <= lengthDivisions; _i++, j += step) {
+
+    vertices.push(j, 0, -halfLength, j, 0, halfLength);
+  }
+
+  var geometry = new BufferGeometry();
+  geometry.addAttribute('position', new Float32BufferAttribute(vertices, 3));
+
+  var material = new LineBasicMaterial({ color: color });
+
+  LineSegments.call(this, geometry, material);
+}
+
+Grid.prototype = Object.create(LineSegments.prototype);
+Grid.prototype.constructor = Grid;
 
 var loaders = new Loaders();
 
@@ -59592,24 +59623,26 @@ var Simulation = function () {
 
         this.loadingPromises = [];
 
-        this.grid = new Grid();
+        this.gui = new GUI();
 
         // Put any per frame calculation here
         canvas$1.app.onUpdate = function () {
             // NB: use self inside this function, 'this' will refer to App
 
             animationControls.update(this.delta);
-            self.grid.render(canvas$1.app.renderer);
+            self.gui.render(canvas$1.app.renderer);
         };
 
         // put any per resize calculations here (throttled to once per 250ms)
         canvas$1.app.onWindowResize = function () {
 
             // NB: use self inside this function
-            self.grid.resize();
+            self.gui.resize();
         };
 
+        this.initGrid();
         this.initReset();
+        this.initRandomize();
     };
 
     // load the models
@@ -59673,7 +59706,15 @@ var Simulation = function () {
         HTMLControl.setInitialState();
         this.setInitialTransforms();
 
-        this.grid.init(this.ball.position);
+        this.gui.init(this.ball.position);
+    };
+
+    Simulation.prototype.initGrid = function initGrid() {
+
+        this.grid = new Grid(176, 110, 10, 0x888888);
+        this.grid.position.y = 2;
+        this.grid.visible = false;
+        canvas$1.app.scene.add(this.grid);
     };
 
     // set up positions for the animations
@@ -59706,8 +59747,28 @@ var Simulation = function () {
             clearTimeout(_this3.ballTimer);
             _this3.ballTimer = undefined;
 
-            _this3.grid.reset();
-            _this3.init();
+            animationControls.reset();
+            canvas$1.app.controls.reset();
+
+            HTMLControl.setInitialState();
+            _this3.setInitialTransforms();
+            _this3.gui.updateSlope(0);
+        });
+    };
+
+    Simulation.prototype.initRandomize = function initRandomize() {
+        var _this4 = this;
+
+        HTMLControl.controls.randomize.addEventListener('click', function () {
+
+            cancelAnimationFrame(_this4.ballAnimationFrameId);
+            _this4.ballAnimationFrameId = undefined;
+
+            clearTimeout(_this4.ballTimer);
+            _this4.ballTimer = undefined;
+
+            _this4.gui.reset();
+            _this4.init();
         });
     };
 
@@ -59838,7 +59899,7 @@ var Simulation = function () {
     };
 
     Simulation.prototype.initSimulation = function initSimulation() {
-        var _this4 = this;
+        var _this5 = this;
 
         HTMLControl.controls.simulate.addEventListener('click', function (e) {
 
@@ -59846,13 +59907,25 @@ var Simulation = function () {
 
             var slope = -HTMLControl.controls.slope.value;
 
-            _this4.initNaoAnimation();
-            _this4.initBallAnimation(slope);
+            _this5.initNaoAnimation();
+            _this5.initBallAnimation(slope);
 
             animationControls.play();
 
-            HTMLControl.controls.simulate.disabled = true;
-            HTMLControl.controls.reset.disabled = false;
+            HTMLControl.setOnSimulateState();
+        }, false);
+
+        HTMLControl.controls.slope.addEventListener('input', function (e) {
+
+            e.preventDefault();
+
+            _this5.gui.updateSlope(e.target.value);
+        }, false);
+
+        HTMLControl.controls.showGrid.addEventListener('click', function (e) {
+
+            _this5.gui.enabled = e.target.checked;
+            _this5.grid.visible = e.target.checked;
         }, false);
     };
 

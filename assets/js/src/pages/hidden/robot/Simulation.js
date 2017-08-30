@@ -6,6 +6,7 @@ import Loaders from './utilities/Loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
 import invertMirroredFBX from './utilities/invertMirroredFBX.js';
 import animationControls from './utilities/AnimationControls.js';
+import GUI from './utilities/GUI.js';
 import Grid from './utilities/Grid.js';
 
 const loaders = new Loaders();
@@ -35,14 +36,14 @@ export default class Simulation {
 
     this.loadingPromises = [];
 
-    this.grid = new Grid();
+    this.gui = new GUI();
 
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
       // NB: use self inside this function, 'this' will refer to App
 
       animationControls.update( this.delta );
-      self.grid.render( canvas.app.renderer );
+      self.gui.render( canvas.app.renderer );
 
     };
 
@@ -50,11 +51,13 @@ export default class Simulation {
     canvas.app.onWindowResize = function () {
 
       // NB: use self inside this function
-      self.grid.resize();
+      self.gui.resize();
 
     };
 
+    this.initGrid();
     this.initReset();
+    this.initRandomize();
 
   }
 
@@ -121,10 +124,18 @@ export default class Simulation {
     HTMLControl.setInitialState();
     this.setInitialTransforms();
 
-    this.grid.init( this.ball.position );
+    this.gui.init( this.ball.position );
 
   }
 
+  initGrid() {
+
+    this.grid = new Grid( 176, 110, 10, 0x888888 );
+    this.grid.position.y = 2;
+    this.grid.visible = false;
+    canvas.app.scene.add( this.grid );
+
+  }
 
   // set up positions for the animations
   initPositions() {
@@ -164,7 +175,28 @@ export default class Simulation {
       clearTimeout( this.ballTimer );
       this.ballTimer = undefined;
 
-      this.grid.reset();
+      animationControls.reset();
+      canvas.app.controls.reset();
+
+      HTMLControl.setInitialState();
+      this.setInitialTransforms();
+      this.gui.updateSlope( 0 );
+
+    } );
+
+  }
+
+  initRandomize() {
+
+    HTMLControl.controls.randomize.addEventListener( 'click', () => {
+
+      cancelAnimationFrame( this.ballAnimationFrameId );
+      this.ballAnimationFrameId = undefined;
+
+      clearTimeout( this.ballTimer );
+      this.ballTimer = undefined;
+
+      this.gui.reset();
       this.init();
 
     } );
@@ -189,7 +221,7 @@ export default class Simulation {
 
   }
 
-    // this is set up after the user has entered the slope
+  // this is set up after the user has entered the slope
   initNaoAnimation() {
 
     this.naoMixer = new THREE.AnimationMixer( this.nao );
@@ -313,8 +345,22 @@ export default class Simulation {
 
       animationControls.play();
 
-      HTMLControl.controls.simulate.disabled = true;
-      HTMLControl.controls.reset.disabled = false;
+      HTMLControl.setOnSimulateState();
+
+    }, false );
+
+    HTMLControl.controls.slope.addEventListener( 'input', ( e ) => {
+
+      e.preventDefault();
+
+      this.gui.updateSlope( e.target.value );
+
+    }, false );
+
+    HTMLControl.controls.showGrid.addEventListener( 'click', ( e ) => {
+
+      this.gui.enabled = e.target.checked;
+      this.grid.visible = e.target.checked;
 
     }, false );
 

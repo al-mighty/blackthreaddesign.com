@@ -22,14 +22,13 @@ const animation = {
 const loading = {
   bar: document.querySelector( '#loading-bar' ),
   overlay: document.querySelector( '#loading-overlay' ),
-  revealOnLoad: document.querySelectorAll( '.reveal-on-load' ),
-  hideOnLoad: document.querySelectorAll( '.hide-on-load' ),
   progress: document.querySelector( '#progress' ),
 };
 
 const controls = {
   links: document.querySelector( '#controls' ).querySelectorAll( 'span' ),
   reset: document.querySelector( '#reset' ),
+  randomize: document.querySelector( '#randomize' ),
   slope: document.querySelector( '#slope' ),
   simulate: document.querySelector( '#simulate' ),
   fullscreen: document.querySelector( '#fullscreen-button' ),
@@ -44,30 +43,30 @@ export default class HTMLControl {
 
     controls.simulate.disabled = false;
     controls.slope.disabled = false;
+    controls.randomize.disabled = false;
     controls.reset.disabled = true;
+    controls.showGrid.disabled = false;
 
   }
 
   static setOnLoadStartState() {
+
     loading.bar.classList.remove( 'hide' );
+
   }
 
   static setOnLoadEndState() {
+
     loading.overlay.classList.add( 'hide' );
 
-    for ( let i = 0; i < loading.hideOnLoad.length; i++ ) {
+  }
 
-      loading.hideOnLoad[ i ].classList.add( 'hide' );
+  static setOnSimulateState() {
 
-    }
+    controls.simulate.disabled = true;
+    controls.slope.disabled = true;
+    controls.reset.disabled = false;
 
-    for ( let i = 0; i < loading.revealOnLoad.length; i++ ) {
-
-      loading.revealOnLoad[ i ].classList.remove( 'hide' );
-
-    }
-
-    controls.showGrid.disabled = false;
   }
 
 }

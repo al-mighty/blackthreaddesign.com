@@ -1,222 +1,53 @@
 import * as THREE from 'three';
-import throttle from 'lodash.throttle';
 
-import HTMLControl from './HTMLControl.js';
+/**
+ * Forked from the THREE.GridHelper to allow non-square grid
+ */
 
-export default class Grid {
+export default function Grid( width, length, divisions, color ) {
 
-  constructor() {
+  width = width || 10;
+  length = length || 10;
+  divisions = divisions || 10;
+  color = color !== undefined ? color : 0x888888;
 
-    this.enabled = false;
+  // if ( ( ( length % divisions ) !== 0 ) || ( ( width % divisions ) !== 0 )  ) {
 
-    this.scene = new THREE.Scene();
+  //   console.error( 'Grid: Length and Width should both be multiples of number of divisions.' );
+  //   return;
 
-    this.initCamera();
-    this.initFrame();
+  // }
 
-    this.initControls();
+  const step = length / divisions;
+  const halfWidth = width / 2;
 
-  }
+  const lengthDivisions = width / step;
+  const halfLength = length / 2;
 
-  init( position ) {
+  const vertices = [];
 
-    this.position = position;
+  // vertical lines
+  for ( let i = 0, k = -halfLength; i <= divisions; i++, k += step ) {
 
-    this.initObjects( position );
-
-  }
-
-  initFrame() {
-
-    const width = 250;
-    const height = 190;
-    const x = 10;
-    const y = HTMLControl.canvas.height - height - 10;
-
-    this.frame = {
-      x,
-      y,
-      height,
-      width,
-      center: new THREE.Vector3(
-
-        // to place at left
-        // -HTMLControl.canvas.width / 2 + this.frame.width / 2 + this.frame.x,
-
-        // to place at right
-        HTMLControl.canvas.width / 2 - width / 2 - x,
-
-        // top place at top
-        -HTMLControl.canvas.height / 2 + height / 2 + y,
-
-        // to place at bottom
-        // HTMLControl.canvas.height / 2 - this.frame.height / 2 - this.frame.y,
-
-        0
-      ),
-    }
-  }
-
-  // create a camera the full size of the canvas
-  initCamera() {
-
-    this.camera = new THREE.OrthographicCamera(
-      -HTMLControl.canvas.width / 2,
-      HTMLControl.canvas.width / 2,
-      HTMLControl.canvas.height / 2,
-      -HTMLControl.canvas.height / 2,
-      0.1,
-      1000,
-    );
-
-    this.camera.position.set( 0, 0, 2 );
+    vertices.push( -halfWidth, 0, k, halfWidth, 0, k );
 
   }
 
-  initObjects( position ) {
+  // horizontal lines
+  for ( let i = 0, j = -halfWidth; i <= lengthDivisions; i++, j += step ) {
 
-    if ( position === undefined ) position = this.position;
-
-    this.initBackGround();
-    this.initBorder();
-    this.initField();
-    this.initGoals();
-    this.initBallHelper( position );
-    this.initArrowHelper();
+    vertices.push( j, 0, -halfLength, j, 0, halfLength );
 
   }
 
-  initBackGround() {
+  const geometry = new THREE.BufferGeometry();
+  geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
-    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height );
-    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x909090, transparent: true, opacity: 0.1 } ) );
+  const material = new THREE.LineBasicMaterial( { color } );
 
-    mesh.position.copy( this.frame.center );
-
-    this.scene.add( mesh );
-
-  }
-
-  initBorder() {
-
-    const plane = new THREE.PlaneBufferGeometry( this.frame.width, this.frame.height );
-
-    const edges = new THREE.EdgesGeometry( plane );
-    const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x202020, transparent: true, opacity: 0.75 } ) );
-
-    line.position.copy( this.frame.center );
-
-    this.scene.add( line );
-
-  }
-
-  initField() {
-
-    const plane = new THREE.PlaneBufferGeometry( this.frame.width - 50, this.frame.height - 50 );
-    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x75B82B } ) );
-
-    mesh.position.copy( this.frame.center );
-
-    this.scene.add( mesh );
-
-  }
-
-  initGoals() {
-
-    const plane = new THREE.PlaneBufferGeometry( 5, 50 );
-    const mesh = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0x303030 } ) );
-
-    mesh.position.set(
-      this.frame.center.x + 73,
-      this.frame.center.y,
-      this.frame.center.z + 1,
-    );
-
-    this.scene.add( mesh );
-
-  }
-
-  initBallHelper( position ) {
-
-    const geo = new THREE.CircleBufferGeometry( 5, 12 );
-    this.ball = new THREE.Mesh( geo, new THREE.MeshBasicMaterial( { color: 0xffffff } ) );
-    this.ball.position.set(
-      this.frame.center.x + position.x,
-      this.frame.center.y - position.z,
-      this.frame.center.z,
-     );
-
-    this.scene.add( this.ball );
-
-  }
-
-  initArrowHelper() {
-
-    const dir = new THREE.Vector3( 1, 0, 0 );
-    const origin = this.ball.position.clone();
-    this.arrowHelper = new THREE.ArrowHelper( dir, origin, 40, 0x000000, 20, 10 );
-
-    this.scene.add( this.arrowHelper );
-
-  }
-
-  render( renderer ) {
-
-    if ( !this.enabled ) return;
-
-    renderer.render( this.scene, this.camera, null, true );
-
-  }
-
-  resize() {
-
-    throttle( () => {
-
-      this.initFrame();
-      this.initCamera();
-      this.scene = new THREE.Scene();
-      this.initObjects();
-
-    }, 250 );
-
-  }
-
-  reset() {
-
-    this.scene.remove( this.arrowHelper );
-
-  }
-
-  updateSlope( slope ) {
-
-    const angle = Math.atan( slope );
-
-    const direction = new THREE.Vector3(
-      Math.cos( angle ),
-      Math.sin( angle ),
-      0
-    ).normalize();
-
-    this.arrowHelper.setDirection( direction );
-
-  }
-
-  initControls() {
-
-    HTMLControl.controls.slope.addEventListener( 'input', ( e ) => {
-
-      e.preventDefault();
-
-      this.updateSlope( e.target.value );
-
-    }, false );
-
-    HTMLControl.controls.showGrid.addEventListener( 'click', ( e ) => {
-
-      this.enabled = e.target.checked;
-
-    }, false );
-
-  }
+  THREE.LineSegments.call( this, geometry, material );
 
 }
+
+Grid.prototype = Object.create( THREE.LineSegments.prototype );
+Grid.prototype.constructor = Grid;
