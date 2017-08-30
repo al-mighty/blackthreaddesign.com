@@ -129,9 +129,18 @@ export default class Grid {
     center.position.set( 0, 0, 0 );
 
     const upperLeft = new THREE.Mesh( geometry, material );
-    upperLeft.position.set( position, 0, -position );
+    upperLeft.position.set( -position, 0, -position );
 
-    this.group.add( center, upperLeft );
+    const upperRight = new THREE.Mesh( geometry, material );
+    upperRight.position.set( position, 0, -position );
+
+    const lowerLeft = new THREE.Mesh( geometry, material );
+    lowerLeft.position.set( -position, 0, position );
+
+    const lowerRight = new THREE.Mesh( geometry, material );
+    lowerRight.position.set( position, 0, position );
+
+    this.group.add( center, upperLeft, upperRight, lowerLeft, lowerRight );
 
   }
 
@@ -143,13 +152,13 @@ export default class Grid {
       centerText.position.set( 3, 0, -2 );
 
       const upperLeftText = createTextMesh( font, '(-40,40)' );
-      upperLeftText.position.set( -43, 0, -38 );
+      upperLeftText.position.set( -38, 0, -42 );
 
       const upperRightText = createTextMesh( font, '(40,40)' );
-      upperRightText.position.set( 43, 0, -38 );
+      upperRightText.position.set( 43, 0, -42 );
 
       const lowerLeftText = createTextMesh( font, '(-40,-40)' );
-      lowerLeftText.position.set( -43, 0, 38 );
+      lowerLeftText.position.set( -38, 0, 38 );
 
       const lowerRightText = createTextMesh( font, '(40,-40)' );
       lowerRightText.position.set( 43, 0, 38 );

@@ -59696,9 +59696,18 @@ var Grid = function () {
         center.position.set(0, 0, 0);
 
         var upperLeft = new Mesh(geometry, material);
-        upperLeft.position.set(position, 0, -position);
+        upperLeft.position.set(-position, 0, -position);
 
-        this.group.add(center, upperLeft);
+        var upperRight = new Mesh(geometry, material);
+        upperRight.position.set(position, 0, -position);
+
+        var lowerLeft = new Mesh(geometry, material);
+        lowerLeft.position.set(-position, 0, position);
+
+        var lowerRight = new Mesh(geometry, material);
+        lowerRight.position.set(position, 0, position);
+
+        this.group.add(center, upperLeft, upperRight, lowerLeft, lowerRight);
     };
 
     Grid.prototype.initText = function initText() {
@@ -59710,13 +59719,13 @@ var Grid = function () {
             centerText.position.set(3, 0, -2);
 
             var upperLeftText = createTextMesh(font, '(-40,40)');
-            upperLeftText.position.set(-43, 0, -38);
+            upperLeftText.position.set(-38, 0, -42);
 
             var upperRightText = createTextMesh(font, '(40,40)');
-            upperRightText.position.set(43, 0, -38);
+            upperRightText.position.set(43, 0, -42);
 
             var lowerLeftText = createTextMesh(font, '(-40,-40)');
-            lowerLeftText.position.set(-43, 0, 38);
+            lowerLeftText.position.set(-38, 0, 38);
 
             var lowerRightText = createTextMesh(font, '(40,-40)');
             lowerRightText.position.set(43, 0, 38);
