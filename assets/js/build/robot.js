@@ -9669,6 +9669,24 @@ var classCallCheck = function (instance, Constructor) {
   }
 };
 
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
 var canvas = document.querySelector('#viewer-canvas');
 var container = document.querySelector('#view-container');
 
@@ -59194,6 +59212,7 @@ loadingManager.onError = function (msg) {
   if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
 };
 
+var fontLoader = null;
 var objectLoader = null;
 var bufferGeometryLoader = null;
 var jsonLoader = null;
@@ -59220,6 +59239,13 @@ var Loaders = function Loaders() {
 
 
   return {
+
+    get fontLoader() {
+      if (fontLoader === null) {
+        fontLoader = promisifyLoader(new FontLoader(loadingManager));
+      }
+      return fontLoader;
+    },
 
     get objectLoader() {
       if (objectLoader === null) {
@@ -59258,6 +59284,8 @@ var Loaders = function Loaders() {
 
   };
 };
+
+var loaders = new Loaders();
 
 function invertMirroredFBX(object) {
 
@@ -59551,52 +59579,161 @@ var GUI = function () {
     return GUI;
 }();
 
-function Grid(width, length, divisions, color) {
+/**
+ * Forked from the THREE.GridHelper to allow non-square grid, add coords etc
+ */
 
-  width = width || 10;
-  length = length || 10;
-  divisions = divisions || 10;
-  color = color !== undefined ? color : 0x888888;
+var createTextMesh = function (font, text, color) {
 
-  // if ( ( ( length % divisions ) !== 0 ) || ( ( width % divisions ) !== 0 )  ) {
+    color = color || 0xeeeeee;
 
-  //   console.error( 'Grid: Length and Width should both be multiples of number of divisions.' );
-  //   return;
+    var textMat = new LineBasicMaterial({ color: color });
 
-  // }
+    var textGeometry = new TextBufferGeometry(text, {
+        size: 4,
+        height: 0.1,
+        font: font,
+        curveSegments: 12
+    });
 
-  var step = length / divisions;
-  var halfWidth = width / 2;
+    textGeometry.rotateX(-Math.PI / 2);
+    textGeometry.translate(0, 3, 0);
 
-  var lengthDivisions = width / step;
-  var halfLength = length / 2;
+    return new Mesh(textGeometry, textMat);
+};
 
-  var vertices = [];
+var Grid = function () {
+    function Grid(width, length, widthDivisions, colorCenterLine, colorGrid) {
+        classCallCheck(this, Grid);
 
-  // vertical lines
-  for (var i = 0, k = -halfLength; i <= divisions; i++, k += step) {
 
-    vertices.push(-halfWidth, 0, k, halfWidth, 0, k);
-  }
+        this.height = 2;
+        this.width = width || 10;
+        this.length = length || 10;
+        this.widthDivisions = widthDivisions || 10;
+        this.colorCenterLine = new Color(colorCenterLine !== undefined ? colorCenterLine : 0x444444).toArray();
+        this.colorGrid = new Color(colorGrid !== undefined ? colorGrid : 0x888888).toArray();
 
-  // horizontal lines
-  for (var _i = 0, j = -halfWidth; _i <= lengthDivisions; _i++, j += step) {
+        this.group = new Group();
 
-    vertices.push(j, 0, -halfLength, j, 0, halfLength);
-  }
+        this.group.visible = true;
 
-  var geometry = new BufferGeometry();
-  geometry.addAttribute('position', new Float32BufferAttribute(vertices, 3));
+        this.initGrid();
+        this.initCenterCircle();
+        this.initCoords();
+        this.initText();
+    }
 
-  var material = new LineBasicMaterial({ color: color });
+    Grid.prototype.initGrid = function initGrid() {
 
-  LineSegments.call(this, geometry, material);
-}
+        var step = this.length / this.widthDivisions;
+        var halfWidth = this.width / 2;
 
-Grid.prototype = Object.create(LineSegments.prototype);
-Grid.prototype.constructor = Grid;
+        var lengthDivisions = this.width / step;
+        var halfLength = this.length / 2;
 
-var loaders = new Loaders();
+        var widthCenter = this.widthDivisions / 2;
+        var lengthCenter = lengthDivisions / 2;
+
+        var vertices = [];
+        var colors = [];
+
+        // vertical lines
+        for (var i = 0, j = 0, k = -halfLength; i <= this.widthDivisions; i++, k += step) {
+
+            // create a vertex at either end of the  line
+            vertices.push(-halfWidth, this.height, k, halfWidth, this.height, k);
+
+            var color = i === widthCenter ? this.colorCenterLine : this.colorGrid;
+
+            // push the color details twice (once for each vertex)
+            colors.push.apply(colors, color.concat(color));
+        }
+
+        // horizontal lines
+        for (var _i = 0, _k = -halfWidth; _i <= lengthDivisions; _i++, _k += step) {
+
+            vertices.push(_k, this.height, -halfLength, _k, this.height, halfLength);
+
+            var _color = _i === lengthCenter ? this.colorCenterLine : this.colorGrid;
+
+            colors.push.apply(colors, _color.concat(_color));
+        }
+
+        var geometry = new BufferGeometry();
+        geometry.addAttribute('position', new Float32BufferAttribute(vertices, 3));
+        geometry.addAttribute('color', new Float32BufferAttribute(colors, 3));
+
+        var material = new LineBasicMaterial({ vertexColors: VertexColors });
+
+        this.group.add(new LineSegments(geometry, material));
+    };
+
+    Grid.prototype.initCenterCircle = function initCenterCircle() {
+
+        var geometry = new CircleBufferGeometry(13.5, 64);
+        geometry.rotateX(-Math.PI / 2);
+        geometry.translate(0, this.height, 0);
+        var material = new LineBasicMaterial({ color: this.colorGrid });
+        var edges = new EdgesGeometry(geometry);
+
+        var line = new LineSegments(edges, material);
+
+        this.group.add(line);
+    };
+
+    Grid.prototype.initCoords = function initCoords() {
+
+        var position = 40;
+
+        var geometry = new CircleBufferGeometry(2, 32);
+        geometry.rotateX(-Math.PI / 2);
+        geometry.translate(0, this.height, 0);
+
+        var material = new MeshBasicMaterial({ color: this.colorCenterLine });
+
+        var center = new Mesh(geometry, material);
+        center.position.set(0, 0, 0);
+
+        var upperLeft = new Mesh(geometry, material);
+        upperLeft.position.set(position, 0, -position);
+
+        this.group.add(center, upperLeft);
+    };
+
+    Grid.prototype.initText = function initText() {
+        var _this = this;
+
+        loaders.fontLoader('/assets/fonts/json/droid_sans_mono_regular.typeface.json').then(function (font) {
+
+            var centerText = createTextMesh(font, '(0,0)');
+            centerText.position.set(3, 0, -2);
+
+            var upperLeftText = createTextMesh(font, '(-40,40)');
+            upperLeftText.position.set(-43, 0, -38);
+
+            var upperRightText = createTextMesh(font, '(40,40)');
+            upperRightText.position.set(43, 0, -38);
+
+            var lowerLeftText = createTextMesh(font, '(-40,-40)');
+            lowerLeftText.position.set(-43, 0, 38);
+
+            var lowerRightText = createTextMesh(font, '(40,-40)');
+            lowerRightText.position.set(43, 0, 38);
+
+            _this.group.add(centerText, upperLeftText, upperRightText, lowerLeftText, lowerRightText);
+        });
+    };
+
+    createClass(Grid, [{
+        key: 'enabled',
+        set: function (bool) {
+
+            this.group.visible = bool;
+        }
+    }]);
+    return Grid;
+}();
 
 var timing = {
 
@@ -59713,10 +59850,8 @@ var Simulation = function () {
 
     Simulation.prototype.initGrid = function initGrid() {
 
-        this.grid = new Grid(176, 110, 10, 0x888888);
-        this.grid.position.y = 2;
-        this.grid.visible = false;
-        canvas$1.app.scene.add(this.grid);
+        this.grid = new Grid(176, 110, 10, 0xeeeeee, 0x888888);
+        canvas$1.app.scene.add(this.grid.group);
     };
 
     // set up positions for the animations
@@ -59927,7 +60062,7 @@ var Simulation = function () {
         HTMLControl.controls.showGrid.addEventListener('click', function (e) {
 
             _this5.gui.enabled = e.target.checked;
-            _this5.grid.visible = e.target.checked;
+            _this5.grid.enabled = e.target.checked;
         }, false);
     };
 

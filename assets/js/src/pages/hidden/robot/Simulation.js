@@ -2,14 +2,12 @@ import * as THREE from 'three';
 
 import canvas from './Canvas.js';
 
-import Loaders from './utilities/Loaders.js';
+import loaders from './utilities/loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
 import invertMirroredFBX from './utilities/invertMirroredFBX.js';
 import animationControls from './utilities/AnimationControls.js';
 import GUI from './utilities/GUI.js';
 import Grid from './utilities/Grid.js';
-
-const loaders = new Loaders();
 
 const timing = {
 
@@ -130,10 +128,8 @@ export default class Simulation {
 
   initGrid() {
 
-    this.grid = new Grid( 176, 110, 10, 0x888888 );
-    this.grid.position.y = 2;
-    this.grid.visible = false;
-    canvas.app.scene.add( this.grid );
+    this.grid = new Grid( 176, 110, 10, 0xeeeeee, 0x888888 );
+    canvas.app.scene.add( this.grid.group );
 
   }
 
@@ -360,7 +356,7 @@ export default class Simulation {
     HTMLControl.controls.showGrid.addEventListener( 'click', ( e ) => {
 
       this.gui.enabled = e.target.checked;
-      this.grid.visible = e.target.checked;
+      this.grid.enabled = e.target.checked;
 
     }, false );
 
