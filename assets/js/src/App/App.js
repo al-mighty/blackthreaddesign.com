@@ -242,7 +242,9 @@ function App( canvas ) {
 
   };
 
-  this.fitCameraToObject = function ( object ) {
+  this.fitCameraToObject = function ( object, zoom ) {
+
+    zoom = zoom || 1.25;
 
     const boundingBox = new THREE.Box3();
 
@@ -258,7 +260,7 @@ function App( canvas ) {
     const fov = this.camera.fov * ( Math.PI / 180 );
     let cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
 
-    cameraZ *= 1.25; // zoom out a little so that objects don't fill the screen
+    cameraZ *= zoom; // zoom out a little so that objects don't fill the screen
 
     this.camera.position.z = cameraZ;
 

@@ -1,5 +1,6 @@
 import throttle from 'lodash.throttle';
 import HTMLControl from './HTMLControl.js';
+import cameraControl from './cameraControl.js';
 
 export default class AttributeControls {
 
@@ -60,7 +61,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'catch_1';
+      const animName = 'idle';
 
       const value = ( e.target.value === 1 ) ? 2 : e.target.value;
 
@@ -69,6 +70,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusOnWholeBody();
 
     }, 100 ), false );
 
@@ -207,7 +210,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'on_back_to_stand';
+      const animName = 'idle';
 
       const value = ( e.target.value === 1 ) ? 2 : e.target.value;
 
@@ -216,6 +219,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusOnUpperBody();
 
     }, 100 ), false );
 
@@ -247,7 +252,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      const animName = 'on_back_to_stand';
 
       const value = ( e.target.value === 1 ) ? 2 : e.target.value;
 

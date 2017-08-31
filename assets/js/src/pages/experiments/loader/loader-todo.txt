@@ -1,4 +1,5 @@
 - make JSON format work for blender exporter
+- check in firefox
 
 USE cameras:
 

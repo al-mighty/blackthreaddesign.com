@@ -1,10 +1,11 @@
-// import * as THREE from 'three';
+import * as THREE from 'three';
 
 import canvas from './Canvas.js';
 import Loaders from './utilities/Loaders.js';
 // import HTMLControl from './utilities/HTMLControl.js';
 import AttributeControls from './utilities/AttributeControls.js';
 import animationControls from './utilities/AnimationControls.js';
+import cameraControl from './utilities/cameraControl.js';
 
 const loaders = new Loaders();
 
@@ -24,11 +25,29 @@ export default class Simulation {
 
   preLoad() {
 
+    // const self = this;
+
     this.animations = {};
 
     this.loadingPromises = [];
 
     this.attributeControls = new AttributeControls();
+
+    // Put any per frame calculation here
+    canvas.app.onUpdate = function () {
+      // NB: use self inside this function, 'this' will refer to canvas.app
+
+      animationControls.update( this.delta );
+      cameraControl.update( this.delta );
+
+    };
+
+    // put any per resize calculations here (throttled to once per 250ms)
+    canvas.app.onWindowResize = function () {
+      // NB: use self inside this function, 'this' will refer to canvas.app
+
+    };
+
 
   }
 
@@ -37,10 +56,16 @@ export default class Simulation {
     const playerPromise = loaders.fbxLoader( '/assets/models/nfl/white_player_static.fbx' ).then( ( object ) => {
 
       object.traverse( ( child ) => {
-        console.log( child )
 
-        child.frustumCulled = false;
-        child.castShadow = true;
+        // console.log( child )
+
+        if ( child instanceof THREE.Mesh ) {
+
+          child.frustumCulled = false;
+          // child.castShadow = true;
+
+        }
+
 
       } );
 
@@ -89,7 +114,7 @@ export default class Simulation {
     Promise.all( this.loadingPromises ).then(
       () => {
 
-        canvas.addObjectToScene( this.player );
+        canvas.app.scene.add( this.player );
 
         canvas.app.play();
 
@@ -106,6 +131,8 @@ export default class Simulation {
         this.attributeControls.initAnimationControls( animationControls );
 
         this.attributeControls.enableControls();
+
+        cameraControl.init( this.player );
 
       },
     );

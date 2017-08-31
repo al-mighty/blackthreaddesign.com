@@ -6,33 +6,53 @@ const loadingManager = new THREE.LoadingManager();
 
 let percentComplete = 0;
 
-// hide the upload form when loading starts so that the progress bar can be shown
-loadingManager.onStart = ( url, itemsLoaded, itemsTotal ) => {
+let timerID = null;
 
-  percentComplete = 0;
+// hide the upload form when loading starts so that the progress bar can be shown
+loadingManager.onStart = () => {
+
+  // prevent onStart being called multiple times
+  if ( timerID !== null ) return;
+
   HTMLControl.setOnLoadStartState();
+
+  timerID = setInterval( () => {
+
+    percentComplete += 5;
+
+    if ( percentComplete >= 100 ) {
+      clearInterval( timerID );
+
+    } else {
+
+      HTMLControl.loading.progress.style.width = percentComplete + '%';
+
+    }
+
+  }, 100 );
 
 };
 
 loadingManager.onLoad = function ( ) {
 
   HTMLControl.setOnLoadEndState();
+  clearInterval( timerID );
 
 };
 
-loadingManager.onProgress = ( url, currentFile, totalFiles ) => {
+loadingManager.onProgress = () => {
 
-  // console.log( 'on progress ', percentComplete)
-  if ( percentComplete < 100 ) {
+  if ( percentComplete >= 100 ) return;
 
-    percentComplete += ( 10 / totalFiles );
-    HTMLControl.loading.progress.style.width = percentComplete + '%';
+  percentComplete += 5;
 
-  }
+  HTMLControl.loading.progress.style.width = percentComplete + '%';
 
 };
 
 loadingManager.onError = ( msg ) => {
+
+  if ( msg instanceof String && msg === '' ) return;
 
   console.error( 'THREE.LoadingManager error: ' + msg );
 

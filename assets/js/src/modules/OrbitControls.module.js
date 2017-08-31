@@ -191,7 +191,8 @@ export default function OrbitControls ( object, domElement ) {
 
 			}
 
-			scale = 1;
+      scale = 1;
+
 			panOffset.set( 0, 0, 0 );
 
 			// update condition is:
@@ -257,7 +258,8 @@ export default function OrbitControls ( object, domElement ) {
 	var spherical = new THREE.Spherical();
 	var sphericalDelta = new THREE.Spherical();
 
-	var scale = 1;
+  var scale = 1;
+
 	var panOffset = new THREE.Vector3();
 	var zoomChanged = false;
 
@@ -389,7 +391,9 @@ export default function OrbitControls ( object, domElement ) {
 
 		}
 
-	}
+  }
+
+  scope.dollyIn = dollyIn;
 
 	function dollyOut( dollyScale ) {
 
@@ -410,7 +414,9 @@ export default function OrbitControls ( object, domElement ) {
 
 		}
 
-	}
+  }
+
+  scope.dollyIn = dollyOut;
 
 	//
 	// event callbacks - update the object state

@@ -18,13 +18,9 @@ loadingManager.onStart = () => {
 
   timerID = setInterval( () => {
 
-    console.log( percentComplete );
-
     percentComplete += 5;
 
     if ( percentComplete >= 100 ) {
-
-      console.log( 'interval!', percentComplete, timerID );
 
       clearInterval( timerID );
 
@@ -48,9 +44,6 @@ loadingManager.onLoad = function ( ) {
 loadingManager.onProgress = () => {
 
   if ( percentComplete >= 100 ) return;
-
-  console.log( HTMLControl.loading.progress.style.width, 'progress' );
-
 
   percentComplete += 5;
 

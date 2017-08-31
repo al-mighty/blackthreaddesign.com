@@ -12,12 +12,6 @@ const loading = {
   progress: document.querySelector( '#progress' ),
 };
 
-const controls = {
-
-  fullscreen: document.querySelector( '#fullscreen-button' ),
-
-};
-
 const attributes = {
   'dominant-hand': {
     left: document.querySelector( '#hand-left' ),
@@ -70,6 +64,5 @@ HTMLControl.container = container;
 HTMLControl.masthead = masthead;
 HTMLControl.footer = footer;
 HTMLControl.loading = loading;
-HTMLControl.controls = controls;
 HTMLControl.attributes = attributes;
 

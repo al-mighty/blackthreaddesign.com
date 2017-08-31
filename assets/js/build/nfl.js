@@ -9550,255 +9550,6 @@ function initFooter () {
   }
 }
 
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var canvas = document.querySelector('#canvas');
-var container = document.querySelector('#container');
-
-var masthead = document.querySelector('.masthead');
-var footer$1 = document.querySelector('.page__footer');
-
-var loading = {
-  bar: document.querySelector('#loading-bar'),
-  overlay: document.querySelector('#loading-overlay'),
-  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
-  hideOnLoad: document.querySelectorAll('.hide-on-load'),
-  progress: document.querySelector('#progress')
-};
-
-var controls = {
-
-  fullscreen: document.querySelector('#fullscreen-button')
-
-};
-
-var attributes = {
-  'dominant-hand': {
-    left: document.querySelector('#hand-left'),
-    right: document.querySelector('#hand-right'),
-    both: document.querySelector('#hand-both')
-  }
-};
-
-[].slice.call(document.querySelectorAll('.attribute')).forEach(function (node) {
-
-  var slider = node.querySelector('.slider');
-
-  if (slider !== null) attributes[slider.id] = slider;
-});
-
-var HTMLControl = function () {
-  function HTMLControl() {
-    classCallCheck(this, HTMLControl);
-  }
-
-  HTMLControl.setInitialState = function setInitialState() {};
-
-  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
-
-    loading.bar.classList.remove('hide');
-  };
-
-  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
-    loading.overlay.classList.add('hide');
-
-    for (var i = 0; i < loading.hideOnLoad.length; i++) {
-
-      loading.hideOnLoad[i].classList.add('hide');
-    }
-
-    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
-
-      loading.revealOnLoad[_i].classList.remove('hide');
-    }
-  };
-
-  return HTMLControl;
-}();
-
-HTMLControl.canvas = canvas;
-HTMLControl.container = container;
-HTMLControl.masthead = masthead;
-HTMLControl.footer = footer$1;
-HTMLControl.loading = loading;
-HTMLControl.controls = controls;
-HTMLControl.attributes = attributes;
-
-var onFullscreen = function () {
-
-  HTMLControl.masthead.classList.add('hide');
-  HTMLControl.footer.classList.add('hide');
-};
-
-var onExitFullscreen = function () {
-
-  HTMLControl.masthead.classList.remove('hide');
-  HTMLControl.footer.classList.remove('hide');
-};
-
-var goFullscreen = function (elem) {
-
-  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-
-    if (elem.requestFullscreen) {
-
-      onFullscreen();
-      elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-
-      onFullscreen();
-      elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-
-      onFullscreen();
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-
-      onFullscreen();
-      elem.webkitRequestFullscreen();
-    }
-  } else if (document.exitFullscreen) {
-
-    onExitFullscreen();
-    document.exitFullscreen();
-  } else if (document.msExitFullscreen) {
-
-    onExitFullscreen();
-    document.msExitFullscreen();
-  } else if (document.mozCancelFullScreen) {
-
-    onExitFullscreen();
-    document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) {
-
-    onExitFullscreen();
-    document.webkitExitFullscreen();
-  }
-};
-
-HTMLControl.controls.fullscreen.addEventListener('click', function (e) {
-
-  e.preventDefault();
-  goFullscreen(HTMLControl.container);
-}, false);
-
 // Polyfills
 
 if ( Number.EPSILON === undefined ) {
@@ -52802,6 +52553,7 @@ function OrbitControls(object, domElement) {
 			}
 
 			scale = 1;
+
 			panOffset.set(0, 0, 0);
 
 			// update condition is:
@@ -52862,6 +52614,7 @@ function OrbitControls(object, domElement) {
 	var sphericalDelta = new Spherical();
 
 	var scale = 1;
+	scope.scale = scale;
 	var panOffset = new Vector3();
 	var zoomChanged = false;
 
@@ -52978,6 +52731,8 @@ function OrbitControls(object, domElement) {
 		}
 	}
 
+	scope.dollyIn = dollyIn;
+
 	function dollyOut(dollyScale) {
 
 		if (scope.object instanceof PerspectiveCamera) {
@@ -52994,6 +52749,8 @@ function OrbitControls(object, domElement) {
 			scope.enableZoom = false;
 		}
 	}
+
+	scope.dollyIn = dollyOut;
 
 	//
 	// event callbacks - update the object state
@@ -53654,7 +53411,9 @@ function App(canvas) {
     this.controls.dampingFactor = 0.2;
   };
 
-  this.fitCameraToObject = function (object) {
+  this.fitCameraToObject = function (object, zoom) {
+
+    zoom = zoom || 1.25;
 
     var boundingBox = new Box3();
 
@@ -53670,7 +53429,7 @@ function App(canvas) {
     var fov = this.camera.fov * (Math.PI / 180);
     var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
 
-    cameraZ *= 1.25; // zoom out a little so that objects don't fill the screen
+    cameraZ *= zoom; // zoom out a little so that objects don't fill the screen
 
     this.camera.position.z = cameraZ;
 
@@ -53727,6 +53486,125 @@ function App(canvas) {
     return img;
   };
 }
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
 
 var LightingSetup = function () {
     function LightingSetup(app) {
@@ -53785,6 +53663,71 @@ var LightingSetup = function () {
 
     return LightingSetup;
 }();
+
+var canvas$1 = document.querySelector('#canvas');
+var container = document.querySelector('#container');
+
+var masthead = document.querySelector('.masthead');
+var footer$1 = document.querySelector('.page__footer');
+
+var loading = {
+  bar: document.querySelector('#loading-bar'),
+  overlay: document.querySelector('#loading-overlay'),
+  revealOnLoad: document.querySelectorAll('.reveal-on-load'),
+  hideOnLoad: document.querySelectorAll('.hide-on-load'),
+  progress: document.querySelector('#progress')
+};
+
+var attributes = {
+  'dominant-hand': {
+    left: document.querySelector('#hand-left'),
+    right: document.querySelector('#hand-right'),
+    both: document.querySelector('#hand-both')
+  }
+};
+
+[].slice.call(document.querySelectorAll('.attribute')).forEach(function (node) {
+
+  var slider = node.querySelector('.slider');
+
+  if (slider !== null) attributes[slider.id] = slider;
+});
+
+var HTMLControl = function () {
+  function HTMLControl() {
+    classCallCheck(this, HTMLControl);
+  }
+
+  HTMLControl.setInitialState = function setInitialState() {};
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+
+    loading.bar.classList.remove('hide');
+  };
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+    loading.overlay.classList.add('hide');
+
+    for (var i = 0; i < loading.hideOnLoad.length; i++) {
+
+      loading.hideOnLoad[i].classList.add('hide');
+    }
+
+    for (var _i = 0; _i < loading.revealOnLoad.length; _i++) {
+
+      loading.revealOnLoad[_i].classList.remove('hide');
+    }
+  };
+
+  return HTMLControl;
+}();
+
+HTMLControl.canvas = canvas$1;
+HTMLControl.container = container;
+HTMLControl.masthead = masthead;
+HTMLControl.footer = footer$1;
+HTMLControl.loading = loading;
+HTMLControl.attributes = attributes;
 
 var AnimationControls = function () {
   function AnimationControls() {
@@ -53880,27 +53823,12 @@ var Canvas = function () {
 
     this.app.renderer.setClearColor(0xf7f7f7, 1.0);
 
-    // Put any per frame calculation here
-    this.app.onUpdate = function () {
-      // NB: use self inside this function
-
-      animationControls.update(self.app.delta);
-    };
-
-    // put any per resize calculations here (throttled to once per 250ms)
-    this.app.onWindowResize = function () {
-
-      // NB: use self inside this function
-
-    };
-
     this.lighting = new LightingSetup(this.app);
 
     this.loadedObjects = new Group();
     this.app.scene.add(this.loadedObjects);
 
     this.app.initControls();
-    this.initControls();
 
     this.initShadows();
     this.initFog();
@@ -53912,12 +53840,6 @@ var Canvas = function () {
     this.app.renderer.shadowMap.enabled = true;
     this.app.renderer.shadowMap.type = PCFShadowMap;
     // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
-  };
-
-  Canvas.prototype.initControls = function initControls() {
-
-    this.app.controls.minPolarAngle = 0;
-    this.app.controls.maxPolarAngle = Math.PI / 2;
   };
 
   Canvas.prototype.initFog = function initFog() {
@@ -53947,26 +53869,10 @@ var Canvas = function () {
     this.app.scene.add(ground);
   };
 
-  Canvas.prototype.addObjectToScene = function addObjectToScene(object) {
-
-    if (object === undefined) {
-
-      console.error('Oops! An unspecified error occurred :(');
-      return;
-    }
-    this.app.scene.add(object);
-
-    // fit camera to all loaded objects
-    this.app.fitCameraToObject(object);
-
-    this.app.camera.far = 3000;
-    this.app.camera.updateProjectionMatrix();
-  };
-
   return Canvas;
 }();
 
-var canvas$1 = new Canvas(HTMLControl.canvas);
+var canvas = new Canvas(HTMLControl.canvas);
 
 function DDSLoader() {
 
@@ -59278,29 +59184,47 @@ var loadingManager = new LoadingManager();
 
 var percentComplete = 0;
 
-// hide the upload form when loading starts so that the progress bar can be shown
-loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+var timerID = null;
 
-  percentComplete = 0;
+// hide the upload form when loading starts so that the progress bar can be shown
+loadingManager.onStart = function () {
+
+  // prevent onStart being called multiple times
+  if (timerID !== null) return;
+
   HTMLControl.setOnLoadStartState();
+
+  timerID = setInterval(function () {
+
+    percentComplete += 5;
+
+    if (percentComplete >= 100) {
+      clearInterval(timerID);
+    } else {
+
+      HTMLControl.loading.progress.style.width = percentComplete + '%';
+    }
+  }, 100);
 };
 
 loadingManager.onLoad = function () {
 
   HTMLControl.setOnLoadEndState();
+  clearInterval(timerID);
 };
 
-loadingManager.onProgress = function (url, currentFile, totalFiles) {
+loadingManager.onProgress = function () {
 
-  // console.log( 'on progress ', percentComplete)
-  if (percentComplete < 100) {
+  if (percentComplete >= 100) return;
 
-    percentComplete += 10 / totalFiles;
-    HTMLControl.loading.progress.style.width = percentComplete + '%';
-  }
+  percentComplete += 5;
+
+  HTMLControl.loading.progress.style.width = percentComplete + '%';
 };
 
 loadingManager.onError = function (msg) {
+
+  if (msg instanceof String && msg === '') return;
 
   console.error('THREE.LoadingManager error: ' + msg);
 };
@@ -59370,6 +59294,151 @@ var Loaders = function Loaders() {
   };
 };
 
+// import throttle from 'lodash.throttle';
+// import AttributeControls from './AttributeControls.js';
+// import animationControls from './AnimationControls.js';
+
+var CameraControl = function () {
+    function CameraControl() {
+        classCallCheck(this, CameraControl);
+
+
+        this.camera = canvas.app.camera;
+        this.controls = canvas.app.controls;
+
+        this.lookAtTargets = {
+            current: new Vector3()
+        };
+
+        this.positionTargets = {
+            current: new Vector3()
+        };
+    }
+
+    CameraControl.prototype.initCamera = function initCamera() {
+
+        var boundingBox = new Box3();
+
+        // get bounding box of object - this will be used to setup controls and camera
+        boundingBox.setFromObject(this.player);
+
+        var center = boundingBox.getCenter();
+        var size = boundingBox.getSize();
+
+        // get the max side of the bounding box
+        var maxDim = Math.max(size.x, size.y, size.z);
+        var fov = this.camera.fov * (Math.PI / 180);
+        var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+
+        this.camera.position.z = cameraZ;
+
+        var minZ = boundingBox.min.z;
+        var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+        this.camera.far = cameraToFarEdge * 3;
+        this.camera.updateProjectionMatrix();
+
+        // set camera to rotate around center of loaded object
+        this.controls.target = center;
+
+        // prevent camera from zooming out far enough to create far plane cutoff
+        this.controls.maxDistance = cameraToFarEdge * 2;
+    };
+
+    CameraControl.prototype.initControls = function initControls() {
+
+        this.controls.minPolarAngle = 0;
+        this.controls.maxPolarAngle = Math.PI / 2;
+
+        // save the initial position. This can be regained with controls.reset()
+        this.controls.saveState();
+    };
+
+    CameraControl.prototype.init = function init(player) {
+
+        this.player = player;
+
+        this.initCamera();
+        this.initControls();
+
+        this.initLookAtTarget();
+
+        this.initPositionTargets();
+    };
+
+    CameraControl.prototype.initLookAtTarget = function initLookAtTarget() {
+
+        this.lookAtTargets.upper = this.player.getObjectByName('WAFPhelmet').position; // or mixamorigHead
+
+        this.lookAtTargets.default = this.controls.target.clone(); // this.player.getObjectByName( 'mixamorigHips' ).position;
+
+        this.lookAtTargets.current = this.lookAtTargets.default;
+
+        var geo = new SphereBufferGeometry(25, 12, 12);
+        var mat = new MeshBasicMaterial({ color: 0xff0000 });
+        var torsoTarget = new Mesh(geo, mat);
+        torsoTarget.position.copy(this.lookAtTargets.default);
+        canvas.app.scene.add(torsoTarget);
+
+        var mat2 = new MeshBasicMaterial({ color: 0x00ff00 });
+        var upperTarget = new Mesh(geo, mat2);
+        upperTarget.position.copy(this.lookAtTargets.upper);
+        canvas.app.scene.add(upperTarget);
+    };
+
+    CameraControl.prototype.initPositionTargets = function initPositionTargets() {
+
+        this.positionTargets.head = this.player.getObjectByName('mixamorigNeck').position; // or mixamorigHead
+
+        this.positionTargets.torso = this.player.getObjectByName('mixamorigSpine').position; // or mixamorigSpine1 or mixamorigSpine2
+
+        // this.positionTargets.default = this.player.getObjectByName( 'mixamorigHips' ).position;
+
+        // this.positionTargets.current = this.positionTargets.default;
+    };
+
+    // per frame calculation
+
+
+    CameraControl.prototype.update = function update(delta) {
+
+        // console.log( this.controls.scale );
+
+        delta /= 1000;
+
+        var distance = this.controls.target.distanceTo(this.lookAtTargets.current);
+
+        if (distance > 0.1) {
+
+            var start = new Vector3().copy(this.controls.target);
+
+            var direction = start.sub(this.lookAtTargets.current).normalize();
+
+            direction.multiplyScalar(distance * delta);
+
+            this.controls.target.sub(direction);
+        }
+
+        // this.controls.dollyIn( delta / 1000 );
+    };
+
+    CameraControl.prototype.focusOnUpperBody = function focusOnUpperBody() {
+
+        console.log('Focussing on upper body');
+        this.lookAtTargets.current = this.lookAtTargets.upper; // this.lookAtTargets.torso
+    };
+
+    CameraControl.prototype.focusOnWholeBody = function focusOnWholeBody() {
+
+        console.log('Focussing on whole body');
+        this.lookAtTargets.current = this.lookAtTargets.default;
+    };
+
+    return CameraControl;
+}();
+
+var cameraControl = new CameraControl();
+
 var AttributeControls = function () {
       function AttributeControls() {
             classCallCheck(this, AttributeControls);
@@ -59429,7 +59498,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'catch_1';
+                  var animName = 'idle';
 
                   var value = e.target.value === 1 ? 2 : e.target.value;
 
@@ -59438,6 +59507,8 @@ var AttributeControls = function () {
                   _this.animationControls.setTimeScale(timeScale, animName);
 
                   _this.animationControls.playAction(animName);
+
+                  cameraControl.focusOnWholeBody();
             }, 100), false);
       };
 
@@ -59566,7 +59637,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'on_back_to_stand';
+                  var animName = 'idle';
 
                   var value = e.target.value === 1 ? 2 : e.target.value;
 
@@ -59575,6 +59646,8 @@ var AttributeControls = function () {
                   _this7.animationControls.setTimeScale(timeScale, animName);
 
                   _this7.animationControls.playAction(animName);
+
+                  cameraControl.focusOnUpperBody();
             }, 100), false);
       };
 
@@ -59604,7 +59677,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  var animName = 'on_back_to_stand';
 
                   var value = e.target.value === 1 ? 2 : e.target.value;
 
@@ -59845,8 +59918,6 @@ var AttributeControls = function () {
       return AttributeControls;
 }();
 
-// import * as THREE from 'three';
-
 var loaders = new Loaders();
 
 var Simulation = function () {
@@ -59865,11 +59936,27 @@ var Simulation = function () {
 
     Simulation.prototype.preLoad = function preLoad() {
 
+        // const self = this;
+
         this.animations = {};
 
         this.loadingPromises = [];
 
         this.attributeControls = new AttributeControls();
+
+        // Put any per frame calculation here
+        canvas.app.onUpdate = function () {
+            // NB: use self inside this function, 'this' will refer to canvas.app
+
+            animationControls.update(this.delta);
+            cameraControl.update(this.delta);
+        };
+
+        // put any per resize calculations here (throttled to once per 250ms)
+        canvas.app.onWindowResize = function () {
+            // NB: use self inside this function, 'this' will refer to canvas.app
+
+        };
     };
 
     Simulation.prototype.loadModels = function loadModels() {
@@ -59878,10 +59965,14 @@ var Simulation = function () {
         var playerPromise = loaders.fbxLoader('/assets/models/nfl/white_player_static.fbx').then(function (object) {
 
             object.traverse(function (child) {
-                console.log(child);
 
-                child.frustumCulled = false;
-                child.castShadow = true;
+                // console.log( child )
+
+                if (child instanceof Mesh) {
+
+                    child.frustumCulled = false;
+                    // child.castShadow = true;
+                }
             });
 
             _this.player = object;
@@ -59914,9 +60005,9 @@ var Simulation = function () {
 
         Promise.all(this.loadingPromises).then(function () {
 
-            canvas$1.addObjectToScene(_this3.player);
+            canvas.app.scene.add(_this3.player);
 
-            canvas$1.app.play();
+            canvas.app.play();
 
             animationControls.initMixer(_this3.player);
 
@@ -59930,6 +60021,8 @@ var Simulation = function () {
             _this3.attributeControls.initAnimationControls(animationControls);
 
             _this3.attributeControls.enableControls();
+
+            cameraControl.init(_this3.player);
         });
     };
 

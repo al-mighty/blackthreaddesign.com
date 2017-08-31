@@ -19,10 +19,29 @@
 }
 
 #loading-overlay {
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  -ms-flex-negative: 1;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+
+  width: 100%;
+  height: 100%;
+
   text-align:center;
   border: 1px solid #062f4f;
   background: rgb( 240,183,161 );
   background: radial-gradient(ellipse at center, rgba(84,84,84,1) 1%,rgba(38,37,33,1) 100%,rgba(191,110,78,1) 100%);
+
 }
 
 #loading-bar {
