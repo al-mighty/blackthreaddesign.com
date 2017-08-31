@@ -9550,253 +9550,6 @@ function initFooter () {
   }
 }
 
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-var canvas = document.querySelector('#viewer-canvas');
-var container = document.querySelector('#view-container');
-
-var ballPosition = document.querySelector('#ball_position');
-var equation = document.querySelector('#equation');
-
-var error = {
-  overlay: document.querySelector('#error-overlay'),
-  messages: document.querySelector('#error-messages')
-};
-
-var animation = {
-  slider: document.querySelector('#animation-slider'),
-  playButton: document.querySelector('#play-button'),
-  pauseButton: document.querySelector('#pause-button'),
-  playbackControl: document.querySelector('#playback-control'),
-  clipsSelection: document.querySelector('#animation-clips'),
-  controls: document.querySelector('#animation-controls')
-};
-
-var loading = {
-  bar: document.querySelector('#loading-bar'),
-  overlay: document.querySelector('#loading-overlay'),
-  progress: document.querySelector('#progress')
-};
-
-var controls = {
-  links: document.querySelector('#controls').querySelectorAll('span'),
-  reset: document.querySelector('#reset'),
-  randomize: document.querySelector('#randomize'),
-  slope: document.querySelector('#slope'),
-  simulate: document.querySelector('#simulate'),
-  fullscreen: document.querySelector('#fullscreen-button'),
-  showGrid: document.querySelector('#show-grid')
-};
-
-var HTMLControl = function () {
-  function HTMLControl() {
-    classCallCheck(this, HTMLControl);
-  }
-
-  HTMLControl.setInitialState = function setInitialState() {
-
-    controls.slope.value = 0;
-
-    controls.simulate.disabled = false;
-    controls.slope.disabled = false;
-    controls.randomize.disabled = false;
-    controls.reset.disabled = true;
-    controls.showGrid.disabled = false;
-  };
-
-  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
-
-    loading.bar.classList.remove('hide');
-  };
-
-  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
-
-    loading.overlay.classList.add('hide');
-  };
-
-  HTMLControl.setOnSimulateState = function setOnSimulateState() {
-
-    controls.simulate.disabled = true;
-    controls.slope.disabled = true;
-    controls.reset.disabled = false;
-  };
-
-  return HTMLControl;
-}();
-
-HTMLControl.canvas = canvas;
-HTMLControl.container = container;
-HTMLControl.ballPosition = ballPosition;
-HTMLControl.equation = equation;
-HTMLControl.error = error;
-HTMLControl.animation = animation;
-HTMLControl.loading = loading;
-HTMLControl.controls = controls;
-
-var goFullscreen = function (elem) {
-
-  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    }
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.msExitFullscreen) {
-    document.msExitFullscreen();
-  } else if (document.mozCancelFullScreen) {
-    document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  }
-};
-
-HTMLControl.controls.fullscreen.addEventListener('click', function (e) {
-
-  e.preventDefault();
-  goFullscreen(HTMLControl.container);
-}, false);
-
 // Polyfills
 
 if ( Number.EPSILON === undefined ) {
@@ -53726,6 +53479,143 @@ function App(canvas) {
   };
 }
 
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -53747,32 +53637,12 @@ var LightingSetup = function () {
 
         var backLight = new DirectionalLight(0xffffff, 0.325);
         backLight.position.set(130, 100, 150);
-        // backLight.castShadow = true;
-        // backLight.shadow.mapSize.width = 2048;
-        // backLight.shadow.mapSize.height = 2048;
-        // backLight.shadow.camera.near = 0.5;
-        // backLight.shadow.camera.far = 1500;
-        // backLight.shadow.camera.updateProjectionMatrix();
 
         var keyLight = new DirectionalLight(0xffffff, 0.375);
         keyLight.position.set(100, 50, 0);
-        // keyLight.castShadow = true;
-        // keyLight.shadow.mapSize.width = 2048;
-        // keyLight.shadow.mapSize.height = 2048;
-        // keyLight.shadow.camera.near = 0.5;
-        // keyLight.shadow.camera.far = 1500;
-        // keyLight.shadow.camera.updateProjectionMatrix();
 
         var fillLight = new DirectionalLight(0xffffff, 0.3);
         fillLight.position.set(75, 75, 50);
-
-        // fillLight.castShadow = true;
-        // fillLight.shadow.bias = 0.0001;
-        // fillLight.shadow.mapSize.width = 2048;
-        // fillLight.shadow.mapSize.height = 2048;
-        // fillLight.shadow.camera.near = 0.5;
-        // fillLight.shadow.camera.far = 1500;
-        // fillLight.shadow.camera.updateProjectionMatrix();
 
         this.app.scene.add(backLight, keyLight, fillLight);
 
@@ -53787,6 +53657,70 @@ var LightingSetup = function () {
 
     return LightingSetup;
 }();
+
+var canvas$1 = document.querySelector('#viewer-canvas');
+var container = document.querySelector('#view-container');
+
+var ballPosition = document.querySelector('#ball_position');
+var equation = document.querySelector('#equation');
+
+var loading = {
+  bar: document.querySelector('#loading-bar'),
+  overlay: document.querySelector('#loading-overlay'),
+  progress: document.querySelector('#progress')
+};
+
+var controls = {
+  reset: document.querySelector('#reset'),
+  randomize: document.querySelector('#randomize'),
+  slope: document.querySelector('#slope'),
+  simulate: document.querySelector('#simulate'),
+  showGrid: document.querySelector('#show-grid')
+};
+
+var HTMLControl = function () {
+  function HTMLControl() {
+    classCallCheck(this, HTMLControl);
+  }
+
+  HTMLControl.setInitialState = function setInitialState() {
+
+    controls.slope.value = 0;
+
+    controls.simulate.disabled = false;
+    controls.slope.disabled = false;
+    controls.randomize.disabled = false;
+    controls.reset.disabled = true;
+    controls.showGrid.disabled = false;
+  };
+
+  HTMLControl.setOnLoadStartState = function setOnLoadStartState() {
+
+    loading.bar.classList.remove('hide');
+    loading.progress.style.width = '0%';
+  };
+
+  HTMLControl.setOnLoadEndState = function setOnLoadEndState() {
+
+    loading.overlay.classList.add('hide');
+  };
+
+  HTMLControl.setOnSimulateState = function setOnSimulateState() {
+
+    controls.simulate.disabled = true;
+    controls.slope.disabled = true;
+    controls.reset.disabled = false;
+  };
+
+  return HTMLControl;
+}();
+
+HTMLControl.canvas = canvas$1;
+HTMLControl.container = container;
+HTMLControl.ballPosition = ballPosition;
+HTMLControl.equation = equation;
+HTMLControl.loading = loading;
+HTMLControl.controls = controls;
 
 var Canvas = function () {
   function Canvas(canvas) {
@@ -53874,7 +53808,7 @@ var Canvas = function () {
   return Canvas;
 }();
 
-var canvas$1 = new Canvas(HTMLControl.canvas);
+var canvas = new Canvas(HTMLControl.canvas);
 
 function DDSLoader() {
 
@@ -59154,69 +59088,64 @@ function slice(a, b, from, to) {
   return a;
 }
 
-function AnimationLoader(manager) {
-
-    this.manager = manager !== undefined ? manager : DefaultLoadingManager;
-}
-
-Object.assign(AnimationLoader.prototype, {
-    load: function (url, onLoad, onProgress, onError) {
-
-        var scope = this;
-
-        var loader = new FileLoader(scope.manager);
-        loader.load(url, function (text) {
-
-            scope.parse(JSON.parse(text), onLoad);
-        }, onProgress, onError);
-    },
-    parse: function (json, onLoad) {
-
-        var tracks = json.tracks.map(function (t) {
-            return KeyframeTrack.parse(t);
-        });
-
-        var clip = new AnimationClip(json.name, json.duration, tracks);
-
-        onLoad(clip);
-    }
-});
-
 var loadingManager = new LoadingManager();
 
 var percentComplete = 0;
 
+var timerID = null;
+
 // hide the upload form when loading starts so that the progress bar can be shown
-loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
-  percentComplete = 0;
+loadingManager.onStart = function () {
+
+  // prevent onStart being called multiple times
+  if (timerID !== null) return;
+
   HTMLControl.setOnLoadStartState();
+
+  timerID = setInterval(function () {
+
+    console.log(percentComplete);
+
+    percentComplete += 5;
+
+    if (percentComplete >= 100) {
+
+      console.log('interval!', percentComplete, timerID);
+
+      clearInterval(timerID);
+    } else {
+
+      HTMLControl.loading.progress.style.width = percentComplete + '%';
+    }
+  }, 100);
 };
 
 loadingManager.onLoad = function () {
 
   HTMLControl.setOnLoadEndState();
+  clearInterval(timerID);
 };
 
-loadingManager.onProgress = function (url, currentFile, totalFiles) {
+loadingManager.onProgress = function () {
 
-  // console.log( 'on progress ', percentComplete)
-  if (percentComplete < 100) {
+  if (percentComplete >= 100) return;
 
-    percentComplete += 10 / totalFiles;
-    HTMLControl.loading.progress.style.width = percentComplete + '%';
-  }
+  console.log(HTMLControl.loading.progress.style.width, 'progress');
+
+  percentComplete += 5;
+
+  HTMLControl.loading.progress.style.width = percentComplete + '%';
 };
 
 loadingManager.onError = function (msg) {
 
-  if (msg instanceof String && msg !== '') console.error('THREE.LoadingManager error: ' + msg);else console.log(msg);
+  if (msg instanceof String && msg === '') return;
+
+  console.error('THREE.LoadingManager error: ' + msg);
 };
 
 var fontLoader = null;
-var objectLoader = null;
-var bufferGeometryLoader = null;
-var jsonLoader = null;
-var animationLoader = null;
+
 var fbxLoader = null;
 
 var defaultReject = function (err) {
@@ -59245,34 +59174,6 @@ var Loaders = function Loaders() {
         fontLoader = promisifyLoader(new FontLoader(loadingManager));
       }
       return fontLoader;
-    },
-
-    get objectLoader() {
-      if (objectLoader === null) {
-        objectLoader = promisifyLoader(new ObjectLoader(loadingManager));
-      }
-      return objectLoader;
-    },
-
-    get bufferGeometryLoader() {
-      if (bufferGeometryLoader === null) {
-        bufferGeometryLoader = promisifyLoader(new BufferGeometryLoader(loadingManager));
-      }
-      return bufferGeometryLoader;
-    },
-
-    get jsonLoader() {
-      if (jsonLoader === null) {
-        jsonLoader = promisifyLoader(new JSONLoader(loadingManager));
-      }
-      return jsonLoader;
-    },
-
-    get animationLoader() {
-      if (animationLoader === null) {
-        animationLoader = promisifyLoader(new AnimationLoader(loadingManager));
-      }
-      return animationLoader;
     },
 
     get fbxLoader() {
@@ -59358,8 +59259,6 @@ var AnimationControls = function () {
     this.mixers = {};
     this.actions = [];
     this.isPaused = true;
-
-    // this.setTimeScales( -3 );
   };
 
   AnimationControls.prototype.update = function update(delta) {
@@ -59368,15 +59267,8 @@ var AnimationControls = function () {
 
     Object.values(this.mixers).forEach(function (mixer) {
 
+      // divide by 1000 to convert seconds to milliseconds
       mixer.update(delta / 1000);
-    });
-  };
-
-  AnimationControls.prototype.setTimeScales = function setTimeScales(timeScale) {
-
-    this.actions.forEach(function (action) {
-
-      action.timeScale = timeScale;
     });
   };
 
@@ -59400,186 +59292,15 @@ var AnimationControls = function () {
     this.isPaused = false;
   };
 
+  AnimationControls.prototype.pause = function pause() {
+
+    this.isPaused = true;
+  };
+
   return AnimationControls;
 }();
 
 var animationControls = new AnimationControls();
-
-var GUI = function () {
-    function GUI() {
-        classCallCheck(this, GUI);
-
-
-        this.enabled = false;
-
-        this.scene = new Scene();
-
-        this.initCamera();
-        this.initFrame();
-
-        this.initObjects();
-    }
-
-    GUI.prototype.init = function init(position) {
-
-        this.position = position;
-
-        this.initBallHelper(position);
-        this.initArrowHelper();
-    };
-
-    GUI.prototype.initFrame = function initFrame() {
-
-        var width = 250;
-        var height = 190;
-        var x = 10;
-        var y = HTMLControl.canvas.height - height - 10;
-
-        this.frame = {
-            x: x,
-            y: y,
-            height: height,
-            width: width,
-            center: new Vector3(
-
-            // to place at left
-            // -HTMLControl.canvas.width / 2 + this.frame.width / 2 + this.frame.x,
-
-            // to place at right
-            HTMLControl.canvas.width / 2 - width / 2 - x,
-
-            // top place at top
-            -HTMLControl.canvas.height / 2 + height / 2 + y,
-
-            // to place at bottom
-            // HTMLControl.canvas.height / 2 - this.frame.height / 2 - this.frame.y,
-
-            0)
-        };
-    };
-
-    // create a camera the full size of the canvas
-
-
-    GUI.prototype.initCamera = function initCamera() {
-
-        this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
-
-        this.camera.position.set(0, 0, 2);
-    };
-
-    GUI.prototype.initObjects = function initObjects() {
-
-        this.initBackGround();
-        this.initBorder();
-        this.initField();
-        this.initGoals();
-    };
-
-    GUI.prototype.initBackGround = function initBackGround() {
-
-        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
-        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x909090, transparent: true, opacity: 0.1 }));
-
-        mesh.position.copy(this.frame.center);
-
-        this.scene.add(mesh);
-    };
-
-    GUI.prototype.initBorder = function initBorder() {
-
-        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
-
-        var edges = new EdgesGeometry(plane);
-        var line = new LineSegments(edges, new LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.75 }));
-
-        line.position.copy(this.frame.center);
-
-        this.scene.add(line);
-    };
-
-    GUI.prototype.initField = function initField() {
-
-        var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50);
-        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x75B82B }));
-
-        mesh.position.copy(this.frame.center);
-
-        this.scene.add(mesh);
-    };
-
-    GUI.prototype.initGoals = function initGoals() {
-
-        var plane = new PlaneBufferGeometry(5, 50);
-        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x000080 }));
-
-        mesh.position.set(this.frame.center.x + 73, this.frame.center.y, this.frame.center.z + 1);
-
-        this.scene.add(mesh);
-    };
-
-    GUI.prototype.initBallHelper = function initBallHelper(position) {
-
-        if (position === undefined) position = this.position;
-
-        var geo = new CircleBufferGeometry(5, 12);
-        this.ballHelper = new Mesh(geo, new MeshBasicMaterial({ color: 0xC60000 }));
-        this.ballHelper.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
-
-        this.scene.add(this.ballHelper);
-    };
-
-    GUI.prototype.initArrowHelper = function initArrowHelper() {
-
-        var dir = new Vector3(1, 0, 0);
-        var origin = this.ballHelper.position.clone();
-        this.arrowHelper = new ArrowHelper(dir, origin, 40, 0x000000, 20, 10);
-
-        this.scene.add(this.arrowHelper);
-    };
-
-    GUI.prototype.render = function render(renderer) {
-
-        renderer.clear();
-
-        if (!this.enabled) return;
-
-        renderer.render(this.scene, this.camera, null, true);
-    };
-
-    GUI.prototype.resize = function resize() {
-        var _this = this;
-
-        throttle(function () {
-
-            _this.initFrame();
-            _this.initCamera();
-            _this.scene = new Scene();
-            _this.initObjects();
-        }, 250);
-    };
-
-    GUI.prototype.reset = function reset() {
-
-        this.scene.remove(this.arrowHelper);
-        this.scene.remove(this.ballHelper);
-    };
-
-    GUI.prototype.updateSlope = function updateSlope(slope) {
-
-        var angle = Math.atan(slope);
-
-        var direction = new Vector3(Math.cos(angle), Math.sin(angle), 0).normalize();
-
-        this.arrowHelper.setDirection(direction);
-    };
-
-    return GUI;
-}();
-
-/**
- * Forked from the THREE.GridHelper to allow non-square grid, add coords etc
- */
 
 var createTextMesh = function (font, text, color) {
 
@@ -59613,6 +59334,8 @@ var Grid = function () {
         this.colorGrid = new Color(colorGrid !== undefined ? colorGrid : 0x888888).toArray();
 
         this.group = new Group();
+
+        canvas.app.scene.add(this.group);
 
         this.group.visible = false;
 
@@ -59785,13 +59508,9 @@ var Grid = function () {
         this.group.add(this.ballCircle);
     };
 
-    Grid.prototype.updateSlope = function updateSlope(slope) {
+    Grid.prototype.update = function update(directionVector) {
 
-        var angle = Math.atan(slope);
-
-        var direction = new Vector3(Math.cos(angle), 0, -Math.sin(angle)).normalize();
-
-        this.arrowHelper.setDirection(direction);
+        this.arrowHelper.setDirection(directionVector);
     };
 
     Grid.prototype.reset = function reset() {
@@ -59807,6 +59526,249 @@ var Grid = function () {
         }
     }]);
     return Grid;
+}();
+
+var HUD = function () {
+    function HUD() {
+        classCallCheck(this, HUD);
+
+
+        this.enabled = false;
+
+        this.scene = new Scene();
+
+        this.initCamera();
+        this.initFrame();
+
+        this.initObjects();
+    }
+
+    HUD.prototype.init = function init(position) {
+
+        this.position = position;
+
+        this.initBallHelper(position);
+        this.initArrowHelper();
+    };
+
+    HUD.prototype.initFrame = function initFrame() {
+
+        var width = 250;
+        var height = 190;
+        var x = 10;
+        var y = HTMLControl.canvas.height - height - 10;
+
+        this.frame = {
+            x: x,
+            y: y,
+            height: height,
+            width: width,
+            center: new Vector3(
+
+            // to place at left
+            // -HTMLControl.canvas.width / 2 + this.frame.width / 2 + this.frame.x,
+
+            // to place at right
+            HTMLControl.canvas.width / 2 - width / 2 - x,
+
+            // top place at top
+            -HTMLControl.canvas.height / 2 + height / 2 + y,
+
+            // to place at bottom
+            // HTMLControl.canvas.height / 2 - this.frame.height / 2 - this.frame.y,
+
+            0)
+        };
+    };
+
+    // create a camera the full size of the canvas
+
+
+    HUD.prototype.initCamera = function initCamera() {
+
+        this.camera = new OrthographicCamera(-HTMLControl.canvas.width / 2, HTMLControl.canvas.width / 2, HTMLControl.canvas.height / 2, -HTMLControl.canvas.height / 2, 0.1, 1000);
+
+        this.camera.position.set(0, 0, 2);
+    };
+
+    HUD.prototype.initObjects = function initObjects() {
+
+        this.initBackGround();
+        this.initBorder();
+        this.initField();
+        this.initGoals();
+    };
+
+    HUD.prototype.initBackGround = function initBackGround() {
+
+        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x909090, transparent: true, opacity: 0.1 }));
+
+        mesh.position.copy(this.frame.center);
+
+        this.scene.add(mesh);
+    };
+
+    HUD.prototype.initBorder = function initBorder() {
+
+        var plane = new PlaneBufferGeometry(this.frame.width, this.frame.height);
+
+        var edges = new EdgesGeometry(plane);
+        var line = new LineSegments(edges, new LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.75 }));
+
+        line.position.copy(this.frame.center);
+
+        this.scene.add(line);
+    };
+
+    HUD.prototype.initField = function initField() {
+
+        var plane = new PlaneBufferGeometry(this.frame.width - 50, this.frame.height - 50);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x75B82B }));
+
+        mesh.position.copy(this.frame.center);
+
+        this.scene.add(mesh);
+    };
+
+    HUD.prototype.initGoals = function initGoals() {
+
+        var plane = new PlaneBufferGeometry(5, 50);
+        var mesh = new Mesh(plane, new MeshBasicMaterial({ color: 0x000080 }));
+
+        mesh.position.set(this.frame.center.x + 73, this.frame.center.y, this.frame.center.z + 1);
+
+        this.scene.add(mesh);
+    };
+
+    HUD.prototype.initBallHelper = function initBallHelper(position) {
+
+        if (position === undefined) position = this.position;
+
+        var geo = new CircleBufferGeometry(5, 12);
+        this.ballHelper = new Mesh(geo, new MeshBasicMaterial({ color: 0xC60000 }));
+        this.ballHelper.position.set(this.frame.center.x + position.x, this.frame.center.y - position.z, this.frame.center.z);
+
+        this.scene.add(this.ballHelper);
+    };
+
+    HUD.prototype.initArrowHelper = function initArrowHelper() {
+
+        var dir = new Vector3(1, 0, 0);
+        var origin = this.ballHelper.position.clone();
+        this.arrowHelper = new ArrowHelper(dir, origin, 40, 0x000000, 20, 10);
+
+        this.scene.add(this.arrowHelper);
+    };
+
+    HUD.prototype.render = function render() {
+
+        // required to draw the renderer's background in the main scene
+        canvas.app.renderer.clear();
+
+        if (!this.enabled) return;
+
+        canvas.app.renderer.render(this.scene, this.camera, null, true);
+    };
+
+    HUD.prototype.resize = function resize() {
+
+        this.initFrame();
+        this.initCamera();
+        this.scene = new Scene();
+        this.initObjects();
+    };
+
+    HUD.prototype.reset = function reset() {
+
+        this.scene.remove(this.arrowHelper);
+        this.scene.remove(this.ballHelper);
+    };
+
+    HUD.prototype.update = function update(directionVector) {
+
+        this.arrowHelper.setDirection(directionVector);
+    };
+
+    return HUD;
+}();
+
+// Simple wrapper for Grid and HUD
+var Overlay = function () {
+  function Overlay() {
+    classCallCheck(this, Overlay);
+
+
+    this.grid = new Grid(160, 100, 10, 0xeeeeee, 0x888888);
+
+    this.hud = new HUD();
+
+    this.initListeners();
+  }
+
+  Overlay.prototype.init = function init(position) {
+
+    this.grid.init(position);
+    this.hud.init(position);
+  };
+
+  Overlay.prototype.render = function render() {
+
+    this.hud.render();
+  };
+
+  Overlay.prototype.update = function update(slope) {
+
+    var angle = Math.atan(slope);
+    var x = Math.cos(angle);
+    var y = Math.sin(angle);
+
+    // direction of arrow is in 2D x, y plane (vertical to screen)
+    this.hud.update(new Vector3(x, y, 0).normalize());
+
+    // direction of arrow is in 3D x, -z plane (into screen)
+    this.grid.update(new Vector3(x, 0, -y).normalize());
+  };
+
+  Overlay.prototype.reset = function reset() {
+
+    this.hud.reset();
+    this.grid.reset();
+  };
+
+  Overlay.prototype.resize = function resize() {
+    var _this = this;
+
+    throttle(function () {
+      _this.hud.resize();
+    }, 250);
+  };
+
+  Overlay.prototype.initListeners = function initListeners() {
+    var _this2 = this;
+
+    HTMLControl.controls.slope.addEventListener('input', function (e) {
+
+      e.preventDefault();
+
+      _this2.update(e.target.value);
+    }, false);
+
+    HTMLControl.controls.showGrid.addEventListener('click', function (e) {
+
+      _this2.enabled = e.target.checked;
+    }, false);
+  };
+
+  createClass(Overlay, [{
+    key: 'enabled',
+    set: function (bool) {
+
+      this.grid.enabled = bool;
+      this.hud.enabled = bool;
+    }
+  }]);
+  return Overlay;
 }();
 
 var timing = {
@@ -59836,24 +59798,23 @@ var Simulation = function () {
 
         this.loadingPromises = [];
 
-        this.gui = new GUI();
+        this.overlay = new Overlay();
 
         // Put any per frame calculation here
-        canvas$1.app.onUpdate = function () {
-            // NB: use self inside this function, 'this' will refer to App
+        canvas.app.onUpdate = function () {
+            // NB: use self inside this function, 'this' will refer to canvas.app
 
             animationControls.update(this.delta);
-            self.gui.render(canvas$1.app.renderer);
+            self.overlay.render();
         };
 
         // put any per resize calculations here (throttled to once per 250ms)
-        canvas$1.app.onWindowResize = function () {
+        canvas.app.onWindowResize = function () {
+            // NB: use self inside this function, 'this' will refer to canvas.app
 
-            // NB: use self inside this function
-            self.gui.resize();
+            self.overlay.resize();
         };
 
-        this.initGrid();
         this.initReset();
         this.initRandomize();
     };
@@ -59866,10 +59827,8 @@ var Simulation = function () {
 
         var fieldPromise = loaders.fbxLoader('/assets/models/robot/field.fbx').then(function (object) {
 
-            // object.getObjectByName( 'Field' ).receiveShadow = true;
-
             // field width width ~140cm, length ~200cm
-            canvas$1.app.scene.add(object);
+            canvas.app.scene.add(object);
         });
 
         var naoPromise = loaders.fbxLoader('/assets/models/robot/nao.fbx').then(function (object) {
@@ -59905,28 +59864,21 @@ var Simulation = function () {
             _this2.initSimulation();
             HTMLControl.setOnLoadEndState();
 
-            canvas$1.app.play();
+            canvas.app.play();
         });
     };
 
     Simulation.prototype.init = function init() {
 
         animationControls.reset();
-        canvas$1.app.controls.reset();
+        canvas.app.controls.reset();
 
         this.initPositions();
         this.updateEquation();
         HTMLControl.setInitialState();
         this.setInitialTransforms();
 
-        this.gui.init(this.ball.position);
-        this.grid.init(this.ball.position);
-    };
-
-    Simulation.prototype.initGrid = function initGrid() {
-
-        this.grid = new Grid(160, 100, 10, 0xeeeeee, 0x888888);
-        canvas$1.app.scene.add(this.grid.group);
+        this.overlay.init(this.ball.position);
     };
 
     // set up positions for the animations
@@ -59951,7 +59903,7 @@ var Simulation = function () {
     Simulation.prototype.initReset = function initReset() {
         var _this3 = this;
 
-        HTMLControl.controls.reset.addEventListener('click', function () {
+        HTMLControl.controls.reset.addEventListener('click', throttle(function () {
 
             cancelAnimationFrame(_this3.ballAnimationFrameId);
             _this3.ballAnimationFrameId = undefined;
@@ -59960,19 +59912,19 @@ var Simulation = function () {
             _this3.ballTimer = undefined;
 
             animationControls.reset();
-            canvas$1.app.controls.reset();
+            canvas.app.controls.reset();
 
             HTMLControl.setInitialState();
             _this3.setInitialTransforms();
-            _this3.gui.updateSlope(0);
-            _this3.grid.updateSlope(0);
-        });
+
+            _this3.overlay.update(0);
+        }, 250));
     };
 
     Simulation.prototype.initRandomize = function initRandomize() {
         var _this4 = this;
 
-        HTMLControl.controls.randomize.addEventListener('click', function () {
+        HTMLControl.controls.randomize.addEventListener('click', throttle(function () {
 
             cancelAnimationFrame(_this4.ballAnimationFrameId);
             _this4.ballAnimationFrameId = undefined;
@@ -59980,15 +59932,15 @@ var Simulation = function () {
             clearTimeout(_this4.ballTimer);
             _this4.ballTimer = undefined;
 
-            _this4.gui.reset();
-            _this4.grid.reset();
+            _this4.overlay.reset();
+
             _this4.init();
-        });
+        }, 250));
     };
 
     Simulation.prototype.addObjects = function addObjects() {
 
-        canvas$1.app.scene.add(this.nao, this.ball);
+        canvas.app.scene.add(this.nao, this.ball);
     };
 
     Simulation.prototype.setInitialTransforms = function setInitialTransforms() {
@@ -60010,7 +59962,7 @@ var Simulation = function () {
         this.naoMixer = new AnimationMixer(this.nao);
         this.naoMixer.name = 'nao mixer';
 
-        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer, timing.naoAnimStart);
+        animationControls.initAnimation(this.nao, this.nao.animations[0], this.naoMixer);
     };
 
     // this is set up after the user has entered the slope
@@ -60127,20 +60079,6 @@ var Simulation = function () {
             animationControls.play();
 
             HTMLControl.setOnSimulateState();
-        }, false);
-
-        HTMLControl.controls.slope.addEventListener('input', function (e) {
-
-            e.preventDefault();
-
-            _this5.gui.updateSlope(e.target.value);
-            _this5.grid.updateSlope(e.target.value);
-        }, false);
-
-        HTMLControl.controls.showGrid.addEventListener('click', function (e) {
-
-            _this5.gui.enabled = e.target.checked;
-            _this5.grid.enabled = e.target.checked;
         }, false);
     };
 

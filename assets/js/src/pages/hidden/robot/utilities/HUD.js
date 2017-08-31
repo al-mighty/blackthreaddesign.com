@@ -1,9 +1,8 @@
 import * as THREE from 'three';
-import throttle from 'lodash.throttle';
-
+import canvas from '../Canvas.js';
 import HTMLControl from './HTMLControl.js';
 
-export default class GUI {
+export default class HUD {
 
   constructor() {
 
@@ -159,26 +158,23 @@ export default class GUI {
 
   }
 
-  render( renderer ) {
+  render() {
 
-    renderer.clear();
+    // required to draw the renderer's background in the main scene
+    canvas.app.renderer.clear();
 
     if ( !this.enabled ) return;
 
-    renderer.render( this.scene, this.camera, null, true );
+    canvas.app.renderer.render( this.scene, this.camera, null, true );
 
   }
 
   resize() {
 
-    throttle( () => {
-
-      this.initFrame();
-      this.initCamera();
-      this.scene = new THREE.Scene();
-      this.initObjects();
-
-    }, 250 );
+    this.initFrame();
+    this.initCamera();
+    this.scene = new THREE.Scene();
+    this.initObjects();
 
   }
 
@@ -189,17 +185,9 @@ export default class GUI {
 
   }
 
-  updateSlope( slope ) {
+  update( directionVector ) {
 
-    const angle = Math.atan( slope );
-
-    const direction = new THREE.Vector3(
-      Math.cos( angle ),
-      Math.sin( angle ),
-      0
-    ).normalize();
-
-    this.arrowHelper.setDirection( direction );
+    this.arrowHelper.setDirection( directionVector );
 
   }
 

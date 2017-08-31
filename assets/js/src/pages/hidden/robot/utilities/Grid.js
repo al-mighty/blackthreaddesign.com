@@ -1,9 +1,6 @@
 import * as THREE from 'three';
 import loaders from './loaders.js';
-
-/**
- * Forked from the THREE.GridHelper to allow non-square grid, add coords etc
- */
+import canvas from '../Canvas.js';
 
 const createTextMesh = ( font, text, color ) => {
 
@@ -37,6 +34,8 @@ export default class Grid {
     this.colorGrid = new THREE.Color( colorGrid !== undefined ? colorGrid : 0x888888 ).toArray();
 
     this.group = new THREE.Group();
+
+    canvas.app.scene.add( this.group );
 
     this.group.visible = false;
 
@@ -227,17 +226,9 @@ export default class Grid {
 
   }
 
-  updateSlope( slope ) {
+  update( directionVector ) {
 
-    const angle = Math.atan( slope );
-
-    const direction = new THREE.Vector3(
-      Math.cos( angle ),
-      0,
-      -Math.sin( angle ),
-    ).normalize();
-
-    this.arrowHelper.setDirection( direction );
+    this.arrowHelper.setDirection( directionVector );
 
   }
 

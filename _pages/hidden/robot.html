@@ -13,34 +13,8 @@ vendor-js:
   [ "/zip/inflate.min" ]
 ---
 
-<div id="view-container" class="control-panel">
+<div id="view-container">
   <canvas id="viewer-canvas" class="fill"></canvas>
-
-  <div id="controls">
-
-    <div id="animation-controls" class="hide">
-
-      <select id="animation-clips">
-        <option value="static">Static Pose</option>
-      </select>
-
-      <a href="#" id="playback-control">
-        <span id="play-button" class="fa fa-lg fa-play-circle hide" aria-hidden="true"></span>
-        <span id="pause-button" class="fa fa-lg fa-pause-circle" aria-hidden="true"></span>
-      </a>
-
-      <input id="animation-slider" type="range" min="0" max="100" value="0" class="loader-slider"/>
-
-    </div>
-
-    <div id="right-buttons" class="hide">
-
-      <a href="#" id="fullscreen-button">
-        <span class="fa fa-lg fa-arrows-alt" aria-hidden="true"></span>
-      </a>
-    </div>
-
-  </div>
 
   <div id="loading-overlay" class="fill">
 

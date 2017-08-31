@@ -1,13 +1,12 @@
 import * as THREE from 'three';
+import throttle from 'lodash.throttle';
 
 import canvas from './Canvas.js';
-
 import loaders from './utilities/loaders.js';
 import HTMLControl from './utilities/HTMLControl.js';
 import invertMirroredFBX from './utilities/invertMirroredFBX.js';
 import animationControls from './utilities/AnimationControls.js';
-import GUI from './utilities/GUI.js';
-import Grid from './utilities/Grid.js';
+import Overlay from './utilities/Overlay.js';
 
 const timing = {
 
@@ -34,26 +33,25 @@ export default class Simulation {
 
     this.loadingPromises = [];
 
-    this.gui = new GUI();
+    this.overlay = new Overlay();
 
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
-      // NB: use self inside this function, 'this' will refer to App
+      // NB: use self inside this function, 'this' will refer to canvas.app
 
       animationControls.update( this.delta );
-      self.gui.render( canvas.app.renderer );
+      self.overlay.render();
 
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
     canvas.app.onWindowResize = function () {
+      // NB: use self inside this function, 'this' will refer to canvas.app
 
-      // NB: use self inside this function
-      self.gui.resize();
+      self.overlay.resize();
 
     };
 
-    this.initGrid();
     this.initReset();
     this.initRandomize();
 
@@ -63,8 +61,6 @@ export default class Simulation {
   loadModels() {
 
     const fieldPromise = loaders.fbxLoader( '/assets/models/robot/field.fbx' ).then( ( object ) => {
-
-      // object.getObjectByName( 'Field' ).receiveShadow = true;
 
       // field width width ~140cm, length ~200cm
       canvas.app.scene.add( object );
@@ -122,15 +118,7 @@ export default class Simulation {
     HTMLControl.setInitialState();
     this.setInitialTransforms();
 
-    this.gui.init( this.ball.position );
-    this.grid.init( this.ball.position );
-
-  }
-
-  initGrid() {
-
-    this.grid = new Grid( 160, 100, 10, 0xeeeeee, 0x888888 );
-    canvas.app.scene.add( this.grid.group );
+    this.overlay.init( this.ball.position );
 
   }
 
@@ -164,7 +152,7 @@ export default class Simulation {
 
   initReset() {
 
-    HTMLControl.controls.reset.addEventListener( 'click', () => {
+    HTMLControl.controls.reset.addEventListener( 'click', throttle( () => {
 
       cancelAnimationFrame( this.ballAnimationFrameId );
       this.ballAnimationFrameId = undefined;
@@ -177,16 +165,16 @@ export default class Simulation {
 
       HTMLControl.setInitialState();
       this.setInitialTransforms();
-      this.gui.updateSlope( 0 );
-      this.grid.updateSlope( 0 );
 
-    } );
+      this.overlay.update( 0 );
+
+    }, 250 ) );
 
   }
 
   initRandomize() {
 
-    HTMLControl.controls.randomize.addEventListener( 'click', () => {
+    HTMLControl.controls.randomize.addEventListener( 'click', throttle( () => {
 
       cancelAnimationFrame( this.ballAnimationFrameId );
       this.ballAnimationFrameId = undefined;
@@ -194,11 +182,11 @@ export default class Simulation {
       clearTimeout( this.ballTimer );
       this.ballTimer = undefined;
 
-      this.gui.reset();
-      this.grid.reset();
+      this.overlay.reset();
+
       this.init();
 
-    } );
+    }, 250 ) );
 
   }
 
@@ -226,7 +214,7 @@ export default class Simulation {
     this.naoMixer = new THREE.AnimationMixer( this.nao );
     this.naoMixer.name = 'nao mixer';
 
-    animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer, timing.naoAnimStart );
+    animationControls.initAnimation( this.nao, this.nao.animations[ 0 ], this.naoMixer );
 
   }
 
@@ -348,21 +336,6 @@ export default class Simulation {
 
     }, false );
 
-    HTMLControl.controls.slope.addEventListener( 'input', ( e ) => {
-
-      e.preventDefault();
-
-      this.gui.updateSlope( e.target.value );
-      this.grid.updateSlope( e.target.value );
-
-    }, false );
-
-    HTMLControl.controls.showGrid.addEventListener( 'click', ( e ) => {
-
-      this.gui.enabled = e.target.checked;
-      this.grid.enabled = e.target.checked;
-
-    }, false );
 
   }
 

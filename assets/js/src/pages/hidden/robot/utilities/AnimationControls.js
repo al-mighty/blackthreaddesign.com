@@ -32,8 +32,6 @@ class AnimationControls {
     this.actions = [];
     this.isPaused = true;
 
-    // this.setTimeScales( -3 );
-
   }
 
   update( delta ) {
@@ -42,17 +40,8 @@ class AnimationControls {
 
     Object.values( this.mixers ).forEach( ( mixer ) => {
 
+      // divide by 1000 to convert seconds to milliseconds
       mixer.update( delta / 1000 );
-
-    } );
-
-  }
-
-  setTimeScales( timeScale ) {
-
-    this.actions.forEach( ( action ) => {
-
-      action.timeScale = timeScale;
 
     } );
 
@@ -77,6 +66,12 @@ class AnimationControls {
   play() {
 
     this.isPaused = false;
+
+  }
+
+  pause() {
+
+    this.isPaused = true;
 
   }
 
