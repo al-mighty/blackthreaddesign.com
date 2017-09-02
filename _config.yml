@@ -140,7 +140,7 @@ plugins:
   - jekyll-gist
   - jemoji
   - font-awesome-sass
-  - jekyll-autoprefixer
+  # - jekyll-autoprefixer
   # - autoprefixer-rails
 
 # mimic GitHub Pages with --safe

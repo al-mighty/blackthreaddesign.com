@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+import loadingOverlay from 'utilities/init/initLoadingOverlay.js';
+
 import pointerPosToCanvasCentre from 'utilities/three/pointerPosToCanvasCentre.js';
 import computeCentroid from 'utilities/three/computeCentroid.js';
 import createBufferAttribute from 'utilities/three/createBufferAttribute.js';
@@ -79,10 +81,6 @@ export default class SplashCanvas {
       // speed up the animation as it progresses
       animSpeed -= 15;
 
-      // console.log( self.app.delta )
-      // console.log( uTime )
-      // console.log( self.app.frameCount );
-
     };
 
     this.app.onUpdate = function () {
@@ -90,9 +88,8 @@ export default class SplashCanvas {
 
       updateAnimation();
 
-      if ( self.controls && self.controls.enableDamping === true ) self.controls.update();
+    //   if ( self.controls && self.controls.enableDamping === true ) self.controls.update();
     };
-
 
     this.app.onWindowResize = function () {
 
@@ -100,11 +97,19 @@ export default class SplashCanvas {
 
     };
 
-    this.app.play();
+
+    THREE.DefaultLoadingManager.onLoad = () => {
+
+      console.log( 'Loading Complete!');
+      loadingOverlay.fadeOut();
+      self.app.play();
+
+    };
 
   }
 
   addText() {
+
     const self = this;
 
     fontLoader( '/assets/fonts/json/droid_sans_mono_regular.typeface.json' )
