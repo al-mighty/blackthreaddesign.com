@@ -132,7 +132,7 @@
     display: none;
   }
 
-  @include breakpoint(max-width ($large - 1px)) {
+  @include breakpoint(max-width ($x-large - 1px)) {
 
     label {
       position: relative;
@@ -165,7 +165,7 @@
       display: block;
       padding: 0.25em 0;
 
-      @include breakpoint($large) {
+      @include breakpoint($x-large) {
         padding-top: 0.125em;
         padding-bottom: 0.125em;
       }
@@ -203,7 +203,7 @@
     border-radius: $border-radius;
   }
 
-  @include breakpoint(max-width ($large - 1px)) {
+  @include breakpoint(max-width ($x-large - 1px)) {
     position: relative;
     max-height: 0;
     opacity: 0%;
@@ -214,7 +214,7 @@
   }
 }
 
-@include breakpoint(max-width ($large - 1px)) {
+@include breakpoint(max-width ($x-large - 1px)) {
   .nav__list input:checked ~ .nav__items {
     transition: 0.5s ease-in-out;
     max-height: 9999px; // exaggerate max-height to accommodate tall lists
@@ -305,7 +305,7 @@
   li > ul li {
     display: none;
 
-    @include breakpoint($medium) {
+    @include breakpoint($x-large) {
       display: block;
     }
   }

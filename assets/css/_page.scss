@@ -24,10 +24,10 @@
 
 .page {
   @include breakpoint($x-large) {
+    position: relative;
+    max-width: 75%;
     float: right;
-    width: 83%;
-    padding-left: 7%;
-    padding-right: 10%;
+    margin-left: auto;
   }
 
   .page__inner-wrap {

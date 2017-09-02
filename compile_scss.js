@@ -1,5 +1,6 @@
 const uncss = require( 'uncss' );
 const glob = require( 'glob' );
+const watch = require( 'node-watch' );
 const fs = require( 'fs' );
 const sass = require( 'node-sass' );
 const autoprefixer = require( 'autoprefixer' );
@@ -101,7 +102,7 @@ const compileSCSS = ( file ) => {
 
   sass.render( {
     file: inputFile,
-      // [, options..]
+    outputStyle: 'compressed',
   }, ( err, result ) => {
 
     if ( err ) {
@@ -127,16 +128,34 @@ if ( process.argv[ 2 ] !== undefined ) {
 
   compileSCSS( file );
 
+  watch( stylesheetSourceLocation, { recursive: true }, () => {
+
+    compileSCSS( file );
+
+  } );
+
 } else {
 
   fs.readdir( stylesheetSourceLocation, ( err, files ) => {
+
+    if ( err ) console.log( err );
+
     files.forEach( ( file ) => {
 
-      if ( err ) console.log( err );
-
-      else compileSCSS( file );
+      compileSCSS( file );
 
     } );
+
+    watch( stylesheetSourceLocation, { recursive: true }, () => {
+
+      files.forEach( ( file ) => {
+
+        compileSCSS( file );
+
+      } );
+
+    } );
+
   } );
 
 }

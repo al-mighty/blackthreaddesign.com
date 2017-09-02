@@ -105,6 +105,7 @@ exclude:
   - tmp
 keep_files:
   - .git
+  - assets/css
 encoding: "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 
