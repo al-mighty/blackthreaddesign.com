@@ -119,7 +119,9 @@ body:hover .visually-hidden button {
 .cf { clear: both; }
 
 .wrapper {
-  @include container();
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 
@@ -157,7 +159,7 @@ body:hover .visually-hidden button {
 
 .full {
   @include breakpoint($large){
-    margin-right: -1 * span(2.5 of 12) !important;
+    // margin-right: -1 * span(2.5 of 12) !important;
   }
 }
 

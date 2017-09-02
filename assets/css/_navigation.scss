@@ -7,10 +7,10 @@
    ========================================================================== */
 
 .pagination {
-  @include full();
   @include clearfix();
   margin-top: 1em;
   padding-top: 1em;
+  width: 100%;
 
   ul {
     margin: 0;
@@ -133,7 +133,7 @@
   }
 
   @include breakpoint(max-width ($large - 1px)) {
-      
+
     label {
       position: relative;
       display: inline-block;

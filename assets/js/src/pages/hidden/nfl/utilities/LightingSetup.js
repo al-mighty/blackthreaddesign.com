@@ -53,9 +53,9 @@ export default class LightingSetup {
     // Visually similar to 3 point lighting, but cheaper as only two lights
     // are needed
 
-    // this.pointLight = new THREE.PointLight( 0xffffff, 0.7, 0, 0 );
-    // this.app.camera.add( this.pointLight );
-    // this.app.scene.add( this.app.camera );
+    this.pointLight = new THREE.PointLight( 0xffffff, 0.5, 0, 0 );
+    this.app.camera.add( this.pointLight );
+    this.app.scene.add( this.app.camera );
 
   }
 

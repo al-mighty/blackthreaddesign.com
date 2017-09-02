@@ -2,6 +2,8 @@ source "https://rubygems.org"
 ruby RUBY_VERSION
 
 #run this before deployment if push fails
+# can happen if gemfile.lock was deleted as
+# platform ruby is required for interoperability with linux
 #bundle lock --add-platform ruby
 
 # Hello! This is where you manage which Jekyll version is used to run.
@@ -12,9 +14,7 @@ ruby RUBY_VERSION
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "3.5.1"
-
-gem "autoprefixer-rails"
+gem "jekyll", "3.5.2"
 
 # required by jekyll
 gem "font-awesome-sass"
@@ -28,13 +28,10 @@ gem "tzinfo-data"
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
-	gem "jekyll-assets"
 	gem "jekyll-seo-tag"
-#	gem "jekyll-paginate-v2"
-#	gem 'jekyll-archives'
-	gem "jekyll-paginate"
 	gem "jekyll-sitemap"
 	gem "jekyll-livereload"
 	gem "jekyll-gist"
-	gem "jemoji"
+  gem "jemoji"
+  gem 'jekyll-autoprefixer'
 end

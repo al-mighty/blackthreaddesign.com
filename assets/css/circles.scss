@@ -1,11 +1,16 @@
+---
+---
+
+@import 'default';
+
 // @import "typography";
-@import "colors";
-@import "variables";
+// @import "colors";
+// @import "variables";
 
 /* Breakpoint - media query mixins */
 
-@import "vendor/breakpoint/breakpoint";
-@include breakpoint-set("to ems", true);
+// @import "vendor/breakpoint/breakpoint";
+// @include breakpoint-set("to ems", true);
 
 .circle-container {
 	  position: relative;
@@ -61,7 +66,7 @@
 }
 
 
-/* ********************************************************** 
+/* **********************************************************
 
 				CIRCLE ANIMATIONS
 */
@@ -102,12 +107,12 @@ $gray6: rgba(30, 30, 30, .6);
 		background-size: 200%;
 		transition: all 2s ease-in-out;
 
-		&:hover { 
+		&:hover {
 			background-size: 100%;
 			transition: all 0.5s ease-in-out;
 		}
 
-		&:nth-child( 4n - 3 ) {		
+		&:nth-child( 4n - 3 ) {
 			box-shadow: inset 0.2em -0.1em 0 0 $dark-blue, inset -0.1em 0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
 			&:hover {
 					box-shadow: inset -0.2em 0.1em 0 0 $dark-blue, inset 0.1em -0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset 0 ($shadow-depth) 0 0 $gray3, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
@@ -121,14 +126,14 @@ $gray6: rgba(30, 30, 30, .6);
 			}
 		}
 
-		&:nth-child( 4n - 1 ) { 
+		&:nth-child( 4n - 1 ) {
 			box-shadow: inset 0.1em -0.1em 0 0 $dark-blue, inset -0.2em 0.1em 0 0 $medium-red, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ; // animation: spin 120s linear infinite;
 			&:hover {
 					box-shadow: inset -0.1em 0.1em 0 0 $dark-blue, inset 0.2em -0.1em 0 0 $medium-red, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ;
 			}
 		}
 
-		&:nth-child( 4n  ) { 
+		&:nth-child( 4n  ) {
 			box-shadow: inset 0.1em -0.1em 0 0 $medium-red, inset -0.2em 0.1em 0 0 $dark-blue, inset (-$x-offset) (-$y-offset) 0 0 $gray2, inset (-$x-offset) $y-offset 0 0 $gray4, inset $x-offset $y-offset 0 0 $gray5, inset 0 (-$shadow-depth) 0 0 $gray6, ; // animation: spin 120s linear infinite;
 			&:hover {
 					box-shadow: inset -0.1em 0.1em 0 0 $medium-red, inset 0.2em -0.1em 0 0 $dark-blue, inset $x-offset (-$y-offset) 0 0 $gray1, inset $x-offset $y-offset 0 0 $gray5, inset 0 ($shadow-depth) 0 0 $gray3, inset (-$x-offset) $y-offset 0 0 $gray4, ;

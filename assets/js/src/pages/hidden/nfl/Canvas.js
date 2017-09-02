@@ -18,8 +18,6 @@ class Canvas {
 
   constructor( canvas ) {
 
-    const self = this;
-
     this.canvas = canvas;
 
     this.app = new App( this.canvas );
@@ -33,7 +31,7 @@ class Canvas {
 
     this.app.initControls();
 
-    this.initShadows();
+    // this.initShadows();
     this.initFog();
     this.addGround();
 
@@ -49,7 +47,7 @@ class Canvas {
 
   initFog() {
 
-    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 2000, 3000 );
+    this.app.scene.fog = new THREE.Fog( 0xf7f7f7, 1500, 10000 );
 
   }
 

@@ -8,12 +8,14 @@
   addEventListener('error', window.__e=function f(e){f.q=f.q||[];f.q.push(e)});
 </script>
 
-{% css main %}
+
 
 {% if page.css %}
   {% for file in page.css %}
-    {% css {{file}} %}
+    <link rel="stylesheet" href="/assets/css/{{file}}.css">
   {% endfor %}
+{% else %}
+  <link rel="stylesheet" href="/assets/css/main.css">
 {% endif %}
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"/>

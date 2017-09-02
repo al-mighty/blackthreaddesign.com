@@ -329,7 +329,7 @@ export default function OrbitControls ( object, domElement ) {
 
 		};
 
-	}();
+  }();
 
 	// deltaX and deltaY are in pixels; right and down are positive
 	var pan = function () {
@@ -370,7 +370,9 @@ export default function OrbitControls ( object, domElement ) {
 
 		};
 
-	}();
+  }();
+
+  scope.pan = pan;
 
 	function dollyIn( dollyScale ) {
 
@@ -416,7 +418,7 @@ export default function OrbitControls ( object, domElement ) {
 
   }
 
-  scope.dollyIn = dollyOut;
+  scope.dollyOut = dollyOut;
 
 	//
 	// event callbacks - update the object state

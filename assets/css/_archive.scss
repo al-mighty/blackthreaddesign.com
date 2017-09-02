@@ -111,7 +111,6 @@
   }
 
   @include breakpoint($small) {
-    @include gallery(5 of 10);
     .archive__item-teaser {
       max-height: 200px;
     }
@@ -120,7 +119,6 @@
   @include breakpoint($medium) {
     margin-left: 0; /* reset before mixin does its thing*/
     margin-right: 0; /* reset before mixin does its thing*/
-    @include gallery(5 of 10);
 
     .archive__item-teaser {
       max-height: 300px;
@@ -150,7 +148,6 @@
 
   @include breakpoint($small) {
     margin-bottom: 0;
-    @include gallery(4 of 12);
 
     .feature__item-teaser {
       max-height: 200px;
@@ -161,7 +158,11 @@
   &--left {
 
 
-    @include full();
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    clear: both;;
     font-size: 1.25rem;
 
     .archive__item-teaser {
@@ -171,19 +172,21 @@
     @include breakpoint($small) {
 			text-align: center;
       .archive__item-teaser {
-        @include span(5 of 12);
+        // width: span(5 of 12);
       }
 
       .archive__item-body {
-        @include span(7 of 12 last);
-        @include prefix(0.5 of 12);
-        @include suffix(1 of 12);
+        // width: span(7 of 12 last);
       }
     }
   }
 
   &--right {
-    @include full();
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    clear: both;
     font-size: 1.25rem;
 
     .archive__item-teaser {
@@ -194,19 +197,25 @@
       text-align: right;
 
       .archive__item-teaser {
-        @include span(5 of 12 rtl);
+        float: left;
+        // width: span(5 of 12);
       }
 
       .archive__item-body {
-        @include span(7 of 12 last rtl);
-        @include prefix(0.5 of 12);
-        @include suffix(1 of 12);
+        float: right;
+        // padding-left: gutter(0.5 of 12);
+        // padding-right: gutter(1 of 12);
+        // width: span(7 of 12);
       }
     }
   }
 
   &--center {
-    @include full();
+    float: left;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    clear: both;
     font-size: 1.25rem;
 
     .archive__item-teaser {
@@ -218,12 +227,12 @@
 
       .archive__item-teaser {
         margin: 0 auto;
-        width: span(5 of 12);
+        // width: span(5 of 12);
       }
 
       .archive__item-body {
         margin: 0 auto;
-        width: span(7 of 12);
+        // width: span(7 of 12);
       }
     }
   }

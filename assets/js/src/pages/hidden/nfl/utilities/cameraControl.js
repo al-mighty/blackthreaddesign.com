@@ -11,22 +11,75 @@ class CameraControl {
     this.camera = canvas.app.camera;
     this.controls = canvas.app.controls;
 
-    this.lookAtTargets = {
-      current: new THREE.Vector3(),
-    };
+    this.targetChanged = false;
+    this.zoomLevelChanged = false;
+    this.dynamicTracking = false;
 
-    this.positionTargets = {
-      current: new THREE.Vector3(),
-    };
+    this._zoomLevel = 1;
+
+    this._currentTarget = new THREE.Object3D();
+
+    this._boundingBox = new THREE.Box3();
+
+  }
+
+  set zoomLevel( value ) {
+
+    if ( this._zoomLevel === value ) return;
+
+    this.zoomLevelChanged = true;
+    this._zoomLevel = value;
+
+  }
+
+  get zoomLevel() {
+
+    return this._zoomLevel;
+
+  }
+
+  set currentTarget( target ) {
+
+    if ( this._currentTarget.position.equals( target.position ) ) return;
+
+    this._currentTarget = target;
+    this.targetChanged = true;
+
+    if ( this._currentTarget.position.equals( this.targets.trackPlayer.position ) ) {
+
+      console.log( this._currentTarget.position.equals( this.targets.trackPlayer.position ) )
+
+      this.dynamicTracking = true;
+
+    } else {
+
+      this.dynamicTracking = false;
+
+    }
+
+  }
+
+  get currentTarget() {
+
+    return this._currentTarget;
+
+  }
+
+  get boundingBox() {
+
+    return this._boundingBox.setFromObject( this.player );
+
+  }
+
+  get center() {
+
+    return this.boundingBox.getCenter();
 
   }
 
   initCamera() {
 
-    const boundingBox = new THREE.Box3();
-
-    // get bounding box of object - this will be used to setup controls and camera
-    boundingBox.setFromObject( this.player );
+    const boundingBox = this.boundingBox;
 
     const center = boundingBox.getCenter();
     const size = boundingBox.getSize();
@@ -44,8 +97,8 @@ class CameraControl {
     this.camera.far = cameraToFarEdge * 3;
     this.camera.updateProjectionMatrix();
 
-      // set camera to rotate around center of loaded object
-    this.controls.target = center;
+    // set camera to rotate around center of loaded object
+    this.controls.target.copy( center );
 
     // prevent camera from zooming out far enough to create far plane cutoff
     this.controls.maxDistance = cameraToFarEdge * 2;
@@ -57,6 +110,8 @@ class CameraControl {
     this.controls.minPolarAngle = 0;
     this.controls.maxPolarAngle = Math.PI / 2;
 
+    this.controls.enablePan = false;
+
     // save the initial position. This can be regained with controls.reset()
     this.controls.saveState();
 
@@ -66,89 +121,201 @@ class CameraControl {
 
     this.player = player;
 
+    // used for targeting
+    this.helmet = this.player.getObjectByName( 'WAFPhelmet' );
+
     this.initCamera();
     this.initControls();
 
-    this.initLookAtTarget();
-
-    this.initPositionTargets();
+    this.initTargets();
 
   }
 
-  initLookAtTarget() {
+  initTargets() {
 
-    this.lookAtTargets.upper = this.player.getObjectByName( 'WAFPhelmet' ).position; // or mixamorigHead
+    this.targets = {};
 
-    this.lookAtTargets.default = this.controls.target.clone(); // this.player.getObjectByName( 'mixamorigHips' ).position;
+    this.targets.head = new THREE.Object3D();
+    this.targets.head.position.copy( this.helmet.position );
 
-    this.lookAtTargets.current = this.lookAtTargets.default;
+    this.targets.default = new THREE.Object3D();
+    this.targets.default.position.copy( this.controls.target );
+
+    this.targets.torso = this.targets.head.clone();
+    this.targets.torso.position.y = ( this.targets.head.position.y + this.targets.default.position.y ) / 2;
+
+    this.targets.head.position.y -= 100;
+
+    this.targets.leftArm = this.targets.torso.clone();
+    this.targets.leftArm.position.x += 75;
+
+    this.targets.rightArm = this.targets.torso.clone();
+    this.targets.rightArm.position.x -= 75;
+
+    this.targets.armTarget = this.targets.rightArm;
 
     const geo = new THREE.SphereBufferGeometry( 25, 12, 12 );
     const mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-    const torsoTarget = new THREE.Mesh( geo, mat );
-    torsoTarget.position.copy( this.lookAtTargets.default );
-    canvas.app.scene.add( torsoTarget );
+    this.targets.trackPlayer = new THREE.Mesh( geo, mat );
+    this.targets.trackPlayer.position.copy( this.targets.default.position );
+    this.player.add( this.targets.trackPlayer );
 
-    const mat2 = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    const upperTarget = new THREE.Mesh( geo, mat2 );
-    upperTarget.position.copy( this.lookAtTargets.upper );
-    canvas.app.scene.add( upperTarget );
+    this.currentTarget = this.targets.default;
+
+    // const addTargetHelper = ( target, color ) => {
+
+    //   const geo = new THREE.SphereBufferGeometry( 25, 12, 12 );
+    //   const mat = new THREE.MeshBasicMaterial( { color } );
+    //   const mesh = new THREE.Mesh( geo, mat );
+    //   mesh.position.copy( target.position );
+
+    //   canvas.app.scene.add( mesh );
+
+    // };
+
+    // addTargetHelper( this.targets.default, 0xff0000 );
+    // addTargetHelper( this.targets.head, 0x00ff00 );
+    // addTargetHelper( this.targets.torso, 0x0000ff );
+
+    // addTargetHelper( this.targets.leftArm, 0xff0000 );
+    // addTargetHelper( this.targets.rightArm, 0x0000ff );
+    // addTargetHelper( this.targets.trackPlayer, 0xff0000 );
 
 
   }
 
-  initPositionTargets() {
+  updateTarget( delta ) {
 
-    this.positionTargets.head = this.player.getObjectByName( 'mixamorigNeck' ).position; // or mixamorigHead
+    // console.log( this.dynamicTracking )
 
-    this.positionTargets.torso = this.player.getObjectByName( 'mixamorigSpine' ).position; // or mixamorigSpine1 or mixamorigSpine2
+    if ( this.dynamicTracking ) {
 
-    // this.positionTargets.default = this.player.getObjectByName( 'mixamorigHips' ).position;
+      // console.log( 'center:', this.helmet.position );
 
-    // this.positionTargets.current = this.positionTargets.default;
+      this.targets.trackPlayer.position.set( this.helmet.position.x, this.helmet.position.y - 100, this.helmet.position.z );
 
-  }
+    }
 
-
-  // per frame calculation
-  update( delta ) {
-
-    // console.log( this.controls.scale );
-
-    delta /= 1000;
-
-    const distance = this.controls.target.distanceTo( this.lookAtTargets.current );
+    const distance = this.controls.target.distanceTo( this.currentTarget.position );
 
     if ( distance > 0.1 ) {
 
       const start = new THREE.Vector3().copy( this.controls.target );
 
-      const direction = start.sub( this.lookAtTargets.current ).normalize();
+      const direction = start.sub( this.currentTarget.position ).normalize();
 
       direction.multiplyScalar( distance * delta );
 
       this.controls.target.sub( direction );
 
+    } else {
+
+      this.targetChanged = false;
+
     }
 
-    // this.controls.dollyIn( delta / 1000 );
+  }
+
+  updateZoomLevel( delta ) {
+
+    const diff = ( this.controls.object.zoom - this.zoomLevel ) * delta;
+
+    if ( Math.abs( diff ) > 0.001 ) {
+
+      this.controls.object.zoom -= diff;
+      this.controls.object.updateProjectionMatrix();
+
+    } else {
+
+      this.controls.object.zoom = this.zoomLevel;
+      this.zoomLevelChanged = false;
+
+    }
 
   }
 
-  focusOnUpperBody() {
+  // per frame calculation
+  update( delta ) {
 
-    console.log( 'Focussing on upper body' );
-    this.lookAtTargets.current = this.lookAtTargets.upper; // this.lookAtTargets.torso
+    delta /= 1000;
 
-  }
+    if ( this.targetChanged || this.dynamicTracking ) this.updateTarget( delta );
 
-  focusOnWholeBody() {
-
-    console.log( 'Focussing on whole body' );
-    this.lookAtTargets.current = this.lookAtTargets.default;
+    if ( this.zoomLevelChanged ) this.updateZoomLevel( delta );
 
   }
 
+  focusHead() {
+
+    console.log( 'Focussing: head' );
+
+    this.currentTarget = this.targets.head;
+    this.zoomLevel = 3;
+
+  }
+
+  focusTorso() {
+
+    console.log( 'Focussing: torso' );
+
+    this.currentTarget = this.targets.torso;
+    this.zoomLevel = 2;
+
+
+  }
+
+
+  focusArms() {
+
+    console.log( 'Focussing: arms' );
+
+    this.currentTarget = this.targets.armTarget;
+    this.zoomLevel = 2;
+
+
+  }
+
+  focusDefault() {
+
+    console.log( 'Focussing: default' );
+
+    this.currentTarget = this.targets.default;
+    this.zoomLevel = 1;
+
+  }
+
+  focusDynamic() {
+
+    console.log( 'Focussing: dynamic' );
+
+    this.currentTarget = this.targets.trackPlayer;
+    this.zoomLevel = 1;
+
+
+  }
+
+  setArmTarget( arm ) {
+
+    arm = arm || 'right';
+
+    if ( arm === 'right' ) {
+
+      this.targets.armTarget = this.targets.rightArm;
+      this.currentTarget = this.targets.armTarget;
+
+    } else if ( arm === 'left' ) {
+
+      this.targets.armTarget = this.targets.leftArm;
+      this.currentTarget = this.targets.armTarget;
+
+    } else if ( arm === 'both' ) {
+
+      this.targets.armTarget = this.targets.torso;
+      this.currentTarget = this.targets.armTarget;
+
+    }
+
+  }
 
 }
 

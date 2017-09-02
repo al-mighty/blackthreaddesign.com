@@ -8,6 +8,8 @@ export default class AttributeControls {
 
     this.attributes = HTMLControl.attributes;
 
+    this.dominantHand = 'right';
+
     this.init();
 
   }
@@ -71,7 +73,7 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
-      cameraControl.focusOnWholeBody();
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
@@ -80,6 +82,28 @@ export default class AttributeControls {
   initAthleticAbility() {
 
     this.attributes[ 'athletic-ability' ].addEventListener( 'input', throttle( ( e ) => {
+
+      e.preventDefault();
+
+      const animName = 'idle';
+
+      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
+
+      const timeScale = Math.log10( value * 2 );
+
+      this.animationControls.setTimeScale( timeScale, animName );
+
+      this.animationControls.playAction( animName );
+
+      cameraControl.focusTorso();
+
+    }, 100 ), false );
+
+  }
+
+  initFootQuickness() {
+
+    this.attributes[ 'foot-quickness' ].addEventListener( 'input', throttle( ( e ) => {
 
       e.preventDefault();
 
@@ -93,25 +117,7 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
-    }, 100 ), false );
-
-  }
-
-  initFootQuickness() {
-
-    this.attributes[ 'foot-quickness' ].addEventListener( 'input', throttle( ( e ) => {
-
-      e.preventDefault();
-
-      const animName = 'catch_3';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -119,18 +125,29 @@ export default class AttributeControls {
 
   initDominantHand() {
 
+    const animName = 'idle';
+
     this.attributes[ 'dominant-hand' ].left.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
 
-      console.log( e );
+      this.animationControls.setTimeScale( 1, animName );
+      this.animationControls.playAction( animName );
+
+      cameraControl.setArmTarget( 'left' );
+      cameraControl.focusArms();
 
     }, 100 ), false );
 
     this.attributes[ 'dominant-hand' ].right.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
-      console.log( e );
+
+      this.animationControls.setTimeScale( 1, animName );
+      this.animationControls.playAction( animName );
+
+      cameraControl.setArmTarget( 'right' );
+      cameraControl.focusArms();
 
     }, 100 ), false );
 
@@ -138,7 +155,11 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      console.log( e );
+      this.animationControls.setTimeScale( 1, animName );
+      this.animationControls.playAction( animName );
+
+      cameraControl.setArmTarget( 'both' );
+      cameraControl.focusArms();
 
     }, 100 ), false );
 
@@ -160,6 +181,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDynamic();
+
     }, 100 ), false );
 
   }
@@ -179,6 +202,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -200,6 +225,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDynamic();
+
     }, 100 ), false );
 
   }
@@ -220,7 +247,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
-      cameraControl.focusOnUpperBody();
+      cameraControl.focusArms();
+
 
     }, 100 ), false );
 
@@ -232,7 +260,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'on_front_to_stand';
+      const animName = 'idle';
 
       const value = ( e.target.value === 1 ) ? 2 : e.target.value;
 
@@ -241,6 +269,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusHead();
 
     }, 100 ), false );
 
@@ -262,6 +292,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDynamic();
+
     }, 100 ), false );
 
   }
@@ -272,7 +304,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      const animName = 'on_front_to_stand';
 
       const value = ( e.target.value === 1 ) ? 2 : e.target.value;
 
@@ -281,6 +313,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -302,6 +336,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -321,6 +357,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
@@ -342,6 +380,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -361,6 +401,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
@@ -382,6 +424,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -401,6 +445,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
@@ -422,6 +468,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -442,6 +490,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -459,6 +509,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, 'run' );
 
       this.animationControls.playAction( 'run' );
+
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -480,6 +532,8 @@ export default class AttributeControls {
 
       this.animationControls.playAction( animName );
 
+      cameraControl.focusDefault();
+
     }, 100 ), false );
 
   }
@@ -499,6 +553,8 @@ export default class AttributeControls {
       this.animationControls.setTimeScale( timeScale, animName );
 
       this.animationControls.playAction( animName );
+
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
