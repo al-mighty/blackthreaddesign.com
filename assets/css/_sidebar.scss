@@ -12,18 +12,15 @@
   @include clearfix();
   margin-bottom: 1em;
 
-  @include breakpoint($large) {
-    // width: span(2 of 12);
+  @include breakpoint($x-large) {
+    width: 10%;
     opacity: 0.75;
+    padding-right: 0;
     transition: opacity 0.2s ease-in-out;
 
     &:hover {
       opacity: 1;
     }
-  }
-
-  @include breakpoint($x-large) {
-    padding-right: 0;
   }
 
   h2, h3, h4, h5, h6 {
@@ -49,7 +46,7 @@
     position: relative;
     float: right;
     width: $right-sidebar-width-narrow;
-    // margin-left: span(0.5 of 12);
+    margin-left: 7%;
     z-index: 10;
   }
 

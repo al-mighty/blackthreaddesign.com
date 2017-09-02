@@ -94,9 +94,10 @@ exclude:
   - structure
   - build.js
   - minify-builds.js
+  - compile_scss.js
   - "*.BAK"
   - "*.txt"
-  # - "*.scss"
+  - "*.scss"
   - node_modules
   - package.json
   - Rakefile
@@ -136,6 +137,7 @@ timezone: Europe/Dublin # https://en.wikipedia.org/wiki/List_of_tz_database_time
 
 # Plugins
 plugins:
+  # - jekyll-assets
   - jekyll-sitemap
   - jekyll-gist
   - jemoji
@@ -162,6 +164,7 @@ compress_html:
 # assets:
 #   digest: false
 #   autoprefixer:
+#     only_production: true
 #     browsers:
 #       - "last 3 versions"
 #       - "IE > 9"
@@ -169,11 +172,11 @@ compress_html:
 #   - assets/css
 
 
-autoprefixer:
-  only_production: true
-  browsers:
-    - "last 3 versions"
-    - "IE > 9"
+# autoprefixer:
+#   only_production: true
+#   browsers:
+#     - "last 3 versions"
+#     - "IE > 9"
 
 collections:
   tutorials:
@@ -189,8 +192,8 @@ collections:
     output: true
     permalink: /:collection/:title
 
-sass:
-    sass_dir: assets/css
+# sass:
+#     sass_dir: assets/css
 
 # Defaults
 defaults:

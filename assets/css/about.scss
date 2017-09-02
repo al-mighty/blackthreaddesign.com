@@ -1,13 +1,12 @@
----
----
 @import 'default';
 
 // @import "colors";
 
 #about-me {
-	position: relative;
-  float: right;
+  position: relative;
+  float: left;
   width: 50%;
+  margin-left: 5%;
 }
 
 #profile-img {
@@ -15,7 +14,6 @@
   width: 40vmin;
   height: 40vmin;
 }
-
 
 .flip-container {
   perspective:1200;

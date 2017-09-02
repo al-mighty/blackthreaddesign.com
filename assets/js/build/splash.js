@@ -56449,7 +56449,6 @@ var SplashCanvas = function () {
 
     DefaultLoadingManager.onLoad = function () {
 
-      console.log('Loading Complete!');
       loadingOverlay.fadeOut();
       self.app.play();
     };
@@ -56617,6 +56616,7 @@ var SplashCanvas = function () {
   return SplashCanvas;
 }();
 
+// this needs to be called before any scripts that use hammer.js, as it sets up the global Hammer
 initNav();
 
 var splashHero = new SplashCanvas(false);

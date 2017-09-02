@@ -16,6 +16,8 @@ ruby RUBY_VERSION
 # Happy Jekylling!
 gem "jekyll", "3.5.2"
 
+# gem "autoprefixer-rails"
+
 # required by jekyll
 gem "font-awesome-sass"
 
@@ -28,10 +30,11 @@ gem "tzinfo-data"
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do
+  gem 'jekyll-assets'
 	gem "jekyll-seo-tag"
 	gem "jekyll-sitemap"
 	gem "jekyll-livereload"
 	gem "jekyll-gist"
   gem "jemoji"
-  gem 'jekyll-autoprefixer'
+  # gem 'jekyll-autoprefixer'
 end

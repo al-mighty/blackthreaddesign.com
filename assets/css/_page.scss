@@ -25,9 +25,9 @@
 .page {
   @include breakpoint($x-large) {
     float: right;
-    // width: span(10 of 12);
-    // padding-left: gutter(0.5 of 12);
-    // padding-right: gutter(2 of 12);
+    width: 83%;
+    padding-left: 7%;
+    padding-right: 10%;
   }
 
   .page__inner-wrap {
@@ -435,11 +435,11 @@
   @include clearfix();
   float: left;
 
-  @include breakpoint($large) {
+  @include breakpoint($x-large) {
     float: right;
-    // width: span(10 of 12);
-    // padding-left: gutter(0.5 of 12);
-    // padding-right: gutter(2 of 12);
+    width: 83%;
+    padding-left: 7%;
+    padding-right: 10%;
   }
 
   a {

@@ -100,7 +100,6 @@ export default class SplashCanvas {
 
     THREE.DefaultLoadingManager.onLoad = () => {
 
-      console.log( 'Loading Complete!');
       loadingOverlay.fadeOut();
       self.app.play();
 

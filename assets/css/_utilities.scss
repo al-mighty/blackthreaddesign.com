@@ -158,8 +158,8 @@ body:hover .visually-hidden button {
 /* file page content container */
 
 .full {
-  @include breakpoint($large){
-    // margin-right: -1 * span(2.5 of 12) !important;
+  @include breakpoint($x-large){
+    margin-right: 10% !important;
   }
 }
 

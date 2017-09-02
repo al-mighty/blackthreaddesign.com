@@ -6,7 +6,7 @@ import initNav from 'utilities/init/initNav.js';
 
 import SplashHero from 'pages/splash/SplashCanvas.js';
 
-// initLoadingOverlay();
 initNav();
 
 const splashHero = new SplashHero( false );
+
