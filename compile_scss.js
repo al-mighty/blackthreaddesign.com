@@ -6,8 +6,8 @@ const sass = require( 'node-sass' );
 const autoprefixer = require( 'autoprefixer' );
 const postcss = require( 'postcss' );
 
-const stylesheetSourceLocation = 'assets/css/';
-const stylesheetLocation = '_site/assets/css/';
+const stylesheetSourceLocation = 'assets/scss/';
+const stylesheetLocation = 'assets/css/';
 
 let inputFile;
 // let outputFile;

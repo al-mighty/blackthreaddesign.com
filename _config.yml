@@ -82,6 +82,7 @@ exclude:
   - .jekyll-assets-cache
   - .sass-cache
   - assets/js/src
+  - assets/scss
   - Capfile
   - CHANGELOG
   - config
@@ -105,7 +106,7 @@ exclude:
   - tmp
 keep_files:
   - .git
-  - assets/css
+  # - assets/css
 encoding: "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 
