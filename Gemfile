@@ -20,7 +20,6 @@ gem "jekyll", "3.5.2"
 gem 'puma'
 gem 'rack-jekyll'
 gem 'rake'
-gem 'yaml'
 
 gem 'kramdown'
 # gem "autoprefixer-rails"
