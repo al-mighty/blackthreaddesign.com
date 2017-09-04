@@ -104,8 +104,6 @@ const compileSCSS = ( file ) => {
   inputFile = stylesheetSourceLocation + file;
   const outputFile = file.slice( 0, -5 ) + '.css';
 
-  console.log( ' file ', outputFile )
-
   sass.render( {
     file: inputFile,
     outputStyle: 'compressed',
