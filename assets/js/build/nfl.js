@@ -59322,6 +59322,10 @@ var Loaders = function Loaders() {
   };
 };
 
+// import throttle from 'lodash.throttle';
+// import AttributeControls from './AttributeControls.js';
+// import animationControls from './AnimationControls.js';
+
 var CameraControl = function () {
     function CameraControl() {
         classCallCheck(this, CameraControl);
@@ -59419,7 +59423,7 @@ var CameraControl = function () {
         var mat = new MeshBasicMaterial({ color: 0xff0000 });
         this.targets.trackPlayer = new Mesh(geo, mat);
         this.targets.trackPlayer.position.copy(this.targets.default.position);
-        this.player.add(this.targets.trackPlayer);
+        // this.player.add( this.targets.trackPlayer );
 
         this.currentTarget = this.targets.default;
 

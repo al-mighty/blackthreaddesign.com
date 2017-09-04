@@ -158,7 +158,7 @@ class CameraControl {
     const mat = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
     this.targets.trackPlayer = new THREE.Mesh( geo, mat );
     this.targets.trackPlayer.position.copy( this.targets.default.position );
-    this.player.add( this.targets.trackPlayer );
+    // this.player.add( this.targets.trackPlayer );
 
     this.currentTarget = this.targets.default;
 
