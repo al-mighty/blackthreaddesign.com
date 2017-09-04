@@ -5,7 +5,7 @@
 .masthead {
   position: relative;
   border-bottom: 1px solid $border-color;
-  animation: intro 0.3s both;
+  animation: $intro-transition;
   animation-delay: 0.15s;
   z-index: 20;
 
@@ -15,6 +15,9 @@
     // margin-right: auto;
     // padding: 1em;
     // max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-family: $sans-serif-narrow;
 
     padding: 1em 1em 1em;
     font-family: $sans-serif;
@@ -26,13 +29,31 @@
     nav {
       z-index: 10;
     }
+
+    a {
+      text-decoration: none;
+    }
   }
 }
 
+.site-title {
+  display: flex;
+  padding: 0.5rem 0;
+  align-self: stretch;
+  align-items: center;
+  font-weight: bold;
+  z-index: 20;
+}
+
 .masthead__menu {
+  // float: left;
+  // margin-left: 0;
+  // margin-right: 0;
+  // width: 100%;
+  // clear: both;
   position: relative;
   min-width: 250px;
-  background: transparent; //$background-color;
+  background: transparent;
 
   a {
     display: block;
@@ -44,6 +65,14 @@
       color: $masthead-link-color-hover;
     }
   }
+
+  // .site-nav {
+  //   margin-left: 0;
+
+  //   @include breakpoint($small) {
+  //     float: right;
+  //   }
+  // }
 
   ul {
     margin: 0;
@@ -59,22 +88,17 @@
   white-space: nowrap;
 
   &--lg {
+    // padding-right: 2em;
     font-weight: 700;
   }
 }
 
-.active {
-  a {
-    color: mix( $masthead-link-color, $masthead-link-color-hover, 50%) !important;
-    border-bottom: 1px solid mix( $masthead-link-color, $masthead-link-color-hover, 50%);
-  }
-}
 
 /*
    Greedy navigation
    ========================================================================== */
 
-.toggle-links {
+  .toggle-links {
   position: absolute;
   height: 100%;
   right: 0;
@@ -181,5 +205,3 @@
     }
   }
 }
-
-

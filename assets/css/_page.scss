@@ -3,31 +3,32 @@
    ========================================================================== */
 
 #main {
-
   @include clearfix;
   margin-left: auto;
   margin-top: 2em;
   margin-right: auto;
   padding-left: 1em;
   padding-right: 1em;
+  animation: $intro-transition;
   max-width: 100%;
-  -webkit-animation: intro 0.3s both;
-          animation: intro 0.3s both;
-  -webkit-animation-delay: 0.35s;
+  animation-delay: 0.35s;
 
-}
-
-.canvas-container {
-  position: relative;
-  margin: auto;
+  @include breakpoint($x-large) {
+    max-width: $x-large;
+  }
 }
 
 .page {
-  @include breakpoint($x-large) {
-    position: relative;
-    max-width: 75%;
+
+  @include breakpoint($large) {
     float: right;
-    margin-left: auto;
+    width: calc(100% - #{$right-sidebar-width-narrow});
+    // padding-right: $right-sidebar-width-narrow;
+  }
+
+  @include breakpoint($x-large) {
+    width: calc(100% - #{$right-sidebar-width});
+    // padding-right: $right-sidebar-width;
   }
 
   .page__inner-wrap {
@@ -40,6 +41,7 @@
     .page__content,
     .page__meta,
     .page__share {
+      position: relative;
       float: left;
       margin-left: 0;
       margin-right: 0;
@@ -53,55 +55,21 @@
   margin-top: 0;
   line-height: 1;
 
-  padding-bottom: 0.5em;
-
-  text-align: center;
-
   & + .page__meta {
     margin-top: -0.5em;
   }
 }
 
 .page__lead {
-  font-family: $sans-serif;
+  font-family: $global-font-family;
   font-size: $type-size-4;
-  text-align: center;
 }
 
 .page__content {
 
-  h1, h2 {
-    padding-bottom: 0.5em;
-  }
-
   h2 {
+    padding-bottom: 0.5em;
     border-bottom: 1px solid $border-color;
-  }
-
-  h3 {
-    font-size: 1.1em;
-  }
-
-  h4 {
-    font-size: 1em;
-  }
-
-  h1{
-    //padding-left: 1em;
-    padding-top: 2em;
-    border-bottom: 2px solid $border-color;
-
-    // &:before{
-    //   content: "\f054";
-    //   font-family: FontAwesome !important;
-    //   font-style: normal;
-    //   font-weight: normal;
-    //   text-decoration: inherit;
-    //   font-size: 0.75em;
-    //   position: absolute;
-    //   padding-top: 0.25em;
-    //   margin-left: -1em;
-    // }
   }
 
   p, li, dl {
@@ -123,7 +91,6 @@
 
   a {
     text-decoration: none;
-    font-weight: bold;
 
     &:hover {
       text-decoration: underline;
@@ -161,22 +128,22 @@
   position: relative;
   margin-bottom: 2em;
   @include clearfix;
-  animation: intro 0.3s both;
+  animation: $intro-transition;
   animation-delay: 0.25s;
 
   &--overlay {
     position: relative;
+    margin-bottom: 2em;
     padding: 18em 0;
     @include clearfix;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: bottom;
-    animation: intro 0.3s both;
+    background-position: center;
+    animation: $intro-transition;
     animation-delay: 0.25s;
-		height: 100%;
 
     a {
-      color: $text-color;
+      color: #fff;
     }
 
     .wrapper {
@@ -192,16 +159,24 @@
     .page__meta,
     .page__lead,
     .btn {
-      color: $text-color;
+      color: #fff;
       text-shadow: 1px 1px 4px rgba(#000, 0.5);
     }
 
+    .page__lead {
+      max-width: $medium;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      font-size: $type-size-3;
+    }
 
     .page__title {
-      font-size: 3em;
+      font-size: $type-size-2;
+      text-align: center;
 
       @include breakpoint($small) {
-        font-size: 4em;
+        font-size: $type-size-1;
       }
     }
   }
@@ -219,21 +194,21 @@
   right: 0;
   margin: 0 auto;
   padding: 2px 5px;
-  color: $text-color;
-  font-family: $serif;
+  color: #fff;
+  font-family: $caption-font-family;
   font-size: $type-size-7;
   background: #000;
   text-align: right;
   z-index: 5;
   opacity: 0.5;
-  border-radius: $border-radius 0 $border-radius 0;
+  border-radius: $border-radius 0 0 0;
 
   @include breakpoint($large) {
     padding: 5px 10px;
   }
 
   a {
-    color: $text-color;
+    color: #fff;
     text-decoration: none;
   }
 }
@@ -348,6 +323,7 @@
 .page__comments-form {
   padding: 1em;
   background: $lighter-gray;
+  -webkit-transition: $global-transition;
   transition: $global-transition;
 
   &.disabled {
@@ -429,17 +405,19 @@
    ========================================================================== */
 
 .page__related {
+  @include clearfix();
+  float: left;
   margin-top: 2em;
   padding-top: 1em;
   border-top: 1px solid $border-color;
-  @include clearfix();
-  float: left;
+
+  @include breakpoint($large) {
+    float: right;
+    width: calc(100% - #{$right-sidebar-width-narrow});
+  }
 
   @include breakpoint($x-large) {
-    float: right;
-    width: 83%;
-    padding-left: 7%;
-    padding-right: 10%;
+    width: calc(100% - #{$right-sidebar-width});
   }
 
   a {

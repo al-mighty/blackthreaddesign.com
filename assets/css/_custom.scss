@@ -1,30 +1,3 @@
-.centred {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.circle {
-  border-radius: 50%;
-}
-
-.fullscreen{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.text-center{
-  text-align: center;
-}
-
-.underline{
-  border-bottom: 1px solid $border-color;
-}
-
 #breakpoint {
   position: fixed;
   top: 0;
@@ -33,28 +6,28 @@
 }
 
 #breakpoint:before {
-  @include breakpoint($x-small) { 
-    content: "BP: X-Small"; 
+  @include breakpoint($x-small) {
+    content: "BP: X-Small";
   }
 
-  @include breakpoint($small) { 
-    content: "BP: Small"; 
+  @include breakpoint($small) {
+    content: "BP: Small";
   }
 
-  @include breakpoint($medium) { 
-    content: "BP: Medium"; 
+  @include breakpoint($medium) {
+    content: "BP: Medium";
   }
 
-  @include breakpoint($medium-wide) { 
-    content: "BP: Medium-Wide"; 
+  @include breakpoint($medium-wide) {
+    content: "BP: Medium-Wide";
   }
 
-  @include breakpoint($large) { 
-    content: "BP: Large"; 
+  @include breakpoint($large) {
+    content: "BP: Large";
   }
 
-  @include breakpoint($x-large) { 
-    content: "BP: X-Large"; 
+  @include breakpoint($x-large) {
+    content: "BP: X-Large";
   }
-   
+
 }

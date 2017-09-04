@@ -1,8 +1,8 @@
 Write a better about page
-Sizing on mid width screens needs fixing
 Add better animation to landing page (face? )
 Finish first section of tutorials
 Still a problem with non www links: https://blackthreaddesign.com/
 Check cache setup
-Still occasionally a problem with footer - switch to non-js placement?
 redesign /work
+Don't include lightbox by default
+go over all styles

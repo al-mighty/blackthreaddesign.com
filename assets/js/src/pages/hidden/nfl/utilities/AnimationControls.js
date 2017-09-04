@@ -73,7 +73,7 @@ class AnimationControls {
 
     const action = this.actions[ name ];
 
-    if( action === undefined ) {
+    if ( action === undefined ) {
 
       console.warn( 'Setting TimeScale: Action \'' + name + '\' was not found' );
       return;

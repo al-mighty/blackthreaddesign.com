@@ -6,14 +6,40 @@
    Visibility
    ========================================================================== */
 
-/* www.456bereastreet.com/archive/200711/screen_readers_sometimes_ignore_displaynone/ */
-.hide {
-	display: none !important;
+/* http://www.456bereastreet.com/archive/200711/screen_readers_sometimes_ignore_displaynone/ */
+
+.centred {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.fullscreen{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.underline{
+  border-bottom: 1px solid $border-color;
 }
 
 .hidden {
   display: none;
   visibility: hidden;
+}
+
+.hide {
+
+  display: none !important;
+
 }
 
 /* for preloading images */
@@ -25,8 +51,6 @@
 .transparent {
   opacity: 0;
 }
-
-
 
 /* https://developer.yahoo.com/blogs/ydn/clip-hidden-content-better-accessibility-53456.html */
 
@@ -129,49 +153,46 @@ body:hover .visually-hidden button {
    Images
    ========================================================================== */
 
-/* image align */
+/* image align left */
 
-.align-left, .align-right, .align-center{
+.align-left {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 0 !important;
-  padding: 1em;
-}
 
-.align-left {
   @include breakpoint($small) {
     float: left;
     margin-right: 1em;
   }
 }
 
-/* image align */
+/* image align right */
 
 .align-right {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
   @include breakpoint($small) {
     float: right;
     margin-left: 1em;
   }
 }
 
+/* image align center */
+
+.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* file page content container */
 
 .full {
-  @include breakpoint($x-large){
-    margin-right: 10% !important;
+  @include breakpoint($large){
+    margin-right: -1 * span(2.5 of 12) !important;
   }
-}
-
-/* fill parent container */
-.fill {
-  position: absolute;
-	top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-	width: 100%;
-	height: 100%;
 }
 
 /*
@@ -201,6 +222,11 @@ body:hover .visually-hidden button {
     color: $behance-color;
   }
 
+  .fa-bitbucket,
+  .fa-bitbucket-square {
+    color: $bitbucket-color;
+  }
+
   .fa-dribbble {
     color: $dribbble-color;
   }
@@ -217,12 +243,6 @@ body:hover .visually-hidden button {
   .fa-foursquare {
     color: $foursquare-color;
   }
-
-	.fa-reddit,
-	.fa-reddit-square {
-		color: $reddit-color;
-	}
-
 
   .fa-github,
   .fa-github-alt,
@@ -307,11 +327,11 @@ body:hover .visually-hidden button {
 
 .navicon {
   position: relative;
-  display: block;
   width: $navicon-width;
   height: $navicon-height;
-  background: $text-color;
-  margin: 1em;
+  background: #fff;
+  margin: auto;
+  -webkit-transition: 0.3s;
   transition: 0.3s;
 
   &:before,
@@ -319,10 +339,10 @@ body:hover .visually-hidden button {
     content: "";
     position: absolute;
     left: 0;
-    background: $text-color;
     width: $navicon-width;
     height: $navicon-height;
     background: #fff;
+    -webkit-transition: 0.3s;
     transition: 0.3s;
   }
 
@@ -341,17 +361,21 @@ body:hover .visually-hidden button {
 
   /* overlay the lines by setting both their top values to 0*/
   &:before, &:after{
-    transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+        -ms-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
     top: 0;
     width: $navicon-width;
   }
 
   /* rotate the lines to form the x shape*/
   &:before{
-    transform: rotate3d(0,0,1,45deg);
+    -webkit-transform: rotate3d(0,0,1,45deg);
+            transform: rotate3d(0,0,1,45deg);
   }
   &:after{
-    transform: rotate3d(0,0,1,-45deg);
+    -webkit-transform: rotate3d(0,0,1,-45deg);
+            transform: rotate3d(0,0,1,-45deg);
   }
 }
 
@@ -363,6 +387,7 @@ body:hover .visually-hidden button {
 .sticky {
   @include breakpoint($large) {
     @include clearfix();
+    position: -webkit-sticky;
     position: sticky;
     top: 2em;
 
@@ -494,7 +519,7 @@ a.reversefootnote {
 
 /*
    Responsive Video Embed
-      ========================================================================== */
+   ========================================================================== */
 
 .responsive-video-container {
   position: relative;
@@ -512,5 +537,13 @@ a.reversefootnote {
     left: 0;
     width: 100%;
     height: 100%;
+  }
+}
+
+// full screen video fixes
+:-webkit-full-screen-ancestor {
+   .masthead,
+   .page__footer {
+    position: static;
   }
 }
