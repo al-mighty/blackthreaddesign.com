@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby RUBY_VERSION
+ruby '2.2.1'
 
 #run this before deployment if push fails
 # can happen if gemfile.lock was deleted as
@@ -20,6 +20,7 @@ gem "jekyll", "3.5.2"
 gem 'puma'
 gem 'rack-jekyll'
 gem 'rake'
+gem 'yaml'
 
 gem 'kramdown'
 # gem "autoprefixer-rails"
