@@ -1,20 +1,23 @@
 import throttle from 'lodash.throttle';
 import HTMLControl from './HTMLControl.js';
 import cameraControl from './cameraControl.js';
+import canvas from '../Canvas.js';
 
-export default class AttributeControls {
+class AttributeControls {
 
   constructor() {
 
     this.attributes = HTMLControl.attributes;
 
     this.dominantHand = 'right';
-
-    this.init();
+    this.passAnim = 'pass_right_handed';
+    this.victoryAnim = 'victory';
 
   }
 
-  init() {
+  init( player ) {
+
+    this.player = player;
 
     this.initSize();
     this.initAthleticAbility();
@@ -59,20 +62,49 @@ export default class AttributeControls {
 
   initSize() {
 
+    let frameId = null;
+    let scale = 1;
+    const anim = 'offensive_idle';
+
+    const updateScale = () => {
+
+      const currentScale = this.player.scale.x;
+
+      const diff = scale - currentScale;
+
+      const change = diff * 0.025;
+
+      const newScale = currentScale + change;
+
+      if ( Math.abs( diff ) > 0.005 ) {
+
+        this.player.scale.set( newScale, newScale, newScale );
+
+        frameId = requestAnimationFrame( updateScale );
+
+      } else {
+
+        this.player.scale.set( scale, scale, scale );
+
+        cancelAnimationFrame( frameId );
+
+      }
+
+    };
+
     this.attributes.size.addEventListener( 'input', throttle( ( e ) => {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      const x = e.target.value;
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
+      // curve fitted to give value between 0.9 and 1.1, with x = 5 returning 1
+      scale = 0.872222 + ( 0.0283333 * x ) + ( 0.000555556 * ( x * x ) );
 
-      const timeScale = Math.log10( value * 2 );
+      cancelAnimationFrame( frameId );
+      updateScale();
 
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
+      this.animationControls.playAction( anim );
       cameraControl.focusDefault();
 
     }, 100 ), false );
@@ -85,37 +117,8 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusTorso();
-
-    }, 100 ), false );
-
-  }
-
-  initFootQuickness() {
-
-    this.attributes[ 'foot-quickness' ].addEventListener( 'input', throttle( ( e ) => {
-
-      e.preventDefault();
-
-      const animName = 'catch_2';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      if ( e.target.value < 5 ) this.animationControls.playAction( 'catch_1' );
+      else this.animationControls.playAction( 'catch_3' );
 
       cameraControl.focusDynamic();
 
@@ -123,16 +126,42 @@ export default class AttributeControls {
 
   }
 
+  initFootQuickness() {
+
+    const anim = 'hike';
+
+    this.attributes[ 'foot-quickness' ].addEventListener( 'input', throttle( ( e ) => {
+
+      e.preventDefault();
+
+
+      const x = ( e.target.value === 1 ) ? 2 : e.target.value;
+
+      // curve fit to give range ( 0.85, 1.2 )
+      const timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * ( x * x );
+
+      this.animationControls.setTimeScale( timeScale, anim );
+
+      this.animationControls.playAction( anim );
+
+      cameraControl.focusDefault();
+
+    }, 100 ), false );
+
+  }
+
   initDominantHand() {
 
-    const animName = 'idle';
+    const anim = 'offensive_idle';
 
     this.attributes[ 'dominant-hand' ].left.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
 
-      this.animationControls.setTimeScale( 1, animName );
-      this.animationControls.playAction( animName );
+      this.passAnim = 'pass_left_handed';
+
+      this.animationControls.setTimeScale( 1, anim );
+      this.animationControls.playAction( anim );
 
       cameraControl.setArmTarget( 'left' );
       cameraControl.focusArms();
@@ -143,8 +172,10 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      this.animationControls.setTimeScale( 1, animName );
-      this.animationControls.playAction( animName );
+      this.passAnim = 'pass_right_handed';
+
+      this.animationControls.setTimeScale( 1, anim );
+      this.animationControls.playAction( anim );
 
       cameraControl.setArmTarget( 'right' );
       cameraControl.focusArms();
@@ -155,8 +186,10 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      this.animationControls.setTimeScale( 1, animName );
-      this.animationControls.playAction( animName );
+      this.passAnim = 'pass_right_handed';
+
+      this.animationControls.setTimeScale( 1, anim );
+      this.animationControls.playAction( anim );
 
       cameraControl.setArmTarget( 'both' );
       cameraControl.focusArms();
@@ -171,15 +204,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'hike';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamic();
 
@@ -193,17 +218,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'pass';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDynamic();
+      cameraControl.focusDynamicUpper();
 
     }, 100 ), false );
 
@@ -215,17 +232,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'stance';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDynamic();
+      cameraControl.focusDynamicUpper();
 
     }, 100 ), false );
 
@@ -237,18 +246,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusArms();
-
+      cameraControl.focusDynamicUpper();
 
     }, 100 ), false );
 
@@ -260,17 +260,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusHead();
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -282,15 +274,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'on_back_to_stand';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamic();
 
@@ -304,15 +288,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'on_front_to_stand';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamic();
 
@@ -326,17 +302,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -348,17 +316,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusDynamic();
 
     }, 100 ), false );
 
@@ -370,17 +330,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( 'offensive_idle' );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusHead();
 
     }, 100 ), false );
 
@@ -392,17 +344,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusDynamicUpper();
 
     }, 100 ), false );
 
@@ -414,15 +358,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      this.animationControls.playAction( 'hike' );
 
       cameraControl.focusDefault();
 
@@ -436,15 +372,7 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
-
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
+      this.animationControls.playAction( 'hike' );
 
       cameraControl.focusDefault();
 
@@ -458,17 +386,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( 'run' );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusUpper();
 
     }, 100 ), false );
 
@@ -480,17 +400,9 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      this.animationControls.playAction( this.passAnim );
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
-
-      const timeScale = Math.log10( value * 2 );
-
-      this.animationControls.setTimeScale( timeScale, animName );
-
-      this.animationControls.playAction( animName );
-
-      cameraControl.focusDefault();
+      cameraControl.focusDynamicUpper();
 
     }, 100 ), false );
 
@@ -502,9 +414,10 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
+      const x = ( e.target.value === 1 ) ? 2 : e.target.value;
 
-      const timeScale = Math.log10( value * 2 );
+      // curve fit to give range ( 0.85, 1.2 )
+      const timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * ( x * x );
 
       this.animationControls.setTimeScale( timeScale, 'run' );
 
@@ -518,21 +431,22 @@ export default class AttributeControls {
 
   initClutchProduction() {
 
+
     this.attributes[ 'clutch-production' ].addEventListener( 'input', throttle( ( e ) => {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      if ( e.target.value + this.attributes[ 'ability-to-win' ].value < 7 ) {
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
+        this.animationControls.playAction( 'defeat' );
 
-      const timeScale = Math.log10( value * 2 );
+      } else {
 
-      this.animationControls.setTimeScale( timeScale, animName );
+        this.animationControls.playAction( 'victory' );
 
-      this.animationControls.playAction( animName );
+      }
 
-      cameraControl.focusDefault();
+      cameraControl.focusUpper();
 
     }, 100 ), false );
 
@@ -544,15 +458,15 @@ export default class AttributeControls {
 
       e.preventDefault();
 
-      const animName = 'idle';
+      if ( e.target.value + this.attributes[ 'clutch-production' ].value < 7 ) {
 
-      const value = ( e.target.value === 1 ) ? 2 : e.target.value;
+        this.animationControls.playAction( 'defeat' );
 
-      const timeScale = Math.log10( value * 2 );
+      } else {
 
-      this.animationControls.setTimeScale( timeScale, animName );
+        this.animationControls.playAction( 'victory' );
 
-      this.animationControls.playAction( animName );
+      }
 
       cameraControl.focusDefault();
 
@@ -561,3 +475,7 @@ export default class AttributeControls {
   }
 
 }
+
+const attributeControls = new AttributeControls();
+
+export default attributeControls;

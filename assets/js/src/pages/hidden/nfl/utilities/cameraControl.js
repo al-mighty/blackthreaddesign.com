@@ -47,7 +47,7 @@ class CameraControl {
 
     if ( this._currentTarget.position.equals( this.targets.trackPlayer.position ) ) {
 
-      console.log( this._currentTarget.position.equals( this.targets.trackPlayer.position ) )
+      // console.log( this._currentTarget.position.equals( this.targets.trackPlayer.position ) )
 
       this.dynamicTracking = true;
 
@@ -247,16 +247,16 @@ class CameraControl {
 
   focusHead() {
 
-    console.log( 'Focussing: head' );
+    // console.log( 'Focussing: head' );
 
     this.currentTarget = this.targets.head;
     this.zoomLevel = 3;
 
   }
 
-  focusTorso() {
+  focusUpper() {
 
-    console.log( 'Focussing: torso' );
+    // console.log( 'Focussing: torso' );
 
     this.currentTarget = this.targets.torso;
     this.zoomLevel = 2;
@@ -267,7 +267,7 @@ class CameraControl {
 
   focusArms() {
 
-    console.log( 'Focussing: arms' );
+    // console.log( 'Focussing: arms' );
 
     this.currentTarget = this.targets.armTarget;
     this.zoomLevel = 2;
@@ -277,7 +277,7 @@ class CameraControl {
 
   focusDefault() {
 
-    console.log( 'Focussing: default' );
+    // console.log( 'Focussing: default' );
 
     this.currentTarget = this.targets.default;
     this.zoomLevel = 1;
@@ -286,11 +286,25 @@ class CameraControl {
 
   focusDynamic() {
 
-    console.log( 'Focussing: dynamic' );
+    //TEMP: not yet implemented!!
+    this.focusDefault();
 
-    this.currentTarget = this.targets.trackPlayer;
-    this.zoomLevel = 1;
+    // console.log( 'Focussing: dynamic' );
 
+    // this.currentTarget = this.targets.trackPlayer;
+    // this.zoomLevel = 1;
+
+  }
+
+  focusDynamicUpper() {
+
+    //TEMP: not yet implemented!!
+    this.focusDefault();
+
+    // console.log( 'Focussing: dynamic' );
+
+    // this.currentTarget = this.targets.trackPlayer;
+    // this.zoomLevel = 1;
 
   }
 

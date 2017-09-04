@@ -10,7 +10,7 @@ const stylesheetSourceLocation = 'assets/css/';
 const stylesheetLocation = '_site/assets/css/';
 
 let inputFile;
-let outputFile;
+// let outputFile;
 
 if ( !fs.existsSync( stylesheetLocation ) ) {
   fs.mkdirSync( stylesheetLocation );
@@ -22,7 +22,7 @@ const writeFile = ( fileName, data ) => {
 
 };
 
-const un = ( htmlFilesArray, css ) => {
+const un = ( htmlFilesArray, css, outputFile ) => {
 
   uncss( htmlFilesArray, {
 
@@ -42,19 +42,24 @@ const un = ( htmlFilesArray, css ) => {
   } );
 };
 
-const cleanCSS = ( css ) => {
+const cleanCSS = ( css, outputFile ) => {
 
-  const pages = outputFile.slice( 0, -4 );
+  // for now skipping uncss
+  console.log( 'Writing file: ' + outputFile );
+  writeFile( outputFile, css );
 
-  // this will have to be done on a per page basis and test
-  if ( pages === 'splash' ) {
 
-    un( ['_site/index.html'], css );
+  // const pages = outputFile.slice( 0, -4 );
 
-  } else {
+  // // this will have to be done on a per page basis and test
+  // if ( pages === 'splash' ) {
 
-    console.log( 'Writing file: ' + outputFile );
-    writeFile( outputFile, css );
+  //   un( ['_site/index.html'], css );
+
+  // } else {
+
+  //   console.log( 'Writing file: ' + outputFile );
+  //   writeFile( outputFile, css );
 
     // other pages not tested yet, don't reduce css
 
@@ -70,12 +75,12 @@ const cleanCSS = ( css ) => {
     //   // un( files, css );
 
     // } );
-  }
+  // }
 
 
 };
 
-const prefixCSS = ( css ) => {
+const prefixCSS = ( css, outputFile ) => {
 
   postcss( [ autoprefixer ] ).process( css ).then( ( object ) => {
     object.warnings().forEach( ( warn ) => {
@@ -84,12 +89,11 @@ const prefixCSS = ( css ) => {
 
     } );
 
-    cleanCSS( object.css );
+    cleanCSS( object.css, outputFile );
 
   } );
 
 };
-
 
 const compileSCSS = ( file ) => {
 
@@ -98,7 +102,9 @@ const compileSCSS = ( file ) => {
   if ( file.slice( -4 ) !== 'scss' ) return;
 
   inputFile = stylesheetSourceLocation + file;
-  outputFile = file.slice( 0, -5 ) + '.css';
+  const outputFile = file.slice( 0, -5 ) + '.css';
+
+  console.log( ' file ', outputFile )
 
   sass.render( {
     file: inputFile,

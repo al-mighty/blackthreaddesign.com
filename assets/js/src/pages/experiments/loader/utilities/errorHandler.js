@@ -10,12 +10,12 @@ const errorHandler = ( msg ) => {
   if ( cachedMessages[ msg ] === true ) return;
   cachedMessages[ msg ] = true;
 
-  // if ( !( msg instanceof String ) ) {
+  if ( !( msg instanceof String ) ) {
 
-  //   console.log( msg );
-  //   return;
+    console.log( msg );
+    return;
 
-  // }
+  }
 
   // bug in three.js or WebGL returns this error on Chrome
   if ( msg.indexOf( 'gl.getProgramInfoLog()' ) !== -1 ) return;

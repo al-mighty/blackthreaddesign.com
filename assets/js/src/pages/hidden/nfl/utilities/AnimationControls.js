@@ -62,7 +62,7 @@ class AnimationControls {
 
     if ( !actionFound ) {
 
-      console.warn( 'Action ' + name + ' was not found.' );
+      console.warn( 'Action \'' + name + '\' was not found.' );
       this.isPaused = true;
 
     }
@@ -71,9 +71,18 @@ class AnimationControls {
 
   setTimeScale( timeScale, name ) {
 
-    if ( this.actions[ name ] !== undefined ) this.actions[ name ].timeScale = timeScale;
+    const action = this.actions[ name ];
 
-    else console.warn( 'Setting TimeScale: Action ' + name + ' was not found' );
+    if( action === undefined ) {
+
+      console.warn( 'Setting TimeScale: Action \'' + name + '\' was not found' );
+      return;
+
+    }
+
+    const currentTimeScale = action.getEffectiveTimeScale();
+
+    action.warp( currentTimeScale, timeScale, 0.25 );
 
   }
 

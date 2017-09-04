@@ -107,6 +107,7 @@ export default class SplashCanvas {
 
   }
 
+
   addText() {
 
     const self = this;

@@ -53806,14 +53806,24 @@ var AnimationControls = function () {
 
     if (!actionFound) {
 
-      console.warn('Action ' + name + ' was not found.');
+      console.warn('Action \'' + name + '\' was not found.');
       this.isPaused = true;
     }
   };
 
   AnimationControls.prototype.setTimeScale = function setTimeScale(timeScale, name) {
 
-    if (this.actions[name] !== undefined) this.actions[name].timeScale = timeScale;else console.warn('Setting TimeScale: Action ' + name + ' was not found');
+    var action = this.actions[name];
+
+    if (action === undefined) {
+
+      console.warn('Setting TimeScale: Action \'' + name + '\' was not found');
+      return;
+    }
+
+    var currentTimeScale = action.getEffectiveTimeScale();
+
+    action.warp(currentTimeScale, timeScale, 0.25);
   };
 
   AnimationControls.prototype.initAnimation = function initAnimation(animationClip, optionalRoot) {
@@ -59491,15 +59501,15 @@ var CameraControl = function () {
 
     CameraControl.prototype.focusHead = function focusHead() {
 
-        console.log('Focussing: head');
+        // console.log( 'Focussing: head' );
 
         this.currentTarget = this.targets.head;
         this.zoomLevel = 3;
     };
 
-    CameraControl.prototype.focusTorso = function focusTorso() {
+    CameraControl.prototype.focusUpper = function focusUpper() {
 
-        console.log('Focussing: torso');
+        // console.log( 'Focussing: torso' );
 
         this.currentTarget = this.targets.torso;
         this.zoomLevel = 2;
@@ -59507,7 +59517,7 @@ var CameraControl = function () {
 
     CameraControl.prototype.focusArms = function focusArms() {
 
-        console.log('Focussing: arms');
+        // console.log( 'Focussing: arms' );
 
         this.currentTarget = this.targets.armTarget;
         this.zoomLevel = 2;
@@ -59515,7 +59525,7 @@ var CameraControl = function () {
 
     CameraControl.prototype.focusDefault = function focusDefault() {
 
-        console.log('Focussing: default');
+        // console.log( 'Focussing: default' );
 
         this.currentTarget = this.targets.default;
         this.zoomLevel = 1;
@@ -59523,10 +59533,24 @@ var CameraControl = function () {
 
     CameraControl.prototype.focusDynamic = function focusDynamic() {
 
-        console.log('Focussing: dynamic');
+        //TEMP: not yet implemented!!
+        this.focusDefault();
 
-        this.currentTarget = this.targets.trackPlayer;
-        this.zoomLevel = 1;
+        // console.log( 'Focussing: dynamic' );
+
+        // this.currentTarget = this.targets.trackPlayer;
+        // this.zoomLevel = 1;
+    };
+
+    CameraControl.prototype.focusDynamicUpper = function focusDynamicUpper() {
+
+        //TEMP: not yet implemented!!
+        this.focusDefault();
+
+        // console.log( 'Focussing: dynamic' );
+
+        // this.currentTarget = this.targets.trackPlayer;
+        // this.zoomLevel = 1;
     };
 
     CameraControl.prototype.setArmTarget = function setArmTarget(arm) {
@@ -59572,7 +59596,7 @@ var CameraControl = function () {
 
             if (this._currentTarget.position.equals(this.targets.trackPlayer.position)) {
 
-                console.log(this._currentTarget.position.equals(this.targets.trackPlayer.position));
+                // console.log( this._currentTarget.position.equals( this.targets.trackPlayer.position ) )
 
                 this.dynamicTracking = true;
             } else {
@@ -59610,11 +59634,13 @@ var AttributeControls = function () {
             this.attributes = HTMLControl.attributes;
 
             this.dominantHand = 'right';
-
-            this.init();
+            this.passAnim = 'pass_right_handed';
+            this.victoryAnim = 'victory';
       }
 
-      AttributeControls.prototype.init = function init() {
+      AttributeControls.prototype.init = function init(player) {
+
+            this.player = player;
 
             this.initSize();
             this.initAthleticAbility();
@@ -59659,20 +59685,46 @@ var AttributeControls = function () {
       AttributeControls.prototype.initSize = function initSize() {
             var _this = this;
 
+            var frameId = null;
+            var scale = 1;
+            var anim = 'offensive_idle';
+
+            var updateScale = function () {
+
+                  var currentScale = _this.player.scale.x;
+
+                  var diff = scale - currentScale;
+
+                  var change = diff * 0.025;
+
+                  var newScale = currentScale + change;
+
+                  if (Math.abs(diff) > 0.005) {
+
+                        _this.player.scale.set(newScale, newScale, newScale);
+
+                        frameId = requestAnimationFrame(updateScale);
+                  } else {
+
+                        _this.player.scale.set(scale, scale, scale);
+
+                        cancelAnimationFrame(frameId);
+                  }
+            };
+
             this.attributes.size.addEventListener('input', throttle(function (e) {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  var x = e.target.value;
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
+                  // curve fitted to give value between 0.9 and 1.1, with x = 5 returning 1
+                  scale = 0.872222 + 0.0283333 * x + 0.000555556 * (x * x);
 
-                  var timeScale = Math.log10(value * 2);
+                  cancelAnimationFrame(frameId);
+                  updateScale();
 
-                  _this.animationControls.setTimeScale(timeScale, animName);
-
-                  _this.animationControls.playAction(animName);
-
+                  _this.animationControls.playAction(anim);
                   cameraControl.focusDefault();
             }, 100), false);
       };
@@ -59684,52 +59736,47 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  if (e.target.value < 5) _this2.animationControls.playAction('catch_1');else _this2.animationControls.playAction('catch_3');
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this2.animationControls.setTimeScale(timeScale, animName);
-
-                  _this2.animationControls.playAction(animName);
-
-                  cameraControl.focusTorso();
+                  cameraControl.focusDynamic();
             }, 100), false);
       };
 
       AttributeControls.prototype.initFootQuickness = function initFootQuickness() {
             var _this3 = this;
 
+            var anim = 'hike';
+
             this.attributes['foot-quickness'].addEventListener('input', throttle(function (e) {
 
                   e.preventDefault();
 
-                  var animName = 'catch_2';
+                  var x = e.target.value === 1 ? 2 : e.target.value;
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
+                  // curve fit to give range ( 0.85, 1.2 )
+                  var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
 
-                  var timeScale = Math.log10(value * 2);
+                  _this3.animationControls.setTimeScale(timeScale, anim);
 
-                  _this3.animationControls.setTimeScale(timeScale, animName);
+                  _this3.animationControls.playAction(anim);
 
-                  _this3.animationControls.playAction(animName);
-
-                  cameraControl.focusDynamic();
+                  cameraControl.focusDefault();
             }, 100), false);
       };
 
       AttributeControls.prototype.initDominantHand = function initDominantHand() {
             var _this4 = this;
 
-            var animName = 'idle';
+            var anim = 'offensive_idle';
 
             this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
 
                   e.preventDefault();
 
-                  _this4.animationControls.setTimeScale(1, animName);
-                  _this4.animationControls.playAction(animName);
+                  _this4.passAnim = 'pass_left_handed';
+
+                  _this4.animationControls.setTimeScale(1, anim);
+                  _this4.animationControls.playAction(anim);
 
                   cameraControl.setArmTarget('left');
                   cameraControl.focusArms();
@@ -59739,8 +59786,10 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  _this4.animationControls.setTimeScale(1, animName);
-                  _this4.animationControls.playAction(animName);
+                  _this4.passAnim = 'pass_right_handed';
+
+                  _this4.animationControls.setTimeScale(1, anim);
+                  _this4.animationControls.playAction(anim);
 
                   cameraControl.setArmTarget('right');
                   cameraControl.focusArms();
@@ -59750,8 +59799,10 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  _this4.animationControls.setTimeScale(1, animName);
-                  _this4.animationControls.playAction(animName);
+                  _this4.passAnim = 'pass_right_handed';
+
+                  _this4.animationControls.setTimeScale(1, anim);
+                  _this4.animationControls.playAction(anim);
 
                   cameraControl.setArmTarget('both');
                   cameraControl.focusArms();
@@ -59765,15 +59816,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'hike';
-
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this5.animationControls.setTimeScale(timeScale, animName);
-
-                  _this5.animationControls.playAction(animName);
+                  _this5.animationControls.playAction(_this5.passAnim);
 
                   cameraControl.focusDynamic();
             }, 100), false);
@@ -59786,17 +59829,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'pass';
+                  _this6.animationControls.playAction(_this6.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this6.animationControls.setTimeScale(timeScale, animName);
-
-                  _this6.animationControls.playAction(animName);
-
-                  cameraControl.focusDynamic();
+                  cameraControl.focusDynamicUpper();
             }, 100), false);
       };
 
@@ -59807,17 +59842,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'stance';
+                  _this7.animationControls.playAction(_this7.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this7.animationControls.setTimeScale(timeScale, animName);
-
-                  _this7.animationControls.playAction(animName);
-
-                  cameraControl.focusDynamic();
+                  cameraControl.focusDynamicUpper();
             }, 100), false);
       };
 
@@ -59828,17 +59855,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this8.animationControls.playAction(_this8.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this8.animationControls.setTimeScale(timeScale, animName);
-
-                  _this8.animationControls.playAction(animName);
-
-                  cameraControl.focusArms();
+                  cameraControl.focusDynamicUpper();
             }, 100), false);
       };
 
@@ -59849,17 +59868,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this9.animationControls.playAction(_this9.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this9.animationControls.setTimeScale(timeScale, animName);
-
-                  _this9.animationControls.playAction(animName);
-
-                  cameraControl.focusHead();
+                  cameraControl.focusDynamic();
             }, 100), false);
       };
 
@@ -59870,15 +59881,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'on_back_to_stand';
-
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this10.animationControls.setTimeScale(timeScale, animName);
-
-                  _this10.animationControls.playAction(animName);
+                  _this10.animationControls.playAction(_this10.passAnim);
 
                   cameraControl.focusDynamic();
             }, 100), false);
@@ -59891,15 +59894,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'on_front_to_stand';
-
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this11.animationControls.setTimeScale(timeScale, animName);
-
-                  _this11.animationControls.playAction(animName);
+                  _this11.animationControls.playAction(_this11.passAnim);
 
                   cameraControl.focusDynamic();
             }, 100), false);
@@ -59912,17 +59907,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this12.animationControls.playAction(_this12.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this12.animationControls.setTimeScale(timeScale, animName);
-
-                  _this12.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusDynamic();
             }, 100), false);
       };
 
@@ -59933,17 +59920,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this13.animationControls.playAction(_this13.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this13.animationControls.setTimeScale(timeScale, animName);
-
-                  _this13.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusDynamic();
             }, 100), false);
       };
 
@@ -59954,17 +59933,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this14.animationControls.playAction('offensive_idle');
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this14.animationControls.setTimeScale(timeScale, animName);
-
-                  _this14.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusHead();
             }, 100), false);
       };
 
@@ -59975,17 +59946,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this15.animationControls.playAction(_this15.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this15.animationControls.setTimeScale(timeScale, animName);
-
-                  _this15.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusDynamicUpper();
             }, 100), false);
       };
 
@@ -59996,15 +59959,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
-
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this16.animationControls.setTimeScale(timeScale, animName);
-
-                  _this16.animationControls.playAction(animName);
+                  _this16.animationControls.playAction('hike');
 
                   cameraControl.focusDefault();
             }, 100), false);
@@ -60017,15 +59972,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
-
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this17.animationControls.setTimeScale(timeScale, animName);
-
-                  _this17.animationControls.playAction(animName);
+                  _this17.animationControls.playAction('hike');
 
                   cameraControl.focusDefault();
             }, 100), false);
@@ -60038,17 +59985,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this18.animationControls.playAction('run');
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this18.animationControls.setTimeScale(timeScale, animName);
-
-                  _this18.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusUpper();
             }, 100), false);
       };
 
@@ -60059,17 +59998,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  _this19.animationControls.playAction(_this19.passAnim);
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
-
-                  var timeScale = Math.log10(value * 2);
-
-                  _this19.animationControls.setTimeScale(timeScale, animName);
-
-                  _this19.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusDynamicUpper();
             }, 100), false);
       };
 
@@ -60080,9 +60011,10 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
+                  var x = e.target.value === 1 ? 2 : e.target.value;
 
-                  var timeScale = Math.log10(value * 2);
+                  // curve fit to give range ( 0.85, 1.2 )
+                  var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
 
                   _this20.animationControls.setTimeScale(timeScale, 'run');
 
@@ -60099,17 +60031,15 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  if (e.target.value + _this21.attributes['ability-to-win'].value < 7) {
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
+                        _this21.animationControls.playAction('defeat');
+                  } else {
 
-                  var timeScale = Math.log10(value * 2);
+                        _this21.animationControls.playAction('victory');
+                  }
 
-                  _this21.animationControls.setTimeScale(timeScale, animName);
-
-                  _this21.animationControls.playAction(animName);
-
-                  cameraControl.focusDefault();
+                  cameraControl.focusUpper();
             }, 100), false);
       };
 
@@ -60120,15 +60050,13 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  var animName = 'idle';
+                  if (e.target.value + _this22.attributes['clutch-production'].value < 7) {
 
-                  var value = e.target.value === 1 ? 2 : e.target.value;
+                        _this22.animationControls.playAction('defeat');
+                  } else {
 
-                  var timeScale = Math.log10(value * 2);
-
-                  _this22.animationControls.setTimeScale(timeScale, animName);
-
-                  _this22.animationControls.playAction(animName);
+                        _this22.animationControls.playAction('victory');
+                  }
 
                   cameraControl.focusDefault();
             }, 100), false);
@@ -60136,6 +60064,8 @@ var AttributeControls = function () {
 
       return AttributeControls;
 }();
+
+var attributeControls = new AttributeControls();
 
 var loaders = new Loaders();
 
@@ -60160,8 +60090,6 @@ var Simulation = function () {
         this.animations = {};
 
         this.loadingPromises = [];
-
-        this.attributeControls = new AttributeControls();
 
         // Put any per frame calculation here
         canvas.app.onUpdate = function () {
@@ -60205,7 +60133,7 @@ var Simulation = function () {
     Simulation.prototype.loadAnimations = function loadAnimations() {
         var _this2 = this;
 
-        var animationsNames = ['catch_1', 'catch_2', 'catch_3', 'hike', 'idle', 'on_back_to_stand', 'on_front_to_stand', 'pass', 'run', 'stance'];
+        var animationsNames = ['catch_1', 'catch_2', 'catch_3', 'hike', 'simple_idle', 'offensive_idle', 'on_back_to_stand', 'on_front_to_stand', 'pass_left_handed', 'pass_right_handed', 'run', 'stance', 'victory', 'defeat'];
 
         this.animations = [];
 
@@ -60235,11 +60163,13 @@ var Simulation = function () {
                 animationControls.initAnimation(anim);
             });
 
-            animationControls.playAction('idle');
+            animationControls.playAction('offensive_idle');
 
-            _this3.attributeControls.initAnimationControls(animationControls);
+            attributeControls.init(_this3.player);
 
-            _this3.attributeControls.enableControls();
+            attributeControls.initAnimationControls(animationControls);
+
+            attributeControls.enableControls();
 
             cameraControl.init(_this3.player);
         });

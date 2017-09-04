@@ -4,3 +4,68 @@
 - adding a couple of other animations (victory and mirroring catch at least)
 - assigning animations to the correct attributes
 - designing the final app for the writer and for the reader
+
+
+What is Drop Back?
+
+
+
+
+
+
+
+
+
+
+ DONE
+
+Size
+ - effect model size, play idle anim
+
+Dominant Hand
+ - Set pass anim to dominand hand, play idle anim but focus on dominant hand
+
+Decision Making
+ - Idle
+
+Mechanics
+Accuracy (short and long)
+Touch (short and long)
+ - Pass
+
+Delivery
+Arm strength
+ Pass, focus on upper body
+
+Read coverage
+  - Idle, focus on head
+
+Athletic Ability
+Pocket Presence
+Poise
+ - play animation 'hike'
+
+Clutch production
+Ability to win
+ - Victory
+
+Mobility
+ - Run, focus upper (speed is set from run attribute)
+
+Running ability
+ - Run, set speed from value
+
+Foot Quickness:
+  (just hike for now)
+ - Dropping Back from center /hike
+
+Throw on move
+ - Run -> pass (just pass for now)
+
+
+Anticipation / rhythym
+ - Drop back -> Pass (play with smoothness of animation based on value)
+  (just pass for now)
+
+Release quickness
+ - Drop back -> Pass (just pass for now)

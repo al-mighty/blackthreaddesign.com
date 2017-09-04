@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import canvas from './Canvas.js';
 import Loaders from './utilities/Loaders.js';
 // import HTMLControl from './utilities/HTMLControl.js';
-import AttributeControls from './utilities/AttributeControls.js';
+import attributeControls from './utilities/AttributeControls.js';
 import animationControls from './utilities/AnimationControls.js';
 import cameraControl from './utilities/cameraControl.js';
 
@@ -30,8 +30,6 @@ export default class Simulation {
     this.animations = {};
 
     this.loadingPromises = [];
-
-    this.attributeControls = new AttributeControls();
 
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
@@ -86,12 +84,16 @@ export default class Simulation {
       'catch_2',
       'catch_3',
       'hike',
-      'idle',
+      'simple_idle',
+      'offensive_idle',
       'on_back_to_stand',
       'on_front_to_stand',
-      'pass',
+      'pass_left_handed',
+      'pass_right_handed',
       'run',
       'stance',
+      'victory',
+      'defeat',
     ];
 
     this.animations = [];
@@ -126,11 +128,13 @@ export default class Simulation {
 
         } );
 
-        animationControls.playAction( 'idle' );
+        animationControls.playAction( 'offensive_idle' );
 
-        this.attributeControls.initAnimationControls( animationControls );
+        attributeControls.init( this.player );
 
-        this.attributeControls.enableControls();
+        attributeControls.initAnimationControls( animationControls );
+
+        attributeControls.enableControls();
 
         cameraControl.init( this.player );
 
