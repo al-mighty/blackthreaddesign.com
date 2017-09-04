@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby '2.2.1'
+ruby '2.2.6'
 
 #run this before deployment if push fails
 # can happen if gemfile.lock was deleted as
