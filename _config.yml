@@ -86,6 +86,7 @@ exclude:
   - Capfile
   - CHANGELOG
   - config
+  - config.ru
   - Gemfile
   - Gruntfile.js
   - gulpfile.js
@@ -101,6 +102,7 @@ exclude:
   - "*.scss"
   - node_modules
   - package.json
+  - Procfile
   - Rakefile
   - README
   - tmp

@@ -16,6 +16,9 @@ ruby RUBY_VERSION
 # Happy Jekylling!
 gem "jekyll", "3.5.2"
 
+# web server
+gem 'puma'
+
 # gem "autoprefixer-rails"
 
 # required by jekyll
