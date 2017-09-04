@@ -18,7 +18,10 @@ gem "jekyll", "3.5.2"
 
 # web server
 gem 'puma'
+gem 'rack-jekyll'
+gem 'rake'
 
+gem 'kramdown'
 # gem "autoprefixer-rails"
 
 # required by jekyll
