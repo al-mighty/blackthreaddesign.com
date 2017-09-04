@@ -1,0 +1,1877 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<script>
+  //Catch errors with Google Analytics (must run first to catch all errors)
+  addEventListener('error', window.__e=function f(e){f.q=f.q||[];f.q.push(e)});
+</script>
+
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"/>
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Getting Started - Black Thread Design</title>
+
+
+
+
+<meta name="description" content="In this tutorial we’ll go over everything you need to know to get a simple three.js app running in your browser">
+
+
+
+<meta name="keywords" content="WebGL, three.js, JavaScript, ES6">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Black Thread Design">
+<meta property="og:title" content="Getting Started">
+
+
+  <link rel="canonical" href="http://localhost:4000/tutorials/1.0-getting-started">
+  <meta property="og:url" content="http://localhost:4000/tutorials/1.0-getting-started">
+
+
+
+  <meta property="og:description" content="In this tutorial we’ll go over everything you need to know to get a simple three.js app running in your browser">
+
+
+
+  <meta name="twitter:site" content="@looeeeb">
+  <meta name="twitter:title" content="Getting Started">
+  <meta name="twitter:description" content="In this tutorial we’ll go over everything you need to know to get a simple three.js app running in your browser">
+  <meta name="twitter:url" content="http://localhost:4000/tutorials/1.0-getting-started">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+    
+  
+
+  
+
+
+
+  
+
+  
+    <meta property="fb:app_id" content="103246253626280">
+  
+
+
+
+  <meta property="og:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2017-09-04T11:14:18+01:00">
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "http://localhost:4000",
+      "logo": "http://localhost:4000/assets/images/default-teaser.jpg"
+    }
+  </script>
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALe3ty6fn59af39/l6ampm2Ojo6BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv7+/KJmZmWSIiIj0b29v/6Wlpf9qamr/n5+f9YaGhuGjo6OOv7+/BAAAAAAAAAAAAAAAAAAAAAAAAAAAu7u7OMDAwMh4eHj/srKy/5ubm/+pqan/o6Oj/5CQkP/ExMT/vr6+/5OTk9Orq6s6AAAAAAAAAAAAAAAAl5eXYLOzs/ZmZmb/SkpK/39/f/+1tbX/IyMj/3BwcP+Ojo7/cHBw/1xcXP+QkJD/i4uLv7+/vwQAAAAAra2tH5GRkbaWlpb/ZWVl/3V1df9QUFD/hISE/ygoKP+Pj4//VFRU/319ff9AQED/pKSk/3BwcP/JyckTAAAAAJqamou5ubn+y8vL/7+/v/+fn5//ZWVl/zU1Nf8lJSX/PT09/zIyMv+srKz/pKSk/5aWlv/Gxsb/tbW1139/fwKVlZXKaGho/1JSUv+MjIz/v7+//9PT0//Nzc3/VlZW/05OTv/IyMj/3d3d/6Wlpf9ISEj/ZmZm/4qKiv/U1NQSo6Oj35KSkv9GRkb/bGxs/0ZGRv+srKz/+fn5/0NDQ//8/Pz/5ubm/09PT/98fHz/QUFB/2VlZf+5ubn/ycnJIaWlpdyjo6P/wsLC/3Z2dv84ODj/TU1N/0VFRf9/f3//FRUV/2lpaf83Nzf/dHR0/3Fxcf/k5OT/m5ub/5eXl2KTk5PWdHR0/7y8vP+Ghob/PT09/yAgIP9aWlr/9/f3/8TExP9BQUH/ICAg/3BwcP+vr6//gICA/46Ojti+vr4npqamm3h4eP90dHT/Ojo6/2BgYP9TU1P/PT09/8zMzP+JiYn/Ly8v/6Kiov8uLi7/cXFx/29vb/+np6fGAAAAALi4uE+4uLjkgoKC/6mpqf+wsLD/Tk5O/4iIiP/Gxsb/paWl/1RUVP+AgID/wsLC/2JiYv+zs7P/oqKijQAAAAC2trYOvLy8KouLi/5lZWX/4eHh/0lJSf+Tk5P/o6Oj/4aGhv9GRkb/kpKS/56env9sbGz/t7e3nAAAAAAAAAAAAAAAAAAAAACSkpJ1e3t72n19fe1lZWX/ZWVl/2dnZ/9gYGD/S0tL/4SEhP+RkZH5iIiI1re3ty4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8fHySlpaW+bOzs/9qamr/tLS0/3h4eP+ioqLtoqKijQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAra2tH4yMjG2rq6ugoqKizpubm7GVlZV/paWlMLm5uQsAAAAAAAAAAAAAAAAAAAAA/r8AAPgPAADgBwAAwAMAAIADAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAACAAQAAwAMAAOAHAADwDwAA/H8=" type="image/x-icon">
+
+
+
+      
+
+
+
+
+
+  <script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+  <body class="layout--single">
+    <!--<div id="breakpoint">
+      
+    </div>-->
+    
+    <!-- [if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif] -->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+      <nav class="masthead__menu">
+        <button class="toggle-links hidden"></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Black Thread Design</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/about/">About</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/contact/">Contact</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/tutorials/">Tutorials</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/work/">Work</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/experiments/">Experiments</a></li>
+          
+        </ul>
+      </nav>
+  </div>
+</div>
+
+
+    
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar">
+    
+      
+        
+        
+        
+      
+      
+        
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc"><span class="navicon"></span></label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">0. Introduction</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.0-requirements" class="">Requirements for running a three.js scene</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.1-github-repo" class="">Three.js on Github</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.2-getting-help" class="">Getting help and reporting bugs</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.3-development-server" class="">Setting up a development server</a></li> 
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">1. First Steps</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.0-getting-started" class="active">Getting started</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.1-textures-intro" class="">Introduction to textures</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.2-orbit-controls" class="">Adding Orbit Controls</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Curves, paths, lines, shapes</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with text</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.6-object3d" class="">The Object3D base class</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Built in geometries</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with the Scene graph</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Grouping objects</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Resizing the canvas</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">2. Build Tools and Debugging</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Setting up an ES6 build environment</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Debugging your code</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">3. Abstraction</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Automating setup with THREE.App</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Using the LoadingManger to create a loading overlay</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>THREE.Time - an improved THREE.Clock</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Creating a debugging overlay</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">4. Materials</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Materials overview</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Basic, Phong and Lambert materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Standard and Physical materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Other mesh materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Multiple materials on a single mesh</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Materials for lines and curves</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">5. Textures</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Understanding Gamma and Linear spaces</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Environment mapping with cube textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with canvas textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Compressed, data and depth texture formats</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Video textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture formats</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture encoding</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">6. Lights and shadows</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The base light class, the ambient light and the hemisphere light</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The point light and light shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The directional light and shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The spot light and shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The new rectangular area light and shadow</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">7. Helpers</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Light and camera helpers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Light and camera helpers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Mesh and geometry helpers</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">8. The /examples folder</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js /examples folder</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Converting plugins to modules</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Camera control plugins</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Loaders</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Promisifying-loaders</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Other renderers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Included libraries</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">9. Working with assets</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Coordinate systems</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js native JSON format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The OBJ format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The FBX format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The GLTF format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with Blender</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with 3D Studio Max</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">10. The WebGLRenderer</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRenderer in detail</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRendererTarget</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRendererTargetCube</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The Sprite WebGLRenderer plugin</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The LensFlare WebGLRenderer plugin</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">11. Geometries and BufferGeometries</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Understanding geometries - vertices, faces and UV mapping</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Moving on to BufferGeometries</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Instanced geometries</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">12. Animation</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Animation overview</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Tweening with GSAP</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js animation system</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Using animations from other applications</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">13. Postprocessing and effects</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Setting up postprocessing</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">14. Creating custom shaders</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>ShaderMaterial and RawShaderMaterial</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">15. Tips & tricks</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Removing objects from a scene</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Reducing draw calls</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture anisotropy</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+      
+    
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Getting Started">
+    <meta itemprop="description" content="In this tutorial we’ll go over everything you need to know to get a simple three.js app running in your browser">
+    <meta itemprop="datePublished" content="September 04, 2017">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Getting Started
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <p>Now that we’ve gone over all the preamble we can get properly started! Here we’ll cover the simplest possible method of getting three.js to display something in your browser, along with a short tour of the basic elements making up a three.js app. Don’t worry if you haven’t covered setting up your own server in the <a href="/tutorials/0.3-development-server">previous tutorial</a> yet - you can just use any text editor here and save the file as <code class="highlighter-rouge">.html</code> and it will load just fine in any modern browser.</p>
+
+<p>We’ll be making this thing</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+
+<canvas id="example-canvas"></canvas>
+
+<script>
+  var canvas = document.querySelector('#example-canvas');
+
+
+  var width = canvas.parentNode.clientWidth;
+  var height = window.innerHeight;
+  
+  var renderer = new THREE.WebGLRenderer( { 
+    canvas: canvas,
+   });
+  renderer.setSize( width, height / 2 );
+
+  // create a scene
+  var scene = new THREE.Scene();
+
+  // create a PerspectiveCamera
+  var fov = 75;
+  var aspect = width / ( height / 2 );
+  var nearClippingPlane = 0.1;
+  var farClippingPlane = 1000;
+
+  var camera = new THREE.PerspectiveCamera( fov, aspect, nearClippingPlane, farClippingPlane );
+
+  camera.position.set( 0, 0, 20 );
+
+  // create a torus knot buffer geometry
+  var geometry = new THREE.TorusKnotBufferGeometry( 5, 1, 100, 16 );
+
+  // create a material and set the color to purple
+  var material = new THREE.MeshStandardMaterial( {
+      color: 0xb300b3, 
+  } );
+
+  var mesh = new THREE.Mesh( geometry, material );
+  scene.add( mesh );
+
+  // create a dark grey ambient with an intensity of 1.0 and add it to the scene
+  var ambientLight = new THREE.AmbientLight( 0x666666, 1.0 );  
+  scene.add( ambientLight );
+
+  // Create a white directional light with an intensity of 1.0
+  var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
+  directionalLight.position.set( 0, 10, 0 );
+  scene.add( directionalLight );
+
+  function animate() {
+
+    requestAnimationFrame( animate );
+
+    mesh.rotation.z += 0.01;
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.01;
+
+    renderer.render( scene, camera );
+
+  }
+
+  animate();
+
+</script>
+
+<h1 id="initial-html-file-setup">Initial HTML file setup</h1>
+
+<p>First, create a directory to hold these tutorials. I’ll assume that you have put them in <code class="highlighter-rouge">C:/tutorials</code> for simplicity. So, create <code class="highlighter-rouge">C:/tutorials/first-steps/1.0/getting-started.html</code> containing:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"</span> <span class="nt">/&gt;</span>
+    
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"content-type"</span> <span class="na">content=</span><span class="s">"text/html; charset=utf-8"</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;title&gt;</span>Black Thread three.js tutorials - 1.0 Getting Started<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+
+  <span class="nt">&lt;body&gt;</span>
+
+  <span class="nt">&lt;/body&gt;</span>
+
+<span class="nt">&lt;/html&gt;</span> </code></pre></figure>
+
+<p><code class="highlighter-rouge">&lt;meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1" /&gt;</code> prevents lots of problems with scaling on mobile devices and you should always include it in your three.js apps.</p>
+
+<p>Next, we’ll include the latest version of three.js, which at the time of writing is r84. If a later version has been released and you want to use that, change the number below.</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">...
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+  <span class="nt">&lt;title&gt;</span>Black Thread three.js tutorials - 1.0 Getting Started<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+...</code></pre></figure>
+
+<p>Note that we are including the uncompressed version of the three.js file, which is useful in development as we will get more meaningful error messages (compression can garble the names of functions and variables). In a production environment you will want to change <code class="highlighter-rouge">three.js</code> to <code class="highlighter-rouge">three.min.js</code> for faster page loading.</p>
+
+<p>In later tutorials we’ll be going over how to bundle all our Javascript into a single file and compressing that to minimize page load time.</p>
+
+<p>If you open the <code class="highlighter-rouge">index.html</code> file in your favourite browser (Chrome or Firefox are strongly recommended for development work), you will just see a white screen. However if you open the developer console ( <code class="highlighter-rouge">ctrl + shift + I</code> windows / linux, <code class="highlighter-rouge">Cmd + Opt + I</code> mac ), then type <code class="highlighter-rouge">THREE</code> and press return you should see</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nb">Object</span> <span class="p">{</span> <span class="nl">WebGLRenderTargetCube</span><span class="p">:</span> <span class="nx">WebGLRenderTargetCube</span><span class="p">(),</span> <span class="nx">WebGLRenderTarget</span><span class="err">:</span> <span class="nx">WebGLRenderTarget</span><span class="p">(),</span> <span class="nx">WebGLRenderer</span><span class="err">:</span> <span class="nx">WebGLRenderer</span><span class="p">(),</span> <span class="nx">ShaderLib</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">UniformsLib</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">UniformsUtils</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">ShaderChunk</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">FogExp2</span><span class="err">:</span> <span class="nx">FogExp2</span><span class="p">(),</span> <span class="nx">Fog</span><span class="err">:</span> <span class="nx">Fog</span><span class="p">(),</span> <span class="nx">Scene</span><span class="err">:</span> <span class="nx">Scene</span><span class="p">(),</span> <span class="mi">367</span> <span class="nx">more</span><span class="err">…</span> <span class="p">}</span></code></pre></figure>
+
+<p>telling us that the <code class="highlighter-rouge">THREE</code> global variable has loaded and can be used.</p>
+
+<p>We’ll also add some very simple styling to the body. Put it inside the <code class="highlighter-rouge">&lt;head&gt;</code> tag after loading the <code class="highlighter-rouge">three.js</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">...
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nt">body</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="m">#000000</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0px</span><span class="p">;</span>
+    <span class="nl">overflow</span><span class="p">:</span> <span class="nb">hidden</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;title&gt;</span>Black Thread three.js tutorials - 1.0 Getting Started<span class="nt">&lt;/title&gt;</span>
+...</code></pre></figure>
+
+<h1 id="the-basic-components-of-a-threejs-app">The basic components of a three.js app</h1>
+
+<p>Every three.js app (in fact, nearly every 3D app of any kind) will have the following basic components - a renderer, a canvas, a scene and a camera. We’ll go over each of these in turn, and then add a simple mesh and a light.</p>
+
+<p>Somewhere after the <code class="highlighter-rouge">&lt;script&gt;</code> tag loading three.js we’ll create another (empty) script tag to hold our example application. Here we will include it inside the <code class="highlighter-rouge">&lt;body&gt;</code> tag, although it can go anywhere after loading the main <code class="highlighter-rouge">three.js</code> file.</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">...
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;script&gt;</span>
+
+    <span class="c1">// our code will go here</span>
+
+  <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+...</code></pre></figure>
+
+<p>Now we can start writing our app inside that empty <code class="highlighter-rouge">&lt;script&gt;</code> tag. First we’ll set up the renderer and canvas.</p>
+
+<h2 id="the-renderer">The renderer</h2>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">...
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;script&gt;</span>
+
+    <span class="c1">// create a WebGLRenderer and set its width and height</span>
+    <span class="kd">var</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">(</span> <span class="p">);</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="p">);</span>
+    
+  <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+...</code></pre></figure>
+
+<p>Here we have created a <a href="https://threejs.org/docs/#api/renderers/WebGLRenderer">WebGLRenderer</a> and set it to 100% of the browser window’s width and height. This will not be automatically resized if we resize the window, but we’ll cover how to fix that later.</p>
+
+<p>There are other renderers available - the files are contained in the <code class="highlighter-rouge">/examples/js/renderers/</code> directory, and will have to be loaded separately to the main <code class="highlighter-rouge">three.js</code> file if you wish to use them. Most of them are not actively updated (except for bug fixes) and were created in the early days of three.js development when WebGL was less well supported. We’ll go over them quickly here, but for the rest of these tutorials we’ll stick with the WebGLRenderer:</p>
+
+<ol>
+  <li>The Canvas renderer - this renders using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API">2D Canvas API</a> instead of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API">3D WebGL API</a>. It is more limited and generally slower than the WebGLRenderer.</li>
+  <li>The <a href="https://threejs.org/examples/#canvas_geometry_birds">CSS3DRenderer</a>. This uses <a href="https://24ways.org/2010/intro-to-css-3d-transforms/">CSS 3D transforms</a> to render your scene. Again, it will be slower and more limited than the WebGLRenderer.</li>
+  <li>The CSS2DRenderer, which uses the CSS 2D API to render objects (in 2D!). You can see it in use in <a href="https://threejs.org/examples/#webgl_loader_pdb">this example</a>, where it is used to render the letter labelling each atom.</li>
+  <li>The <a href="https://threejs.org/examples/#svg_sandbox">SVG renderer</a>. This renders scenes using <a href="https://developer.mozilla.org/en-US/docs/Web/SVG">SVG</a> vector graphics.</li>
+  <li>The <a href="https://threejs.org/examples/#software_geometry_earth">SoftwareRenderer</a>. This generates the image in software (i.e not using any of the above APIs) and then writes the resulting 2D image to a Canvas element.</li>
+  <li>The <a href="https://threejs.org/examples/#raytracing_sandbox">RaytracingRenderer</a>. This is the only renderer which is not intended for real time use - instead it uses <a href="https://www.html5rocks.com/en/tutorials/workers/basics/">webworkers</a> to render a still <a href="https://en.wikipedia.org/wiki/Ray_tracing_(graphics)">ray-traced</a> image. This will (hopefully!) be of much higher quality than anything produced by the other renderers, but it can take a long time to render even a simple scene.</li>
+</ol>
+
+<p>One final renderer that will eventually be included in the core (or combined with the WebGLRenderer) is the under development WebGL2Renderer. While the WebGLRenderer uses the WebGL 1.1 spec, the WebGL2Renderer will use the recently releases WebGL 2.0 spec.</p>
+
+<p>We’ll cover the WebGLRenderer in more detail in a future tutorial.</p>
+
+<h2 id="the-canvas">The canvas</h2>
+
+<p>Next we’ll create a <a href="https://www.w3schools.com/html/html5_canvas.asp">Canvas</a> element to hold the output of the renderer. Actually, the renderer (when created with no options specified, as above), will automatically create a canvas element. We can add it to our page like so:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html">...
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;script&gt;</span>
+
+    <span class="kd">var</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">();</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="p">);</span>
+
+    <span class="c1">// add the automatically created canvas element to the page</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span>
+    
+  <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+...</code></pre></figure>
+
+<p>This appends (i.e. adds just before the closing <code class="highlighter-rouge">&lt;/body&gt;</code> tag) the following to your page, assuming a browser window of 1920 x 1012 pixels.</p>
+
+<p><code class="highlighter-rouge">&lt;canvas width="1920" height="1012" style="width: 1920px; height: 1012px;"&gt;&lt;/canvas&gt;</code></p>
+
+<p>If we want more control over the placement or size of this element, we can create it ourselves and pass it as an option to the WebGLRenderer. We’ll go over how to do that in a future tutorial.</p>
+
+<h2 id="the-scene">The scene</h2>
+
+<p>There not much to say about the setup of the Scene as the constructor doesn’t take any arguments. Add the following line:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span>
+
+<span class="c1">// create a Scene</span>
+<span class="kd">var</span> <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span></code></pre></figure>
+
+<p>Technically speaking this is the root object in a <a href="https://en.wikipedia.org/wiki/Scene_graph">Scene Graph</a>. Everything else in the scene will get added as a child of this scene object, and when the renderer is told to render a scene, it calculated the positions of every other object relative to this Scene object - so generally you do not want to rotate or move a Scene, or you will get some very unexpected results!</p>
+
+<h2 id="the-camera">The camera</h2>
+
+<p>The final object required to to render a scene (aside from, well, some actual visible objects!) is the camera. Again, there are several types of camera available. We’ll generally stick with the <a href="https://threejs.org/docs/#api/cameras/PerspectiveCamera">PerspectiveCamera</a> which renders a scene using perspective projection. Without going into any great detail here, this renders the scene the way you expect a 3D scene to look - in other words, in mimics the way the human eye perceives depth, i.e. objects get smaller the further away they are from the camera.</p>
+
+<p>The PerspectiveCamera takes four options, which together define its <a href="https://en.wikipedia.org/wiki/Viewing_frustum">viewing frustum</a>. We can add it like so:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="kd">var</span> <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
+
+<span class="c1">// create a PerspectiveCamera</span>
+<span class="kd">var</span> <span class="nx">fov</span> <span class="o">=</span> <span class="mi">75</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">aspect</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">nearClippingPlane</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">farClippingPlane</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span> <span class="nx">fov</span><span class="p">,</span> <span class="nx">aspect</span><span class="p">,</span> <span class="nx">nearClippingPlane</span><span class="p">,</span> <span class="nx">farClippingPlane</span> <span class="p">);</span>
+
+<span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span> <span class="p">);</span></code></pre></figure>
+
+<p class="align-left"><img src="http://localhost:4000/assets/images/tutorials/ViewingFrustum.jpg" alt="image-left" /></p>
+<h3 id="the-viewing-frustum">The viewing frustum</h3>
+<p>The viewing frustum is a truncated square pyramid defined by the four options <code class="highlighter-rouge">fov, aspect, nearClippingPlane, farClippingPlane</code>. Object that do not fall inside it will not be rendered - in particular if an object is closer than the nearClippingPlane or further away than the farClippingPlane it will not be visible.</p>
+
+<h3 id="the-threejs-coordinate-system">The three.js coordinate system</h3>
+
+<p class="align-right"><img src="http://localhost:4000/assets/images/tutorials/coords.jpg" alt="image-right" /></p>
+<p>Finally we set the position of the camera to <code class="highlighter-rouge">x=0, y=0, z=20</code>. The three.js the x-axis goes from left to right (negative x to positive x), the y-axis goes from top (positive y), to bottom (negative y) and the z-axis goes from negative (into the screen) to positive (towards the viewer). Technically this is a “right handed” system. The equivalent left-handed system swaps the direction of the z-axis. Care must be taken when working with other applications or APIs, as they may use different coordinate systems (in particular the z / y axes may be swapped, and the “handedness” may be different). We’ll go over this in more detail in a later tutorial.</p>
+
+<h3 id="other-cameras">Other cameras</h3>
+
+<p>The other important camera available is the <a href="https://threejs.org/docs/#api/cameras/OrthographicCamera">OrthographicCamera</a>. This renders a scene using orthographic projection. We’ll cover both of the these projection methods later, but for the time being suffice to say that this does not mimic the perception of depth - objects stay the same size no matter how far they are from the camera. This is generally used for 2D graphical overlay (e.g. health bars in a game), or for rendering 2D scenes.</p>
+
+<p>This <a href="https://threejs.org/examples/#webgl_camera">example</a> renders the same scene using both camera types.</p>
+
+<p>Other camera types available in the core <code class="highlighter-rouge">three.js</code> file are:</p>
+
+<ol>
+  <li>The ArrayCamera, used for virtual reality applications. This was recently added and should be included the next release from time of writing (r85). The API is likely to change so take care when using it.</li>
+  <li>The <a href="https://threejs.org/docs/#Reference/Cameras/CubeCamera">CubeCamera</a>. This is used to render six textures (a cube map) which can then be used as an environment map or skybox. Have a look at <a href="https://threejs.org/examples/#webgl_materials_cubemap_dynamic2">this example</a> to see it in action.</li>
+  <li>The <a href="https://threejs.org/docs/#Reference/Cameras/StereoCamera">StereoCamera</a>. This is used for 3D effects such as <a href="https://threejs.org/examples/#webgl_effects_anaglyph">anaglyph</a>, <a href="https://threejs.org/examples/#webgl_effects_parallaxbarrier">parallax barrier</a> and <a href="https://threejs.org/examples/#webgl_effects_stereo">stereo 3D</a>.</li>
+</ol>
+
+<p>The <a href="https://github.com/mrdoob/three.js/tree/dev/examples/js/cameras">examples folder</a> contains a couple more cameras:</p>
+
+<ol>
+  <li>The <a href="https://threejs.org/examples/#webgl_camera_cinematic">CinematicCamera</a>. Essentially this is a PerspectiveCamera with cinematic post processing effects - focal length, fstop and focal depth.</li>
+  <li>The CombinedCamera. This is a combined perspective and orthographic camera that allows you to quickly switch between each projection method.</li>
+</ol>
+
+<h2 id="adding-a-visible-object-to-our-scene">Adding a visible object to our scene</h2>
+
+<p>Every visible object in three.js consists of three components - a <a href="https://threejs.org/docs/#Reference/Core/Geometry">Geometry</a> (or <a href="https://threejs.org/docs/#Reference/Core/BufferGeometry">BufferGeometry</a>), a <a href="https://threejs.org/docs/#Reference/Materials/Material">Material</a> and a <a href="https://threejs.org/docs/#Reference/Objects/Mesh">Mesh</a> (which combines the geometry and material).</p>
+
+<h3 id="creating-a-geometry">Creating a geometry</h3>
+
+<p>We’ll start by creating a <a href="https://threejs.org/docs/#Reference/Geometries/TorusKnotBufferGeometry">TorusKnotBufferGeometry</a>.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span> <span class="p">);</span>
+
+<span class="c1">// create a TorusKnotBufferGeometry</span>
+<span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TorusKnotBufferGeometry</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">16</span> <span class="p">);</span></code></pre></figure>
+
+<h4 id="buffergeometry">BufferGeometry?</h4>
+
+<p>Why did we create a TorusKnotBufferGeometry instead of just a TorusKnotGeometry?</p>
+
+<p>Well, that’s yet another thing we’ll go into in detail later. But for now suffice to say that BufferGeometry is a newer and faster (although slightly more complex) version of Geometry. It’s faster because attributes such as vertex positions are held in big flat <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/TypedArray">TypedArrays</a>, rather than creating an individual object (such as a <a href="https://threejs.org/docs/#Reference/Math/Vector3">Vector3</a> for position) for every single attribute. Three.js is slowly transitioning to exclusively using BufferGeometry, and we’ll follow suite and only ever use buffer geometries in these tutorials.</p>
+
+<h3 id="creating-a-material">Creating a material</h3>
+
+<p>We’ll go over materials in much more detail in future, but here we’ll take a quick look at two of the most commonly used. First, we’ll create a <a href="https://threejs.org/docs/#Reference/Materials/MeshBasicMaterial">MeshBasicMaterial</a> which is the simplest (and fastest) material available in three.js. It completely ignores any lights in the scene, and just flat shades a mesh based on it’s color or any texture maps, which is useful here as we have not yet added any lights - if we used other materials which <em>do</em> need lights to see an object, we would not see anything as our scene is completely dark! This is a common point of confusion when you are just getting started, so if you can’t see anything make sure you have added some lights to your scene and they are pointing at the object you want to see.</p>
+
+<p>Let’s create the material:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="kd">var</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SphereBufferGeometry</span><span class="p">(</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span> <span class="p">);</span>
+
+<span class="c1">// create a MeshBasicMaterial and set its color to purple</span>
+<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">(</span> <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="mh">0xb300b3</span><span class="p">,</span> 
+<span class="p">}</span> <span class="p">);</span></code></pre></figure>
+
+<h4 id="passing-spec-objects-to-constructors">Passing spec objects to constructors</h4>
+
+<p>Note the way that we passed the color parameter to the constructor - this is the standard method for passing parameters whenever a constructor can take more than four or five parameters. We’re passing in a spec object which can contain any of the properties listed in the docs for 
+the <a href="https://threejs.org/docs/#Reference/Materials/Material">Material</a> superclass, as well as any additional properties of the <a href="https://threejs.org/docs/#Reference/Materials/MeshBasicMaterial">MeshBasicMaterial</a>. They can be listed in any order.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">materialSpecs</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">color</span><span class="p">:</span> <span class="mh">0xb300b3</span><span class="p">,</span>
+  <span class="na">map</span><span class="p">:</span> <span class="nx">ourTextureMap</span><span class="p">,</span>
+  <span class="na">transparent</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">opacity</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+  <span class="p">...</span> <span class="c1">// and so on</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="colors-in-threejs">Colors in three.js</h4>
+
+<p>The other thing to take note of here is the format of the color - it’s a <a href="https://en.wikipedia.org/wiki/Web_colors#Hex_triplet">Hex Triplet</a> - a six digit (three byte) hexadecimal (base 16) number representing an RGB color. You may be more familiar with the CSS form <code class="highlighter-rouge">#b300b3</code> which is identical to <code class="highlighter-rouge">0xb300b3</code>. Here, <code class="highlighter-rouge">0x</code> tells JavaScript that this is a hex number, then the first two digits <code class="highlighter-rouge">b3</code> represent the red component of the color, the next two <code class="highlighter-rouge">00</code> are the green component and the final two, <code class="highlighter-rouge">b3</code> again, are the blue component. Each are in the hex range <code class="highlighter-rouge">00 -&gt; ff</code> which is equivalent to <code class="highlighter-rouge">0 -&gt; 256</code> in base 10.</p>
+
+<p>There are lots other ways of specifying colors in three.js - see the <a href="https://threejs.org/docs/#api/math/Color">Color</a> docs for details - but hex triples are the most commonly used and the method we’ll be sticking with in these tutorials.</p>
+
+<p>We’ll switch to a material that is affected by lights below and see the difference in quality.</p>
+
+<h3 id="creating-a-mesh-and-adding-it-to-the-scene">Creating a mesh and adding it to the scene</h3>
+
+<p>Finally we’ll combine the geometry and material into a Mesh and add it to the scene.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">(</span> <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="mh">0xb300b3</span><span class="p">,</span> 
+<span class="p">}</span> <span class="p">);</span>
+
+<span class="c1">// create a Mesh containing the geometry and material and add it to the scene</span>
+<span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span> <span class="nx">geometry</span><span class="p">,</span> <span class="nx">material</span> <span class="p">);</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">mesh</span> <span class="p">);</span></code></pre></figure>
+
+<h2 id="rendering-the-scene">Rendering the scene</h2>
+
+<p>We’re almost there! Before we can see anything though, we need to actually render the scene. To do this, we’ll use the line <code class="highlighter-rouge">renderer.render( scene, camera );</code>. However, if we do that now we won’t see anything. This is because by default the renderer resets (clears) the frame at the end of every frame. Since we don’t want to mess with any default settings just yet, we’ll have to call the <code class="highlighter-rouge">renderer.render</code> function in a loop. We’ll do this using <a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame">requestAnimationFrame</a>, a browser function designed specifically for frame based animation.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">mesh</span> <span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// schedule the animate function to be called at the start of every frame</span>
+  <span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">animate</span> <span class="p">);</span>
+  
+  <span class="c1">// render a frame</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">animate</span><span class="p">();</span></code></pre></figure>
+
+<h2 id="adding-lights">Adding lights</h2>
+
+<p>At the moment our scene looks kind of ugly. Let’s add some lights and switch to a higher quality material.</p>
+
+<p>Change the line</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span><span class="p">(</span> <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="mh">0xb300b3</span><span class="p">,</span> 
+<span class="p">}</span> <span class="p">);</span></code></pre></figure>
+
+<p>to</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshStandardMaterial</span><span class="p">(</span> <span class="p">{</span>
+    <span class="na">color</span><span class="p">:</span> <span class="mh">0xb300b3</span><span class="p">,</span> 
+<span class="p">}</span> <span class="p">);</span></code></pre></figure>
+
+<p>MeshBasicMaterial and <a href="https://threejs.org/docs/#Reference/Materials/MeshStandardMaterial">MeshStandardMaterial</a> share the <code class="highlighter-rouge">color</code> property, so we don’t need to change anything else.</p>
+
+<p>The first thing you’ll notice if you refresh the page after switching material types, is that the sphere has vanished! This is because the MeshStandardMaterial reacts to light, and as mentioned above our scene is completely dark. Let’s fix that.</p>
+
+<p>First we’ll add an <a href="https://threejs.org/docs/#Reference/Lights/AmbientLight">AmbientLight</a>. This provides <a href="https://en.wikipedia.org/wiki/Global_illumination">global illumination</a> - i.e. it adds non-directional light equally to all objects in the scene. You will generally always add some ambient light to a 3D scene. Real light bounces infinitely from object to object and there is no way to mimic this in 3D (even computing several bounces is generally too computationally expensive for real time graphics), so we fake it by adding some global illumination. After creating the PerspectiveCamera, create an AmbientLight and add it to the scene.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">....</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">mesh</span> <span class="p">);</span>
+
+<span class="c1">// create a dark grey ambient with an intensity of 1.0 and add it to the scene</span>
+<span class="kd">var</span> <span class="nx">ambientLight</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AmbientLight</span><span class="p">(</span> <span class="mh">0x666666</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">);</span>  
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">ambientLight</span> <span class="p">);</span></code></pre></figure>
+
+<p>If you refresh the page again, you will see dimly see the sphere again. Let’s add another light - this time a <a href="https://threejs.org/docs/#Reference/Lights/DirectionalLight">DirectionalLight</a>. This light type simulates light from a very distant source - unlike the AmbientLight, the light rays do have a direction. However they do not have a position in space - the are considered to come from “infinitely” far away. This light type is commonly used to simulate sunlight.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">....</span>
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">ambientLight</span> <span class="p">);</span>
+
+<span class="c1">// Create a white directional light with an intensity of 1.0</span>
+<span class="kd">var</span> <span class="nx">directionalLight</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DirectionalLight</span><span class="p">(</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">);</span>
+
+<span class="nx">directionalLight</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+
+<span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">directionalLight</span> <span class="p">);</span></code></pre></figure>
+
+<p>What’s going on here though? We just said that the DirectionalLight doesn’t have a position in space, and then we went right ahead and set the light’s position!</p>
+
+<p>Not quite - the light <em>rays</em> do not have a position in space. The light itself does - strictly speaking, the three.js DirectionalLight is actually a <em>Targeted</em>DirectionalLight. By default, the <code class="highlighter-rouge">directionalLight.target</code> is an <a href="https://threejs.org/docs/#Reference/Core/Object3D">Object3D</a> located at <code class="highlighter-rouge">(0, 0, 0)</code> and the direction of the light rays is calculated based on the angle between the light and it’s target. So if we set the light’s position to <code class="highlighter-rouge">(0, 10, 0)</code> (directly <em>above</em> the target), the direction of the rays is from <code class="highlighter-rouge">(0, 10, 0)</code> -&gt; <code class="highlighter-rouge">(0, 0, 0)</code>, i.e. straight down. Confusing? A little.</p>
+
+<h2 id="adding-movement">Adding movement</h2>
+
+<p>Our scene is still pretty boring - generally a 3D scene should at least have some movement in it! Let’s add some rotation to the torus. Add a couple of lines to the <code class="highlighter-rouge">animate</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">...</span>
+<span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// schedule the animate function to be called at the start of every frame</span>
+  <span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">animate</span> <span class="p">);</span>
+  
+  <span class="c1">// increase the mesh's rotation each frame</span>
+  <span class="nx">mesh</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">z</span> <span class="o">+=</span> <span class="mf">0.01</span><span class="p">;</span>
+  <span class="nx">mesh</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span> <span class="o">+=</span> <span class="mf">0.01</span><span class="p">;</span>
+  <span class="nx">mesh</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span> <span class="o">+=</span> <span class="mf">0.01</span><span class="p">;</span>
+  
+  <span class="c1">// render a frame</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">animate</span><span class="p">();</span></code></pre></figure>
+
+<h1 id="final-code">Final code</h1>
+
+<p>Here is the final code for this example</p>
+
+<script src="https://gist.github.com/looeee/c7aff28dcfbab3d9a662823b01027051.js"></script>
+
+<p>And here’s the code converted to ES6 - no major changes yet, just the <code class="highlighter-rouge">var</code>s are changed to <code class="highlighter-rouge">const</code>s.</p>
+
+<p data-height="400" data-theme-id="0" data-slug-hash="GmJPrm" data-default-tab="result" class="codepen"></p>
+<script async="async" src="//codepen.io/assets/embed/ei.js"></script>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+
+        
+          <p class="page__date"><strong><span class="fa fa-fw fa-calendar" aria-hidden="true"></span> Updated:</strong> <time datetime="2017-09-04T11:14:18+01:00">September 04, 2017</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/tutorials/0.3-development-server" class="pagination--pager" title="Setting up a development server
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/tutorials/1.1-textures-intro" class="pagination--pager" title="Introduction to textures
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+    <h4 class="page__comments-title">Leave a Comment</h4>
+    <section id="disqus_thread"></section>
+  
+</div>
+    
+  </article>
+
+  
+  
+</div>
+
+
+    <div class="page__footer">
+      <footer>
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><a href="https://github.com/looeee/"><span class="fa fa-fw fa-github" aria-hidden="true"></span> GitHub</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2017 Lewy Blue.</div>
+
+
+      </footer>
+    </div>
+
+    
+
+
+
+
+
+
+  <script async src="/assets/js/build/main.js"></script>
+
+
+
+
+
+  
+  <script type="text/javascript">
+  	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  	var disqus_shortname = 'www-blackthreaddesign-com';
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function() {
+  		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  	})();
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function () {
+  		var s = document.createElement('script'); s.async = true;
+  		s.type = 'text/javascript';
+  		s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  		(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  	}());
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+
+
+  </body>
+</html>

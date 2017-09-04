@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<script>
+  //Catch errors with Google Analytics (must run first to catch all errors)
+  addEventListener('error', window.__e=function f(e){f.q=f.q||[];f.q.push(e)});
+</script>
+
+
+  
+    <link rel="stylesheet" href="/assets/css/loader.css">
+  
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"/>
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Robot Simulation - Black Thread Design</title>
+
+
+
+
+<meta name="description" content="Home page of the Black Thread Design Agency - tutorials, web experiments, WebGL and more">
+
+
+
+<meta name="keywords" content="WebGL, three.js, JavaScript, ES6">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Black Thread Design">
+<meta property="og:title" content="Robot Simulation">
+
+
+  <link rel="canonical" href="http://localhost:4000/hidden/robot/">
+  <meta property="og:url" content="http://localhost:4000/hidden/robot/">
+
+
+
+  <meta property="og:description" content="Home page of the Black Thread Design Agency - tutorials, web experiments, WebGL and more">
+
+
+
+  <meta name="twitter:site" content="@looeeeb">
+  <meta name="twitter:title" content="Robot Simulation">
+  <meta name="twitter:description" content="Home page of the Black Thread Design Agency - tutorials, web experiments, WebGL and more">
+  <meta name="twitter:url" content="http://localhost:4000/hidden/robot/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+    
+  
+
+  
+
+
+
+  
+
+  
+    <meta property="fb:app_id" content="103246253626280">
+  
+
+
+
+  <meta property="og:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "http://localhost:4000",
+      "logo": "http://localhost:4000/assets/images/default-teaser.jpg"
+    }
+  </script>
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALe3ty6fn59af39/l6ampm2Ojo6BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv7+/KJmZmWSIiIj0b29v/6Wlpf9qamr/n5+f9YaGhuGjo6OOv7+/BAAAAAAAAAAAAAAAAAAAAAAAAAAAu7u7OMDAwMh4eHj/srKy/5ubm/+pqan/o6Oj/5CQkP/ExMT/vr6+/5OTk9Orq6s6AAAAAAAAAAAAAAAAl5eXYLOzs/ZmZmb/SkpK/39/f/+1tbX/IyMj/3BwcP+Ojo7/cHBw/1xcXP+QkJD/i4uLv7+/vwQAAAAAra2tH5GRkbaWlpb/ZWVl/3V1df9QUFD/hISE/ygoKP+Pj4//VFRU/319ff9AQED/pKSk/3BwcP/JyckTAAAAAJqamou5ubn+y8vL/7+/v/+fn5//ZWVl/zU1Nf8lJSX/PT09/zIyMv+srKz/pKSk/5aWlv/Gxsb/tbW1139/fwKVlZXKaGho/1JSUv+MjIz/v7+//9PT0//Nzc3/VlZW/05OTv/IyMj/3d3d/6Wlpf9ISEj/ZmZm/4qKiv/U1NQSo6Oj35KSkv9GRkb/bGxs/0ZGRv+srKz/+fn5/0NDQ//8/Pz/5ubm/09PT/98fHz/QUFB/2VlZf+5ubn/ycnJIaWlpdyjo6P/wsLC/3Z2dv84ODj/TU1N/0VFRf9/f3//FRUV/2lpaf83Nzf/dHR0/3Fxcf/k5OT/m5ub/5eXl2KTk5PWdHR0/7y8vP+Ghob/PT09/yAgIP9aWlr/9/f3/8TExP9BQUH/ICAg/3BwcP+vr6//gICA/46Ojti+vr4npqamm3h4eP90dHT/Ojo6/2BgYP9TU1P/PT09/8zMzP+JiYn/Ly8v/6Kiov8uLi7/cXFx/29vb/+np6fGAAAAALi4uE+4uLjkgoKC/6mpqf+wsLD/Tk5O/4iIiP/Gxsb/paWl/1RUVP+AgID/wsLC/2JiYv+zs7P/oqKijQAAAAC2trYOvLy8KouLi/5lZWX/4eHh/0lJSf+Tk5P/o6Oj/4aGhv9GRkb/kpKS/56env9sbGz/t7e3nAAAAAAAAAAAAAAAAAAAAACSkpJ1e3t72n19fe1lZWX/ZWVl/2dnZ/9gYGD/S0tL/4SEhP+RkZH5iIiI1re3ty4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8fHySlpaW+bOzs/9qamr/tLS0/3h4eP+ioqLtoqKijQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAra2tH4yMjG2rq6ugoqKizpubm7GVlZV/paWlMLm5uQsAAAAAAAAAAAAAAAAAAAAA/r8AAPgPAADgBwAAwAMAAIADAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAACAAQAAwAMAAOAHAADwDwAA/H8=" type="image/x-icon">
+
+
+
+      
+
+
+
+
+
+  <script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+  <body class="layout--single">
+    <!--<div id="breakpoint">
+      
+    </div>-->
+    
+    <!-- [if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif] -->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+      <nav class="masthead__menu">
+        <button class="toggle-links hidden"></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Black Thread Design</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/about/">About</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/contact/">Contact</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/tutorials/">Tutorials</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/work/">Work</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/experiments/">Experiments</a></li>
+          
+        </ul>
+      </nav>
+  </div>
+</div>
+
+
+    
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Robot Simulation">
+    <meta itemprop="description" content="">
+    <meta itemprop="datePublished" content="September 04, 2017">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Robot Simulation
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <div id="view-container">
+  <canvas id="viewer-canvas" class="fill"></canvas>
+
+  <div id="loading-overlay" class="fill">
+
+    <div id="loading-bar" class="hide">
+      <span id="bar">
+        <span id="progress"></span>
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="info">
+  <br>
+  <button id="reset" disabled >Reset</button>
+  <button id="randomize" disabled>Randomize</button>
+  <button id="simulate" disabled >Run Simulation</button>
+  <input id="show-grid" type="checkbox" disabled />Show Grid
+  <br>
+  Equation: y =
+  <input id="slope" style="width: 4em; color: black;" type="number" min="-1.5" value="0" max="1.5" step="0.05">
+  <span id="equation"></span>
+  <p>
+    The field is a rectangle of width 1.4 metres and length 2 metres, the goal is 50cm wide
+    and the centre of the table is at position (0, 0).<br>
+    The ball has been randomly placed on the table at position (<span id="ball_position"></span>),
+    which gives the above equation for a line going along the surface of the table through
+    the ball.
+  </p>
+  <p>
+    The value of the slope  has been left blank in the above equation - enter an estimate
+    and hit "simulate" to see if you can score a goal!
+  </p>
+
+</div>
+        
+      </section>
+
+      <footer class="page__meta">
+        
+
+        
+      </footer>
+
+      
+
+      
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+
+    <div class="page__footer">
+      <footer>
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><a href="https://github.com/looeee/"><span class="fa fa-fw fa-github" aria-hidden="true"></span> GitHub</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2017 Lewy Blue.</div>
+
+
+      </footer>
+    </div>
+
+    
+
+
+  
+    <script async src='/assets/js/vendor/zip/inflate.min.js'></script>
+  
+
+
+
+
+
+  
+  <script async src="/assets/js/build/robot.js"></script>
+  
+
+
+
+
+
+  </body>
+</html>

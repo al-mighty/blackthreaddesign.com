@@ -1,0 +1,1534 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<script>
+  //Catch errors with Google Analytics (must run first to catch all errors)
+  addEventListener('error', window.__e=function f(e){f.q=f.q||[];f.q.push(e)});
+</script>
+
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"/>
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Adding Orbit Controls - Black Thread Design</title>
+
+
+
+
+<meta name="description" content="How to set up OrbitControls to control the camera in your three.js scene">
+
+
+
+<meta name="keywords" content="WebGL, three.js, JavaScript, ES6">
+
+
+
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Black Thread Design">
+<meta property="og:title" content="Adding Orbit Controls">
+
+
+  <link rel="canonical" href="http://localhost:4000/tutorials/1.2-orbit-controls">
+  <meta property="og:url" content="http://localhost:4000/tutorials/1.2-orbit-controls">
+
+
+
+  <meta property="og:description" content="How to set up OrbitControls to control the camera in your three.js scene">
+
+
+
+  <meta name="twitter:site" content="@looeeeb">
+  <meta name="twitter:title" content="Adding Orbit Controls">
+  <meta name="twitter:description" content="How to set up OrbitControls to control the camera in your three.js scene">
+  <meta name="twitter:url" content="http://localhost:4000/tutorials/1.2-orbit-controls">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+    
+  
+
+  
+
+
+
+  
+
+  
+    <meta property="fb:app_id" content="103246253626280">
+  
+
+
+
+  <meta property="og:image" content="http://localhost:4000/assets/images/default-teaser.jpg">
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2017-09-04T11:14:18+01:00">
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "http://localhost:4000",
+      "logo": "http://localhost:4000/assets/images/default-teaser.jpg"
+    }
+  </script>
+
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALe3ty6fn59af39/l6ampm2Ojo6BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAv7+/KJmZmWSIiIj0b29v/6Wlpf9qamr/n5+f9YaGhuGjo6OOv7+/BAAAAAAAAAAAAAAAAAAAAAAAAAAAu7u7OMDAwMh4eHj/srKy/5ubm/+pqan/o6Oj/5CQkP/ExMT/vr6+/5OTk9Orq6s6AAAAAAAAAAAAAAAAl5eXYLOzs/ZmZmb/SkpK/39/f/+1tbX/IyMj/3BwcP+Ojo7/cHBw/1xcXP+QkJD/i4uLv7+/vwQAAAAAra2tH5GRkbaWlpb/ZWVl/3V1df9QUFD/hISE/ygoKP+Pj4//VFRU/319ff9AQED/pKSk/3BwcP/JyckTAAAAAJqamou5ubn+y8vL/7+/v/+fn5//ZWVl/zU1Nf8lJSX/PT09/zIyMv+srKz/pKSk/5aWlv/Gxsb/tbW1139/fwKVlZXKaGho/1JSUv+MjIz/v7+//9PT0//Nzc3/VlZW/05OTv/IyMj/3d3d/6Wlpf9ISEj/ZmZm/4qKiv/U1NQSo6Oj35KSkv9GRkb/bGxs/0ZGRv+srKz/+fn5/0NDQ//8/Pz/5ubm/09PT/98fHz/QUFB/2VlZf+5ubn/ycnJIaWlpdyjo6P/wsLC/3Z2dv84ODj/TU1N/0VFRf9/f3//FRUV/2lpaf83Nzf/dHR0/3Fxcf/k5OT/m5ub/5eXl2KTk5PWdHR0/7y8vP+Ghob/PT09/yAgIP9aWlr/9/f3/8TExP9BQUH/ICAg/3BwcP+vr6//gICA/46Ojti+vr4npqamm3h4eP90dHT/Ojo6/2BgYP9TU1P/PT09/8zMzP+JiYn/Ly8v/6Kiov8uLi7/cXFx/29vb/+np6fGAAAAALi4uE+4uLjkgoKC/6mpqf+wsLD/Tk5O/4iIiP/Gxsb/paWl/1RUVP+AgID/wsLC/2JiYv+zs7P/oqKijQAAAAC2trYOvLy8KouLi/5lZWX/4eHh/0lJSf+Tk5P/o6Oj/4aGhv9GRkb/kpKS/56env9sbGz/t7e3nAAAAAAAAAAAAAAAAAAAAACSkpJ1e3t72n19fe1lZWX/ZWVl/2dnZ/9gYGD/S0tL/4SEhP+RkZH5iIiI1re3ty4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8fHySlpaW+bOzs/9qamr/tLS0/3h4eP+ioqLtoqKijQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAra2tH4yMjG2rq6ugoqKizpubm7GVlZV/paWlMLm5uQsAAAAAAAAAAAAAAAAAAAAA/r8AAPgPAADgBwAAwAMAAIADAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAACAAQAAwAMAAOAHAADwDwAA/H8=" type="image/x-icon">
+
+
+
+      
+
+
+
+
+
+  <script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+  <body class="layout--single">
+    <!--<div id="breakpoint">
+      
+    </div>-->
+    
+    <!-- [if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif] -->
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+      <nav class="masthead__menu">
+        <button class="toggle-links hidden"></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="http://localhost:4000/">Black Thread Design</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/about/">About</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/contact/">Contact</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/tutorials/">Tutorials</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/work/">Work</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="http://localhost:4000/experiments/">Experiments</a></li>
+          
+        </ul>
+      </nav>
+  </div>
+</div>
+
+
+    
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar">
+    
+      
+        
+        
+        
+      
+      
+        
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc"><span class="navicon"></span></label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">0. Introduction</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.0-requirements" class="">Requirements for running a three.js scene</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.1-github-repo" class="">Three.js on Github</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.2-getting-help" class="">Getting help and reporting bugs</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/0.3-development-server" class="">Setting up a development server</a></li> 
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">1. First Steps</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.0-getting-started" class="">Getting started</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.1-textures-intro" class="">Introduction to textures</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.2-orbit-controls" class="active">Adding Orbit Controls</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Curves, paths, lines, shapes</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with text</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li><a href="http://localhost:4000/tutorials/1.6-object3d" class="">The Object3D base class</a></li> 
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Built in geometries</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with the Scene graph</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Grouping objects</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Resizing the canvas</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">2. Build Tools and Debugging</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Setting up an ES6 build environment</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Debugging your code</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">3. Abstraction</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Automating setup with THREE.App</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Using the LoadingManger to create a loading overlay</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>THREE.Time - an improved THREE.Clock</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Creating a debugging overlay</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">4. Materials</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Materials overview</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Basic, Phong and Lambert materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Standard and Physical materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Other mesh materials</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Multiple materials on a single mesh</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Materials for lines and curves</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">5. Textures</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Understanding Gamma and Linear spaces</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Environment mapping with cube textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with canvas textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Compressed, data and depth texture formats</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Video textures</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture formats</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture encoding</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">6. Lights and shadows</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The base light class, the ambient light and the hemisphere light</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The point light and light shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The directional light and shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The spot light and shadow</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The new rectangular area light and shadow</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">7. Helpers</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Light and camera helpers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Light and camera helpers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Mesh and geometry helpers</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">8. The /examples folder</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js /examples folder</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Converting plugins to modules</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Camera control plugins</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Loaders</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Promisifying-loaders</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Other renderers</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Included libraries</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">9. Working with assets</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Coordinate systems</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js native JSON format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The OBJ format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The FBX format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The GLTF format</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with Blender</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Working with 3D Studio Max</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">10. The WebGLRenderer</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRenderer in detail</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRendererTarget</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The WebGLRendererTargetCube</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The Sprite WebGLRenderer plugin</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The LensFlare WebGLRenderer plugin</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">11. Geometries and BufferGeometries</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Understanding geometries - vertices, faces and UV mapping</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Moving on to BufferGeometries</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Instanced geometries</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">12. Animation</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Animation overview</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Tweening with GSAP</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>The three.js animation system</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Using animations from other applications</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">13. Postprocessing and effects</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Setting up postprocessing</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">14. Creating custom shaders</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>ShaderMaterial and RawShaderMaterial</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">15. Tips & tricks</span>
+        
+
+        
+        <ul>
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Removing objects from a scene</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Reducing draw calls</li>
+            
+            
+          
+            
+
+            
+            
+
+            
+            
+
+            
+              <li>Texture anisotropy</li>
+            
+            
+          
+        </ul>
+        
+      </li>
+    
+  </ul>
+</nav>
+      
+    
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Adding Orbit Controls">
+    <meta itemprop="description" content="How to set up OrbitControls to control the camera in your three.js scene">
+    <meta itemprop="datePublished" content="September 04, 2017">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Adding Orbit Controls
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <p>At the moment our scene is not interactive. We’ll add some simple controls in the form the <code class="highlighter-rouge">OrbitalControls</code>. This is the first thing that we want to use that is not part of the three.js core. That is, it is not included in the main <code class="highlighter-rouge">three.js</code> JavaScript file that we’ve been loading so far. Instead, it’s in a separate file located at <a href="https://github.com/mrdoob/three.js/blob/dev/examples/js/controls/OrbitControls.js">/examples/js/controls/OrbitControls.js</a> in the three.js Github repository.</p>
+
+<p>There are lots of other “examples” (or rather, plugins) contained here, and we’ll go over how to use them later, in Section 8. But for now, let’s add camera controls to our scene as a quick example of how to use these plugins.</p>
+
+<p>Once again, we’ll expand the previous example, and when we are done, we’ll have this:</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+
+<script src="/assets/js/vendor/threejs/OrbitControls.js"></script>
+
+<canvas id="example-canvas"></canvas>
+
+<script>
+  var canvas = document.querySelector('#example-canvas');
+
+  var width = canvas.parentNode.clientWidth;
+  var height = window.innerHeight;
+  
+  var renderer = new THREE.WebGLRenderer( { 
+    canvas: canvas,
+   });
+  renderer.setSize( width, height / 2 );
+
+  // create a scene
+  var scene = new THREE.Scene();
+
+  // create a PerspectiveCamera
+  var fov = 75;
+  var aspect = width / ( height / 2 );
+  var nearClippingPlane = 0.1;
+  var farClippingPlane = 1000;
+
+  var camera = new THREE.PerspectiveCamera( fov, aspect, nearClippingPlane, farClippingPlane );
+
+  camera.position.set( 0, 0, 20 );
+
+  var controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+  // create a box buffer geometry
+  var geometry = new THREE.BoxBufferGeometry( 10, 10, 10 );
+
+  var loader = new THREE.TextureLoader();
+
+  loader.crossOrigin = '';
+
+  var texture = loader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/crate.gif');
+
+  // create a material and set the color to purple
+  var material = new THREE.MeshStandardMaterial( {
+      color: 0xffffff, 
+      map: texture,
+  } );
+
+  var mesh = new THREE.Mesh( geometry, material );
+  scene.add( mesh );
+
+  // create a dark grey ambient with an intensity of 2.0 and add it to the scene
+  var ambientLight = new THREE.AmbientLight( 0x999999, 2.0 );  
+  scene.add( ambientLight );
+
+  // Create a white directional light with an intensity of 2.0
+  var directionalLight = new THREE.DirectionalLight( 0xffffff, 2.0 );
+  directionalLight.position.set( 0, 10, 0 );
+  scene.add( directionalLight );
+
+  function animate() {
+
+    requestAnimationFrame( animate );
+
+    mesh.rotation.z += 0.01;
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.01;
+
+    renderer.render( scene, camera );
+
+  }
+
+  animate();
+
+</script>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+
+        
+          <p class="page__date"><strong><span class="fa fa-fw fa-calendar" aria-hidden="true"></span> Updated:</strong> <time datetime="2017-09-04T11:14:18+01:00">September 04, 2017</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/tutorials/1.1-textures-intro" class="pagination--pager" title="Introduction to textures
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/tutorials/1.6-object3d" class="pagination--pager" title="The Object3D base class
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+    <h4 class="page__comments-title">Leave a Comment</h4>
+    <section id="disqus_thread"></section>
+  
+</div>
+    
+  </article>
+
+  
+  
+</div>
+
+
+    <div class="page__footer">
+      <footer>
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><a href="https://github.com/looeee/"><span class="fa fa-fw fa-github" aria-hidden="true"></span> GitHub</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2017 Lewy Blue.</div>
+
+
+      </footer>
+    </div>
+
+    
+
+
+
+
+
+
+  <script async src="/assets/js/build/main.js"></script>
+
+
+
+
+
+  
+  <script type="text/javascript">
+  	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+  	var disqus_shortname = 'www-blackthreaddesign-com';
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function() {
+  		var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  		dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  	})();
+
+  	/* * * DON'T EDIT BELOW THIS LINE * * */
+  	(function () {
+  		var s = document.createElement('script'); s.async = true;
+  		s.type = 'text/javascript';
+  		s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  		(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+  	}());
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+
+
+  </body>
+</html>

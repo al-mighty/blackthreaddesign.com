@@ -1,0 +1,2 @@
+The uploads directory needs to exist in _site/php/uploads. 
+However if it is empty Jekyll will ignore it. 
