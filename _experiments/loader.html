@@ -16,6 +16,25 @@ vendor-js:
 <div id="view-container" class="control-panel">
   <canvas id="viewer-canvas" class="fill"></canvas>
 
+
+  <div id="loading-overlay" class="fill">
+
+    <div id="file-upload-form">
+      Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.
+      </br>
+      </br>
+      <input id="file-upload-input" type="file" name="files[]" multiple="" class="hide">
+      <input type="submit" class="" value="Upload Files" id="file-upload-button"/>
+    </div>
+
+    <div id="loading-bar" class="hide">
+      <span id="bar">
+        <span id="progress"></span>
+      </span>
+    </div>
+
+  </div>
+
   <div id="controls">
 
     <div id="grid-controls">
@@ -59,23 +78,7 @@ vendor-js:
 
 
 
-  <div id="loading-overlay" class="fill">
 
-    <div id="file-upload-form">
-      Upload json, fbx, obj, gltf, glb or dae files and associated textures in jpg, png, gif, bmp or dds format.
-      </br>
-      </br>
-      <input id="file-upload-input" type="file" name="files[]" multiple="" class="hide">
-      <input type="submit" class="" value="Upload Files" id="file-upload-button"/>
-    </div>
-
-    <div id="loading-bar" class="hide">
-      <span id="bar">
-        <span id="progress"></span>
-      </span>
-    </div>
-
-  </div>
 
 </div>
 

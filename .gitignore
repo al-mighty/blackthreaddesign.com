@@ -1,6 +1,3 @@
-.sass-cache
-.jekyll-metadata
-
 # Logs
 logs
 *.log
@@ -42,7 +39,9 @@ jspm_packages
 #Visual Studio
 /.vscode
 
-#jekyll assets
+#jekyll
+.sass-cache
+.jekyll-metadata
 /.asset-cache
 /TODO-general.txt
 /TODO-seo.txt

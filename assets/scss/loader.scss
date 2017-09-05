@@ -1,6 +1,7 @@
 @import 'default';
 
 #view-container {
+  display: flex;
 	position: relative;
 	height: 90vh;
 }
@@ -14,8 +15,16 @@
   top: 0;
 }
 
+#viewer-canvas {
+  position: absolute;
+  z-index: 1;
+
+}
+
 
 #loading-overlay {
+  position: absolute;
+  z-index: 3;
   text-align:center;
   border: 1px solid #062f4f;
   background: rgb( 240,183,161 );
@@ -26,7 +35,8 @@
 	position: absolute;
   left: 50%;
 	top: 50%;
- 	width: 50vw;
+  max-width: 70%;
+  min-width: 50%;
 	transform: translate3d( -50%,-50%,0 );
 
 	border-radius: 60px;
@@ -60,13 +70,19 @@
   position: absolute;
   left: 50%;
 	top: 40%;
- 	width: 50vw;
+ 	width: 90%;
 	transform: translate3d( -50%,-50%,0 );
   text-align: center;
 }
 
+#file-upload-button {
+  max-width: 70%;
+  min-width: 50%;
+}
+
 #controls {
   position: absolute;
+  z-index: 2;
   top: 0;
   left: 0;
   width: 96%;

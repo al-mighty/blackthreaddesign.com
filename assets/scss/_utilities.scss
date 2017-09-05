@@ -7,6 +7,12 @@
    ========================================================================== */
 
 /* http://www.456bereastreet.com/archive/200711/screen_readers_sometimes_ignore_displaynone/ */
+.fill {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 
 .centred {
   position: fixed;
