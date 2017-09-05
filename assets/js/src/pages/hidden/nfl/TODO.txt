@@ -1,8 +1,4 @@
-- adding camera movement so the camera follows animations / zooms to the players upper body etc
 - stitching some animations together
-- blending between animations so that the transition from e.g. idle to throw is smooth
-- adding a couple of other animations (victory and mirroring catch at least)
-- assigning animations to the correct attributes
 - designing the final app for the writer and for the reader
 
 

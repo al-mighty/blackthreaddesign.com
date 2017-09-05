@@ -77,10 +77,7 @@ include:
   - _pages
 exclude:
   - vendor
-  - .asset-cache
   - .bundle
-  - .jekyll-assets-cache
-  - .sass-cache
   - assets/js/src
   - assets/scss
   - Capfile
@@ -113,7 +110,7 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 
 
 # Conversion
-markdown: kramdown
+# markdown: kramdown
 highlighter: rouge
 lsi: false
 excerpt_separator: "\n\n"
@@ -121,15 +118,15 @@ incremental: false
 
 
 # Markdown Processing
-kramdown:
-  input: GFM
-  hard_wrap: false
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  smart_quotes: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
+# kramdown:
+#   input: GFM
+#   hard_wrap: false
+#   auto_ids: true
+#   footnote_nr: 1
+#   entity_output: as_char
+#   toc_levels: 1..6
+#   smart_quotes: lsquo,rsquo,ldquo,rdquo
+#   enable_coderay: false
 
 # Outputting
 permalink: /:collection/:title
@@ -140,11 +137,10 @@ timezone: Europe/Dublin # https://en.wikipedia.org/wiki/List_of_tz_database_time
 
 # Plugins
 plugins:
-  # - jekyll-assets
   - jekyll-sitemap
   - jekyll-gist
   - jemoji
-  - font-awesome-sass
+  # - font-awesome-sass
   # - jekyll-autoprefixer
   # - autoprefixer-rails
 
@@ -163,24 +159,6 @@ compress_html:
   ignore:
     envs: development
 
-
-# assets:
-#   digest: false
-#   autoprefixer:
-#     only_production: true
-#     browsers:
-#       - "last 3 versions"
-#       - "IE > 9"
-#   sources:
-#   - assets/css
-
-
-# autoprefixer:
-#   only_production: true
-#   browsers:
-#     - "last 3 versions"
-#     - "IE > 9"
-
 collections:
   tutorials:
     output: true
@@ -194,9 +172,6 @@ collections:
   blog:
     output: true
     permalink: /:collection/:title
-
-# sass:
-#     sass_dir: assets/css
 
 # Defaults
 defaults:

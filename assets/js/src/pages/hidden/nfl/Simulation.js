@@ -51,7 +51,7 @@ export default class Simulation {
 
   loadModels() {
 
-    const playerPromise = loaders.fbxLoader( '/assets/models/nfl/white_player_static.fbx' ).then( ( object ) => {
+    const playerPromise = loaders.fbxLoader( '/assets/models/nfl/t_pose_rigged.fbx' ).then( ( object ) => {
 
       object.traverse( ( child ) => {
 
@@ -80,20 +80,19 @@ export default class Simulation {
   loadAnimations() {
 
     const animationsNames = [
-      'catch_1',
-      'catch_2',
-      'catch_3',
-      'hike',
-      'simple_idle',
-      'offensive_idle',
-      'on_back_to_stand',
-      'on_front_to_stand',
-      'pass_left_handed',
-      'pass_right_handed',
-      'run',
-      'stance',
-      'victory',
+      'catch_to_fall',
+      'catch_to_roll',
       'defeat',
+      'hike',
+      'idle_transition_long',
+      'idle_transition_short',
+      'offensive_idle',
+      'pass_left_hand',
+      'pass_right_hand',
+      'pushup_to_idle',
+      'run',
+      'situp_to_idle',
+      'victory',
     ];
 
     this.animations = [];

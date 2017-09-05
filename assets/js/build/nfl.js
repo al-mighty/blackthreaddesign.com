@@ -9526,7 +9526,6 @@ module.exports = throttle;
 
 var throttle = interopDefault(index$2);
 
-// equivalent to jQuery outerHeight( true )
 function outerHeight(el) {
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
@@ -11510,10 +11509,7 @@ Object.assign( WebGLRenderTarget.prototype, EventDispatcher.prototype, {
 } );
 
 /**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author bhouston / http://clara.io
+ * @author alteredq / http://alteredqualia.com
  */
 
 function Quaternion( x, y, z, w ) {
@@ -22678,6 +22674,8 @@ Object.assign( BufferAttribute.prototype, {
 
 } );
 
+//
+
 function Uint16BufferAttribute( array, itemSize ) {
 
 	BufferAttribute.call( this, new Uint16Array( array ), itemSize );
@@ -22707,10 +22705,6 @@ function Float32BufferAttribute( array, itemSize ) {
 Float32BufferAttribute.prototype = Object.create( BufferAttribute.prototype );
 Float32BufferAttribute.prototype.constructor = Float32BufferAttribute;
 
-
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DirectGeometry() {
 
@@ -34194,7 +34188,7 @@ Group.prototype = Object.assign( Object.create( Object3D.prototype ), {
 } );
 
 /**
- * @author alteredq / http://alteredqualia.com/
+ * @author mrdoob / http://mrdoob.com/
  */
 
 function CompressedTexture( mipmaps, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, encoding ) {
@@ -34222,8 +34216,8 @@ CompressedTexture.prototype.constructor = CompressedTexture;
 CompressedTexture.prototype.isCompressedTexture = true;
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
+ * @author Matt DesLauriers / @mattdesl
+ * @author atix / arthursilber.de
  */
 
 function WireframeGeometry( geometry ) {
@@ -45890,7 +45884,10 @@ Object.assign( StereoCamera.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
+ * Camera for rendering cube maps
+ *	- renders scene into axis-aligned cube
+ *
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function AudioListener() {
@@ -49860,8 +49857,7 @@ Object.assign( Cylindrical.prototype, {
 } );
 
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
+ * @author alteredq / http://alteredqualia.com/
  */
 
 function VertexNormalsHelper( object, size, hex, linewidth ) {
@@ -50217,7 +50213,6 @@ SkeletonHelper.prototype.onBeforeRender = function () {
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mrdoob / http://mrdoob.com/
- * @author Mugen87 / https://github.com/Mugen87
  */
 
 function HemisphereLightHelper( light, size, color ) {
@@ -50301,7 +50296,6 @@ HemisphereLightHelper.prototype.update = function () {
 
 /**
  * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
  */
 
 function FaceNormalsHelper( object, size, hex, linewidth ) {
@@ -50795,18 +50789,6 @@ BoxHelper.prototype.setFromObject = function ( object ) {
 
 /**
  * @author WestLangley / http://github.com/WestLangley
- * @author zz85 / http://github.com/zz85
- * @author bhouston / http://clara.io
- *
- * Creates an arrow for visualizing directions
- *
- * Parameters:
- *  dir - Vector3
- *  origin - Vector3
- *  length - Number
- *  color - color in hex value
- *  headLength - Number
- *  headWidth - Number
  */
 
 var lineGeometry;
@@ -50904,26 +50886,9 @@ ArrowHelper.prototype.setColor = function ( color ) {
 };
 
 /**
- * @author zz85 https://github.com/zz85
- *
- * Centripetal CatmullRom Curve - which is useful for avoiding
- * cusps and self-intersections in non-uniform catmull rom curves.
- * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
- *
- * curve.type accepts centripetal(default), chordal and catmullrom
- * curve.tension is used for catmullrom which defaults to 0.5
+ * @author sroucheray / http://sroucheray.org/
+ * @author mrdoob / http://mrdoob.com/
  */
-
-
-/*
-Based on an optimized c++ solution in
- - http://stackoverflow.com/questions/9489736/catmull-rom-curve-with-no-cusps-and-no-self-intersections/
- - http://ideone.com/NoEbVM
-
-This CubicPoly class could be used for reusing some variables and calculations,
-but for three.js curve use, it could be possible inlined and flatten into a single function call
-which can be placed in CurveUtils.
-*/
 
 function CubicPoly() {
 
@@ -51080,10 +51045,6 @@ CatmullRomCurve3.prototype.getPoint = function ( t ) {
 
 };
 
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 var SceneUtils = {
 
 	createMultiMaterialObject: function ( geometry, materials ) {
@@ -51119,7 +51080,9 @@ var SceneUtils = {
 
 };
 
-//
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
 
 Curve.create = function ( construct, getPoint ) {
 
@@ -51166,13 +51129,12 @@ Object.assign( Spline.prototype, {
 
 } );
 
+//
 SkeletonHelper.prototype.update = function () {
 
 	console.error( 'THREE.SkeletonHelper: update() no longer needs to be called.' );
 
 };
-
-//
 
 Object.assign( Box2.prototype, {
 
@@ -52248,6 +52210,8 @@ AudioAnalyser.prototype.getData = function () {
 
 };
 
+//
+
 var ImageUtils = {
 
 	crossOrigin: undefined,
@@ -52295,6 +52259,8 @@ var ImageUtils = {
 	}
 
 };
+
+//
 
 /**
  * @author Lewy Blue / https://github.com/looeee
@@ -52417,21 +52383,6 @@ function Time() {
     this.paused = true;
   };
 }
-
-/**
- * @author qiao / https://github.com/qiao
- * @author mrdoob / http://mrdoob.com
- * @author alteredq / http://alteredqualia.com/
- * @author WestLangley / http://github.com/WestLangley
- * @author erich666 / http://erichaines.com
- */
-
-// This set of controls performs orbiting, dollying (zooming), and panning.
-// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finger swipe
 
 function OrbitControls(object, domElement) {
 
@@ -53259,11 +53210,6 @@ function OrbitControls(object, domElement) {
 OrbitControls.prototype = Object.create(EventDispatcher.prototype);
 OrbitControls.prototype.constructor = OrbitControls;
 
-/**
- * @author Lewy Blue / https://github.com/looeee
- *
- */
-
 function App(canvas) {
 
   var self = this;
@@ -53680,8 +53626,6 @@ var createClass = function () {
   };
 }();
 
-// import HTMLControl from './HTMLControl.js';
-
 var LightingSetup = function () {
     function LightingSetup(app) {
         classCallCheck(this, LightingSetup);
@@ -53805,6 +53749,51 @@ HTMLControl.footer = footer$1;
 HTMLControl.loading = loading;
 HTMLControl.attributes = attributes;
 
+var mixer = void 0;
+var actions = {};
+
+function setWeight(action, weight) {
+
+  action.enabled = true;
+  action.setEffectiveTimeScale(1);
+  action.setEffectiveWeight(weight);
+}
+
+function executeCrossFade(startAction, endAction, duration) {
+
+  // Not only the start action, but also the end action must get a weight of 1 before fading
+  // (concerning the start action this is already guaranteed in this place)
+
+  setWeight(endAction, 1);
+  endAction.time = 0;
+
+  startAction.crossFadeTo(endAction, duration, false);
+}
+
+// add an event listener to call executeCrossFade() at teh end of the current action's current loop
+function prepareCrossFade(startAction, endAction, duration) {
+
+  if (!duration) duration = 1;
+
+  if (startAction.name === 'offensive_idle') {
+
+    duration = 1;
+  } else {
+
+    duration = startAction._clip.duration - startAction.time;
+  }
+
+  if (duration < 1) duration = 1;
+
+  executeCrossFade(startAction, endAction, duration);
+
+  // } else {
+
+  //   synchronizeCrossFade( startAction, endAction, duration );
+
+  // }
+}
+
 var AnimationControls = function () {
   function AnimationControls() {
     classCallCheck(this, AnimationControls);
@@ -53812,21 +53801,19 @@ var AnimationControls = function () {
 
     this.isPaused = true;
 
-    this.actions = {};
-
     this.currentAction = null;
   }
 
   AnimationControls.prototype.initMixer = function initMixer(object) {
 
-    this.mixer = new AnimationMixer(object);
+    mixer = new AnimationMixer(object);
   };
 
   AnimationControls.prototype.update = function update(delta) {
 
     if (this.isPaused) return;
 
-    if (this.mixer !== undefined) this.mixer.update(delta / 1000);
+    if (mixer !== undefined) mixer.update(delta / 1000);
   };
 
   AnimationControls.prototype.play = function play() {
@@ -53840,13 +53827,50 @@ var AnimationControls = function () {
   };
 
   AnimationControls.prototype.playAction = function playAction(name) {
+
+    var action = actions[name];
+
+    if (action === undefined) {
+
+      console.warn('Action \'' + name + '\' was not found.');
+      return;
+    }
+
+    // don't restart already playing action
+    if (this.currentAction && this.currentAction.name === name) return;
+
+    // if this is the first action being played just start immediately
+    if (this.currentAction === null) {
+
+      this.currentAction = action;
+      setWeight(this.currentAction, 1);
+    }
+
+    // otherwise crossfade to the new action
+    else {
+
+        // console.log( 'warping from ' + this.currentAction.name + ' to ' + action.name)
+
+        var oldAction = this.currentAction;
+        this.currentAction = action;
+        this.currentAction.reset();
+
+        var duration = 1;
+
+        prepareCrossFade(oldAction, this.currentAction, duration);
+      }
+
+    this.isPaused = false;
+  };
+
+  AnimationControls.prototype.playActionOLD = function playActionOLD(name) {
     var _this = this;
 
     if (this.currentAction && this.currentAction.name === name) return;
 
     var actionFound = false;
 
-    Object.values(this.actions).forEach(function (action) {
+    Object.values(actions).forEach(function (action) {
 
       if (action.name === name) {
 
@@ -53869,13 +53893,7 @@ var AnimationControls = function () {
 
   AnimationControls.prototype.setTimeScale = function setTimeScale(timeScale, name) {
 
-    var action = this.actions[name];
-
-    if (action === undefined) {
-
-      console.warn('Setting TimeScale: Action \'' + name + '\' was not found');
-      return;
-    }
+    var action = actions[name];
 
     var currentTimeScale = action.getEffectiveTimeScale();
 
@@ -53884,11 +53902,15 @@ var AnimationControls = function () {
 
   AnimationControls.prototype.initAnimation = function initAnimation(animationClip, optionalRoot) {
 
-    var action = this.mixer.clipAction(animationClip, optionalRoot);
+    var action = mixer.clipAction(animationClip, optionalRoot);
 
     action.name = animationClip.name;
 
-    this.actions[animationClip.name] = action;
+    actions[animationClip.name] = action;
+
+    setWeight(action, 0);
+
+    action.play();
   };
 
   return AnimationControls;
@@ -53957,10 +53979,6 @@ var Canvas = function () {
 }();
 
 var canvas = new Canvas(HTMLControl.canvas);
-
-/*
- * @author mrdoob / http://mrdoob.com/
- */
 
 function DDSLoader() {
 
@@ -54194,18 +54212,6 @@ DDSLoader.parse = function (buffer, loadMipmaps) {
 
 // With this line you can now just do import 'DDSLoader.js' and it should work
 Loader.Handlers.add(/\.dds$/i, new DDSLoader());
-
-/**
- * @author renej
- * NURBS utils
- *
- * See NURBSCurve and NURBSSurface.
- *
- **/
-
-/**************************************************************
- *	NURBS Utils
- **************************************************************/
 
 var NURBSUtils = {
 
@@ -54600,20 +54606,6 @@ var NURBSUtils = {
 
 };
 
-/**
- * @author renej
- * NURBS curve object
- *
- * Derives from Curve, overriding getPoint and getTangent.
- *
- * Implementation is based on (x, y [, z=0 [, w=1]]) control points with w=weight.
- *
- **/
-
-/**************************************************************
- *	NURBS curve
- **************************************************************/
-
 function NURBSCurve(degree, knots /* array of reals */, controlPoints /* array of Vector(2|3|4) */, startKnot /* index in knots */, endKnot /* index in knots */) {
 
 	Curve.call(this);
@@ -54661,33 +54653,6 @@ NURBSCurve.prototype.getTangent = function (t) {
 	return tangent;
 };
 
-/**
- * @author Kyle-Larson https://github.com/Kyle-Larson
- * @author Takahiro https://github.com/takahirox
- *
- * Loader loads FBX file and generates Group representing FBX scene.
- * Requires FBX file to be >= 7.0 and in ASCII or to be any version in Binary format.
- *
- * Supports:
- * 	Mesh Generation (Positional Data)
- * 	Normal Data (Per Vertex Drawing Instance)
- *  UV Data (Per Vertex Drawing Instance)
- *  Skinning
- *  Animation
- * 	- Separated Animations based on stacks.
- * 	- Skeletal & Non-Skeletal Animations
- *  NURBS (Open, Closed and Periodic forms)
- *
- * Needs Support:
- * 	Indexed Buffers
- * 	PreRotation support.
- */
-
-/**
- * Generates a loader for loading FBX files from URL and parsing into
- * a THREE.Group.
- * @param {THREE.LoadingManager} manager - Loading Manager for loader to use.
- */
 function FBXLoader(manager) {
 
   this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -55152,10 +55117,18 @@ function parseParameters(properties, textureMap, childrenRelationships) {
         parameters.normalMap = textureMap.get(relationship.ID);
         break;
 
-      case ' "AmbientColor':
       case ' "EmissiveColor':
-      case 'AmbientColor':
       case 'EmissiveColor':
+        parameters.emissiveMap = textureMap.get(relationship.ID);
+        break;
+
+      case ' "SpecularColor':
+      case 'SpecularColor':
+        parameters.specularMap = textureMap.get(relationship.ID);
+        break;
+
+      case ' "AmbientColor':
+      case 'AmbientColor':
       default:
         console.warn('Unknown texture application of type ' + type + ', skipping texture');
         break;
@@ -59293,10 +59266,6 @@ function slice(a, b, from, to) {
   return a;
 }
 
-/**
- * @author bhouston / http://clara.io/
- */
-
 function AnimationLoader(manager) {
 
     this.manager = manager !== undefined ? manager : DefaultLoadingManager;
@@ -59439,9 +59408,7 @@ var Loaders = function Loaders() {
   };
 };
 
-// import throttle from 'lodash.throttle';
-// import AttributeControls from './AttributeControls.js';
-// import animationControls from './AnimationControls.js';
+// Control camera targeting and OrbitControl settings
 
 var CameraControl = function () {
     function CameraControl() {
@@ -59456,15 +59423,14 @@ var CameraControl = function () {
         this.dynamicTracking = false;
 
         this._zoomLevel = 1;
+        this.targetTrackingSpeed = 1;
 
-        this._currentTarget = new Object3D();
-
-        this._boundingBox = new Box3();
+        this.currentTargetName = 'default';
     }
 
     CameraControl.prototype.initCamera = function initCamera() {
 
-        var boundingBox = this.boundingBox;
+        var boundingBox = new Box3().setFromObject(this.player);
 
         var center = boundingBox.getCenter();
         var size = boundingBox.getSize();
@@ -59494,7 +59460,7 @@ var CameraControl = function () {
         this.controls.minPolarAngle = 0;
         this.controls.maxPolarAngle = Math.PI / 2;
 
-        this.controls.enablePan = false;
+        // this.controls.enablePan = false;
 
         // save the initial position. This can be regained with controls.reset()
         this.controls.saveState();
@@ -59503,9 +59469,6 @@ var CameraControl = function () {
     CameraControl.prototype.init = function init(player) {
 
         this.player = player;
-
-        // used for targeting
-        this.helmet = this.player.getObjectByName('WAFPhelmet');
 
         this.initCamera();
         this.initControls();
@@ -59517,36 +59480,33 @@ var CameraControl = function () {
 
         this.targets = {};
 
-        this.targets.head = new Object3D();
-        this.targets.head.position.copy(this.helmet.position);
+        // used for targeting - position is recaulcated per frame if this.dynamicTracking = true
+        this.dynamicTarget = this.player.getObjectByName('mixamorigHead');
+        this.targets.dynamic = new Object3D();
+        this.targets.dynamicUpper = new Object3D();
 
         this.targets.default = new Object3D();
         this.targets.default.position.copy(this.controls.target);
 
+        this.targets.head = new Object3D();
+        this.targets.head.position.copy(this.player.getObjectByName('WAFPhelmet').position);
+
         this.targets.torso = this.targets.head.clone();
         this.targets.torso.position.y = (this.targets.head.position.y + this.targets.default.position.y) / 2;
 
-        this.targets.head.position.y -= 100;
-
         this.targets.leftArm = this.targets.torso.clone();
-        this.targets.leftArm.position.x += 75;
+        this.targets.leftArm.position.x += 25;
 
         this.targets.rightArm = this.targets.torso.clone();
-        this.targets.rightArm.position.x -= 75;
+        this.targets.rightArm.position.x -= 25;
 
-        this.targets.armTarget = this.targets.rightArm;
+        this.targets.arms = this.targets.rightArm;
 
-        var geo = new SphereBufferGeometry(25, 12, 12);
-        var mat = new MeshBasicMaterial({ color: 0xff0000 });
-        this.targets.trackPlayer = new Mesh(geo, mat);
-        this.targets.trackPlayer.position.copy(this.targets.default.position);
-        // this.player.add( this.targets.trackPlayer );
-
-        this.currentTarget = this.targets.default;
+        this.currentTarget = 'default';
 
         // const addTargetHelper = ( target, color ) => {
 
-        //   const geo = new THREE.SphereBufferGeometry( 25, 12, 12 );
+        //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
         //   const mat = new THREE.MeshBasicMaterial( { color } );
         //   const mesh = new THREE.Mesh( geo, mat );
         //   mesh.position.copy( target.position );
@@ -59556,38 +59516,39 @@ var CameraControl = function () {
         // };
 
         // addTargetHelper( this.targets.default, 0xff0000 );
-        // addTargetHelper( this.targets.head, 0x00ff00 );
-        // addTargetHelper( this.targets.torso, 0x0000ff );
+        // addTargetHelper( this.targets.torso, 0x00ff00 );
+        // addTargetHelper( this.targets.head, 0x0000ff );
 
-        // addTargetHelper( this.targets.leftArm, 0xff0000 );
         // addTargetHelper( this.targets.rightArm, 0x0000ff );
-        // addTargetHelper( this.targets.trackPlayer, 0xff0000 );
+        // addTargetHelper( this.targets.leftArm, 0xff0000 );
 
     };
 
     CameraControl.prototype.updateTarget = function updateTarget(delta) {
 
-        // console.log( this.dynamicTracking )
-
         if (this.dynamicTracking) {
 
-            // console.log( 'center:', this.helmet.position );
+            this.dynamicTarget.getWorldPosition(this.targets.dynamicUpper.position);
 
-            this.targets.trackPlayer.position.set(this.helmet.position.x, this.helmet.position.y - 100, this.helmet.position.z);
+            this.targets.dynamic.position.copy(this.targets.dynamicUpper.position);
+
+            this.targets.dynamic.position.y = 100;
         }
 
         var distance = this.controls.target.distanceTo(this.currentTarget.position);
 
-        if (distance > 0.1) {
+        if (distance > 0.1 || this.dynamicTracking) {
 
             var start = new Vector3().copy(this.controls.target);
 
             var direction = start.sub(this.currentTarget.position).normalize();
 
-            direction.multiplyScalar(distance * delta);
+            direction.multiplyScalar(distance * delta * this.targetTrackingSpeed);
 
             this.controls.target.sub(direction);
         } else {
+
+            this.controls.target.copy(this.currentTarget.position);
 
             this.targetChanged = false;
         }
@@ -59622,56 +59583,39 @@ var CameraControl = function () {
 
     CameraControl.prototype.focusHead = function focusHead() {
 
-        // console.log( 'Focussing: head' );
-
-        this.currentTarget = this.targets.head;
+        this.currentTarget = 'head';
         this.zoomLevel = 3;
     };
 
     CameraControl.prototype.focusUpper = function focusUpper() {
 
-        // console.log( 'Focussing: torso' );
-
-        this.currentTarget = this.targets.torso;
+        this.currentTarget = 'torso';
         this.zoomLevel = 2;
     };
 
     CameraControl.prototype.focusArms = function focusArms() {
 
-        // console.log( 'Focussing: arms' );
-
-        this.currentTarget = this.targets.armTarget;
+        this.currentTarget = 'arms';
         this.zoomLevel = 2;
     };
 
     CameraControl.prototype.focusDefault = function focusDefault() {
 
-        // console.log( 'Focussing: default' );
-
-        this.currentTarget = this.targets.default;
+        this.currentTarget = 'default';
         this.zoomLevel = 1;
     };
 
     CameraControl.prototype.focusDynamic = function focusDynamic() {
 
-        //TEMP: not yet implemented!!
-        this.focusDefault();
-
-        // console.log( 'Focussing: dynamic' );
-
-        // this.currentTarget = this.targets.trackPlayer;
-        // this.zoomLevel = 1;
+        this.currentTarget = 'dynamic';
+        this.dynamicTracking = true;
+        this.zoomLevel = 1;
     };
 
     CameraControl.prototype.focusDynamicUpper = function focusDynamicUpper() {
 
-        //TEMP: not yet implemented!!
-        this.focusDefault();
-
-        // console.log( 'Focussing: dynamic' );
-
-        // this.currentTarget = this.targets.trackPlayer;
-        // this.zoomLevel = 1;
+        this.currentTarget = 'dynamicUpper';
+        this.zoomLevel = 2;
     };
 
     CameraControl.prototype.setArmTarget = function setArmTarget(arm) {
@@ -59680,17 +59624,16 @@ var CameraControl = function () {
 
         if (arm === 'right') {
 
-            this.targets.armTarget = this.targets.rightArm;
-            this.currentTarget = this.targets.armTarget;
+            this.targets.arms = this.targets.rightArm;
         } else if (arm === 'left') {
 
-            this.targets.armTarget = this.targets.leftArm;
-            this.currentTarget = this.targets.armTarget;
+            this.targets.arms = this.targets.leftArm;
         } else if (arm === 'both') {
 
-            this.targets.armTarget = this.targets.torso;
-            this.currentTarget = this.targets.armTarget;
+            this.targets.arms = this.targets.torso;
         }
+
+        this.focusArms();
     };
 
     createClass(CameraControl, [{
@@ -59708,38 +59651,28 @@ var CameraControl = function () {
         }
     }, {
         key: 'currentTarget',
-        set: function (target) {
+        set: function (targetName) {
 
-            if (this._currentTarget.position.equals(target.position)) return;
+            if (this.currentTargetName === targetName) return;
 
-            this._currentTarget = target;
+            this.currentTargetName = targetName;
+
+            this._currentTarget = this.targets[targetName];
             this.targetChanged = true;
 
-            if (this._currentTarget.position.equals(this.targets.trackPlayer.position)) {
-
-                // console.log( this._currentTarget.position.equals( this.targets.trackPlayer.position ) )
+            if (targetName.includes('dynamic')) {
 
                 this.dynamicTracking = true;
+                this.targetTrackingSpeed = 2;
             } else {
 
                 this.dynamicTracking = false;
+                this.targetTrackingSpeed = 1;
             }
         },
         get: function () {
 
-            return this._currentTarget;
-        }
-    }, {
-        key: 'boundingBox',
-        get: function () {
-
-            return this._boundingBox.setFromObject(this.player);
-        }
-    }, {
-        key: 'center',
-        get: function () {
-
-            return this.boundingBox.getCenter();
+            return this.targets[this.currentTargetName];
         }
     }]);
     return CameraControl;
@@ -59755,7 +59688,7 @@ var AttributeControls = function () {
             this.attributes = HTMLControl.attributes;
 
             this.dominantHand = 'right';
-            this.passAnim = 'pass_right_handed';
+            this.passAnim = 'pass_right_hand';
             this.victoryAnim = 'victory';
       }
 
@@ -59857,7 +59790,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  if (e.target.value < 5) _this2.animationControls.playAction('catch_1');else _this2.animationControls.playAction('catch_3');
+                  if (e.target.value < 5) _this2.animationControls.playAction('catch_to_fall');else _this2.animationControls.playAction('catch_to_roll');
 
                   cameraControl.focusDynamic();
             }, 100), false);
@@ -59894,7 +59827,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  _this4.passAnim = 'pass_left_handed';
+                  _this4.passAnim = 'pass_left_hand';
 
                   _this4.animationControls.setTimeScale(1, anim);
                   _this4.animationControls.playAction(anim);
@@ -59907,7 +59840,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  _this4.passAnim = 'pass_right_handed';
+                  _this4.passAnim = 'pass_right_hand';
 
                   _this4.animationControls.setTimeScale(1, anim);
                   _this4.animationControls.playAction(anim);
@@ -59920,7 +59853,7 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  _this4.passAnim = 'pass_right_handed';
+                  _this4.passAnim = 'pass_right_hand';
 
                   _this4.animationControls.setTimeScale(1, anim);
                   _this4.animationControls.playAction(anim);
@@ -60141,7 +60074,7 @@ var AttributeControls = function () {
 
                   _this20.animationControls.playAction('run');
 
-                  cameraControl.focusDynamic();
+                  cameraControl.focusDefault();
             }, 100), false);
       };
 
@@ -60152,7 +60085,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  if (e.target.value + _this21.attributes['ability-to-win'].value < 7) {
+                  var total = parseInt(e.target.value) + parseInt(_this21.attributes['ability-to-win'].value);
+
+                  if (total < 7) {
 
                         _this21.animationControls.playAction('defeat');
                   } else {
@@ -60171,7 +60106,9 @@ var AttributeControls = function () {
 
                   e.preventDefault();
 
-                  if (e.target.value + _this22.attributes['clutch-production'].value < 7) {
+                  var total = parseInt(e.target.value) + parseInt(_this22.attributes['clutch-production'].value);
+
+                  if (total < 7) {
 
                         _this22.animationControls.playAction('defeat');
                   } else {
@@ -60188,7 +60125,6 @@ var AttributeControls = function () {
 
 var attributeControls = new AttributeControls();
 
-// import HTMLControl from './utilities/HTMLControl.js';
 var loaders = new Loaders();
 
 var Simulation = function () {
@@ -60231,7 +60167,7 @@ var Simulation = function () {
     Simulation.prototype.loadModels = function loadModels() {
         var _this = this;
 
-        var playerPromise = loaders.fbxLoader('/assets/models/nfl/white_player_static.fbx').then(function (object) {
+        var playerPromise = loaders.fbxLoader('/assets/models/nfl/t_pose_rigged.fbx').then(function (object) {
 
             object.traverse(function (child) {
 
@@ -60255,7 +60191,7 @@ var Simulation = function () {
     Simulation.prototype.loadAnimations = function loadAnimations() {
         var _this2 = this;
 
-        var animationsNames = ['catch_1', 'catch_2', 'catch_3', 'hike', 'simple_idle', 'offensive_idle', 'on_back_to_stand', 'on_front_to_stand', 'pass_left_handed', 'pass_right_handed', 'run', 'stance', 'victory', 'defeat'];
+        var animationsNames = ['catch_to_fall', 'catch_to_roll', 'defeat', 'hike', 'idle_transition_long', 'idle_transition_short', 'offensive_idle', 'pass_left_hand', 'pass_right_hand', 'pushup_to_idle', 'run', 'situp_to_idle', 'victory'];
 
         this.animations = [];
 

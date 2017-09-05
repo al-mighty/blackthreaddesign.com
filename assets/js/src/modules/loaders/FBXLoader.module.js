@@ -538,10 +538,18 @@ function parseParameters( properties, textureMap, childrenRelationships ) {
         parameters.normalMap = textureMap.get( relationship.ID );
         break;
 
-      case ' "AmbientColor':
       case ' "EmissiveColor':
-      case 'AmbientColor':
       case 'EmissiveColor':
+        parameters.emissiveMap = textureMap.get( relationship.ID );
+        break;
+
+      case ' "SpecularColor':
+      case 'SpecularColor':
+        parameters.specularMap = textureMap.get( relationship.ID );
+        break;
+
+      case ' "AmbientColor':
+      case 'AmbientColor':
       default:
         console.warn( 'Unknown texture application of type ' + type + ', skipping texture' );
         break;

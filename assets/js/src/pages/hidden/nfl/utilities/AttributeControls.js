@@ -10,7 +10,7 @@ class AttributeControls {
     this.attributes = HTMLControl.attributes;
 
     this.dominantHand = 'right';
-    this.passAnim = 'pass_right_handed';
+    this.passAnim = 'pass_right_hand';
     this.victoryAnim = 'victory';
 
   }
@@ -117,8 +117,8 @@ class AttributeControls {
 
       e.preventDefault();
 
-      if ( e.target.value < 5 ) this.animationControls.playAction( 'catch_1' );
-      else this.animationControls.playAction( 'catch_3' );
+      if ( e.target.value < 5 ) this.animationControls.playAction( 'catch_to_fall' );
+      else this.animationControls.playAction( 'catch_to_roll' );
 
       cameraControl.focusDynamic();
 
@@ -158,7 +158,7 @@ class AttributeControls {
 
       e.preventDefault();
 
-      this.passAnim = 'pass_left_handed';
+      this.passAnim = 'pass_left_hand';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
@@ -172,7 +172,7 @@ class AttributeControls {
 
       e.preventDefault();
 
-      this.passAnim = 'pass_right_handed';
+      this.passAnim = 'pass_right_hand';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
@@ -186,7 +186,7 @@ class AttributeControls {
 
       e.preventDefault();
 
-      this.passAnim = 'pass_right_handed';
+      this.passAnim = 'pass_right_hand';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
@@ -423,7 +423,7 @@ class AttributeControls {
 
       this.animationControls.playAction( 'run' );
 
-      cameraControl.focusDynamic();
+      cameraControl.focusDefault();
 
     }, 100 ), false );
 
@@ -436,7 +436,9 @@ class AttributeControls {
 
       e.preventDefault();
 
-      if ( e.target.value + this.attributes[ 'ability-to-win' ].value < 7 ) {
+      const total = parseInt( e.target.value ) + parseInt( this.attributes[ 'ability-to-win' ].value );
+
+      if ( total < 7 ) {
 
         this.animationControls.playAction( 'defeat' );
 
@@ -458,7 +460,9 @@ class AttributeControls {
 
       e.preventDefault();
 
-      if ( e.target.value + this.attributes[ 'clutch-production' ].value < 7 ) {
+      const total = parseInt( e.target.value ) + parseInt( this.attributes[ 'clutch-production' ].value );
+
+      if ( total < 7 ) {
 
         this.animationControls.playAction( 'defeat' );
 
