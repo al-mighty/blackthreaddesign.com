@@ -53627,61 +53627,61 @@ var createClass = function () {
 }();
 
 var LightingSetup = function () {
-    function LightingSetup(app) {
-        classCallCheck(this, LightingSetup);
+  function LightingSetup(app) {
+    classCallCheck(this, LightingSetup);
 
 
-        this.app = app;
+    this.app = app;
 
-        this.initLights();
-    }
+    this.initLights();
+  }
 
-    LightingSetup.prototype.initLights = function initLights() {
+  LightingSetup.prototype.initLights = function initLights() {
 
-        var ambientLight = new AmbientLight(0xffffff, 0.3);
-        this.app.scene.add(ambientLight);
+    var ambientLight = new AmbientLight(0xffffff, 0.3);
+    this.app.scene.add(ambientLight);
 
-        // ****  METHOD 1:   3 POINT LIGHTING ***************************
-        // Traditional 3 point light setup - slightly more expensive due to
-        // two extra lights
+    // ****  METHOD 1:   3 POINT LIGHTING ***************************
+    // Traditional 3 point light setup - slightly more expensive due to
+    // two extra lights
 
-        var backLight = new DirectionalLight(0xffffff, 0.425);
-        backLight.position.set(130, 200, 150);
-        // backLight.castShadow = true;
-        // backLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 40, 1, 1, 10000 ) );
-        // backLight.shadow.bias = -0.000222;
-        // backLight.shadow.mapSize.width = 2048;
-        // backLight.shadow.mapSize.height = 2048;
+    var backLight = new DirectionalLight(0xffffff, 0.425);
+    backLight.position.set(130, 200, 150);
+    // backLight.castShadow = true;
+    // backLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 40, 1, 1, 10000 ) );
+    // backLight.shadow.bias = -0.000222;
+    // backLight.shadow.mapSize.width = 2048;
+    // backLight.shadow.mapSize.height = 2048;
 
 
-        var keyLight = new DirectionalLight(0xffffff, 0.475);
-        keyLight.position.set(100, 50, 0);
-        // keyLight.castShadow = true;
-        // keyLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
-        // keyLight.shadow.bias = 0.000222;
-        // keyLight.shadow.mapSize.width = 2048;
-        // keyLight.shadow.mapSize.height = 2048;
+    var keyLight = new DirectionalLight(0xffffff, 0.475);
+    keyLight.position.set(100, 50, 0);
+    // keyLight.castShadow = true;
+    // keyLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
+    // keyLight.shadow.bias = 0.000222;
+    // keyLight.shadow.mapSize.width = 2048;
+    // keyLight.shadow.mapSize.height = 2048;
 
-        var fillLight = new DirectionalLight(0xffffff, 0.4);
-        fillLight.position.set(75, 75, 50);
-        // fillLight.castShadow = true;
-        // fillLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
-        // fillLight.shadow.bias = 0.0001;
-        // fillLight.shadow.mapSize.width = 2048;
-        // fillLight.shadow.mapSize.height = 2048;
+    var fillLight = new DirectionalLight(0xffffff, 0.4);
+    fillLight.position.set(75, 75, 50);
+    // fillLight.castShadow = true;
+    // fillLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
+    // fillLight.shadow.bias = 0.0001;
+    // fillLight.shadow.mapSize.width = 2048;
+    // fillLight.shadow.mapSize.height = 2048;
 
-        this.app.scene.add(backLight, keyLight, fillLight);
+    this.app.scene.add(backLight, keyLight, fillLight);
 
-        // ****  METHOD 2:   CAMERA LIGHT ***********************************
-        // Visually similar to 3 point lighting, but cheaper as only two lights
-        // are needed
+    // ****  METHOD 2:   CAMERA LIGHT ***********************************
+    // Visually similar to 3 point lighting, but cheaper as only two lights
+    // are needed
 
-        this.pointLight = new PointLight(0xffffff, 0.5, 0, 0);
-        this.app.camera.add(this.pointLight);
-        this.app.scene.add(this.app.camera);
-    };
+    this.pointLight = new PointLight(0xffffff, 0.5, 0, 0);
+    this.app.camera.add(this.pointLight);
+    this.app.scene.add(this.app.camera);
+  };
 
-    return LightingSetup;
+  return LightingSetup;
 }();
 
 var canvas$1 = document.querySelector('#canvas');
@@ -59247,68 +59247,6 @@ var Loaders = function Loaders() {
   };
 };
 
-var Canvas$1 = function () {
-  function Canvas(canvas) {
-    classCallCheck(this, Canvas);
-
-
-    this.canvas = canvas;
-
-    this.app = new App(this.canvas);
-
-    this.app.renderer.setClearColor(0xf7f7f7, 1.0);
-
-    this.lighting = new LightingSetup(this.app);
-
-    this.loadedObjects = new Group();
-    this.app.scene.add(this.loadedObjects);
-
-    this.app.initControls();
-
-    // this.initShadows();
-    this.initFog();
-    this.addGround();
-  }
-
-  Canvas.prototype.initShadows = function initShadows() {
-
-    this.app.renderer.shadowMap.enabled = true;
-    this.app.renderer.shadowMap.type = PCFShadowMap;
-    // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
-  };
-
-  Canvas.prototype.initFog = function initFog() {
-
-    this.app.scene.fog = new Fog(0xf7f7f7, 1500, 10000);
-  };
-
-  Canvas.prototype.addGround = function addGround() {
-
-    var geometry = new PlaneBufferGeometry(20000, 20000);
-    var material = new MeshPhongMaterial({ color: 0xb0b0b0, shininess: 0.1 });
-    var ground = new Mesh(geometry, material);
-    ground.position.set(0, -25, 0);
-    ground.rotation.x = -Math.PI / 2;
-
-    // const shadowGeometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
-    // const shadowMat = new THREE.ShadowMaterial();
-    // shadowMat.opacity = 0.2;
-    // const shadowReceiver = new THREE.Mesh( shadowGeometry, shadowMat );
-    // shadowReceiver.position.set( 0, 0, 0 );
-    // shadowReceiver.rotation.x = -Math.PI / 2;
-    // shadowReceiver.receiveShadow = true;
-
-    // this.app.scene.add( ground, shadowReceiver );
-
-    ground.receiveShadow = true;
-    this.app.scene.add(ground);
-  };
-
-  return Canvas;
-}();
-
-var canvas$2 = new Canvas$1(HTMLControl.canvas);
-
 // Control camera targeting and OrbitControl settings
 
 var CameraControl = function () {
@@ -59316,6 +59254,66 @@ var CameraControl = function () {
     classCallCheck(this, CameraControl);
 
 
+    this.camera = canvas.app.camera;
+    this.controls = canvas.app.controls;
+
+    this.targetChanged = false;
+    this.zoomLevelChanged = false;
+    this.dynamicTracking = false;
+
+    this._zoomLevel = 1;
+    this.targetTrackingSpeed = 1;
+
+    this.currentTargetName = 'default';
+  }
+
+  CameraControl.prototype.initCamera = function initCamera() {
+
+    var boundingBox = new Box3().setFromObject(this.player);
+
+    var center = boundingBox.getCenter();
+    var size = boundingBox.getSize();
+
+    // get the max side of the bounding box
+    var maxDim = Math.max(size.x, size.y, size.z);
+    var fov = this.camera.fov * (Math.PI / 180);
+    var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+
+    this.camera.position.z = cameraZ;
+
+    var minZ = boundingBox.min.z;
+    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+
+    // set camera to rotate around center of loaded object
+    this.controls.target.copy(center);
+
+    // prevent camera from zooming out far enough to create far plane cutoff
+    this.controls.maxDistance = cameraToFarEdge * 2;
+  };
+
+  CameraControl.prototype.initControls = function initControls() {
+
+    this.controls.minPolarAngle = 0;
+    this.controls.maxPolarAngle = Math.PI / 2;
+
+    // this.controls.enablePan = false;
+
+<<<<<<< HEAD
+var CameraControl = function () {
+  function CameraControl() {
+    classCallCheck(this, CameraControl);
+=======
+    // save the initial position. This can be regained with controls.reset()
+    this.controls.saveState();
+  };
+>>>>>>> rollback
+
+  CameraControl.prototype.init = function init(player) {
+
+<<<<<<< HEAD
     this.camera = canvas$2.app.camera;
     this.controls = canvas$2.app.controls;
 
@@ -59471,8 +59469,163 @@ var CameraControl = function () {
   };
 
   // per frame calculation
+=======
+    this.player = player;
+
+    this.initCamera();
+    this.initControls();
+
+    this.initTargets();
+  };
+
+  CameraControl.prototype.initTargets = function initTargets() {
+
+    this.targets = {};
+
+    // used for targeting - position is recaulcated per frame if this.dynamicTracking = true
+    this.dynamicTarget = this.player.getObjectByName('mixamorigHead');
+    this.targets.dynamic = new Object3D();
+    this.targets.dynamicUpper = new Object3D();
+
+    this.targets.default = new Object3D();
+    this.targets.default.position.copy(this.controls.target);
+
+    this.targets.head = new Object3D();
+    this.targets.head.position.copy(this.player.getObjectByName('WAFPhelmet').position);
+
+    this.targets.torso = this.targets.head.clone();
+    this.targets.torso.position.y = (this.targets.head.position.y + this.targets.default.position.y) / 2;
+
+    this.targets.leftArm = this.targets.torso.clone();
+    this.targets.leftArm.position.x += 25;
+
+    this.targets.rightArm = this.targets.torso.clone();
+    this.targets.rightArm.position.x -= 25;
+
+    this.targets.arms = this.targets.rightArm;
+
+    this.currentTarget = 'default';
+
+    // const addTargetHelper = ( target, color ) => {
+
+    //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
+    //   const mat = new THREE.MeshBasicMaterial( { color } );
+    //   const mesh = new THREE.Mesh( geo, mat );
+    //   mesh.position.copy( target.position );
+
+    //   canvas.app.scene.add( mesh );
+
+    // };
+
+    // addTargetHelper( this.targets.default, 0xff0000 );
+    // addTargetHelper( this.targets.torso, 0x00ff00 );
+    // addTargetHelper( this.targets.head, 0x0000ff );
+
+    // addTargetHelper( this.targets.rightArm, 0x0000ff );
+    // addTargetHelper( this.targets.leftArm, 0xff0000 );
+
+  };
+
+  CameraControl.prototype.updateTarget = function updateTarget(delta) {
+
+    if (this.dynamicTracking) {
+
+      this.dynamicTarget.getWorldPosition(this.targets.dynamicUpper.position);
+
+      this.targets.dynamic.position.copy(this.targets.dynamicUpper.position);
+
+      this.targets.dynamic.position.y = 100;
+    }
+
+    var distance = this.controls.target.distanceTo(this.currentTarget.position);
+
+    if (distance > 0.1 || this.dynamicTracking) {
+
+      var start = new Vector3().copy(this.controls.target);
+
+      var direction = start.sub(this.currentTarget.position).normalize();
+
+      direction.multiplyScalar(distance * delta * this.targetTrackingSpeed);
+
+      this.controls.target.sub(direction);
+    } else {
+
+      this.controls.target.copy(this.currentTarget.position);
+
+      this.targetChanged = false;
+    }
+  };
+
+  CameraControl.prototype.updateZoomLevel = function updateZoomLevel(delta) {
+
+    var diff = (this.controls.object.zoom - this.zoomLevel) * delta;
+
+    if (Math.abs(diff) > 0.001) {
+
+      this.controls.object.zoom -= diff;
+      this.controls.object.updateProjectionMatrix();
+    } else {
+
+      this.controls.object.zoom = this.zoomLevel;
+      this.zoomLevelChanged = false;
+    }
+  };
+
+  // per frame calculation
 
 
+  CameraControl.prototype.update = function update(delta) {
+
+    delta /= 1000;
+
+    if (this.targetChanged || this.dynamicTracking) this.updateTarget(delta);
+
+    if (this.zoomLevelChanged) this.updateZoomLevel(delta);
+  };
+
+  CameraControl.prototype.focusHead = function focusHead() {
+
+    this.currentTarget = 'head';
+    this.zoomLevel = 3;
+  };
+
+  CameraControl.prototype.focusUpper = function focusUpper() {
+
+    this.currentTarget = 'torso';
+    this.zoomLevel = 2;
+  };
+
+  CameraControl.prototype.focusArms = function focusArms() {
+
+    this.currentTarget = 'arms';
+    this.zoomLevel = 2;
+  };
+
+  CameraControl.prototype.focusDefault = function focusDefault() {
+
+    this.currentTarget = 'default';
+    this.zoomLevel = 1;
+  };
+
+  CameraControl.prototype.focusDynamic = function focusDynamic() {
+
+    this.currentTarget = 'dynamic';
+    this.dynamicTracking = true;
+    this.zoomLevel = 1;
+  };
+
+  CameraControl.prototype.focusDynamicUpper = function focusDynamicUpper() {
+
+    this.currentTarget = 'dynamicUpper';
+    this.zoomLevel = 2;
+  };
+
+  CameraControl.prototype.setArmTarget = function setArmTarget(arm) {
+>>>>>>> rollback
+
+    arm = arm || 'right';
+
+<<<<<<< HEAD
   CameraControl.prototype.update = function update(delta) {
 
     delta /= 1000;
@@ -59578,9 +59731,131 @@ var CameraControl = function () {
   }]);
   return CameraControl;
 }();
+=======
+    if (arm === 'right') {
+
+      this.targets.arms = this.targets.rightArm;
+    } else if (arm === 'left') {
+
+      this.targets.arms = this.targets.leftArm;
+    } else if (arm === 'both') {
+
+      this.targets.arms = this.targets.torso;
+    }
+
+    this.focusArms();
+  };
+
+  createClass(CameraControl, [{
+    key: 'zoomLevel',
+    set: function (value) {
+
+      if (this._zoomLevel === value) return;
+
+      this.zoomLevelChanged = true;
+      this._zoomLevel = value;
+    },
+    get: function () {
+
+      return this._zoomLevel;
+    }
+  }, {
+    key: 'currentTarget',
+    set: function (targetName) {
+
+      if (this.currentTargetName === targetName) return;
+
+      this.currentTargetName = targetName;
+
+      this._currentTarget = this.targets[targetName];
+      this.targetChanged = true;
+
+      if (targetName.includes('dynamic')) {
+
+        this.dynamicTracking = true;
+        this.targetTrackingSpeed = 2;
+      } else {
+
+        this.dynamicTracking = false;
+        this.targetTrackingSpeed = 1;
+      }
+    },
+    get: function () {
+
+      return this.targets[this.currentTargetName];
+    }
+  }]);
+  return CameraControl;
+}();
 
 var cameraControl = new CameraControl();
 
+var Canvas$1 = function () {
+  function Canvas(canvas) {
+    classCallCheck(this, Canvas);
+
+
+    this.canvas = canvas;
+
+    this.app = new App(this.canvas);
+
+    this.app.renderer.setClearColor(0xf7f7f7, 1.0);
+
+    this.lighting = new LightingSetup(this.app);
+
+    this.loadedObjects = new Group();
+    this.app.scene.add(this.loadedObjects);
+
+    this.app.initControls();
+
+    // this.initShadows();
+    this.initFog();
+    this.addGround();
+  }
+
+  Canvas.prototype.initShadows = function initShadows() {
+
+    this.app.renderer.shadowMap.enabled = true;
+    this.app.renderer.shadowMap.type = PCFShadowMap;
+    // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
+  };
+
+  Canvas.prototype.initFog = function initFog() {
+
+    this.app.scene.fog = new Fog(0xf7f7f7, 1500, 10000);
+  };
+
+  Canvas.prototype.addGround = function addGround() {
+
+    var geometry = new PlaneBufferGeometry(20000, 20000);
+    var material = new MeshPhongMaterial({ color: 0xb0b0b0, shininess: 0.1 });
+    var ground = new Mesh(geometry, material);
+    ground.position.set(0, -25, 0);
+    ground.rotation.x = -Math.PI / 2;
+>>>>>>> rollback
+
+    // const shadowGeometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
+    // const shadowMat = new THREE.ShadowMaterial();
+    // shadowMat.opacity = 0.2;
+    // const shadowReceiver = new THREE.Mesh( shadowGeometry, shadowMat );
+    // shadowReceiver.position.set( 0, 0, 0 );
+    // shadowReceiver.rotation.x = -Math.PI / 2;
+    // shadowReceiver.receiveShadow = true;
+
+<<<<<<< HEAD
+=======
+    // this.app.scene.add( ground, shadowReceiver );
+
+    ground.receiveShadow = true;
+    this.app.scene.add(ground);
+  };
+
+  return Canvas;
+}();
+
+var canvas$2 = new Canvas$1(HTMLControl.canvas);
+
+>>>>>>> rollback
 var AttributeControls = function () {
   function AttributeControls() {
     classCallCheck(this, AttributeControls);
