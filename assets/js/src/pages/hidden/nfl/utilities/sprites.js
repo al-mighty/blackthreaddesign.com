@@ -16,7 +16,7 @@ class Sprite {
 
     this.object = new THREE.Sprite( mat );
 
-    // canvas.scene.add( this.object );
+    canvas.scene.add( this.object );
 
     this.enabled = false;
 
@@ -41,13 +41,13 @@ class Sprites {
 
   constructor() {
 
-    // this.attributes = HTMLControl.attributes;
+    this.attributes = HTMLControl.attributes;
 
-    // this.loadTexture();
+    this.loadTexture();
 
-    // this.sprites = {};
+    this.sprites = {};
 
-    // this.arm = 'right';
+    this.arm = 'right';
 
   }
 
