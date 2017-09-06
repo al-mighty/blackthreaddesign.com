@@ -53626,8 +53626,6 @@ var createClass = function () {
   };
 }();
 
-// import HTMLControl from './HTMLControl.js';
-
 var LightingSetup = function () {
   function LightingSetup(app) {
     classCallCheck(this, LightingSetup);
@@ -59181,6 +59179,7 @@ var bufferGeometryLoader = null;
 var jsonLoader = null;
 var animationLoader = null;
 var fbxLoader = null;
+var textureLoader = null;
 
 var defaultReject = function (err) {
   console.log(err);
@@ -59202,6 +59201,13 @@ var Loaders = function Loaders() {
 
 
   return {
+
+    get textureLoader() {
+      if (textureLoader === null) {
+        textureLoader = promisifyLoader(new TextureLoader(loadingManager));
+      }
+      return textureLoader;
+    },
 
     get objectLoader() {
       if (objectLoader === null) {
@@ -59240,6 +59246,8 @@ var Loaders = function Loaders() {
 
   };
 };
+
+var loaders = new Loaders();
 
 // Control camera targeting and OrbitControl settings
 
@@ -60189,7 +60197,189 @@ var AnimationControls = function () {
 
 var animationControls = new AnimationControls();
 
-var loaders = new Loaders();
+var Sprite$1 = function () {
+  function Sprite$$(texture, attribute) {
+    classCallCheck(this, Sprite$$);
+
+
+    this.attribute = attribute;
+
+    var mat = new SpriteMaterial({ map: texture, color: 0xffffff });
+
+    this.object = new Sprite(mat);
+
+    canvas$2.scene.add(this.object);
+
+    this.enabled = false;
+  }
+
+  Sprite$$.prototype.enable = function enable() {
+
+    this.enabled = true;
+    this.visible = true;
+  };
+
+  createClass(Sprite$$, [{
+    key: 'visible',
+    set: function (bool) {
+
+      this.object.visible = bool;
+    }
+  }]);
+  return Sprite$$;
+}();
+
+var Sprites = function () {
+  function Sprites() {
+    classCallCheck(this, Sprites);
+
+
+    this.attributes = HTMLControl.attributes;
+
+    this.loadTexture();
+
+    this.sprites = {};
+
+    this.arm = 'right';
+  }
+
+  Sprites.prototype.init = function init(player) {
+
+    this.player = player;
+    this.initTargets;
+  };
+
+  Sprites.prototype.loadTexture = function loadTexture() {
+    var _this = this;
+
+    loaders.textureLoader('/assets/images/nfl/power_bar.png').then(function (texture) {
+
+      _this.testTexture = texture;
+    });
+  };
+
+  Sprites.prototype.initTargets = function initTargets() {
+
+    this.targets = {
+
+      rightArm: this.player.getObjectByName('mixamorigRightShoulder'),
+      leftArm: this.player.getObjectByName('mixamorigLeftShoulder')
+
+    };
+  };
+
+  Sprites.prototype.initPositions = function initPositions() {
+
+    var armPos = new Vector3();
+
+    this.positions = {
+
+      get arms() {
+
+        if (this.arm === 'right' || this.arm === 'both') {
+
+          this.targets.rightArm.getWorldPosition(armPos);
+          armPos.x += 25;
+        } else {
+
+          this.targets.leftArm.getWorldPosition(armPos);
+          armPos.x -= 25;
+        }
+
+        armPos.y -= 25;
+
+        return armPos;
+      }
+
+    };
+  };
+
+  Sprites.prototype.initSprites = function initSprites() {
+
+    this.sprites.armStrength = new Sprite$1(this.testTexture, this.attributes['arm-strength']);
+  };
+
+  // set to right, left or both
+
+
+  Sprites.prototype.setArm = function setArm(arm) {
+
+    arm = arm || 'right';
+
+    this.arm = arm;
+  };
+
+  Sprites.prototype.hideAll = function hideAll() {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      sprite.visible = false;
+    });
+
+    this.stopAnimation();
+  };
+
+  Sprites.prototype.showAllEnabled = function showAllEnabled() {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      if (sprite.enabled) sprite.visible = true;
+    });
+
+    this.animate();
+  };
+
+  Sprites.prototype.enable = function enable(spriteName) {
+
+    var sprite = this.sprites[spriteName];
+
+    if (sprite === undefined) {
+
+      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+      return;
+    }
+
+    sprite.enable();
+  };
+
+  Sprites.prototype.disable = function disable(spriteName) {
+
+    var sprite = this.sprites[spriteName];
+
+    if (sprite === undefined) {
+
+      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+      return;
+    }
+
+    sprite.disable();
+  };
+
+  Sprites.prototype.animate = function animate() {
+    var _this2 = this;
+
+    this.animationFrameID = null;
+
+    var update = function () {
+
+      Object.values(_this2.sprites).forEach(function (sprite) {
+
+        if (sprite.enabled) sprite.update();
+      });
+
+      _this2.animationFrameID = requestAnimationFrame(update);
+    };
+  };
+
+  Sprites.prototype.stopAnimation = function stopAnimation() {
+
+    cancelAnimationFrame(this.animationFrameID);
+  };
+
+  return Sprites;
+}();
+
+var sprites = new Sprites();
 
 var Simulation = function () {
   function Simulation() {
@@ -60294,6 +60484,8 @@ var Simulation = function () {
       attributeControls.enableControls();
 
       cameraControl.init(_this3.player);
+
+      sprites.init(_this3.player);
     });
   };
 

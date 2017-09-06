@@ -11,6 +11,7 @@ let bufferGeometryLoader = null;
 let jsonLoader = null;
 let animationLoader = null;
 let fbxLoader = null;
+let textureLoader = null;
 
 
 const defaultReject = ( err ) => { console.log( err ); };
@@ -23,11 +24,18 @@ const promisifyLoader = loader =>
   } );
 
 
-export default class Loaders {
+class Loaders {
 
   constructor() {
 
     return {
+
+      get textureLoader() {
+        if ( textureLoader === null ) {
+          textureLoader = promisifyLoader( new THREE.TextureLoader( loadingManager ) );
+        }
+        return textureLoader;
+      },
 
       get objectLoader() {
         if ( objectLoader === null ) {
@@ -69,3 +77,7 @@ export default class Loaders {
   }
 
 }
+
+const loaders = new Loaders();
+
+export default loaders;
