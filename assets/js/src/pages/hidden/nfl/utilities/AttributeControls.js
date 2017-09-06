@@ -1,7 +1,6 @@
 import throttle from 'lodash.throttle';
 import HTMLControl from './HTMLControl.js';
 import cameraControl from './cameraControl.js';
-import canvas from '../canvas.js';
 
 class AttributeControls {
 

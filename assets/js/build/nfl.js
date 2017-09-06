@@ -59179,6 +59179,7 @@ var bufferGeometryLoader = null;
 var jsonLoader = null;
 var animationLoader = null;
 var fbxLoader = null;
+var textureLoader = null;
 
 var defaultReject = function (err) {
   console.log(err);
@@ -59200,6 +59201,13 @@ var Loaders = function Loaders() {
 
 
   return {
+
+    get textureLoader() {
+      if (textureLoader === null) {
+        textureLoader = promisifyLoader(new TextureLoader(loadingManager));
+      }
+      return textureLoader;
+    },
 
     get objectLoader() {
       if (objectLoader === null) {
@@ -59304,716 +59312,716 @@ var canvas$2 = new Canvas$1(HTMLControl.canvas);
 // Control camera targeting and OrbitControl settings
 
 var CameraControl = function () {
-    function CameraControl() {
-        classCallCheck(this, CameraControl);
+  function CameraControl() {
+    classCallCheck(this, CameraControl);
 
 
-        this.camera = canvas$2.app.camera;
-        this.controls = canvas$2.app.controls;
+    this.camera = canvas$2.app.camera;
+    this.controls = canvas$2.app.controls;
 
-        this.targetChanged = false;
-        this.zoomLevelChanged = false;
-        this.dynamicTracking = false;
+    this.targetChanged = false;
+    this.zoomLevelChanged = false;
+    this.dynamicTracking = false;
 
-        this._zoomLevel = 1;
-        this.targetTrackingSpeed = 1;
+    this._zoomLevel = 1;
+    this.targetTrackingSpeed = 1;
 
-        this.currentTargetName = 'default';
+    this.currentTargetName = 'default';
+  }
+
+  CameraControl.prototype.initCamera = function initCamera() {
+
+    var boundingBox = new Box3().setFromObject(this.player);
+
+    var center = boundingBox.getCenter();
+    var size = boundingBox.getSize();
+
+    // get the max side of the bounding box
+    var maxDim = Math.max(size.x, size.y, size.z);
+    var fov = this.camera.fov * (Math.PI / 180);
+    var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+
+    this.camera.position.z = cameraZ;
+
+    var minZ = boundingBox.min.z;
+    var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+
+    // set camera to rotate around center of loaded object
+    this.controls.target.copy(center);
+
+    // prevent camera from zooming out far enough to create far plane cutoff
+    this.controls.maxDistance = cameraToFarEdge * 2;
+  };
+
+  CameraControl.prototype.initControls = function initControls() {
+
+    this.controls.minPolarAngle = 0;
+    this.controls.maxPolarAngle = Math.PI / 2;
+
+    // this.controls.enablePan = false;
+
+    // save the initial position. This can be regained with controls.reset()
+    this.controls.saveState();
+  };
+
+  CameraControl.prototype.init = function init(player) {
+
+    this.player = player;
+
+    this.initCamera();
+    this.initControls();
+
+    this.initTargets();
+  };
+
+  CameraControl.prototype.initTargets = function initTargets() {
+
+    this.targets = {};
+
+    // used for targeting - position is recaulcated per frame if this.dynamicTracking = true
+    this.dynamicTarget = this.player.getObjectByName('mixamorigHead');
+    this.targets.dynamic = new Object3D();
+    this.targets.dynamicUpper = new Object3D();
+
+    this.targets.default = new Object3D();
+    this.targets.default.position.copy(this.controls.target);
+
+    this.targets.head = new Object3D();
+    this.targets.head.position.copy(this.player.getObjectByName('WAFPhelmet').position);
+
+    this.targets.torso = this.targets.head.clone();
+    this.targets.torso.position.y = (this.targets.head.position.y + this.targets.default.position.y) / 2;
+
+    this.targets.leftArm = this.targets.torso.clone();
+    this.targets.leftArm.position.x += 25;
+
+    this.targets.rightArm = this.targets.torso.clone();
+    this.targets.rightArm.position.x -= 25;
+
+    this.targets.arms = this.targets.rightArm;
+
+    this.currentTarget = 'default';
+
+    // const addTargetHelper = ( target, color ) => {
+
+    //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
+    //   const mat = new THREE.MeshBasicMaterial( { color } );
+    //   const mesh = new THREE.Mesh( geo, mat );
+    //   mesh.position.copy( target.position );
+
+    //   canvas.app.scene.add( mesh );
+
+    // };
+
+    // addTargetHelper( this.targets.default, 0xff0000 );
+    // addTargetHelper( this.targets.torso, 0x00ff00 );
+    // addTargetHelper( this.targets.head, 0x0000ff );
+
+    // addTargetHelper( this.targets.rightArm, 0x0000ff );
+    // addTargetHelper( this.targets.leftArm, 0xff0000 );
+
+  };
+
+  CameraControl.prototype.updateTarget = function updateTarget(delta) {
+
+    if (this.dynamicTracking) {
+
+      this.dynamicTarget.getWorldPosition(this.targets.dynamicUpper.position);
+
+      this.targets.dynamic.position.copy(this.targets.dynamicUpper.position);
+
+      this.targets.dynamic.position.y = 100;
     }
 
-    CameraControl.prototype.initCamera = function initCamera() {
+    var distance = this.controls.target.distanceTo(this.currentTarget.position);
 
-        var boundingBox = new Box3().setFromObject(this.player);
+    if (distance > 0.1 || this.dynamicTracking) {
 
-        var center = boundingBox.getCenter();
-        var size = boundingBox.getSize();
+      var start = new Vector3().copy(this.controls.target);
 
-        // get the max side of the bounding box
-        var maxDim = Math.max(size.x, size.y, size.z);
-        var fov = this.camera.fov * (Math.PI / 180);
-        var cameraZ = Math.abs(maxDim / 4 * Math.tan(fov * 2));
+      var direction = start.sub(this.currentTarget.position).normalize();
 
-        this.camera.position.z = cameraZ;
+      direction.multiplyScalar(distance * delta * this.targetTrackingSpeed);
 
-        var minZ = boundingBox.min.z;
-        var cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+      this.controls.target.sub(direction);
+    } else {
 
-        this.camera.far = cameraToFarEdge * 3;
-        this.camera.updateProjectionMatrix();
+      this.controls.target.copy(this.currentTarget.position);
 
-        // set camera to rotate around center of loaded object
-        this.controls.target.copy(center);
+      this.targetChanged = false;
+    }
+  };
 
-        // prevent camera from zooming out far enough to create far plane cutoff
-        this.controls.maxDistance = cameraToFarEdge * 2;
-    };
+  CameraControl.prototype.updateZoomLevel = function updateZoomLevel(delta) {
 
-    CameraControl.prototype.initControls = function initControls() {
+    var diff = (this.controls.object.zoom - this.zoomLevel) * delta;
 
-        this.controls.minPolarAngle = 0;
-        this.controls.maxPolarAngle = Math.PI / 2;
+    if (Math.abs(diff) > 0.001) {
 
-        // this.controls.enablePan = false;
+      this.controls.object.zoom -= diff;
+      this.controls.object.updateProjectionMatrix();
+    } else {
 
-        // save the initial position. This can be regained with controls.reset()
-        this.controls.saveState();
-    };
+      this.controls.object.zoom = this.zoomLevel;
+      this.zoomLevelChanged = false;
+    }
+  };
 
-    CameraControl.prototype.init = function init(player) {
+  // per frame calculation
 
-        this.player = player;
 
-        this.initCamera();
-        this.initControls();
+  CameraControl.prototype.update = function update(delta) {
 
-        this.initTargets();
-    };
+    delta /= 1000;
 
-    CameraControl.prototype.initTargets = function initTargets() {
+    if (this.targetChanged || this.dynamicTracking) this.updateTarget(delta);
 
-        this.targets = {};
+    if (this.zoomLevelChanged) this.updateZoomLevel(delta);
+  };
 
-        // used for targeting - position is recaulcated per frame if this.dynamicTracking = true
-        this.dynamicTarget = this.player.getObjectByName('mixamorigHead');
-        this.targets.dynamic = new Object3D();
-        this.targets.dynamicUpper = new Object3D();
+  CameraControl.prototype.focusHead = function focusHead() {
 
-        this.targets.default = new Object3D();
-        this.targets.default.position.copy(this.controls.target);
+    this.currentTarget = 'head';
+    this.zoomLevel = 3;
+  };
 
-        this.targets.head = new Object3D();
-        this.targets.head.position.copy(this.player.getObjectByName('WAFPhelmet').position);
+  CameraControl.prototype.focusUpper = function focusUpper() {
 
-        this.targets.torso = this.targets.head.clone();
-        this.targets.torso.position.y = (this.targets.head.position.y + this.targets.default.position.y) / 2;
+    this.currentTarget = 'torso';
+    this.zoomLevel = 2;
+  };
 
-        this.targets.leftArm = this.targets.torso.clone();
-        this.targets.leftArm.position.x += 25;
+  CameraControl.prototype.focusArms = function focusArms() {
 
-        this.targets.rightArm = this.targets.torso.clone();
-        this.targets.rightArm.position.x -= 25;
+    this.currentTarget = 'arms';
+    this.zoomLevel = 2;
+  };
 
-        this.targets.arms = this.targets.rightArm;
+  CameraControl.prototype.focusDefault = function focusDefault() {
 
-        this.currentTarget = 'default';
+    this.currentTarget = 'default';
+    this.zoomLevel = 1;
+  };
 
-        // const addTargetHelper = ( target, color ) => {
+  CameraControl.prototype.focusDynamic = function focusDynamic() {
 
-        //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
-        //   const mat = new THREE.MeshBasicMaterial( { color } );
-        //   const mesh = new THREE.Mesh( geo, mat );
-        //   mesh.position.copy( target.position );
+    this.currentTarget = 'dynamic';
+    this.dynamicTracking = true;
+    this.zoomLevel = 1;
+  };
 
-        //   canvas.app.scene.add( mesh );
+  CameraControl.prototype.focusDynamicUpper = function focusDynamicUpper() {
 
-        // };
+    this.currentTarget = 'dynamicUpper';
+    this.zoomLevel = 2;
+  };
 
-        // addTargetHelper( this.targets.default, 0xff0000 );
-        // addTargetHelper( this.targets.torso, 0x00ff00 );
-        // addTargetHelper( this.targets.head, 0x0000ff );
+  CameraControl.prototype.setArmTarget = function setArmTarget(arm) {
 
-        // addTargetHelper( this.targets.rightArm, 0x0000ff );
-        // addTargetHelper( this.targets.leftArm, 0xff0000 );
+    arm = arm || 'right';
 
-    };
+    if (arm === 'right') {
 
-    CameraControl.prototype.updateTarget = function updateTarget(delta) {
+      this.targets.arms = this.targets.rightArm;
+    } else if (arm === 'left') {
 
-        if (this.dynamicTracking) {
+      this.targets.arms = this.targets.leftArm;
+    } else if (arm === 'both') {
 
-            this.dynamicTarget.getWorldPosition(this.targets.dynamicUpper.position);
+      this.targets.arms = this.targets.torso;
+    }
 
-            this.targets.dynamic.position.copy(this.targets.dynamicUpper.position);
+    this.focusArms();
+  };
 
-            this.targets.dynamic.position.y = 100;
-        }
+  createClass(CameraControl, [{
+    key: 'zoomLevel',
+    set: function (value) {
 
-        var distance = this.controls.target.distanceTo(this.currentTarget.position);
+      if (this._zoomLevel === value) return;
 
-        if (distance > 0.1 || this.dynamicTracking) {
+      this.zoomLevelChanged = true;
+      this._zoomLevel = value;
+    },
+    get: function () {
 
-            var start = new Vector3().copy(this.controls.target);
+      return this._zoomLevel;
+    }
+  }, {
+    key: 'currentTarget',
+    set: function (targetName) {
 
-            var direction = start.sub(this.currentTarget.position).normalize();
+      if (this.currentTargetName === targetName) return;
 
-            direction.multiplyScalar(distance * delta * this.targetTrackingSpeed);
+      this.currentTargetName = targetName;
 
-            this.controls.target.sub(direction);
-        } else {
+      this._currentTarget = this.targets[targetName];
+      this.targetChanged = true;
 
-            this.controls.target.copy(this.currentTarget.position);
+      if (targetName.includes('dynamic')) {
 
-            this.targetChanged = false;
-        }
-    };
-
-    CameraControl.prototype.updateZoomLevel = function updateZoomLevel(delta) {
-
-        var diff = (this.controls.object.zoom - this.zoomLevel) * delta;
-
-        if (Math.abs(diff) > 0.001) {
-
-            this.controls.object.zoom -= diff;
-            this.controls.object.updateProjectionMatrix();
-        } else {
-
-            this.controls.object.zoom = this.zoomLevel;
-            this.zoomLevelChanged = false;
-        }
-    };
-
-    // per frame calculation
-
-
-    CameraControl.prototype.update = function update(delta) {
-
-        delta /= 1000;
-
-        if (this.targetChanged || this.dynamicTracking) this.updateTarget(delta);
-
-        if (this.zoomLevelChanged) this.updateZoomLevel(delta);
-    };
-
-    CameraControl.prototype.focusHead = function focusHead() {
-
-        this.currentTarget = 'head';
-        this.zoomLevel = 3;
-    };
-
-    CameraControl.prototype.focusUpper = function focusUpper() {
-
-        this.currentTarget = 'torso';
-        this.zoomLevel = 2;
-    };
-
-    CameraControl.prototype.focusArms = function focusArms() {
-
-        this.currentTarget = 'arms';
-        this.zoomLevel = 2;
-    };
-
-    CameraControl.prototype.focusDefault = function focusDefault() {
-
-        this.currentTarget = 'default';
-        this.zoomLevel = 1;
-    };
-
-    CameraControl.prototype.focusDynamic = function focusDynamic() {
-
-        this.currentTarget = 'dynamic';
         this.dynamicTracking = true;
-        this.zoomLevel = 1;
-    };
+        this.targetTrackingSpeed = 2;
+      } else {
 
-    CameraControl.prototype.focusDynamicUpper = function focusDynamicUpper() {
+        this.dynamicTracking = false;
+        this.targetTrackingSpeed = 1;
+      }
+    },
+    get: function () {
 
-        this.currentTarget = 'dynamicUpper';
-        this.zoomLevel = 2;
-    };
-
-    CameraControl.prototype.setArmTarget = function setArmTarget(arm) {
-
-        arm = arm || 'right';
-
-        if (arm === 'right') {
-
-            this.targets.arms = this.targets.rightArm;
-        } else if (arm === 'left') {
-
-            this.targets.arms = this.targets.leftArm;
-        } else if (arm === 'both') {
-
-            this.targets.arms = this.targets.torso;
-        }
-
-        this.focusArms();
-    };
-
-    createClass(CameraControl, [{
-        key: 'zoomLevel',
-        set: function (value) {
-
-            if (this._zoomLevel === value) return;
-
-            this.zoomLevelChanged = true;
-            this._zoomLevel = value;
-        },
-        get: function () {
-
-            return this._zoomLevel;
-        }
-    }, {
-        key: 'currentTarget',
-        set: function (targetName) {
-
-            if (this.currentTargetName === targetName) return;
-
-            this.currentTargetName = targetName;
-
-            this._currentTarget = this.targets[targetName];
-            this.targetChanged = true;
-
-            if (targetName.includes('dynamic')) {
-
-                this.dynamicTracking = true;
-                this.targetTrackingSpeed = 2;
-            } else {
-
-                this.dynamicTracking = false;
-                this.targetTrackingSpeed = 1;
-            }
-        },
-        get: function () {
-
-            return this.targets[this.currentTargetName];
-        }
-    }]);
-    return CameraControl;
+      return this.targets[this.currentTargetName];
+    }
+  }]);
+  return CameraControl;
 }();
 
 var cameraControl = new CameraControl();
 
 var AttributeControls = function () {
-      function AttributeControls() {
-            classCallCheck(this, AttributeControls);
+  function AttributeControls() {
+    classCallCheck(this, AttributeControls);
 
 
-            this.attributes = HTMLControl.attributes;
+    this.attributes = HTMLControl.attributes;
 
-            this.dominantHand = 'right';
-            this.passAnim = 'pass_right_hand';
-            this.victoryAnim = 'victory';
+    this.dominantHand = 'right';
+    this.passAnim = 'pass_right_hand';
+    this.victoryAnim = 'victory';
+  }
+
+  AttributeControls.prototype.init = function init(player) {
+
+    this.player = player;
+
+    this.initSize();
+    this.initAthleticAbility();
+    this.initFootQuickness();
+    this.initDominantHand();
+    this.initReleaseQuickness();
+    this.initDelivery();
+    this.initMechanics();
+    this.initArmStrength();
+    this.initAnticipation();
+    this.initAccuracyShort();
+    this.initTouchShort();
+    this.initAccuracyLong();
+    this.initTouchLong();
+    this.initDecisionMaking();
+    this.initReadCoverage();
+    this.initPocketPresence();
+    this.initPoise();
+    this.initMobility();
+    this.initThrowOnMove();
+    this.initRunningAbility();
+    this.initClutchProduction();
+    this.initAbilityToWin();
+  };
+
+  AttributeControls.prototype.initAnimationControls = function initAnimationControls(controls) {
+
+    this.animationControls = controls;
+  };
+
+  AttributeControls.prototype.enableControls = function enableControls() {
+
+    Object.values(this.attributes).forEach(function (attribute) {
+      attribute.disabled = false;
+    });
+
+    this.attributes['dominant-hand'].left.disabled = false;
+    this.attributes['dominant-hand'].right.disabled = false;
+    this.attributes['dominant-hand'].both.disabled = false;
+  };
+
+  AttributeControls.prototype.initSize = function initSize() {
+    var _this = this;
+
+    var frameId = null;
+    var scale = 1;
+    var anim = 'offensive_idle';
+
+    var updateScale = function () {
+
+      var currentScale = _this.player.scale.x;
+
+      var diff = scale - currentScale;
+
+      var change = diff * 0.025;
+
+      var newScale = currentScale + change;
+
+      if (Math.abs(diff) > 0.005) {
+
+        _this.player.scale.set(newScale, newScale, newScale);
+
+        frameId = requestAnimationFrame(updateScale);
+      } else {
+
+        _this.player.scale.set(scale, scale, scale);
+
+        cancelAnimationFrame(frameId);
+      }
+    };
+
+    this.attributes.size.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      var x = e.target.value;
+
+      // curve fitted to give value between 0.9 and 1.1, with x = 5 returning 1
+      scale = 0.872222 + 0.0283333 * x + 0.000555556 * (x * x);
+
+      cancelAnimationFrame(frameId);
+      updateScale();
+
+      _this.animationControls.playAction(anim);
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initAthleticAbility = function initAthleticAbility() {
+    var _this2 = this;
+
+    this.attributes['athletic-ability'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      if (e.target.value < 5) _this2.animationControls.playAction('catch_to_fall');else _this2.animationControls.playAction('catch_to_roll');
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initFootQuickness = function initFootQuickness() {
+    var _this3 = this;
+
+    var anim = 'hike';
+
+    this.attributes['foot-quickness'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      var x = e.target.value === 1 ? 2 : e.target.value;
+
+      // curve fit to give range ( 0.85, 1.2 )
+      var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
+
+      _this3.animationControls.setTimeScale(timeScale, anim);
+
+      _this3.animationControls.playAction(anim);
+
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initDominantHand = function initDominantHand() {
+    var _this4 = this;
+
+    var anim = 'offensive_idle';
+
+    this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this4.passAnim = 'pass_left_hand';
+
+      _this4.animationControls.setTimeScale(1, anim);
+      _this4.animationControls.playAction(anim);
+
+      cameraControl.setArmTarget('left');
+      cameraControl.focusArms();
+    }, 100), false);
+
+    this.attributes['dominant-hand'].right.addEventListener('click', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this4.passAnim = 'pass_right_hand';
+
+      _this4.animationControls.setTimeScale(1, anim);
+      _this4.animationControls.playAction(anim);
+
+      cameraControl.setArmTarget('right');
+      cameraControl.focusArms();
+    }, 100), false);
+
+    this.attributes['dominant-hand'].both.addEventListener('click', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this4.passAnim = 'pass_right_hand';
+
+      _this4.animationControls.setTimeScale(1, anim);
+      _this4.animationControls.playAction(anim);
+
+      cameraControl.setArmTarget('both');
+      cameraControl.focusArms();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initReleaseQuickness = function initReleaseQuickness() {
+    var _this5 = this;
+
+    this.attributes['release-quickness'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this5.animationControls.playAction(_this5.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initDelivery = function initDelivery() {
+    var _this6 = this;
+
+    this.attributes.delivery.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this6.animationControls.playAction(_this6.passAnim);
+
+      cameraControl.focusDynamicUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initMechanics = function initMechanics() {
+    var _this7 = this;
+
+    this.attributes.mechanics.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this7.animationControls.playAction(_this7.passAnim);
+
+      cameraControl.focusDynamicUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initArmStrength = function initArmStrength() {
+    var _this8 = this;
+
+    this.attributes['arm-strength'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this8.animationControls.playAction(_this8.passAnim);
+
+      cameraControl.focusDynamicUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initAnticipation = function initAnticipation() {
+    var _this9 = this;
+
+    this.attributes.anticipation.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this9.animationControls.playAction(_this9.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initAccuracyShort = function initAccuracyShort() {
+    var _this10 = this;
+
+    this.attributes['accuracy-short'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this10.animationControls.playAction(_this10.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initTouchShort = function initTouchShort() {
+    var _this11 = this;
+
+    this.attributes['touch-short'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this11.animationControls.playAction(_this11.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initAccuracyLong = function initAccuracyLong() {
+    var _this12 = this;
+
+    this.attributes['accuracy-long'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this12.animationControls.playAction(_this12.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initTouchLong = function initTouchLong() {
+    var _this13 = this;
+
+    this.attributes['touch-long'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this13.animationControls.playAction(_this13.passAnim);
+
+      cameraControl.focusDynamic();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initDecisionMaking = function initDecisionMaking() {
+    var _this14 = this;
+
+    this.attributes['decision-making'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this14.animationControls.playAction('offensive_idle');
+
+      cameraControl.focusHead();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initReadCoverage = function initReadCoverage() {
+    var _this15 = this;
+
+    this.attributes['read-coverage'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this15.animationControls.playAction(_this15.passAnim);
+
+      cameraControl.focusDynamicUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initPocketPresence = function initPocketPresence() {
+    var _this16 = this;
+
+    this.attributes['pocket-presence'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this16.animationControls.playAction('hike');
+
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initPoise = function initPoise() {
+    var _this17 = this;
+
+    this.attributes.poise.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this17.animationControls.playAction('hike');
+
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initMobility = function initMobility() {
+    var _this18 = this;
+
+    this.attributes.mobility.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this18.animationControls.playAction('run');
+
+      cameraControl.focusUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initThrowOnMove = function initThrowOnMove() {
+    var _this19 = this;
+
+    this.attributes['throw-on-move'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this19.animationControls.playAction(_this19.passAnim);
+
+      cameraControl.focusDynamicUpper();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initRunningAbility = function initRunningAbility() {
+    var _this20 = this;
+
+    this.attributes['running-ability'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      var x = e.target.value === 1 ? 2 : e.target.value;
+
+      // curve fit to give range ( 0.85, 1.2 )
+      var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
+
+      _this20.animationControls.setTimeScale(timeScale, 'run');
+
+      _this20.animationControls.playAction('run');
+
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
+
+  AttributeControls.prototype.initClutchProduction = function initClutchProduction() {
+    var _this21 = this;
+
+    this.attributes['clutch-production'].addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      var total = parseInt(e.target.value) + parseInt(_this21.attributes['ability-to-win'].value);
+
+      if (total < 7) {
+
+        _this21.animationControls.playAction('defeat');
+      } else {
+
+        _this21.animationControls.playAction('victory');
       }
 
-      AttributeControls.prototype.init = function init(player) {
+      cameraControl.focusUpper();
+    }, 100), false);
+  };
 
-            this.player = player;
+  AttributeControls.prototype.initAbilityToWin = function initAbilityToWin() {
+    var _this22 = this;
 
-            this.initSize();
-            this.initAthleticAbility();
-            this.initFootQuickness();
-            this.initDominantHand();
-            this.initReleaseQuickness();
-            this.initDelivery();
-            this.initMechanics();
-            this.initArmStrength();
-            this.initAnticipation();
-            this.initAccuracyShort();
-            this.initTouchShort();
-            this.initAccuracyLong();
-            this.initTouchLong();
-            this.initDecisionMaking();
-            this.initReadCoverage();
-            this.initPocketPresence();
-            this.initPoise();
-            this.initMobility();
-            this.initThrowOnMove();
-            this.initRunningAbility();
-            this.initClutchProduction();
-            this.initAbilityToWin();
-      };
+    this.attributes['ability-to-win'].addEventListener('input', throttle(function (e) {
 
-      AttributeControls.prototype.initAnimationControls = function initAnimationControls(controls) {
+      e.preventDefault();
 
-            this.animationControls = controls;
-      };
+      var total = parseInt(e.target.value) + parseInt(_this22.attributes['clutch-production'].value);
 
-      AttributeControls.prototype.enableControls = function enableControls() {
+      if (total < 7) {
 
-            Object.values(this.attributes).forEach(function (attribute) {
-                  attribute.disabled = false;
-            });
+        _this22.animationControls.playAction('defeat');
+      } else {
 
-            this.attributes['dominant-hand'].left.disabled = false;
-            this.attributes['dominant-hand'].right.disabled = false;
-            this.attributes['dominant-hand'].both.disabled = false;
-      };
+        _this22.animationControls.playAction('victory');
+      }
 
-      AttributeControls.prototype.initSize = function initSize() {
-            var _this = this;
+      cameraControl.focusDefault();
+    }, 100), false);
+  };
 
-            var frameId = null;
-            var scale = 1;
-            var anim = 'offensive_idle';
-
-            var updateScale = function () {
-
-                  var currentScale = _this.player.scale.x;
-
-                  var diff = scale - currentScale;
-
-                  var change = diff * 0.025;
-
-                  var newScale = currentScale + change;
-
-                  if (Math.abs(diff) > 0.005) {
-
-                        _this.player.scale.set(newScale, newScale, newScale);
-
-                        frameId = requestAnimationFrame(updateScale);
-                  } else {
-
-                        _this.player.scale.set(scale, scale, scale);
-
-                        cancelAnimationFrame(frameId);
-                  }
-            };
-
-            this.attributes.size.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  var x = e.target.value;
-
-                  // curve fitted to give value between 0.9 and 1.1, with x = 5 returning 1
-                  scale = 0.872222 + 0.0283333 * x + 0.000555556 * (x * x);
-
-                  cancelAnimationFrame(frameId);
-                  updateScale();
-
-                  _this.animationControls.playAction(anim);
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initAthleticAbility = function initAthleticAbility() {
-            var _this2 = this;
-
-            this.attributes['athletic-ability'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  if (e.target.value < 5) _this2.animationControls.playAction('catch_to_fall');else _this2.animationControls.playAction('catch_to_roll');
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initFootQuickness = function initFootQuickness() {
-            var _this3 = this;
-
-            var anim = 'hike';
-
-            this.attributes['foot-quickness'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  var x = e.target.value === 1 ? 2 : e.target.value;
-
-                  // curve fit to give range ( 0.85, 1.2 )
-                  var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
-
-                  _this3.animationControls.setTimeScale(timeScale, anim);
-
-                  _this3.animationControls.playAction(anim);
-
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initDominantHand = function initDominantHand() {
-            var _this4 = this;
-
-            var anim = 'offensive_idle';
-
-            this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this4.passAnim = 'pass_left_hand';
-
-                  _this4.animationControls.setTimeScale(1, anim);
-                  _this4.animationControls.playAction(anim);
-
-                  cameraControl.setArmTarget('left');
-                  cameraControl.focusArms();
-            }, 100), false);
-
-            this.attributes['dominant-hand'].right.addEventListener('click', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this4.passAnim = 'pass_right_hand';
-
-                  _this4.animationControls.setTimeScale(1, anim);
-                  _this4.animationControls.playAction(anim);
-
-                  cameraControl.setArmTarget('right');
-                  cameraControl.focusArms();
-            }, 100), false);
-
-            this.attributes['dominant-hand'].both.addEventListener('click', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this4.passAnim = 'pass_right_hand';
-
-                  _this4.animationControls.setTimeScale(1, anim);
-                  _this4.animationControls.playAction(anim);
-
-                  cameraControl.setArmTarget('both');
-                  cameraControl.focusArms();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initReleaseQuickness = function initReleaseQuickness() {
-            var _this5 = this;
-
-            this.attributes['release-quickness'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this5.animationControls.playAction(_this5.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initDelivery = function initDelivery() {
-            var _this6 = this;
-
-            this.attributes.delivery.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this6.animationControls.playAction(_this6.passAnim);
-
-                  cameraControl.focusDynamicUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initMechanics = function initMechanics() {
-            var _this7 = this;
-
-            this.attributes.mechanics.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this7.animationControls.playAction(_this7.passAnim);
-
-                  cameraControl.focusDynamicUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initArmStrength = function initArmStrength() {
-            var _this8 = this;
-
-            this.attributes['arm-strength'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this8.animationControls.playAction(_this8.passAnim);
-
-                  cameraControl.focusDynamicUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initAnticipation = function initAnticipation() {
-            var _this9 = this;
-
-            this.attributes.anticipation.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this9.animationControls.playAction(_this9.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initAccuracyShort = function initAccuracyShort() {
-            var _this10 = this;
-
-            this.attributes['accuracy-short'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this10.animationControls.playAction(_this10.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initTouchShort = function initTouchShort() {
-            var _this11 = this;
-
-            this.attributes['touch-short'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this11.animationControls.playAction(_this11.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initAccuracyLong = function initAccuracyLong() {
-            var _this12 = this;
-
-            this.attributes['accuracy-long'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this12.animationControls.playAction(_this12.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initTouchLong = function initTouchLong() {
-            var _this13 = this;
-
-            this.attributes['touch-long'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this13.animationControls.playAction(_this13.passAnim);
-
-                  cameraControl.focusDynamic();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initDecisionMaking = function initDecisionMaking() {
-            var _this14 = this;
-
-            this.attributes['decision-making'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this14.animationControls.playAction('offensive_idle');
-
-                  cameraControl.focusHead();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initReadCoverage = function initReadCoverage() {
-            var _this15 = this;
-
-            this.attributes['read-coverage'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this15.animationControls.playAction(_this15.passAnim);
-
-                  cameraControl.focusDynamicUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initPocketPresence = function initPocketPresence() {
-            var _this16 = this;
-
-            this.attributes['pocket-presence'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this16.animationControls.playAction('hike');
-
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initPoise = function initPoise() {
-            var _this17 = this;
-
-            this.attributes.poise.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this17.animationControls.playAction('hike');
-
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initMobility = function initMobility() {
-            var _this18 = this;
-
-            this.attributes.mobility.addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this18.animationControls.playAction('run');
-
-                  cameraControl.focusUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initThrowOnMove = function initThrowOnMove() {
-            var _this19 = this;
-
-            this.attributes['throw-on-move'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  _this19.animationControls.playAction(_this19.passAnim);
-
-                  cameraControl.focusDynamicUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initRunningAbility = function initRunningAbility() {
-            var _this20 = this;
-
-            this.attributes['running-ability'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  var x = e.target.value === 1 ? 2 : e.target.value;
-
-                  // curve fit to give range ( 0.85, 1.2 )
-                  var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
-
-                  _this20.animationControls.setTimeScale(timeScale, 'run');
-
-                  _this20.animationControls.playAction('run');
-
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initClutchProduction = function initClutchProduction() {
-            var _this21 = this;
-
-            this.attributes['clutch-production'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  var total = parseInt(e.target.value) + parseInt(_this21.attributes['ability-to-win'].value);
-
-                  if (total < 7) {
-
-                        _this21.animationControls.playAction('defeat');
-                  } else {
-
-                        _this21.animationControls.playAction('victory');
-                  }
-
-                  cameraControl.focusUpper();
-            }, 100), false);
-      };
-
-      AttributeControls.prototype.initAbilityToWin = function initAbilityToWin() {
-            var _this22 = this;
-
-            this.attributes['ability-to-win'].addEventListener('input', throttle(function (e) {
-
-                  e.preventDefault();
-
-                  var total = parseInt(e.target.value) + parseInt(_this22.attributes['clutch-production'].value);
-
-                  if (total < 7) {
-
-                        _this22.animationControls.playAction('defeat');
-                  } else {
-
-                        _this22.animationControls.playAction('victory');
-                  }
-
-                  cameraControl.focusDefault();
-            }, 100), false);
-      };
-
-      return AttributeControls;
+  return AttributeControls;
 }();
 
 var attributeControls = new AttributeControls();
@@ -60039,6 +60047,7 @@ function executeCrossFade(startAction, endAction, duration) {
   startAction.crossFadeTo(endAction, duration, false);
 }
 
+// add an event listener to call executeCrossFade() at teh end of the current action's current loop
 function prepareCrossFade(startAction, endAction, duration) {
 
   if (!duration) duration = 1;
@@ -60189,112 +60198,112 @@ var animationControls = new AnimationControls();
 var loaders = new Loaders();
 
 var Simulation = function () {
-    function Simulation() {
-        classCallCheck(this, Simulation);
+  function Simulation() {
+    classCallCheck(this, Simulation);
 
 
-        this.preLoad();
+    this.preLoad();
 
-        this.loadModels();
+    this.loadModels();
 
-        this.loadAnimations();
+    this.loadAnimations();
 
-        this.postLoad();
-    }
+    this.postLoad();
+  }
 
-    Simulation.prototype.preLoad = function preLoad() {
+  Simulation.prototype.preLoad = function preLoad() {
 
-        // const self = this;
+    // const self = this;
 
-        this.animations = {};
+    this.animations = {};
 
-        this.loadingPromises = [];
+    this.loadingPromises = [];
 
-        // Put any per frame calculation here
-        canvas.app.onUpdate = function () {
-            // NB: use self inside this function, 'this' will refer to canvas.app
+    // Put any per frame calculation here
+    canvas.app.onUpdate = function () {
+      // NB: use self inside this function, 'this' will refer to canvas.app
 
-            animationControls.update(this.delta);
-            cameraControl.update(this.delta);
-        };
-
-        // put any per resize calculations here (throttled to once per 250ms)
-        canvas.app.onWindowResize = function () {
-            // NB: use self inside this function, 'this' will refer to canvas.app
-
-        };
+      animationControls.update(this.delta);
+      cameraControl.update(this.delta);
     };
 
-    Simulation.prototype.loadModels = function loadModels() {
-        var _this = this;
+    // put any per resize calculations here (throttled to once per 250ms)
+    canvas.app.onWindowResize = function () {
+      // NB: use self inside this function, 'this' will refer to canvas.app
 
-        var playerPromise = loaders.fbxLoader('/assets/models/nfl/t_pose_rigged.fbx').then(function (object) {
-
-            object.traverse(function (child) {
-
-                // console.log( child )
-
-                if (child instanceof Mesh) {
-
-                    child.frustumCulled = false;
-                    // child.castShadow = true;
-                }
-            });
-
-            _this.player = object;
-        });
-
-        var ballPromise = Promise.resolve();
-
-        this.loadingPromises = [playerPromise, ballPromise];
     };
+  };
 
-    Simulation.prototype.loadAnimations = function loadAnimations() {
-        var _this2 = this;
+  Simulation.prototype.loadModels = function loadModels() {
+    var _this = this;
 
-        var animationsNames = ['catch_to_fall', 'catch_to_roll', 'defeat', 'hike', 'idle_transition_long', 'idle_transition_short', 'offensive_idle', 'pass_left_hand', 'pass_right_hand', 'pushup_to_idle', 'run', 'situp_to_idle', 'victory'];
+    var playerPromise = loaders.fbxLoader('/assets/models/nfl/t_pose_rigged.fbx').then(function (object) {
 
-        this.animations = [];
+      object.traverse(function (child) {
 
-        animationsNames.forEach(function (name) {
+        // console.log( child )
 
-            _this2.loadingPromises.push(loaders.animationLoader('/assets/models/nfl/anims/' + name + '.json').then(function (anim) {
+        if (child instanceof Mesh) {
 
-                anim.name = name;
-                _this2.animations.push(anim);
-            }));
-        });
-    };
+          child.frustumCulled = false;
+          // child.castShadow = true;
+        }
+      });
 
-    Simulation.prototype.postLoad = function postLoad() {
-        var _this3 = this;
+      _this.player = object;
+    });
 
-        Promise.all(this.loadingPromises).then(function () {
+    var ballPromise = Promise.resolve();
 
-            canvas.app.scene.add(_this3.player);
+    this.loadingPromises = [playerPromise, ballPromise];
+  };
 
-            canvas.app.play();
+  Simulation.prototype.loadAnimations = function loadAnimations() {
+    var _this2 = this;
 
-            animationControls.initMixer(_this3.player);
+    var animationsNames = ['catch_to_fall', 'catch_to_roll', 'defeat', 'hike', 'idle_transition_long', 'idle_transition_short', 'offensive_idle', 'pass_left_hand', 'pass_right_hand', 'pushup_to_idle', 'run', 'situp_to_idle', 'victory'];
 
-            _this3.animations.forEach(function (anim) {
+    this.animations = [];
 
-                animationControls.initAnimation(anim);
-            });
+    animationsNames.forEach(function (name) {
 
-            animationControls.playAction('offensive_idle');
+      _this2.loadingPromises.push(loaders.animationLoader('/assets/models/nfl/anims/' + name + '.json').then(function (anim) {
 
-            attributeControls.init(_this3.player);
+        anim.name = name;
+        _this2.animations.push(anim);
+      }));
+    });
+  };
 
-            attributeControls.initAnimationControls(animationControls);
+  Simulation.prototype.postLoad = function postLoad() {
+    var _this3 = this;
 
-            attributeControls.enableControls();
+    Promise.all(this.loadingPromises).then(function () {
 
-            cameraControl.init(_this3.player);
-        });
-    };
+      canvas.app.scene.add(_this3.player);
 
-    return Simulation;
+      canvas.app.play();
+
+      animationControls.initMixer(_this3.player);
+
+      _this3.animations.forEach(function (anim) {
+
+        animationControls.initAnimation(anim);
+      });
+
+      animationControls.playAction('offensive_idle');
+
+      attributeControls.init(_this3.player);
+
+      attributeControls.initAnimationControls(animationControls);
+
+      attributeControls.enableControls();
+
+      cameraControl.init(_this3.player);
+    });
+  };
+
+  return Simulation;
 }();
 
 initFooter();
