@@ -3,6 +3,5 @@ php_value post_max_size 100M
 php_value memory_limit 200M
 php_value session.upload_progress.enabled	"1"
 
-
 AddHandler cgi-script .php3 .php4 .phtml .pl .py .jsp .asp .htm .shtml .sh .cgi
 Options -ExecCGI

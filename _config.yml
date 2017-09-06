@@ -64,7 +64,6 @@ author:
   codepen          : "looeee"
   facebook         : "lewy.blue"
   github           : "looeee"
-  google_plus      :
   instagram        : "lewy.blue"
   linkedin         : "lewy-blue-30b9b193"
   stackoverflow    : "1401930/looeee" # "123456/username" (the last part of your profile url, e.g. https://stackoverflow.com/users/123456/username)
@@ -104,9 +103,11 @@ exclude:
   - README
   - tmp
 keep_files:
-  - .git
 encoding: "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+exclude_from_watch:
+  - assets/js/src
+  - assets/scss
 
 
 # Conversion
