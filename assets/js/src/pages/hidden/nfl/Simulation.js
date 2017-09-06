@@ -1,13 +1,11 @@
 import * as THREE from 'three';
 
 import canvas from './Canvas.js';
-import Loaders from './utilities/Loaders.js';
-// import HTMLControl from './utilities/HTMLControl.js';
+import loaders from './utilities/loaders.js';
 import attributeControls from './utilities/AttributeControls.js';
 import animationControls from './utilities/AnimationControls.js';
 import cameraControl from './utilities/cameraControl.js';
-
-const loaders = new Loaders();
+// import sprites from './utilities/sprites.js';
 
 export default class Simulation {
 
@@ -55,7 +53,7 @@ export default class Simulation {
 
       object.traverse( ( child ) => {
 
-        // console.log( child )
+        // console.log( child.name )
 
         if ( child instanceof THREE.Mesh ) {
 
@@ -136,6 +134,8 @@ export default class Simulation {
         attributeControls.enableControls();
 
         cameraControl.init( this.player );
+
+        // sprites.init( this.player );
 
       },
     );
