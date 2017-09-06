@@ -8,16 +8,17 @@ import OrbitControls from 'modules/OrbitControls.module.js';
  *
  */
 
+let _canvas;
+let _scene;
+let _camera;
+let _renderer;
+
+let _currentAnimationFrameID;
+
+
 function App( canvas ) {
 
   const self = this;
-
-  let _canvas;
-  let _scene;
-  let _camera;
-  let _renderer;
-
-  let _currentAnimationFrameID;
 
   if ( canvas !== undefined ) _canvas = canvas;
 

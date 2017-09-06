@@ -136,6 +136,7 @@ export default class Simulation {
 
         cameraControl.init( this.player );
 
+        console.log( 'sprites init' )
         sprites.init( this.player );
 
       },

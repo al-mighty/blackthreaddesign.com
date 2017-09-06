@@ -17,12 +17,20 @@ module Jekyll
       old_custom_excludes(options)
     end
 
-    # # replace old method by new method
-    # alias_method :old_listen_handler, :listen_handler
-    # def listen_handler(site)
-    #   old_listen_handler(site)
-    #   sleep 30
-    # end
+    # replace old method by new method
+    # customized to make :force_polling => false,
+    # preventing multiple calls to listener on each file change
+    alias_method :old_build_listener, :build_listener
+    def build_listener(site, options)
+      Listen.to(
+        options['source'],
+        :ignore => listen_ignore_paths(options),
+        :force_polling => false,
+        :wait_for_delay => 2,
+        :latency => 2,
+        &(listen_handler(site))
+      )
+    end
 
   end
 end

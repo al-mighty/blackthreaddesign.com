@@ -2,21 +2,23 @@ import * as THREE from 'three';
 // import throttle from 'lodash.throttle';
 import canvas from '../canvas.js';
 import HTMLControl from './HTMLControl.js';
-
-
-import loaders from './loaders.js';
+// import loaders from './loaders.js';
 
 class Sprite {
 
-  constructor( texture, attribute ) {
+  constructor( texture, attribute, target ) {
 
     this.attribute = attribute;
+    this.positionTarget = target;
 
-    const mat = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+    const material = new THREE.SpriteMaterial( { map: texture, color: 0xff0000 } );
 
-    this.object = new THREE.Sprite( mat );
+    this.object = new THREE.Sprite( material );
+    this.object.frustumCulled = false;
+    this.object.scale.x = 50;
+    this.object.scale.y = 50;
 
-    canvas.scene.add( this.object );
+    canvas.app.scene.add( this.object );
 
     this.enabled = false;
 
@@ -32,6 +34,14 @@ class Sprite {
 
     this.enabled = true;
     this.visible = true;
+
+  }
+
+  update( position ) {
+
+    if ( !this.enabled ) return;
+
+    this.object.position.copy( position );
 
   }
 
@@ -54,18 +64,17 @@ class Sprites {
   init( player ) {
 
     this.player = player;
-    this.initTargets;
+
+    this.initTargets();
+    this.initPositions();
+    this.initSprites();
 
   }
 
   loadTexture() {
 
-    loaders.textureLoader( '/assets/images/nfl/power_bar.png' )
-      .then( ( texture ) => {
+    this.testTexture = new THREE.TextureLoader().load( '/assets/images/nfl/power_bar.png' );
 
-        this.testTexture = texture;
-
-      } );
   }
 
   initTargets() {
@@ -87,7 +96,11 @@ class Sprites {
 
       get arms() {
 
+        console.log( this.arms)
+
         if ( this.arm === 'right' || this.arm === 'both' ) {
+
+          console.log(this.targets, this.targets.rightArm)
 
           this.targets.rightArm.getWorldPosition( armPos );
           armPos.x += 25;
@@ -111,7 +124,7 @@ class Sprites {
 
   initSprites() {
 
-    this.sprites.armStrength = new Sprite( this.testTexture, this.attributes[ 'arm-strength' ] );
+    this.sprites.armStrength = new Sprite( this.testTexture, this.attributes[ 'arm-strength' ], this.positions.arms );
 
   }
 
@@ -192,7 +205,7 @@ class Sprites {
 
       this.animationFrameID = requestAnimationFrame( update );
 
-    }
+    };
 
   }
 

@@ -21,7 +21,7 @@ export default class LightingSetup {
     // Traditional 3 point light setup - slightly more expensive due to
     // two extra lights
 
-    const backLight = new THREE.DirectionalLight( 0xffffff, 0.425 );
+    const backLight = new THREE.DirectionalLight( 0xffffff, 0.4 );
     backLight.position.set( 130, 200, 150 );
     // backLight.castShadow = true;
     // backLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 40, 1, 1, 10000 ) );
@@ -30,7 +30,7 @@ export default class LightingSetup {
     // backLight.shadow.mapSize.height = 2048;
 
 
-    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.475 );
+    const keyLight = new THREE.DirectionalLight( 0xffffff, 0.4 );
     keyLight.position.set( 100, 50, 0 );
     // keyLight.castShadow = true;
     // keyLight.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 70, 1, 1, 2000 ) );
@@ -53,9 +53,9 @@ export default class LightingSetup {
     // Visually similar to 3 point lighting, but cheaper as only two lights
     // are needed
 
-    this.pointLight = new THREE.PointLight( 0xffffff, 0.5, 0, 0 );
-    this.app.camera.add( this.pointLight );
-    this.app.scene.add( this.app.camera );
+    // this.pointLight = new THREE.PointLight( 0xffffff, 0.5, 0, 0 );
+    // this.app.camera.add( this.pointLight );
+    // this.app.scene.add( this.app.camera );
 
   }
 

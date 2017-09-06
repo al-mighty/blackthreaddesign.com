@@ -146,18 +146,19 @@ class CameraControl {
 
     // const addTargetHelper = ( target, color ) => {
 
-    //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
-    //   const mat = new THREE.MeshBasicMaterial( { color } );
-    //   const mesh = new THREE.Mesh( geo, mat );
-    //   mesh.position.copy( target.position );
+    //   const mat = new THREE.SpriteMaterial( { color } );
+    //   const sprite = new THREE.Sprite( mat );
+    //   sprite.position.copy( target );
+    //   sprite.scale.set( 10, 10, 1 );
 
-    //   canvas.app.scene.add( mesh );
+    //   canvas.app.scene.add( sprite );
 
     // };
 
     // addTargetHelper( this.targets.default, 0xff0000 );
     // addTargetHelper( this.targets.torso, 0x00ff00 );
     // addTargetHelper( this.targets.head, 0x0000ff );
+    // console.log( this.targets.head )
 
     // addTargetHelper( this.targets.rightArm, 0x0000ff );
     // addTargetHelper( this.targets.leftArm, 0xff0000 );
