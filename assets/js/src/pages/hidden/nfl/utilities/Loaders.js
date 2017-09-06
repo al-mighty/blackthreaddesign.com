@@ -12,6 +12,10 @@ let jsonLoader = null;
 let animationLoader = null;
 let fbxLoader = null;
 let textureLoader = null;
+<<<<<<< HEAD
+=======
+
+>>>>>>> rollback
 
 const defaultReject = ( err ) => { console.log( err ); };
 
@@ -23,7 +27,7 @@ const promisifyLoader = loader =>
   } );
 
 
-export default class Loaders {
+class Loaders {
 
   constructor() {
 
@@ -76,3 +80,7 @@ export default class Loaders {
   }
 
 }
+
+const loaders = new Loaders();
+
+export default loaders;
