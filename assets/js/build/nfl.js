@@ -53749,175 +53749,6 @@ HTMLControl.footer = footer$1;
 HTMLControl.loading = loading;
 HTMLControl.attributes = attributes;
 
-var mixer = void 0;
-var actions = {};
-
-function setWeight(action, weight) {
-
-  action.enabled = true;
-  action.setEffectiveTimeScale(1);
-  action.setEffectiveWeight(weight);
-}
-
-function executeCrossFade(startAction, endAction, duration) {
-
-  // Not only the start action, but also the end action must get a weight of 1 before fading
-  // (concerning the start action this is already guaranteed in this place)
-
-  setWeight(endAction, 1);
-  endAction.time = 0;
-
-  startAction.crossFadeTo(endAction, duration, false);
-}
-
-// add an event listener to call executeCrossFade() at teh end of the current action's current loop
-function prepareCrossFade(startAction, endAction, duration) {
-
-  if (!duration) duration = 1;
-
-  if (startAction.name === 'offensive_idle') {
-
-    duration = 1;
-  } else {
-
-    duration = startAction._clip.duration - startAction.time;
-  }
-
-  if (duration < 1) duration = 1;
-
-  executeCrossFade(startAction, endAction, duration);
-
-  // } else {
-
-  //   synchronizeCrossFade( startAction, endAction, duration );
-
-  // }
-}
-
-var AnimationControls = function () {
-  function AnimationControls() {
-    classCallCheck(this, AnimationControls);
-
-
-    this.isPaused = true;
-
-    this.currentAction = null;
-  }
-
-  AnimationControls.prototype.initMixer = function initMixer(object) {
-
-    mixer = new AnimationMixer(object);
-  };
-
-  AnimationControls.prototype.update = function update(delta) {
-
-    if (this.isPaused) return;
-
-    if (mixer !== undefined) mixer.update(delta / 1000);
-  };
-
-  AnimationControls.prototype.play = function play() {
-
-    this.isPaused = false;
-  };
-
-  AnimationControls.prototype.pause = function pause() {
-
-    this.isPaused = true;
-  };
-
-  AnimationControls.prototype.playAction = function playAction(name) {
-
-    var action = actions[name];
-
-    if (action === undefined) {
-
-      console.warn('Action \'' + name + '\' was not found.');
-      return;
-    }
-
-    // don't restart already playing action
-    if (this.currentAction && this.currentAction.name === name) return;
-
-    // if this is the first action being played just start immediately
-    if (this.currentAction === null) {
-
-      this.currentAction = action;
-      setWeight(this.currentAction, 1);
-    }
-
-    // otherwise crossfade to the new action
-    else {
-
-        // console.log( 'warping from ' + this.currentAction.name + ' to ' + action.name)
-
-        var oldAction = this.currentAction;
-        this.currentAction = action;
-        this.currentAction.reset();
-
-        var duration = 1;
-
-        prepareCrossFade(oldAction, this.currentAction, duration);
-      }
-
-    this.isPaused = false;
-  };
-
-  AnimationControls.prototype.playActionOLD = function playActionOLD(name) {
-    var _this = this;
-
-    if (this.currentAction && this.currentAction.name === name) return;
-
-    var actionFound = false;
-
-    Object.values(actions).forEach(function (action) {
-
-      if (action.name === name) {
-
-        _this.currentAction = action;
-
-        action.play();
-
-        _this.isPaused = false;
-
-        actionFound = true;
-      } else action.stop();
-    });
-
-    if (!actionFound) {
-
-      console.warn('Action \'' + name + '\' was not found.');
-      this.isPaused = true;
-    }
-  };
-
-  AnimationControls.prototype.setTimeScale = function setTimeScale(timeScale, name) {
-
-    var action = actions[name];
-
-    var currentTimeScale = action.getEffectiveTimeScale();
-
-    action.warp(currentTimeScale, timeScale, 0.25);
-  };
-
-  AnimationControls.prototype.initAnimation = function initAnimation(animationClip, optionalRoot) {
-
-    var action = mixer.clipAction(animationClip, optionalRoot);
-
-    action.name = animationClip.name;
-
-    actions[animationClip.name] = action;
-
-    setWeight(action, 0);
-
-    action.play();
-  };
-
-  return AnimationControls;
-}();
-
-var animationControls = new AnimationControls();
-
 var Canvas = function () {
   function Canvas(canvas) {
     classCallCheck(this, Canvas);
@@ -59348,6 +59179,7 @@ var bufferGeometryLoader = null;
 var jsonLoader = null;
 var animationLoader = null;
 var fbxLoader = null;
+var textureLoader = null;
 
 var defaultReject = function (err) {
   console.log(err);
@@ -59369,6 +59201,13 @@ var Loaders = function Loaders() {
 
 
   return {
+
+    get textureLoader() {
+      if (textureLoader === null) {
+        textureLoader = promisifyLoader(new TextureLoader(loadingManager));
+      }
+      return textureLoader;
+    },
 
     get objectLoader() {
       if (objectLoader === null) {
@@ -59408,6 +59247,254 @@ var Loaders = function Loaders() {
   };
 };
 
+var loaders = new Loaders();
+
+var Canvas$1 = function () {
+  function Canvas(canvas) {
+    classCallCheck(this, Canvas);
+
+
+    this.canvas = canvas;
+
+    this.app = new App(this.canvas);
+
+    this.app.renderer.setClearColor(0xf7f7f7, 1.0);
+
+    this.lighting = new LightingSetup(this.app);
+
+    this.loadedObjects = new Group();
+    this.app.scene.add(this.loadedObjects);
+
+    this.app.initControls();
+
+    // this.initShadows();
+    this.initFog();
+    this.addGround();
+  }
+
+  Canvas.prototype.initShadows = function initShadows() {
+
+    this.app.renderer.shadowMap.enabled = true;
+    this.app.renderer.shadowMap.type = PCFShadowMap;
+    // PCFSoftShadowMap, PCFShadowMap, BasicShadowMap
+  };
+
+  Canvas.prototype.initFog = function initFog() {
+
+    this.app.scene.fog = new Fog(0xf7f7f7, 1500, 10000);
+  };
+
+  Canvas.prototype.addGround = function addGround() {
+
+    var geometry = new PlaneBufferGeometry(20000, 20000);
+    var material = new MeshPhongMaterial({ color: 0xb0b0b0, shininess: 0.1 });
+    var ground = new Mesh(geometry, material);
+    ground.position.set(0, -25, 0);
+    ground.rotation.x = -Math.PI / 2;
+
+    // const shadowGeometry = new THREE.PlaneBufferGeometry( 20000, 20000 );
+    // const shadowMat = new THREE.ShadowMaterial();
+    // shadowMat.opacity = 0.2;
+    // const shadowReceiver = new THREE.Mesh( shadowGeometry, shadowMat );
+    // shadowReceiver.position.set( 0, 0, 0 );
+    // shadowReceiver.rotation.x = -Math.PI / 2;
+    // shadowReceiver.receiveShadow = true;
+
+    // this.app.scene.add( ground, shadowReceiver );
+
+    ground.receiveShadow = true;
+    this.app.scene.add(ground);
+  };
+
+  return Canvas;
+}();
+
+var canvas$2 = new Canvas$1(HTMLControl.canvas);
+
+var Sprite$1 = function () {
+    function Sprite$$(texture, attribute) {
+        classCallCheck(this, Sprite$$);
+
+
+        this.attribute = attribute;
+
+        var mat = new SpriteMaterial({ map: texture, color: 0xffffff });
+
+        this.object = new Sprite(mat);
+
+        // canvas.scene.add( this.object );
+
+        this.enabled = false;
+    }
+
+    Sprite$$.prototype.enable = function enable() {
+
+        this.enabled = true;
+        this.visible = true;
+    };
+
+    createClass(Sprite$$, [{
+        key: 'visible',
+        set: function (bool) {
+
+            this.object.visible = bool;
+        }
+    }]);
+    return Sprite$$;
+}();
+
+var Sprites = function () {
+    function Sprites() {
+
+        // this.attributes = HTMLControl.attributes;
+
+        // this.loadTexture();
+
+        // this.sprites = {};
+
+        // this.arm = 'right';
+
+        classCallCheck(this, Sprites);
+    }
+
+    Sprites.prototype.init = function init(player) {
+
+        this.player = player;
+        this.initTargets;
+    };
+
+    Sprites.prototype.loadTexture = function loadTexture() {
+        var _this = this;
+
+        loaders.textureLoader('/assets/images/nfl/power_bar.png').then(function (texture) {
+
+            _this.testTexture = texture;
+        });
+    };
+
+    Sprites.prototype.initTargets = function initTargets() {
+
+        this.targets = {
+
+            rightArm: this.player.getObjectByName('mixamorigRightShoulder'),
+            leftArm: this.player.getObjectByName('mixamorigLeftShoulder')
+
+        };
+    };
+
+    Sprites.prototype.initPositions = function initPositions() {
+
+        var armPos = new Vector3();
+
+        this.positions = {
+
+            get arms() {
+
+                if (this.arm === 'right' || this.arm === 'both') {
+
+                    this.targets.rightArm.getWorldPosition(armPos);
+                    armPos.x += 25;
+                } else {
+
+                    this.targets.leftArm.getWorldPosition(armPos);
+                    armPos.x -= 25;
+                }
+
+                armPos.y -= 25;
+
+                return armPos;
+            }
+
+        };
+    };
+
+    Sprites.prototype.initSprites = function initSprites() {
+
+        this.sprites.armStrength = new Sprite$1(this.testTexture, this.attributes['arm-strength']);
+    };
+
+    // set to right, left or both
+
+
+    Sprites.prototype.setArm = function setArm(arm) {
+
+        arm = arm || 'right';
+
+        this.arm = arm;
+    };
+
+    Sprites.prototype.hideAll = function hideAll() {
+
+        Object.values(this.sprites).forEach(function (sprite) {
+
+            sprite.visible = false;
+        });
+
+        this.stopAnimation();
+    };
+
+    Sprites.prototype.showAllEnabled = function showAllEnabled() {
+
+        Object.values(this.sprites).forEach(function (sprite) {
+
+            if (sprite.enabled) sprite.visible = true;
+        });
+
+        this.animate();
+    };
+
+    Sprites.prototype.enable = function enable(spriteName) {
+
+        var sprite = this.sprites[spriteName];
+
+        if (sprite === undefined) {
+
+            console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+            return;
+        }
+
+        sprite.enable();
+    };
+
+    Sprites.prototype.disable = function disable(spriteName) {
+
+        var sprite = this.sprites[spriteName];
+
+        if (sprite === undefined) {
+
+            console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+            return;
+        }
+
+        sprite.disable();
+    };
+
+    Sprites.prototype.animate = function animate() {
+        var _this2 = this;
+
+        this.animationFrameID = null;
+
+        var update = function () {
+
+            Object.values(_this2.sprites).forEach(function (sprite) {
+
+                if (sprite.enabled) sprite.update();
+            });
+
+            _this2.animationFrameID = requestAnimationFrame(update);
+        };
+    };
+
+    Sprites.prototype.stopAnimation = function stopAnimation() {
+
+        cancelAnimationFrame(this.animationFrameID);
+    };
+
+    return Sprites;
+}();
+
+var sprites = new Sprites();
+
 // Control camera targeting and OrbitControl settings
 
 var CameraControl = function () {
@@ -59415,8 +59502,8 @@ var CameraControl = function () {
         classCallCheck(this, CameraControl);
 
 
-        this.camera = canvas.app.camera;
-        this.controls = canvas.app.controls;
+        this.camera = canvas$2.app.camera;
+        this.controls = canvas$2.app.controls;
 
         this.targetChanged = false;
         this.zoomLevelChanged = false;
@@ -59459,8 +59546,6 @@ var CameraControl = function () {
 
         this.controls.minPolarAngle = 0;
         this.controls.maxPolarAngle = Math.PI / 2;
-
-        // this.controls.enablePan = false;
 
         // save the initial position. This can be regained with controls.reset()
         this.controls.saveState();
@@ -59664,10 +59749,16 @@ var CameraControl = function () {
 
                 this.dynamicTracking = true;
                 this.targetTrackingSpeed = 2;
+
+                // don't show sprites
+                sprites.hideAll();
             } else {
 
                 this.dynamicTracking = false;
                 this.targetTrackingSpeed = 1;
+
+                // show any enabled sprites
+                sprites.showAllEnabled();
             }
         },
         get: function () {
@@ -60125,7 +60216,174 @@ var AttributeControls = function () {
 
 var attributeControls = new AttributeControls();
 
-var loaders = new Loaders();
+var mixer = void 0;
+var actions = {};
+
+function setWeight(action, weight) {
+
+  action.enabled = true;
+  action.setEffectiveTimeScale(1);
+  action.setEffectiveWeight(weight);
+}
+
+function executeCrossFade(startAction, endAction, duration) {
+
+  // Not only the start action, but also the end action must get a weight of 1 before fading
+  // (concerning the start action this is already guaranteed in this place)
+
+  setWeight(endAction, 1);
+  endAction.time = 0;
+
+  startAction.crossFadeTo(endAction, duration, false);
+}
+
+// add an event listener to call executeCrossFade() at teh end of the current action's current loop
+function prepareCrossFade(startAction, endAction, duration) {
+
+  if (!duration) duration = 1;
+
+  if (startAction.name === 'offensive_idle') {
+
+    duration = 1;
+  } else {
+
+    duration = startAction._clip.duration - startAction.time;
+  }
+
+  if (duration < 1) duration = 1;
+
+  executeCrossFade(startAction, endAction, duration);
+
+  // } else {
+
+  //   synchronizeCrossFade( startAction, endAction, duration );
+
+  // }
+}
+
+var AnimationControls = function () {
+  function AnimationControls() {
+    classCallCheck(this, AnimationControls);
+
+
+    this.isPaused = true;
+
+    this.currentAction = null;
+  }
+
+  AnimationControls.prototype.initMixer = function initMixer(object) {
+
+    mixer = new AnimationMixer(object);
+  };
+
+  AnimationControls.prototype.update = function update(delta) {
+
+    if (this.isPaused) return;
+
+    if (mixer !== undefined) mixer.update(delta / 1000);
+  };
+
+  AnimationControls.prototype.play = function play() {
+
+    this.isPaused = false;
+  };
+
+  AnimationControls.prototype.pause = function pause() {
+
+    this.isPaused = true;
+  };
+
+  AnimationControls.prototype.playAction = function playAction(name) {
+
+    var action = actions[name];
+
+    if (action === undefined) {
+
+      console.warn('Action \'' + name + '\' was not found.');
+      return;
+    }
+
+    // don't restart already playing action
+    if (this.currentAction && this.currentAction.name === name) return;
+
+    // if this is the first action being played just start immediately
+    if (this.currentAction === null) {
+
+      this.currentAction = action;
+      setWeight(this.currentAction, 1);
+    }
+
+    // otherwise crossfade to the new action
+    else {
+
+        // console.log( 'warping from ' + this.currentAction.name + ' to ' + action.name)
+
+        var oldAction = this.currentAction;
+        this.currentAction = action;
+        this.currentAction.reset();
+
+        var duration = 1;
+
+        prepareCrossFade(oldAction, this.currentAction, duration);
+      }
+
+    this.isPaused = false;
+  };
+
+  AnimationControls.prototype.playActionOLD = function playActionOLD(name) {
+    var _this = this;
+
+    if (this.currentAction && this.currentAction.name === name) return;
+
+    var actionFound = false;
+
+    Object.values(actions).forEach(function (action) {
+
+      if (action.name === name) {
+
+        _this.currentAction = action;
+
+        action.play();
+
+        _this.isPaused = false;
+
+        actionFound = true;
+      } else action.stop();
+    });
+
+    if (!actionFound) {
+
+      console.warn('Action \'' + name + '\' was not found.');
+      this.isPaused = true;
+    }
+  };
+
+  AnimationControls.prototype.setTimeScale = function setTimeScale(timeScale, name) {
+
+    var action = actions[name];
+
+    var currentTimeScale = action.getEffectiveTimeScale();
+
+    action.warp(currentTimeScale, timeScale, 0.25);
+  };
+
+  AnimationControls.prototype.initAnimation = function initAnimation(animationClip, optionalRoot) {
+
+    var action = mixer.clipAction(animationClip, optionalRoot);
+
+    action.name = animationClip.name;
+
+    actions[animationClip.name] = action;
+
+    setWeight(action, 0);
+
+    action.play();
+  };
+
+  return AnimationControls;
+}();
+
+var animationControls = new AnimationControls();
 
 var Simulation = function () {
     function Simulation() {
@@ -60171,7 +60429,7 @@ var Simulation = function () {
 
             object.traverse(function (child) {
 
-                // console.log( child )
+                // console.log( child.name )
 
                 if (child instanceof Mesh) {
 
@@ -60230,6 +60488,8 @@ var Simulation = function () {
             attributeControls.enableControls();
 
             cameraControl.init(_this3.player);
+
+            // sprites.init( this.player );
         });
     };
 
