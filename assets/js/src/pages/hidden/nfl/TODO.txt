@@ -1,5 +1,5 @@
 - stitching some animations together
 - designing the final app for the writer and for the reader
-
-
-What is Drop Back?
+- add 2D power metres to limbs
+- go over camera control
+- go over animation transitions
