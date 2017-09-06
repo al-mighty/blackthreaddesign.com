@@ -207,4 +207,3 @@ class AnimationControls {
 const animationControls = new AnimationControls();
 
 export default animationControls;
-

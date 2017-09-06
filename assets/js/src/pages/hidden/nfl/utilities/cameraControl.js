@@ -2,7 +2,6 @@
 
 import * as THREE from 'three';
 import canvas from '../canvas.js';
-import sprites from './sprites.js';
 
 class CameraControl {
 
@@ -51,16 +50,10 @@ class CameraControl {
       this.dynamicTracking = true;
       this.targetTrackingSpeed = 2;
 
-      // don't show sprites
-      sprites.hideAll();
-
     } else {
 
       this.dynamicTracking = false;
       this.targetTrackingSpeed = 1;
-
-      // show any enabled sprites
-      sprites.showAllEnabled();
 
     }
 
@@ -105,6 +98,7 @@ class CameraControl {
     this.controls.minPolarAngle = 0;
     this.controls.maxPolarAngle = Math.PI / 2;
 
+    // this.controls.enablePan = false;
 
     // save the initial position. This can be regained with controls.reset()
     this.controls.saveState();
@@ -150,7 +144,7 @@ class CameraControl {
 
     this.currentTarget = 'default';
 
- // const addTargetHelper = ( target, color ) => {
+    // const addTargetHelper = ( target, color ) => {
 
     //   const geo = new THREE.SphereBufferGeometry( 5, 12, 12 );
     //   const mat = new THREE.MeshBasicMaterial( { color } );
