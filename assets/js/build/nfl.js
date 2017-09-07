@@ -59586,10 +59586,6 @@ var Canvas$1 = function () {
 
 var canvas$2 = new Canvas$1(HTMLControl.canvas);
 
-// import throttle from 'lodash.throttle';
-// import loaders from './loaders.js';
-
-
 var start = new Vector3();
 var end = new Vector3();
 
@@ -59608,30 +59604,37 @@ var Sprite$1 = function () {
     // make sure the sprite is always drawn on top
     this.object.renderOrder = 999;
 
-    this.object.position.copy(this.target);
     this.object.scale.x = 50;
     this.object.scale.y = 50;
 
-    canvas$2.app.scene.add(this.object);
-
     this.enabled = false;
+    this.visible = false;
 
-    // for testing
-    this.enable();
+    canvas$2.app.scene.add(this.object);
   }
 
+  Sprite$$.prototype.init = function init() {};
+
   Sprite$$.prototype.enable = function enable() {
+
+    if (this.enabled) return;
 
     this.object.position.copy(this.target);
     this.enabled = true;
     this.visible = true;
 
-    this.object.onBeforeRender = function () {};
+    this.object.onBeforeRender = function (renderer) {
+      renderer.clearDepth();
+    };
   };
 
   Sprite$$.prototype.disable = function disable() {
 
+    if (!this.enabled) return;
+
     this.object.onBeforeRender = function () {};
+    this.enabled = false;
+    this.visible = false;
   };
 
   Sprite$$.prototype.update = function update(delta) {
@@ -59764,8 +59767,6 @@ var Sprites = function () {
 
       sprite.visible = false;
     });
-
-    this.stopAnimation();
   };
 
   Sprites.prototype.showAllEnabled = function showAllEnabled() {
@@ -59774,11 +59775,19 @@ var Sprites = function () {
 
       if (sprite.enabled) sprite.visible = true;
     });
+  };
 
-    this.animate();
+  Sprites.prototype.disableAll = function disableAll() {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      sprite.disable();
+    });
   };
 
   Sprites.prototype.enable = function enable(spriteName) {
+
+    // this.hideAll();
 
     var sprite = this.sprites[spriteName];
 
@@ -59813,12 +59822,6 @@ var Sprites = function () {
 
     // weird hack (force positions.arms to update )
     positions.arms;
-    // if ( positions.arms ) console.log( positions.arms );
-  };
-
-  Sprites.prototype.stopAnimation = function stopAnimation() {
-
-    cancelAnimationFrame(this.animationFrameID);
   };
 
   return Sprites;
@@ -59926,6 +59929,8 @@ var AttributeControls = function () {
 
       _this.animationControls.playAction(anim);
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -59939,6 +59944,8 @@ var AttributeControls = function () {
       if (e.target.value < 5) _this2.animationControls.playAction('catch_to_fall');else _this2.animationControls.playAction('catch_to_roll');
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -59957,10 +59964,11 @@ var AttributeControls = function () {
       var timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * (x * x);
 
       _this3.animationControls.setTimeScale(timeScale, anim);
-
       _this3.animationControls.playAction(anim);
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -59969,6 +59977,18 @@ var AttributeControls = function () {
 
     var anim = 'offensive_idle';
 
+    var handy = function () {
+
+      _this4.animationControls.setTimeScale(1, anim);
+      _this4.animationControls.playAction(anim);
+
+      cameraControl.setArmTarget(_this4.dominantHand);
+      cameraControl.focusArms();
+
+      sprites.setArm(_this4.dominantHand);
+      sprites.enable('armStrength');
+    };
+
     this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
 
       e.preventDefault();
@@ -59976,12 +59996,7 @@ var AttributeControls = function () {
       _this4.passAnim = 'pass_left_hand';
       _this4.dominantHand = 'left';
 
-      _this4.animationControls.setTimeScale(1, anim);
-      _this4.animationControls.playAction(anim);
-
-      cameraControl.setArmTarget(_this4.dominantHand);
-      sprites.setArm(_this4.dominantHand);
-      cameraControl.focusArms();
+      handy();
     }, 100), false);
 
     this.attributes['dominant-hand'].right.addEventListener('click', throttle(function (e) {
@@ -59991,12 +60006,7 @@ var AttributeControls = function () {
       _this4.passAnim = 'pass_right_hand';
       _this4.dominantHand = 'right';
 
-      _this4.animationControls.setTimeScale(1, anim);
-      _this4.animationControls.playAction(anim);
-
-      cameraControl.setArmTarget(_this4.dominantHand);
-      sprites.setArm(_this4.dominantHand);
-      cameraControl.focusArms();
+      handy();
     }, 100), false);
 
     this.attributes['dominant-hand'].both.addEventListener('click', throttle(function (e) {
@@ -60006,12 +60016,7 @@ var AttributeControls = function () {
       _this4.passAnim = 'pass_right_hand';
       _this4.dominantHand = 'right';
 
-      _this4.animationControls.setTimeScale(1, anim);
-      _this4.animationControls.playAction(anim);
-
-      cameraControl.setArmTarget(_this4.dominantHand);
-      sprites.setArm(_this4.dominantHand);
-      cameraControl.focusArms();
+      handy();
     }, 100), false);
   };
 
@@ -60025,6 +60030,8 @@ var AttributeControls = function () {
       _this5.animationControls.playAction(_this5.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60038,6 +60045,8 @@ var AttributeControls = function () {
       _this6.animationControls.playAction(_this6.passAnim);
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60051,6 +60060,8 @@ var AttributeControls = function () {
       _this7.animationControls.playAction(_this7.passAnim);
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60061,9 +60072,10 @@ var AttributeControls = function () {
 
       e.preventDefault();
 
-      _this8.animationControls.playAction(_this8.passAnim);
+      _this8.animationControls.playAction('offensive_idle');
 
-      cameraControl.focusDynamicUpper();
+      cameraControl.focusDefault();
+      sprites.enable('armStrength');
     }, 100), false);
   };
 
@@ -60077,6 +60089,8 @@ var AttributeControls = function () {
       _this9.animationControls.playAction(_this9.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60090,6 +60104,8 @@ var AttributeControls = function () {
       _this10.animationControls.playAction(_this10.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60103,6 +60119,8 @@ var AttributeControls = function () {
       _this11.animationControls.playAction(_this11.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60116,6 +60134,8 @@ var AttributeControls = function () {
       _this12.animationControls.playAction(_this12.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60129,6 +60149,8 @@ var AttributeControls = function () {
       _this13.animationControls.playAction(_this13.passAnim);
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60142,6 +60164,8 @@ var AttributeControls = function () {
       _this14.animationControls.playAction('offensive_idle');
 
       cameraControl.focusHead();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60155,6 +60179,8 @@ var AttributeControls = function () {
       _this15.animationControls.playAction(_this15.passAnim);
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60168,6 +60194,8 @@ var AttributeControls = function () {
       _this16.animationControls.playAction('hike');
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60181,6 +60209,8 @@ var AttributeControls = function () {
       _this17.animationControls.playAction('hike');
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60194,6 +60224,8 @@ var AttributeControls = function () {
       _this18.animationControls.playAction('run');
 
       cameraControl.focusUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60207,6 +60239,8 @@ var AttributeControls = function () {
       _this19.animationControls.playAction(_this19.passAnim);
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60227,6 +60261,8 @@ var AttributeControls = function () {
       _this20.animationControls.playAction('run');
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60248,6 +60284,8 @@ var AttributeControls = function () {
       }
 
       cameraControl.focusUpper();
+
+      sprites.disableAll();
     }, 100), false);
   };
 
@@ -60269,6 +60307,8 @@ var AttributeControls = function () {
       }
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
     }, 100), false);
   };
 

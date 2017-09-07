@@ -22,16 +22,17 @@ class Sprite {
     // make sure the sprite is always drawn on top
     this.object.renderOrder = 999;
 
-    this.object.position.copy( this.target );
     this.object.scale.x = 50;
     this.object.scale.y = 50;
 
+    this.enabled = false;
+    this.visible = false;
+
     canvas.app.scene.add( this.object );
 
-    this.enabled = false;
+  }
 
-    // for testing
-    this.enable();
+  init() {
 
   }
 
@@ -43,17 +44,23 @@ class Sprite {
 
   enable() {
 
+    if ( this.enabled ) return;
+
     this.object.position.copy( this.target );
     this.enabled = true;
     this.visible = true;
 
-    this.object.onBeforeRender = () => {};
+    this.object.onBeforeRender = ( renderer ) => { renderer.clearDepth(); };
 
   }
 
   disable() {
 
+    if ( !this.enabled ) return;
+
     this.object.onBeforeRender = () => {};
+    this.enabled = false;
+    this.visible = false;
 
   }
 
@@ -190,8 +197,6 @@ class Sprites {
 
     } );
 
-    this.stopAnimation();
-
   }
 
   showAllEnabled() {
@@ -202,11 +207,21 @@ class Sprites {
 
     } );
 
-    this.animate();
+  }
+
+  disableAll() {
+
+    Object.values( this.sprites ).forEach( ( sprite ) => {
+
+      sprite.disable();
+
+    } );
 
   }
 
   enable( spriteName ) {
+
+    // this.hideAll();
 
     const sprite = this.sprites[ spriteName ];
 
@@ -246,15 +261,8 @@ class Sprites {
 
     // weird hack (force positions.arms to update )
     positions.arms;
-    // if ( positions.arms ) console.log( positions.arms );
-
   }
 
-  stopAnimation() {
-
-    cancelAnimationFrame( this.animationFrameID );
-
-  }
 
 }
 

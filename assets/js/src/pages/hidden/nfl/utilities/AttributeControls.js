@@ -107,6 +107,8 @@ class AttributeControls {
       this.animationControls.playAction( anim );
       cameraControl.focusDefault();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -121,6 +123,8 @@ class AttributeControls {
       else this.animationControls.playAction( 'catch_to_roll' );
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -141,10 +145,11 @@ class AttributeControls {
       const timeScale = 0.813889 + 0.0358333 * x + 0.000277778 * ( x * x );
 
       this.animationControls.setTimeScale( timeScale, anim );
-
       this.animationControls.playAction( anim );
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -154,6 +159,19 @@ class AttributeControls {
 
     const anim = 'offensive_idle';
 
+    const handy = () => {
+
+      this.animationControls.setTimeScale( 1, anim );
+      this.animationControls.playAction( anim );
+
+      cameraControl.setArmTarget( this.dominantHand );
+      cameraControl.focusArms();
+
+      sprites.setArm( this.dominantHand );
+      sprites.enable( 'armStrength' );
+
+    };
+
     this.attributes[ 'dominant-hand' ].left.addEventListener( 'click', throttle( ( e ) => {
 
       e.preventDefault();
@@ -161,12 +179,7 @@ class AttributeControls {
       this.passAnim = 'pass_left_hand';
       this.dominantHand = 'left';
 
-      this.animationControls.setTimeScale( 1, anim );
-      this.animationControls.playAction( anim );
-
-      cameraControl.setArmTarget( this.dominantHand );
-      sprites.setArm( this.dominantHand );
-      cameraControl.focusArms();
+      handy();
 
     }, 100 ), false );
 
@@ -177,12 +190,7 @@ class AttributeControls {
       this.passAnim = 'pass_right_hand';
       this.dominantHand = 'right';
 
-      this.animationControls.setTimeScale( 1, anim );
-      this.animationControls.playAction( anim );
-
-      cameraControl.setArmTarget( this.dominantHand );
-      sprites.setArm( this.dominantHand );
-      cameraControl.focusArms();
+      handy();
 
     }, 100 ), false );
 
@@ -193,12 +201,7 @@ class AttributeControls {
       this.passAnim = 'pass_right_hand';
       this.dominantHand = 'right';
 
-      this.animationControls.setTimeScale( 1, anim );
-      this.animationControls.playAction( anim );
-
-      cameraControl.setArmTarget( this.dominantHand );
-      sprites.setArm( this.dominantHand );
-      cameraControl.focusArms();
+      handy();
 
     }, 100 ), false );
 
@@ -214,6 +217,8 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -227,6 +232,8 @@ class AttributeControls {
       this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -242,6 +249,8 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -252,9 +261,10 @@ class AttributeControls {
 
       e.preventDefault();
 
-      this.animationControls.playAction( this.passAnim );
+      this.animationControls.playAction( 'offensive_idle' );
 
-      cameraControl.focusDynamicUpper();
+      cameraControl.focusDefault();
+      sprites.enable( 'armStrength' );
 
     }, 100 ), false );
 
@@ -270,6 +280,8 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -283,6 +295,8 @@ class AttributeControls {
       this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -298,6 +312,8 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -311,6 +327,8 @@ class AttributeControls {
       this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamic();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -326,6 +344,8 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -339,6 +359,8 @@ class AttributeControls {
       this.animationControls.playAction( 'offensive_idle' );
 
       cameraControl.focusHead();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -354,6 +376,8 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -367,6 +391,8 @@ class AttributeControls {
       this.animationControls.playAction( 'hike' );
 
       cameraControl.focusDefault();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -382,6 +408,8 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -396,6 +424,8 @@ class AttributeControls {
 
       cameraControl.focusUpper();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
@@ -409,6 +439,8 @@ class AttributeControls {
       this.animationControls.playAction( this.passAnim );
 
       cameraControl.focusDynamicUpper();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -431,12 +463,13 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
 
   initClutchProduction() {
-
 
     this.attributes[ 'clutch-production' ].addEventListener( 'input', throttle( ( e ) => {
 
@@ -455,6 +488,8 @@ class AttributeControls {
       }
 
       cameraControl.focusUpper();
+
+      sprites.disableAll();
 
     }, 100 ), false );
 
@@ -480,12 +515,12 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
+      sprites.disableAll();
+
     }, 100 ), false );
 
   }
 
 }
 
-const attributeControls = new AttributeControls();
-
-export default attributeControls;
+export default new AttributeControls();
