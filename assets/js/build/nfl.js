@@ -59586,6 +59586,10 @@ var Canvas$1 = function () {
 
 var canvas$2 = new Canvas$1(HTMLControl.canvas);
 
+// import throttle from 'lodash.throttle';
+// import loaders from './loaders.js';
+
+
 var start = new Vector3();
 var end = new Vector3();
 
@@ -59597,7 +59601,7 @@ var Sprite$1 = function () {
     this.attribute = attribute;
     this.target = target || new Vector3();
 
-    var material = new SpriteMaterial({ map: texture, color: 0xff0000 });
+    var material = new SpriteMaterial({ map: texture, color: 0xff0000, transparent: true });
 
     this.object = new Sprite(material);
 
@@ -59614,6 +59618,8 @@ var Sprite$1 = function () {
   }
 
   Sprite$$.prototype.init = function init() {};
+
+  Sprite$$.prototype.fadeOut = function fadeOut() {};
 
   Sprite$$.prototype.enable = function enable() {
 

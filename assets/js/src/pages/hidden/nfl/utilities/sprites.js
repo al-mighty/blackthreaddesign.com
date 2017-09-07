@@ -15,7 +15,7 @@ class Sprite {
     this.attribute = attribute;
     this.target = target || new THREE.Vector3();
 
-    const material = new THREE.SpriteMaterial( { map: texture, color: 0xff0000 } );
+    const material = new THREE.SpriteMaterial( { map: texture, color: 0xff0000, transparent: true } );
 
     this.object = new THREE.Sprite( material );
 
@@ -39,6 +39,10 @@ class Sprite {
   set visible( bool ) {
 
     this.object.visible = bool;
+
+  }
+
+  fadeOut() {
 
   }
 
