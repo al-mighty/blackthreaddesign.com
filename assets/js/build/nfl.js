@@ -9527,6 +9527,7 @@ module.exports = throttle;
 var throttle = interopDefault(index$2);
 
 function outerHeight(el) {
+
   var height = el.offsetHeight;
   var style = getComputedStyle(el);
 
@@ -9544,6 +9545,9 @@ var setBodyMargin = function setBodyMargin() {
 
 function initFooter () {
   if (footer) {
+
+    footer.classList.remove('hide');
+
     setBodyMargin();
 
     window.addEventListener('resize', throttle(setBodyMargin, 250));
@@ -59416,8 +59420,6 @@ var CameraControl = function () {
 
   CameraControl.prototype.update = function update(delta) {
 
-    delta /= 1000;
-
     if (this.targetChanged || this.dynamicTracking) this.updateTarget(delta);
 
     if (this.zoomLevelChanged) this.updateZoomLevel(delta);
@@ -59584,6 +59586,246 @@ var Canvas$1 = function () {
 
 var canvas$2 = new Canvas$1(HTMLControl.canvas);
 
+// import throttle from 'lodash.throttle';
+// import loaders from './loaders.js';
+
+
+var start = new Vector3();
+var end = new Vector3();
+
+var Sprite$1 = function () {
+  function Sprite$$(texture, attribute, target) {
+    classCallCheck(this, Sprite$$);
+
+
+    this.attribute = attribute;
+    this.target = target || new Vector3();
+
+    var material = new SpriteMaterial({ map: texture, color: 0xff0000 });
+
+    this.object = new Sprite(material);
+
+    // make sure the sprite is always drawn on top
+    this.object.renderOrder = 999;
+
+    this.object.position.copy(this.target);
+    this.object.scale.x = 50;
+    this.object.scale.y = 50;
+
+    canvas$2.app.scene.add(this.object);
+
+    this.enabled = false;
+
+    // for testing
+    this.enable();
+  }
+
+  Sprite$$.prototype.enable = function enable() {
+
+    this.object.position.copy(this.target);
+    this.enabled = true;
+    this.visible = true;
+
+    this.object.onBeforeRender = function () {};
+  };
+
+  Sprite$$.prototype.disable = function disable() {
+
+    this.object.onBeforeRender = function () {};
+  };
+
+  Sprite$$.prototype.update = function update(delta) {
+
+    if (!this.enabled) return;
+
+    end.copy(this.target);
+
+    var distance = end.distanceTo(this.object.position);
+
+    if (Math.abs(distance) > 0.001) {
+
+      start.copy(this.object.position);
+
+      var direction = start.sub(end).normalize();
+
+      direction.multiplyScalar(distance * delta);
+
+      this.object.position.sub(direction);
+    }
+
+    // this.object.position.copy( this.target );
+  };
+
+  createClass(Sprite$$, [{
+    key: 'visible',
+    set: function (bool) {
+
+      this.object.visible = bool;
+    }
+  }]);
+  return Sprite$$;
+}();
+
+// bypass problems with using 'this' in update function
+
+
+var targets = {};
+var positions = {};
+
+var Sprites = function () {
+  function Sprites() {
+    classCallCheck(this, Sprites);
+
+
+    this.attributes = HTMLControl.attributes;
+
+    this.loadTexture();
+
+    this.sprites = {};
+
+    this.arm = 'right';
+  }
+
+  Sprites.prototype.init = function init(player) {
+
+    this.player = player;
+
+    this.initTargets();
+    this.initPositions();
+    this.initSprites();
+  };
+
+  Sprites.prototype.loadTexture = function loadTexture() {
+
+    this.testTexture = new TextureLoader().load('/assets/images/nfl/power_bar.png');
+  };
+
+  // hold references to bones
+
+
+  Sprites.prototype.initTargets = function initTargets() {
+
+    targets.rightArm = this.player.getObjectByName('mixamorigRightShoulder');
+    targets.leftArm = this.player.getObjectByName('mixamorigLeftShoulder');
+  };
+
+  // getters to return positions in world space relative to target bones
+
+
+  Sprites.prototype.initPositions = function initPositions() {
+
+    var self = this;
+
+    var armPos = new Vector3();
+
+    Object.defineProperties(positions, {
+
+      arms: {
+        get: function () {
+
+          if (self.arm === 'right' || self.arm === 'both') {
+
+            targets.rightArm.getWorldPosition(armPos);
+            armPos.x -= 60;
+          } else {
+
+            targets.leftArm.getWorldPosition(armPos);
+            armPos.x = 60;
+          }
+
+          armPos.y -= 25;
+          // armPos.z += 20;
+
+          return armPos;
+        }
+      }
+
+    });
+  };
+
+  Sprites.prototype.initSprites = function initSprites() {
+
+    this.sprites.armStrength = new Sprite$1(this.testTexture, this.attributes['arm-strength'], positions.arms);
+  };
+
+  // set to right, left or both
+
+
+  Sprites.prototype.setArm = function setArm(arm) {
+
+    arm = arm || 'right';
+
+    this.arm = arm;
+  };
+
+  Sprites.prototype.hideAll = function hideAll() {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      sprite.visible = false;
+    });
+
+    this.stopAnimation();
+  };
+
+  Sprites.prototype.showAllEnabled = function showAllEnabled() {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      if (sprite.enabled) sprite.visible = true;
+    });
+
+    this.animate();
+  };
+
+  Sprites.prototype.enable = function enable(spriteName) {
+
+    var sprite = this.sprites[spriteName];
+
+    if (sprite === undefined) {
+
+      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+      return;
+    }
+
+    sprite.enable();
+  };
+
+  Sprites.prototype.disable = function disable(spriteName) {
+
+    var sprite = this.sprites[spriteName];
+
+    if (sprite === undefined) {
+
+      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
+      return;
+    }
+
+    sprite.disable();
+  };
+
+  Sprites.prototype.update = function update(delta) {
+
+    Object.values(this.sprites).forEach(function (sprite) {
+
+      sprite.update(delta);
+    });
+
+    // weird hack (force positions.arms to update )
+    positions.arms;
+    // if ( positions.arms ) console.log( positions.arms );
+  };
+
+  Sprites.prototype.stopAnimation = function stopAnimation() {
+
+    cancelAnimationFrame(this.animationFrameID);
+  };
+
+  return Sprites;
+}();
+
+var sprites = new Sprites();
+
 var AttributeControls = function () {
   function AttributeControls() {
     classCallCheck(this, AttributeControls);
@@ -59732,11 +59974,13 @@ var AttributeControls = function () {
       e.preventDefault();
 
       _this4.passAnim = 'pass_left_hand';
+      _this4.dominantHand = 'left';
 
       _this4.animationControls.setTimeScale(1, anim);
       _this4.animationControls.playAction(anim);
 
-      cameraControl.setArmTarget('left');
+      cameraControl.setArmTarget(_this4.dominantHand);
+      sprites.setArm(_this4.dominantHand);
       cameraControl.focusArms();
     }, 100), false);
 
@@ -59745,11 +59989,13 @@ var AttributeControls = function () {
       e.preventDefault();
 
       _this4.passAnim = 'pass_right_hand';
+      _this4.dominantHand = 'right';
 
       _this4.animationControls.setTimeScale(1, anim);
       _this4.animationControls.playAction(anim);
 
-      cameraControl.setArmTarget('right');
+      cameraControl.setArmTarget(_this4.dominantHand);
+      sprites.setArm(_this4.dominantHand);
       cameraControl.focusArms();
     }, 100), false);
 
@@ -59758,11 +60004,13 @@ var AttributeControls = function () {
       e.preventDefault();
 
       _this4.passAnim = 'pass_right_hand';
+      _this4.dominantHand = 'right';
 
       _this4.animationControls.setTimeScale(1, anim);
       _this4.animationControls.playAction(anim);
 
-      cameraControl.setArmTarget('both');
+      cameraControl.setArmTarget(_this4.dominantHand);
+      sprites.setArm(_this4.dominantHand);
       cameraControl.focusArms();
     }, 100), false);
   };
@@ -60093,7 +60341,7 @@ var AnimationControls = function () {
 
     if (this.isPaused) return;
 
-    if (mixer !== undefined) mixer.update(delta / 1000);
+    if (mixer !== undefined) mixer.update(delta);
   };
 
   AnimationControls.prototype.play = function play() {
@@ -60198,207 +60446,6 @@ var AnimationControls = function () {
 
 var animationControls = new AnimationControls();
 
-// import throttle from 'lodash.throttle';
-// import loaders from './loaders.js';
-
-var Sprite$1 = function () {
-  function Sprite$$(texture, attribute, target) {
-    classCallCheck(this, Sprite$$);
-
-
-    this.attribute = attribute;
-    this.positionTarget = target;
-
-    var material = new SpriteMaterial({ map: texture, color: 0xff0000 });
-
-    this.object = new Sprite(material);
-    this.object.frustumCulled = false;
-    this.object.scale.x = 50;
-    this.object.scale.y = 50;
-
-    canvas$2.app.scene.add(this.object);
-
-    this.enabled = false;
-  }
-
-  Sprite$$.prototype.enable = function enable() {
-
-    this.enabled = true;
-    this.visible = true;
-  };
-
-  Sprite$$.prototype.update = function update(position) {
-
-    if (!this.enabled) return;
-
-    this.object.position.copy(position);
-  };
-
-  createClass(Sprite$$, [{
-    key: 'visible',
-    set: function (bool) {
-
-      this.object.visible = bool;
-    }
-  }]);
-  return Sprite$$;
-}();
-
-var Sprites = function () {
-  function Sprites() {
-    classCallCheck(this, Sprites);
-
-
-    this.attributes = HTMLControl.attributes;
-
-    this.loadTexture();
-
-    this.sprites = {};
-
-    this.arm = 'right';
-  }
-
-  Sprites.prototype.init = function init(player) {
-
-    this.player = player;
-
-    this.initTargets();
-    this.initPositions();
-    this.initSprites();
-  };
-
-  Sprites.prototype.loadTexture = function loadTexture() {
-
-    this.testTexture = new TextureLoader().load('/assets/images/nfl/power_bar.png');
-  };
-
-  Sprites.prototype.initTargets = function initTargets() {
-
-    this.targets = {
-
-      rightArm: this.player.getObjectByName('mixamorigRightShoulder'),
-      leftArm: this.player.getObjectByName('mixamorigLeftShoulder')
-
-    };
-  };
-
-  Sprites.prototype.initPositions = function initPositions() {
-
-    var armPos = new Vector3();
-
-    this.positions = {
-
-      get arms() {
-
-        console.log(this.arms);
-
-        if (this.arm === 'right' || this.arm === 'both') {
-
-          console.log(this.targets, this.targets.rightArm);
-
-          this.targets.rightArm.getWorldPosition(armPos);
-          armPos.x += 25;
-        } else {
-
-          this.targets.leftArm.getWorldPosition(armPos);
-          armPos.x -= 25;
-        }
-
-        armPos.y -= 25;
-
-        return armPos;
-      }
-
-    };
-  };
-
-  Sprites.prototype.initSprites = function initSprites() {
-
-    this.sprites.armStrength = new Sprite$1(this.testTexture, this.attributes['arm-strength'], this.positions.arms);
-  };
-
-  // set to right, left or both
-
-
-  Sprites.prototype.setArm = function setArm(arm) {
-
-    arm = arm || 'right';
-
-    this.arm = arm;
-  };
-
-  Sprites.prototype.hideAll = function hideAll() {
-
-    Object.values(this.sprites).forEach(function (sprite) {
-
-      sprite.visible = false;
-    });
-
-    this.stopAnimation();
-  };
-
-  Sprites.prototype.showAllEnabled = function showAllEnabled() {
-
-    Object.values(this.sprites).forEach(function (sprite) {
-
-      if (sprite.enabled) sprite.visible = true;
-    });
-
-    this.animate();
-  };
-
-  Sprites.prototype.enable = function enable(spriteName) {
-
-    var sprite = this.sprites[spriteName];
-
-    if (sprite === undefined) {
-
-      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
-      return;
-    }
-
-    sprite.enable();
-  };
-
-  Sprites.prototype.disable = function disable(spriteName) {
-
-    var sprite = this.sprites[spriteName];
-
-    if (sprite === undefined) {
-
-      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
-      return;
-    }
-
-    sprite.disable();
-  };
-
-  Sprites.prototype.animate = function animate() {
-    var _this = this;
-
-    this.animationFrameID = null;
-
-    var update = function () {
-
-      Object.values(_this.sprites).forEach(function (sprite) {
-
-        if (sprite.enabled) sprite.update();
-      });
-
-      _this.animationFrameID = requestAnimationFrame(update);
-    };
-  };
-
-  Sprites.prototype.stopAnimation = function stopAnimation() {
-
-    cancelAnimationFrame(this.animationFrameID);
-  };
-
-  return Sprites;
-}();
-
-var sprites = new Sprites();
-
 var Simulation = function () {
   function Simulation() {
     classCallCheck(this, Simulation);
@@ -60424,9 +60471,11 @@ var Simulation = function () {
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
       // NB: use self inside this function, 'this' will refer to canvas.app
+      var delta = this.delta / 1000;
 
-      animationControls.update(this.delta);
-      cameraControl.update(this.delta);
+      animationControls.update(delta);
+      cameraControl.update(delta);
+      sprites.update(delta);
     };
 
     // put any per resize calculations here (throttled to once per 250ms)
@@ -60496,14 +60545,9 @@ var Simulation = function () {
       animationControls.playAction('offensive_idle');
 
       attributeControls.init(_this3.player);
-
       attributeControls.initAnimationControls(animationControls);
-
       attributeControls.enableControls();
-
       cameraControl.init(_this3.player);
-
-      console.log('sprites init');
       sprites.init(_this3.player);
     });
   };

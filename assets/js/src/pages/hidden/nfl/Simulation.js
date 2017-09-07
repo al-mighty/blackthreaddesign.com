@@ -33,9 +33,11 @@ export default class Simulation {
     // Put any per frame calculation here
     canvas.app.onUpdate = function () {
       // NB: use self inside this function, 'this' will refer to canvas.app
+      const delta = this.delta / 1000;
 
-      animationControls.update( this.delta );
-      cameraControl.update( this.delta );
+      animationControls.update( delta );
+      cameraControl.update( delta );
+      sprites.update( delta );
 
     };
 
@@ -129,14 +131,9 @@ export default class Simulation {
         animationControls.playAction( 'offensive_idle' );
 
         attributeControls.init( this.player );
-
         attributeControls.initAnimationControls( animationControls );
-
         attributeControls.enableControls();
-
         cameraControl.init( this.player );
-
-        console.log( 'sprites init' )
         sprites.init( this.player );
 
       },

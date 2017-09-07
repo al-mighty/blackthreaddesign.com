@@ -1,7 +1,7 @@
 import throttle from 'lodash.throttle';
 import HTMLControl from './HTMLControl.js';
 import cameraControl from './cameraControl.js';
-import canvas from '../canvas.js';
+import sprites from './sprites.js';
 
 class AttributeControls {
 
@@ -159,11 +159,13 @@ class AttributeControls {
       e.preventDefault();
 
       this.passAnim = 'pass_left_hand';
+      this.dominantHand = 'left';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
 
-      cameraControl.setArmTarget( 'left' );
+      cameraControl.setArmTarget( this.dominantHand );
+      sprites.setArm( this.dominantHand );
       cameraControl.focusArms();
 
     }, 100 ), false );
@@ -173,11 +175,13 @@ class AttributeControls {
       e.preventDefault();
 
       this.passAnim = 'pass_right_hand';
+      this.dominantHand = 'right';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
 
-      cameraControl.setArmTarget( 'right' );
+      cameraControl.setArmTarget( this.dominantHand );
+      sprites.setArm( this.dominantHand );
       cameraControl.focusArms();
 
     }, 100 ), false );
@@ -187,11 +191,13 @@ class AttributeControls {
       e.preventDefault();
 
       this.passAnim = 'pass_right_hand';
+      this.dominantHand = 'right';
 
       this.animationControls.setTimeScale( 1, anim );
       this.animationControls.playAction( anim );
 
-      cameraControl.setArmTarget( 'both' );
+      cameraControl.setArmTarget( this.dominantHand );
+      sprites.setArm( this.dominantHand );
       cameraControl.focusArms();
 
     }, 100 ), false );

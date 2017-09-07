@@ -221,8 +221,6 @@ class CameraControl {
   // per frame calculation
   update( delta ) {
 
-    delta /= 1000;
-
     if ( this.targetChanged || this.dynamicTracking ) this.updateTarget( delta );
 
     if ( this.zoomLevelChanged ) this.updateZoomLevel( delta );

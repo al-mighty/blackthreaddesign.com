@@ -4,23 +4,34 @@ import canvas from '../canvas.js';
 import HTMLControl from './HTMLControl.js';
 // import loaders from './loaders.js';
 
+
+const start = new THREE.Vector3();
+const end = new THREE.Vector3();
+
 class Sprite {
 
   constructor( texture, attribute, target ) {
 
     this.attribute = attribute;
-    this.positionTarget = target;
+    this.target = target || new THREE.Vector3();
 
     const material = new THREE.SpriteMaterial( { map: texture, color: 0xff0000 } );
 
     this.object = new THREE.Sprite( material );
-    this.object.frustumCulled = false;
+
+    // make sure the sprite is always drawn on top
+    this.object.renderOrder = 999;
+
+    this.object.position.copy( this.target );
     this.object.scale.x = 50;
     this.object.scale.y = 50;
 
     canvas.app.scene.add( this.object );
 
     this.enabled = false;
+
+    // for testing
+    this.enable();
 
   }
 
@@ -32,20 +43,49 @@ class Sprite {
 
   enable() {
 
+    this.object.position.copy( this.target );
     this.enabled = true;
     this.visible = true;
 
+    this.object.onBeforeRender = () => {};
+
   }
 
-  update( position ) {
+  disable() {
+
+    this.object.onBeforeRender = () => {};
+
+  }
+
+  update( delta ) {
 
     if ( !this.enabled ) return;
 
-    this.object.position.copy( position );
+    end.copy( this.target );
+
+    const distance = end.distanceTo( this.object.position );
+
+    if ( Math.abs( distance ) > 0.001 ) {
+
+      start.copy( this.object.position );
+
+      const direction = start.sub( end ).normalize();
+
+      direction.multiplyScalar( distance * delta );
+
+      this.object.position.sub( direction );
+
+    }
+
+    // this.object.position.copy( this.target );
 
   }
 
 }
+
+// bypass problems with using 'this' in update function
+const targets = {};
+const positions = {};
 
 class Sprites {
 
@@ -77,54 +117,59 @@ class Sprites {
 
   }
 
+  // hold references to bones
   initTargets() {
 
-    this.targets = {
-
-      rightArm: this.player.getObjectByName( 'mixamorigRightShoulder' ),
-      leftArm: this.player.getObjectByName( 'mixamorigLeftShoulder' ),
-
-    };
+    targets.rightArm = this.player.getObjectByName( 'mixamorigRightShoulder' );
+    targets.leftArm = this.player.getObjectByName( 'mixamorigLeftShoulder' );
 
   }
 
+  // getters to return positions in world space relative to target bones
   initPositions() {
+
+    const self = this;
 
     const armPos = new THREE.Vector3();
 
-    this.positions = {
+    Object.defineProperties( positions, {
 
-      get arms() {
+      arms: {
 
-        console.log( this.arms)
+        get() {
 
-        if ( this.arm === 'right' || this.arm === 'both' ) {
+          if ( self.arm === 'right' || self.arm === 'both' ) {
 
-          console.log(this.targets, this.targets.rightArm)
+            targets.rightArm.getWorldPosition( armPos );
+            armPos.x -= 60;
 
-          this.targets.rightArm.getWorldPosition( armPos );
-          armPos.x += 25;
+          } else {
 
-        } else {
+            targets.leftArm.getWorldPosition( armPos );
+            armPos.x = 60;
 
-          this.targets.leftArm.getWorldPosition( armPos );
-          armPos.x -= 25;
+          }
 
-        }
+          armPos.y -= 25;
+          // armPos.z += 20;
 
-        armPos.y -= 25;
+          return armPos;
 
-        return armPos;
+        },
 
       },
 
-    };
+    } );
 
   }
 
   initSprites() {
 
-    this.sprites.armStrength = new Sprite( this.testTexture, this.attributes[ 'arm-strength' ], this.positions.arms );
+    this.sprites.armStrength = new Sprite(
+      this.testTexture,
+      this.attributes[ 'arm-strength' ],
+      positions.arms,
+    );
 
   }
 
@@ -191,21 +236,17 @@ class Sprites {
 
   }
 
-  animate() {
+  update( delta ) {
 
-    this.animationFrameID = null;
+    Object.values( this.sprites ).forEach( ( sprite ) => {
 
-    const update = () => {
+      sprite.update( delta );
 
-      Object.values( this.sprites ).forEach( ( sprite ) => {
+    } );
 
-        if ( sprite.enabled ) sprite.update();
-
-      } );
-
-      this.animationFrameID = requestAnimationFrame( update );
-
-    };
+    // weird hack (force positions.arms to update )
+    positions.arms;
+    // if ( positions.arms ) console.log( positions.arms );
 
   }
 

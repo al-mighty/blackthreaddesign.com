@@ -90,7 +90,7 @@ class AnimationControls {
 
     if ( this.isPaused ) return;
 
-    if ( mixer !== undefined ) mixer.update( delta / 1000 );
+    if ( mixer !== undefined ) mixer.update( delta );
 
   }
 

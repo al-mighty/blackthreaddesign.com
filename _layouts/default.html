@@ -10,7 +10,7 @@
 
   <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}">
     <!--<div id="breakpoint">
-      
+
     </div>-->
     {% if page.loadingOverlay %}{% include loading_overlay %}{% endif %}
     {% include browser-upgrade.html %}
