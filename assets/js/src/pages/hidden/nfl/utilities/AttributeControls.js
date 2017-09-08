@@ -107,7 +107,7 @@ class AttributeControls {
       this.animationControls.playAction( anim );
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -124,7 +124,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -149,7 +149,7 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -168,7 +168,7 @@ class AttributeControls {
       cameraControl.focusArms();
 
       sprites.setArm( this.dominantHand );
-      sprites.enable( 'armStrength' );
+      sprites.hideAllExcept( 'armStrength' );
 
     };
 
@@ -217,7 +217,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -233,7 +233,7 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -249,7 +249,7 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -264,7 +264,7 @@ class AttributeControls {
       this.animationControls.playAction( 'offensive_idle' );
 
       cameraControl.focusDefault();
-      sprites.enable( 'armStrength' );
+      sprites.hideAllExcept( 'armStrength' );
 
     }, 100 ), false );
 
@@ -280,7 +280,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -296,7 +296,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -312,7 +312,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -328,7 +328,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -344,7 +344,7 @@ class AttributeControls {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -360,7 +360,7 @@ class AttributeControls {
 
       cameraControl.focusHead();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -376,7 +376,7 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -392,7 +392,7 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -408,7 +408,7 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -424,7 +424,7 @@ class AttributeControls {
 
       cameraControl.focusUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -440,7 +440,7 @@ class AttributeControls {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -463,7 +463,7 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -489,7 +489,7 @@ class AttributeControls {
 
       cameraControl.focusUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 
@@ -515,7 +515,7 @@ class AttributeControls {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
 
     }, 100 ), false );
 

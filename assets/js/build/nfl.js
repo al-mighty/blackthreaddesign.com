@@ -59586,72 +59586,168 @@ var Canvas$1 = function () {
 
 var canvas$2 = new Canvas$1(HTMLControl.canvas);
 
-// import throttle from 'lodash.throttle';
-// import loaders from './loaders.js';
-
-
 var start = new Vector3();
 var end = new Vector3();
 
+// holds reference to the positions of the bones that are targets for the sprite
+var targets = {
+
+  default: new Vector3()
+
+};
+
+// positions of the actual sprite, calculated relative to the bone. Note that these are only
+// recalculated each time the relevant target it used, so they must always be used in pairs,
+// with the target being accessed first
+var positions = {
+
+  default: new Vector3()
+
+};
+
 var Sprite$1 = function () {
-  function Sprite$$(texture, attribute, target) {
+  function Sprite$$(texture, attribute, name) {
     classCallCheck(this, Sprite$$);
 
 
+    // clone the texture since each sprite will need to control the offset individually
+    this.texture = texture;
     this.attribute = attribute;
-    this.target = target || new Vector3();
+    this.name = name || 'default';
 
-    var material = new SpriteMaterial({ map: texture, color: 0xff0000, transparent: true });
+    this.initLine();
+    this.initObject();
+    this.initListener();
 
-    this.object = new Sprite(material);
+    this.setPosition();
+
+    canvas$2.app.scene.add(this.object, this.line);
+
+    this.visible = false;
+  }
+
+  Sprite$$.prototype.initObject = function initObject() {
+
+    this.spriteMat = new SpriteMaterial({ map: this.texture, transparent: true, opacity: 0 });
+
+    this.object = new Sprite(this.spriteMat);
 
     // make sure the sprite is always drawn on top
     this.object.renderOrder = 999;
-
-    this.object.scale.x = 50;
-    this.object.scale.y = 50;
-
-    this.enabled = false;
-    this.visible = false;
-
-    canvas$2.app.scene.add(this.object);
-  }
-
-  Sprite$$.prototype.init = function init() {};
-
-  Sprite$$.prototype.fadeOut = function fadeOut() {};
-
-  Sprite$$.prototype.enable = function enable() {
-
-    if (this.enabled) return;
-
-    this.object.position.copy(this.target);
-    this.enabled = true;
-    this.visible = true;
-
     this.object.onBeforeRender = function (renderer) {
       renderer.clearDepth();
     };
+
+    this.object.scale.x = 50;
+    this.object.scale.y = 50;
   };
 
-  Sprite$$.prototype.disable = function disable() {
+  Sprite$$.prototype.initLine = function initLine() {
 
-    if (!this.enabled) return;
+    this.lineMat = new LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 });
+    this.lineGeo = new Geometry();
+    this.lineGeo.vertices.push(targets[this.name].clone(), positions[this.name].clone());
+    this.line = new Line(this.lineGeo, this.lineMat);
+  };
 
-    this.object.onBeforeRender = function () {};
-    this.enabled = false;
-    this.visible = false;
+  Sprite$$.prototype.initListener = function initListener() {
+    var _this = this;
+
+    this.attribute.addEventListener('input', throttle(function (e) {
+
+      e.preventDefault();
+
+      _this.updateValue(e.target.value);
+    }, 100), false);
+  };
+
+  Sprite$$.prototype.updateValue = function updateValue(value) {
+
+    var offset = (value - 1) / 10;
+
+    this.texture.offset.set(offset, 0);
+  };
+
+  // directly set the position to prevent jumps when fading in
+  Sprite$$.prototype.setPosition = function setPosition() {
+
+    this.lineGeo.vertices[0].copy(targets[this.name]);
+    this.object.position.copy(positions[this.name]);
+    this.lineGeo.vertices[1].copy(positions[this.name]);
+    this.lineGeo.verticesNeedUpdate = true;
+  };
+
+  Sprite$$.prototype.fadeIn = function fadeIn() {
+    var _this2 = this;
+
+    if (this.visible) return;
+
+    this.setPosition();
+    this.visible = true;
+
+    clearInterval(this.fadeIntervalID);
+
+    var opacity = this.lineMat.opacity;
+
+    // fade in over 1 seconds
+    var step = 1 / 60;
+
+    this.fadeIntervalID = setInterval(function () {
+
+      if (opacity <= 1) {
+
+        console.log('fadeIn');
+
+        opacity += step;
+        _this2.lineMat.opacity = opacity;
+        _this2.spriteMat.opacity = opacity;
+      } else {
+
+        clearInterval(_this2.fadeIntervalID);
+      }
+    }, 17);
+  };
+
+  Sprite$$.prototype.fadeOut = function fadeOut() {
+    var _this3 = this;
+
+    if (!this.visible) return;
+
+    clearInterval(this.fadeIntervalID);
+
+    var opacity = this.lineMat.opacity;
+
+    // fade out over 1 seconds
+    var step = 1 / 60;
+
+    this.fadeIntervalID = setInterval(function () {
+
+      if (opacity >= 0) {
+
+        opacity -= step;
+        _this3.lineMat.opacity = opacity;
+        _this3.spriteMat.opacity = opacity;
+      } else {
+
+        clearInterval(_this3.fadeIntervalID);
+        _this3.visible = false;
+      }
+    }, 17);
   };
 
   Sprite$$.prototype.update = function update(delta) {
 
-    if (!this.enabled) return;
+    if (this.visible === false) return;
 
-    end.copy(this.target);
+    // update line origin
+    this.lineGeo.vertices[0].copy(targets[this.name]);
+
+    // update sprite position
+    end.copy(positions[this.name]);
 
     var distance = end.distanceTo(this.object.position);
 
-    if (Math.abs(distance) > 0.001) {
+    if (Math.abs(distance) > 0.01) {
 
       start.copy(this.object.position);
 
@@ -59662,7 +59758,11 @@ var Sprite$1 = function () {
       this.object.position.sub(direction);
     }
 
-    // this.object.position.copy( this.target );
+    // this.object.position.copy( positions[ this.name ] );
+
+    // update line end
+    this.lineGeo.vertices[1].copy(this.object.position);
+    this.lineGeo.verticesNeedUpdate = true;
   };
 
   createClass(Sprite$$, [{
@@ -59670,16 +59770,15 @@ var Sprite$1 = function () {
     set: function (bool) {
 
       this.object.visible = bool;
+      this.line.visible = bool;
+    },
+    get: function () {
+
+      return this.object.visible;
     }
   }]);
   return Sprite$$;
 }();
-
-// bypass problems with using 'this' in update function
-
-
-var targets = {};
-var positions = {};
 
 var Sprites = function () {
   function Sprites() {
@@ -59699,14 +59798,20 @@ var Sprites = function () {
 
     this.player = player;
 
-    this.initTargets();
     this.initPositions();
+    this.initTargets();
+
     this.initSprites();
   };
 
   Sprites.prototype.loadTexture = function loadTexture() {
 
-    this.testTexture = new TextureLoader().load('/assets/images/nfl/power_bar.png');
+    this.texture = new TextureLoader().load('/assets/images/nfl/power_bar_sheet.png');
+    this.texture.wrapS = this.texture.wrapT = RepeatWrapping;
+    // texture is a sprite sheet 10 frames wide and 1 tall
+    this.texture.repeat.set(0.1, 1);
+    // initialize the texture to the middle frame
+    this.texture.offset.set(0.4, 0);
   };
 
   // hold references to bones
@@ -59714,47 +59819,49 @@ var Sprites = function () {
 
   Sprites.prototype.initTargets = function initTargets() {
 
+    var self = this;
+    var pos = new Vector3();
+
     targets.rightArm = this.player.getObjectByName('mixamorigRightShoulder');
     targets.leftArm = this.player.getObjectByName('mixamorigLeftShoulder');
-  };
 
-  // getters to return positions in world space relative to target bones
+    Object.defineProperties(targets, {
 
+      armStrength: {
 
-  Sprites.prototype.initPositions = function initPositions() {
-
-    var self = this;
-
-    var armPos = new Vector3();
-
-    Object.defineProperties(positions, {
-
-      arms: {
         get: function () {
 
           if (self.arm === 'right' || self.arm === 'both') {
 
-            targets.rightArm.getWorldPosition(armPos);
-            armPos.x -= 60;
+            targets.rightArm.getWorldPosition(pos);
+            positions.armStrength.copy(pos);
+            positions.armStrength.x -= 45;
           } else {
 
-            targets.leftArm.getWorldPosition(armPos);
-            armPos.x = 60;
+            targets.leftArm.getWorldPosition(pos);
+            positions.armStrength.copy(pos);
+            positions.armStrength.x += 45;
           }
 
-          armPos.y -= 25;
-          // armPos.z += 20;
+          pos.y -= 25;
+          positions.armStrength.y += 15;
 
-          return armPos;
+          return pos;
         }
+
       }
 
     });
   };
 
+  Sprites.prototype.initPositions = function initPositions() {
+
+    positions.armStrength = new Vector3();
+  };
+
   Sprites.prototype.initSprites = function initSprites() {
 
-    this.sprites.armStrength = new Sprite$1(this.testTexture, this.attributes['arm-strength'], positions.arms);
+    this.sprites.armStrength = new Sprite$1(this.texture, this.attributes['arm-strength'], 'armStrength');
   };
 
   // set to right, left or both
@@ -59771,52 +59878,16 @@ var Sprites = function () {
 
     Object.values(this.sprites).forEach(function (sprite) {
 
-      sprite.visible = false;
+      sprite.fadeOut();
     });
   };
 
-  Sprites.prototype.showAllEnabled = function showAllEnabled() {
+  Sprites.prototype.hideAllExcept = function hideAllExcept(spriteName) {
 
     Object.values(this.sprites).forEach(function (sprite) {
 
-      if (sprite.enabled) sprite.visible = true;
+      if (sprite.name === spriteName) sprite.fadeIn();else sprite.fadeOut();
     });
-  };
-
-  Sprites.prototype.disableAll = function disableAll() {
-
-    Object.values(this.sprites).forEach(function (sprite) {
-
-      sprite.disable();
-    });
-  };
-
-  Sprites.prototype.enable = function enable(spriteName) {
-
-    // this.hideAll();
-
-    var sprite = this.sprites[spriteName];
-
-    if (sprite === undefined) {
-
-      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
-      return;
-    }
-
-    sprite.enable();
-  };
-
-  Sprites.prototype.disable = function disable(spriteName) {
-
-    var sprite = this.sprites[spriteName];
-
-    if (sprite === undefined) {
-
-      console.warn('Sprite ' + spriteName + ' doesn\'t exist!');
-      return;
-    }
-
-    sprite.disable();
   };
 
   Sprites.prototype.update = function update(delta) {
@@ -59825,9 +59896,6 @@ var Sprites = function () {
 
       sprite.update(delta);
     });
-
-    // weird hack (force positions.arms to update )
-    positions.arms;
   };
 
   return Sprites;
@@ -59936,7 +60004,7 @@ var AttributeControls = function () {
       _this.animationControls.playAction(anim);
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -59951,7 +60019,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -59974,7 +60042,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -59992,7 +60060,7 @@ var AttributeControls = function () {
       cameraControl.focusArms();
 
       sprites.setArm(_this4.dominantHand);
-      sprites.enable('armStrength');
+      sprites.hideAllExcept('armStrength');
     };
 
     this.attributes['dominant-hand'].left.addEventListener('click', throttle(function (e) {
@@ -60037,7 +60105,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60052,7 +60120,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60067,7 +60135,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60081,7 +60149,7 @@ var AttributeControls = function () {
       _this8.animationControls.playAction('offensive_idle');
 
       cameraControl.focusDefault();
-      sprites.enable('armStrength');
+      sprites.hideAllExcept('armStrength');
     }, 100), false);
   };
 
@@ -60096,7 +60164,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60111,7 +60179,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60126,7 +60194,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60141,7 +60209,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60156,7 +60224,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamic();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60171,7 +60239,7 @@ var AttributeControls = function () {
 
       cameraControl.focusHead();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60186,7 +60254,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60201,7 +60269,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60216,7 +60284,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60231,7 +60299,7 @@ var AttributeControls = function () {
 
       cameraControl.focusUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60246,7 +60314,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDynamicUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60268,7 +60336,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60291,7 +60359,7 @@ var AttributeControls = function () {
 
       cameraControl.focusUpper();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 
@@ -60314,7 +60382,7 @@ var AttributeControls = function () {
 
       cameraControl.focusDefault();
 
-      sprites.disableAll();
+      sprites.hideAll();
     }, 100), false);
   };
 

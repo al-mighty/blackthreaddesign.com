@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-// import throttle from 'lodash.throttle';
+import throttle from 'lodash.throttle';
 import canvas from '../canvas.js';
 import HTMLControl from './HTMLControl.js';
 // import loaders from './loaders.js';
@@ -8,75 +8,186 @@ import HTMLControl from './HTMLControl.js';
 const start = new THREE.Vector3();
 const end = new THREE.Vector3();
 
+// holds reference to the positions of the bones that are targets for the sprite
+const targets = {
+
+  default: new THREE.Vector3(),
+
+};
+
+// positions of the actual sprite, calculated relative to the bone. Note that these are only
+// recalculated each time the relevant target it used, so they must always be used in pairs,
+// with the target being accessed first
+const positions = {
+
+  default: new THREE.Vector3(),
+
+};
+
+
 class Sprite {
 
-  constructor( texture, attribute, target ) {
+  constructor( texture, attribute, name ) {
 
+    // clone the texture since each sprite will need to control the offset individually
+    this.texture = texture;
     this.attribute = attribute;
-    this.target = target || new THREE.Vector3();
+    this.name = name || 'default';
 
-    const material = new THREE.SpriteMaterial( { map: texture, color: 0xff0000, transparent: true } );
+    this.initLine();
+    this.initObject();
+    this.initListener();
 
-    this.object = new THREE.Sprite( material );
+    this.setPosition();
+
+    canvas.app.scene.add( this.object, this.line );
+
+    this.visible = false;
+
+  }
+
+  initObject() {
+
+    this.spriteMat = new THREE.SpriteMaterial( { map: this.texture, transparent: true, opacity: 0 } );
+
+    this.object = new THREE.Sprite( this.spriteMat );
 
     // make sure the sprite is always drawn on top
     this.object.renderOrder = 999;
+    this.object.onBeforeRender = ( renderer ) => { renderer.clearDepth(); };
 
     this.object.scale.x = 50;
     this.object.scale.y = 50;
 
-    this.enabled = false;
-    this.visible = false;
+  }
 
-    canvas.app.scene.add( this.object );
+  initLine() {
+
+    this.lineMat = new THREE.LineBasicMaterial( { color: 0x000000, transparent: true, opacity: 0 } );
+    this.lineGeo = new THREE.Geometry();
+    this.lineGeo.vertices.push( targets[ this.name ].clone(), positions[ this.name ].clone() );
+    this.line = new THREE.Line( this.lineGeo, this.lineMat );
 
   }
 
-  init() {
+  initListener() {
+
+    this.attribute.addEventListener( 'input', throttle( ( e ) => {
+
+      e.preventDefault();
+
+      this.updateValue( e.target.value );
+
+    }, 100 ), false );
+
+  }
+
+  updateValue( value ) {
+
+    const offset = ( value - 1 ) / 10;
+
+    this.texture.offset.set( offset, 0 );
 
   }
 
   set visible( bool ) {
 
     this.object.visible = bool;
+    this.line.visible = bool;
 
+  }
+
+  get visible() {
+
+    return this.object.visible;
+
+  }
+
+  // directly set the position to prevent jumps when fading in
+  setPosition() {
+
+    this.lineGeo.vertices[0].copy( targets[ this.name ] );
+    this.object.position.copy( positions[ this.name ] );
+    this.lineGeo.vertices[1].copy( positions[ this.name ] );
+    this.lineGeo.verticesNeedUpdate = true;
+
+  }
+
+  fadeIn() {
+
+    if ( this.visible ) return;
+
+    this.setPosition();
+    this.visible = true;
+
+    clearInterval( this.fadeIntervalID );
+
+    let opacity = this.lineMat.opacity;
+
+    // fade in over 1 seconds
+    const step = 1 / 60;
+
+    this.fadeIntervalID = setInterval( () => {
+
+      if ( opacity <= 1 ) {
+
+        console.log( 'fadeIn' );
+
+        opacity += step;
+        this.lineMat.opacity = opacity;
+        this.spriteMat.opacity = opacity;
+
+      } else {
+
+        clearInterval( this.fadeIntervalID );
+
+      }
+
+    }, 17 );
   }
 
   fadeOut() {
 
-  }
+    if ( !this.visible ) return;
 
-  enable() {
+    clearInterval( this.fadeIntervalID );
 
-    if ( this.enabled ) return;
+    let opacity = this.lineMat.opacity;
 
-    this.object.position.copy( this.target );
-    this.enabled = true;
-    this.visible = true;
+    // fade out over 1 seconds
+    const step = 1 / 60;
 
-    this.object.onBeforeRender = ( renderer ) => { renderer.clearDepth(); };
+    this.fadeIntervalID = setInterval( () => {
 
-  }
+      if ( opacity >= 0 ) {
 
-  disable() {
+        opacity -= step;
+        this.lineMat.opacity = opacity;
+        this.spriteMat.opacity = opacity;
 
-    if ( !this.enabled ) return;
+      } else {
 
-    this.object.onBeforeRender = () => {};
-    this.enabled = false;
-    this.visible = false;
+        clearInterval( this.fadeIntervalID );
+        this.visible = false;
 
+      }
+
+    }, 17 );
   }
 
   update( delta ) {
 
-    if ( !this.enabled ) return;
+    if ( this.visible === false ) return;
 
-    end.copy( this.target );
+    // update line origin
+    this.lineGeo.vertices[0].copy( targets[ this.name ] );
+
+    // update sprite position
+    end.copy( positions[ this.name ] );
 
     const distance = end.distanceTo( this.object.position );
 
-    if ( Math.abs( distance ) > 0.001 ) {
+    if ( Math.abs( distance ) > 0.01 ) {
 
       start.copy( this.object.position );
 
@@ -88,15 +199,15 @@ class Sprite {
 
     }
 
-    // this.object.position.copy( this.target );
+    // this.object.position.copy( positions[ this.name ] );
+
+    // update line end
+    this.lineGeo.vertices[1].copy( this.object.position );
+    this.lineGeo.verticesNeedUpdate = true;
 
   }
 
 }
-
-// bypass problems with using 'this' in update function
-const targets = {};
-const positions = {};
 
 class Sprites {
 
@@ -116,55 +227,57 @@ class Sprites {
 
     this.player = player;
 
-    this.initTargets();
     this.initPositions();
+    this.initTargets();
+
     this.initSprites();
 
   }
 
   loadTexture() {
 
-    this.testTexture = new THREE.TextureLoader().load( '/assets/images/nfl/power_bar.png' );
+    this.texture = new THREE.TextureLoader().load( '/assets/images/nfl/power_bar_sheet.png' );
+    this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+    // texture is a sprite sheet 10 frames wide and 1 tall
+    this.texture.repeat.set( 0.1, 1 );
+    // initialize the texture to the middle frame
+    this.texture.offset.set( 0.4, 0 );
 
   }
 
   // hold references to bones
   initTargets() {
 
+    const self = this;
+    const pos = new THREE.Vector3();
+
     targets.rightArm = this.player.getObjectByName( 'mixamorigRightShoulder' );
     targets.leftArm = this.player.getObjectByName( 'mixamorigLeftShoulder' );
 
-  }
+    Object.defineProperties( targets, {
 
-  // getters to return positions in world space relative to target bones
-  initPositions() {
+      armStrength: {
 
-    const self = this;
-
-    const armPos = new THREE.Vector3();
-
-    Object.defineProperties( positions, {
-
-      arms: {
-
-        get() {
+        get: () => {
 
           if ( self.arm === 'right' || self.arm === 'both' ) {
 
-            targets.rightArm.getWorldPosition( armPos );
-            armPos.x -= 60;
+            targets.rightArm.getWorldPosition( pos );
+            positions.armStrength.copy( pos );
+            positions.armStrength.x -= 45;
 
           } else {
 
-            targets.leftArm.getWorldPosition( armPos );
-            armPos.x = 60;
+            targets.leftArm.getWorldPosition( pos );
+            positions.armStrength.copy( pos );
+            positions.armStrength.x += 45;
 
           }
 
-          armPos.y -= 25;
-          // armPos.z += 20;
+          pos.y -= 25;
+          positions.armStrength.y += 15;
 
-          return armPos;
+          return pos;
 
         },
 
@@ -174,12 +287,18 @@ class Sprites {
 
   }
 
+  initPositions() {
+
+    positions.armStrength = new THREE.Vector3();
+
+  }
+
   initSprites() {
 
     this.sprites.armStrength = new Sprite(
-      this.testTexture,
+      this.texture,
       this.attributes[ 'arm-strength' ],
-      positions.arms,
+      'armStrength',
     );
 
   }
@@ -197,61 +316,20 @@ class Sprites {
 
     Object.values( this.sprites ).forEach( ( sprite ) => {
 
-      sprite.visible = false;
+      sprite.fadeOut();
 
     } );
 
   }
 
-  showAllEnabled() {
+  hideAllExcept( spriteName ) {
 
     Object.values( this.sprites ).forEach( ( sprite ) => {
 
-      if ( sprite.enabled ) sprite.visible = true;
+      if ( sprite.name === spriteName ) sprite.fadeIn();
+      else sprite.fadeOut();
 
     } );
-
-  }
-
-  disableAll() {
-
-    Object.values( this.sprites ).forEach( ( sprite ) => {
-
-      sprite.disable();
-
-    } );
-
-  }
-
-  enable( spriteName ) {
-
-    // this.hideAll();
-
-    const sprite = this.sprites[ spriteName ];
-
-    if ( sprite === undefined ) {
-
-      console.warn( 'Sprite ' + spriteName + ' doesn\'t exist!' );
-      return;
-
-    }
-
-    sprite.enable();
-
-  }
-
-  disable( spriteName ) {
-
-    const sprite = this.sprites[ spriteName ];
-
-    if ( sprite === undefined ) {
-
-      console.warn( 'Sprite ' + spriteName + ' doesn\'t exist!' );
-      return;
-
-    }
-
-    sprite.disable();
 
   }
 
@@ -263,8 +341,6 @@ class Sprites {
 
     } );
 
-    // weird hack (force positions.arms to update )
-    positions.arms;
   }
 
 
