@@ -192,7 +192,7 @@ defaults:
       path: ""
       type: pages
     values:
-      layout: single
+      layout: standard
       author_profile: false
   # _tutorials
   - scope:

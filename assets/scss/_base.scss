@@ -25,7 +25,9 @@ h1, h2, h3, h4, h5, h6 {
   margin: 2em 0 0.5em;
   line-height: 1.2;
   font-family: $header-font-family;
+  color: $text-color;
   font-weight: bold;
+  text-align: center;
 }
 
 h1 {
@@ -313,7 +315,7 @@ nav {
    Global animation transition
    ========================================================================== */
 
-b, i, strong, em, blockquote, p, q, span, figure, img, h1, h2, header, input, a, tr, td, form button, input[type="submit"], .btn, .highlight, .archive__item-teaser {
+b, i, strong, em, blockquote, p, q, span, figure, img, h1, h2, header, input, a, tr, td, form button, input[type="submit"], .highlight, .archive__item-teaser {
   -webkit-transition: $global-transition;
   transition: $global-transition;
 }

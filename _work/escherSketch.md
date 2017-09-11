@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: standard
 title:  "Escher Sketch"
 date:   2017-03-31 13:00:35 +0700
 categories: work
@@ -14,9 +14,9 @@ css:
 ---
 
 
-This is a prototype of an automatic art generator / mathematical education tool. 
+This is a prototype of an automatic art generator / mathematical education tool.
 
-It has two options - the number of sides of the central polygon (left) and the number of polygons meeting at each vertex in the tiling (right). Note that both numbers equal to 4 is not a valid tiling so nothing will happen if you try to do that. 
+It has two options - the number of sides of the central polygon (left) and the number of polygons meeting at each vertex in the tiling (right). Note that both numbers equal to 4 is not a valid tiling so nothing will happen if you try to do that.
 
 The tiling is created out out of two Euclidean triangular pieces, one representing half a white fish, the other half a black fish.
 

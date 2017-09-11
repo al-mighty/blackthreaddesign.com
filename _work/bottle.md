@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: standard
 title:  "Bottle Product Viewer"
 permalink: /work/bottle
 categories: work

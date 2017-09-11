@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: standard
 title: "CSS Circles Animation"
 excerpt: "An experiment in pure CSS animation, using art created with the EscherSketch hyperbolic art generator."
 categories: experiments
@@ -11,7 +11,7 @@ css:
   circles
 ---
 
-These use a pure CSS animation hover effect. They were originally intended for the front page of the site. I decided not to use them, but I still think they look nice! They're fully responsive too, so go ahead and resize the browser window. 
+These use a pure CSS animation hover effect. They were originally intended for the front page of the site. I decided not to use them, but I still think they look nice! They're fully responsive too, so go ahead and resize the browser window.
 
 <div class="circle-container">
 	<div id="circle-1" class="circle-canvas-container circle">
@@ -24,7 +24,7 @@ These use a pure CSS animation hover effect. They were originally intended for t
 </div>
 
 <div class="circle-container">
-	<div id="circle-3" class="circle-canvas-container circle">  
+	<div id="circle-3" class="circle-canvas-container circle">
 	</div>
 </div>
 

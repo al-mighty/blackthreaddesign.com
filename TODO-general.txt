@@ -6,3 +6,4 @@ Check cache setup
 redesign /work
 Don't include lightbox by default
 go over all styles
+switch to Heroku

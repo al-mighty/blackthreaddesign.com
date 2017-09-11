@@ -7,7 +7,6 @@ import 'utilities/init/initHammer.js';
 import initLightBox from 'utilities/init/initLightBox.js';
 import initNav from 'utilities/init/initNav.js';
 import initSmoothScroll from 'utilities/init/initSmoothScroll.js';
-import initFooter from 'utilities/init/initFooter.js';
 import initVideos from 'utilities/init/initVideos.js';
 import initLoadingOverlay from 'utilities/init/initLoadingOverlay.js';
 
@@ -20,6 +19,5 @@ initNav();
 // BUG: nav left not hidden on first image
 initLightBox();
 
-initFooter();
 initSmoothScroll();
 initVideos();

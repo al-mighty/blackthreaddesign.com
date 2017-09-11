@@ -18,21 +18,20 @@
 @import "base";
 @import "forms";
 @import "tables";
-@import "animations";
 
 /* Components */
-@import "buttons";
-@import "notices";
 @import "masthead";
 @import "navigation";
+@import "pagination";
 @import "footer";
 @import "syntax";
+@import "comments";
+@import "hero";
+@import "meta";
 
 /* Utility classes */
 @import "utilities";
 
 /* Layout specific */
-@import "page";
-@import "archive";
-@import "sidebar";
 @import "print";
+@import "archive";

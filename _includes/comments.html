@@ -1,8 +1,8 @@
-<div class="page__comments">
-  {% capture comments_label %}{{ site.data.ui-text[site.locale].comments_label | default: "Comments" }}{% endcapture %}
-  {% case site.comments.provider %}
-  {% when "disqus" %}
-    <h4 class="page__comments-title">{{ comments_label }}</h4>
+{% if site.comments.provider and page.comments %}
+
+  <div class="comments">
+    <h4 class="comments-title">{{ comments_label }}</h4>
     <section id="disqus_thread"></section>
-  {% endcase %}
-</div>
+  </div>
+
+{% endif %}

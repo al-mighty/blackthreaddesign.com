@@ -1,5 +1,5 @@
 // const loadOverlay =
-const canvas = document.querySelector( '#viewer-canvas' );
+const canvas = document.querySelector( '#loader-canvas' );
 const reset = document.querySelector( '#reset' );
 const exportBtn = document.querySelector( '#export' );
 const exportAnims = document.querySelector( '#export-anims' );

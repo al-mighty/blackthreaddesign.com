@@ -1,0 +1,21 @@
+.hero {
+
+  text-align: center;
+
+  padding: 10em 0;
+
+  background-size: cover;
+  background-position: center;
+
+  color: $text-color;
+  text-shadow: 1px 1px 4px rgba(#000, 0.5);
+
+  h1 {
+    font-size: 3em;
+  }
+
+  h3 {
+    font-size: 1.75em;
+  }
+
+}
