@@ -5,12 +5,12 @@
 /* Vendor */
 @import "vendor/avalonbox";
 
-/* Mixins and functions */
+// /* Mixins and functions */
 @import "vendor/breakpoint/breakpoint";
 @include breakpoint-set("to ems", true);
 @import "vendor/font-awesome/font-awesome";
-@import "vendor/magnific-popup/magnific-popup"; // Magnific Popup
-@import "vendor/susy/susy";
+// @import "vendor/magnific-popup/magnific-popup"; // Magnific Popup
+// @import "vendor/susy/susy";
 @import "mixins";
 
 /* Core CSS */

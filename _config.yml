@@ -141,9 +141,6 @@ plugins:
   - jekyll-sitemap
   - jekyll-gist
   - jemoji
-  # - font-awesome-sass
-  # - jekyll-autoprefixer
-  # - autoprefixer-rails
 
 # mimic GitHub Pages with --safe
 whitelist:
@@ -152,13 +149,6 @@ whitelist:
   - jekyll-gist
   - jemoji
 
-
-# HTML Compression
-# - jch.penibelst.de/
-compress_html:
-  clippings: all
-  ignore:
-    envs: development
 
 collections:
   tutorials:
@@ -174,34 +164,19 @@ collections:
     output: true
     permalink: /:collection/:title
 
-# Defaults
 defaults:
-  # _posts
-  # - scope:
-  #     path: "/blog"
-  #     type: posts
-  #   values:
-  #     layout: single
-  #     author_profile: false
-  #     read_time: true
-  #     comments: true
-  #     share: true
-  #     related: true
   # _pages
   - scope:
       path: ""
       type: pages
     values:
       layout: standard
-      author_profile: false
   # _tutorials
   - scope:
       path: "/tutorials"
       type: tutorials
     values:
-      layout: tutorial
-      author_profile: false
-      share: true
+      layout: standard
       comments: true
       sidebar:
        nav: "tutorials"
@@ -210,20 +185,12 @@ defaults:
       path: "/work"
       type: work
     values:
-      layout: single
-      author_profile: false
-      share: false
+      layout: standard
       comments: true
   # _experiments
   - scope:
       path: "/experiments"
       type: experiments
     values:
-      layout: single
-      author_profile: false
-      share: false
+      layout: standard
       comments: true
-
-#PHP include https://github.com/jnvsor/jekyll-php
-# php_path: /php/
-#include: [.php]
