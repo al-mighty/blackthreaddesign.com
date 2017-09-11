@@ -1,7 +1,7 @@
 // Control camera targeting and OrbitControl settings
 
 import * as THREE from 'three';
-import canvas from '../Canvas.js';
+import canvas from '../canvas.js';
 
 class CameraControl {
 

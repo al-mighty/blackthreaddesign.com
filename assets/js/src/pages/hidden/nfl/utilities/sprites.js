@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import throttle from 'lodash.throttle';
 import canvas from '../canvas.js';
 import HTMLControl from './HTMLControl.js';
-// import loaders from './loaders.js';
-
 
 const start = new THREE.Vector3();
 const end = new THREE.Vector3();

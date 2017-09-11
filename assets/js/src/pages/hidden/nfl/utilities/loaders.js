@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-import 'modules/loaders/DDSLoader.module.js';
 import FBXLoader from 'modules/loaders/FBXLoader.module.js';
 import AnimationLoader from 'modules/loaders/AnimationLoader.module.js';
 

@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import throttle from 'lodash.throttle';
-// import HTMLControl from './HTMLControl.js';
 
 export default class LightingSetup {
 
